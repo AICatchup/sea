@@ -62,6 +62,24 @@ export function standard(
   return resources.material(new THREE.MeshStandardMaterial({ color, roughness, metalness }));
 }
 
+/** Weld shading across duplicated primitive/UV vertices without welding the UVs. */
+export function smoothNormalsByPosition(geometry: THREE.BufferGeometry): void {
+  geometry.computeVertexNormals();
+  const positions = geometry.getAttribute('position');
+  const normals = geometry.getAttribute('normal');
+  const sums = new Map<string, THREE.Vector3>();
+  const key = (i: number) => `${Math.round(positions.getX(i) * 1e5)},${Math.round(positions.getY(i) * 1e5)},${Math.round(positions.getZ(i) * 1e5)}`;
+  for (let i = 0; i < positions.count; i++) {
+    const id = key(i), sum = sums.get(id) ?? new THREE.Vector3();
+    sum.x += normals.getX(i); sum.y += normals.getY(i); sum.z += normals.getZ(i); sums.set(id, sum);
+  }
+  sums.forEach((sum) => sum.normalize());
+  for (let i = 0; i < positions.count; i++) {
+    const sum = sums.get(key(i))!; normals.setXYZ(i, sum.x, sum.y, sum.z);
+  }
+  normals.needsUpdate = true;
+}
+
 export function rockGeometry(resources: ModelResources, seed: number, detail = 2): THREE.BufferGeometry {
   const geometry = new THREE.IcosahedronGeometry(1, detail);
   const position = geometry.getAttribute('position');
@@ -70,13 +88,14 @@ export function rockGeometry(resources: ModelResources, seed: number, detail = 2
     const x = position.getX(i), y = position.getY(i), z = position.getZ(i);
     // Position-derived noise keeps duplicate vertices joined, including UV seams.
     const fissure = Math.sin(x * 8.4 + seed) * Math.sin(z * 6.7 + y * 4.3);
-    const layer = 0.83 + Math.sin(y * 11 + x * 2 + seed) * 0.08 + fissure * 0.12;
-    position.setXYZ(i, x * layer, Math.max(-0.68, y * layer), z * layer * 0.86);
+    const layer = 0.83 + Math.sin(y * 11 + x * 2 + seed) * 0.045 + fissure * 0.075;
+    const erosion = Math.sin(x * 2.9 + z * 3.4 + seed * 0.7) * 0.075;
+    position.setXYZ(i, x * (layer + erosion), Math.max(-0.68, y * layer), z * (layer - erosion) * 0.86);
     const shade = 0.72 + fissure * 0.13 + y * 0.06;
     color.set([shade, shade * 0.986, shade * 0.936], i * 3);
   }
   geometry.setAttribute('color', new THREE.BufferAttribute(color, 3));
-  geometry.computeVertexNormals();
+  smoothNormalsByPosition(geometry);
   geometry.computeBoundingSphere();
   return resources.geometry(geometry);
 }

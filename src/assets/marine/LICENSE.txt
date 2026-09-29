@@ -1,0 +1,8 @@
+Poly Haven boulder_01: CC0 1.0 Universal
+https://polyhaven.com/a/boulder_01
+https://polyhaven.com/license
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Photogrammetry mesh and 2K PBR maps acquired via the official public API.
+Bundled locally with no runtime network dependency.
+Powered by Poly Haven: https://polyhaven.com

@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import type { GroundSampler } from './contracts';
-import { makeInstances, ModelResources, randomSeed, rockGeometry, standard, surfaceTexture, updateInstanceBounds } from './models/procedural';
-import { encrustingGeometry, fishEyes, fishGeometry, seagrassGeometry, tailGeometry } from './models/marine';
+import { makeInstances, ModelResources, randomSeed, rockGeometry, standard, surfaceTexture, updateInstanceBounds } from './models/procedural.ts';
+import { encrustingGeometry, finGeometry, finMaterial, fishEyes, fishGeometry, fishMaterial, seagrassGeometry, seagrassMaterial, tailGeometry } from './models/marine.ts';
+import { ScannedRockField } from './scanned-rocks.ts';
 
 interface Fish {
   species: number; index: number; eyeIndex: number; center: THREE.Vector3;
@@ -11,11 +12,16 @@ interface Fish {
 /** Inferred, artist-authored diving habitat; these organisms are not a local biological survey. */
 export class MarineLife {
   readonly group = new THREE.Group();
+  readonly ready: Promise<void>;
   private readonly resources = new ModelResources();
   private readonly instances: THREE.InstancedMesh[] = [];
   private readonly fish: Fish[] = [];
   private readonly bodies: THREE.InstancedMesh[] = [];
+  private readonly fins: THREE.InstancedMesh[] = [];
   private readonly tails: THREE.InstancedMesh[] = [];
+  private readonly scannedRocks: ScannedRockField;
+  private readonly rockLods: { mesh: THREE.InstancedMesh; matrices: THREE.Matrix4[] }[] = [];
+  private readonly animationTime: THREE.IUniform<number> = { value: 0 };
   private readonly eyes: THREE.InstancedMesh;
   private readonly dust: THREE.Points;
   private readonly bubbles: THREE.InstancedMesh;
@@ -29,22 +35,26 @@ export class MarineLife {
   private readonly position = new THREE.Vector3();
   private readonly scale = new THREE.Vector3();
   private readonly yAxis = new THREE.Vector3(0, 1, 0);
+  private readonly swimmingEuler = new THREE.Euler(0, 0, 0, 'YXZ');
   private disposed = false;
 
   constructor(private readonly ground: GroundSampler) {
     this.group.name = 'authored Tomari diving habitat';
     this.group.userData.provenance = 'Inferred seabed dressing and wrasse/damselfish/silver-shoal inspired fish, not surveyed fauna or coral.';
-    this.populateSeabed();
+    this.scannedRocks = this.populateSeabed(); this.ready = this.scannedRocks.ready;
     this.populateFish();
-    const fishMaterial = standard(this.resources, '#ffffff', 0.43, 0.1); fishMaterial.vertexColors = true; fishMaterial.side = THREE.DoubleSide;
-    const eyeMaterial = standard(this.resources, '#111719', 0.18);
+    const membrane = finMaterial(this.resources, this.animationTime);
+    const eyeMaterial = this.resources.material(new THREE.MeshPhysicalMaterial({ color: '#ffffff', vertexColors: true,
+      roughness: 0.16, metalness: 0.03, clearcoat: 0.85, clearcoatRoughness: 0.08 }));
+    eyeMaterial.name = 'paired fish iris / pupil / wet cornea'; eyeMaterial.userData.photorealRole = 'fish eyes';
     for (let species = 0; species < 3; species++) {
       const count = this.fish.filter((fish) => fish.species === species).length;
-      const body = makeInstances(fishGeometry(this.resources, species), fishMaterial, count, ['wrasse inspired school', 'small coastal damselfish inspired school', 'silver coastal shoal'][species]);
-      const tail = makeInstances(tailGeometry(this.resources, species), fishMaterial, count, 'articulated swimming tail');
-      body.castShadow = tail.castShadow = false;
-      body.instanceMatrix.setUsage(THREE.DynamicDrawUsage); tail.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      this.bodies.push(body); this.tails.push(tail); this.instances.push(body, tail); this.group.add(body, tail);
+      const body = makeInstances(fishGeometry(this.resources, species), fishMaterial(this.resources, species), count, ['wrasse inspired school', 'small coastal damselfish inspired school', 'silver coastal shoal'][species]);
+      const fin = makeInstances(finGeometry(this.resources, species), membrane, count, 'thin dorsal / anal / pectoral fins');
+      const tail = makeInstances(tailGeometry(this.resources, species), membrane, count, 'articulated caudal fin with rays');
+      body.castShadow = tail.castShadow = fin.castShadow = false;
+      for (const mesh of [body, fin, tail]) mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      this.bodies.push(body); this.fins.push(fin); this.tails.push(tail); this.instances.push(body, fin, tail); this.group.add(body, fin, tail);
     }
     this.eyes = makeInstances(fishEyes(this.resources), eyeMaterial, this.fish.length, 'paired fish eyes');
     this.eyes.castShadow = false; this.eyes.instanceMatrix.setUsage(THREE.DynamicDrawUsage); this.instances.push(this.eyes); this.group.add(this.eyes);
@@ -65,16 +75,17 @@ export class MarineLife {
     this.update(0, new THREE.Vector3(-36, 3, 27), false);
   }
 
-  private addInstances(geometry: THREE.BufferGeometry, material: THREE.Material, matrices: THREE.Matrix4[], name: string): void {
-    if (!matrices.length) return;
+  private addInstances(geometry: THREE.BufferGeometry, material: THREE.Material, matrices: THREE.Matrix4[], name: string): THREE.InstancedMesh | null {
+    if (!matrices.length) return null;
     const mesh = makeInstances(geometry, material, matrices.length, name); mesh.castShadow = false;
     matrices.forEach((matrix, index) => mesh.setMatrixAt(index, matrix)); updateInstanceBounds(mesh); this.instances.push(mesh); this.group.add(mesh);
+    return mesh;
   }
 
-  private populateSeabed(): void {
+  private populateSeabed(): ScannedRockField {
     const stone = standard(this.resources, '#babdb3', 0.99); stone.vertexColors = true;
     stone.map = surfaceTexture(this.resources, '#cac8bb', 'stone', 299);
-    const grass = standard(this.resources, '#d3ddbd', 0.95); grass.vertexColors = true; grass.side = THREE.DoubleSide;
+    const grass = seagrassMaterial(this.resources, this.animationTime);
     const coral = standard(this.resources, '#85796f', 0.91);
     const rocks: THREE.Matrix4[][] = [[], [], []], grassMatrices: THREE.Matrix4[] = [], kelpMatrices: THREE.Matrix4[] = [], coralMatrices: THREE.Matrix4[] = [];
     for (let i = 0; i < 640; i++) {
@@ -85,7 +96,7 @@ export class MarineLife {
       const variant = Math.floor(this.random() * 3);
       if (i % 2 === 0) {
         const size = Math.min(-height * 0.4, 0.18 + this.random() * 1.2);
-        this.position.set(x, height + size * 0.46, z); this.rotation.setFromAxisAngle(this.yAxis, yaw); this.scale.set(size, size * 0.85, size * 1.2);
+        this.position.set(x, height - size * 0.1, z); this.rotation.setFromAxisAngle(this.yAxis, yaw); this.scale.set(size, size * (0.56 + this.random() * 0.35), size * (0.85 + this.random() * 0.4));
         rocks[variant].push(new THREE.Matrix4().compose(this.position, this.rotation, this.scale));
       }
       if (height > -23 && i % 3 !== 0) {
@@ -98,11 +109,33 @@ export class MarineLife {
         coralMatrices.push(new THREE.Matrix4().compose(this.position, this.rotation, this.scale));
       }
     }
-    for (let variant = 0; variant < 3; variant++) this.addInstances(rockGeometry(this.resources, variant + 633), stone, rocks[variant], 'submerged eroded coast stones');
+    // Small, irregular shelf clusters give the diver close material and silhouette cues.
+    for (const [anchorX, anchorZ] of [[-31, -27], [-54, -43], [-13, -51], [-72, -34], [12, -62]]) {
+      for (let i = 0; i < 24; i++) {
+        const angle = this.random() * Math.PI * 2, spread = Math.sqrt(this.random()) * 10;
+        const x = anchorX + Math.cos(angle) * spread, z = anchorZ + Math.sin(angle) * spread * 0.64;
+        const height = this.ground.heightAt(x, z);
+        if (!Number.isFinite(height) || height > -1.1 || height < -28) continue;
+        const size = 0.23 + Math.pow(this.random(), 1.6) * 1.85;
+        this.position.set(x, height - size * 0.12, z); this.rotation.setFromAxisAngle(this.yAxis, angle);
+        this.scale.set(size, size * (0.55 + this.random() * 0.34), size * (0.78 + this.random() * 0.45));
+        rocks[i % 3].push(new THREE.Matrix4().compose(this.position, this.rotation, this.scale));
+        if (i % 3 !== 0) {
+          this.position.set(x + size * 0.6, height - 0.04, z); this.scale.setScalar(0.63 + this.random() * 0.44);
+          grassMatrices.push(new THREE.Matrix4().compose(this.position, this.rotation, this.scale));
+        }
+      }
+    }
+    for (let variant = 0; variant < 3; variant++) {
+      const geometry = rockGeometry(this.resources, variant + 633, 5); geometry.translate(0, 0.68, 0);
+      const mesh = this.addInstances(geometry, stone, rocks[variant], 'distant rounded seabed stones');
+      if (mesh) { mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); this.rockLods.push({ mesh, matrices: rocks[variant] }); }
+    }
     this.addInstances(seagrassGeometry(this.resources, 41), grass, grassMatrices, 'modest inferred seagrass patches');
     this.addInstances(seagrassGeometry(this.resources, 83, true), grass, kelpMatrices, 'brown coastal algae fronds');
     this.addInstances(encrustingGeometry(this.resources, 20), coral, coralMatrices, 'muted inferred encrusting organisms');
     this.group.userData.habitatCounts = { rocks: rocks.flat().length, seagrass: grassMatrices.length, algae: kelpMatrices.length, encrusting: coralMatrices.length };
+    return new ScannedRockField(this.group, this.resources, rocks.flat());
   }
 
   private findWaterCenter(x: number, z: number): THREE.Vector3 | null {
@@ -128,7 +161,7 @@ export class MarineLife {
       for (let i = 0; i < school.count; i++) {
         this.fish.push({ species: school.species, index: counts[school.species]++, eyeIndex: this.fish.length, center,
           radius: 2.8 + this.random() * 6.3, aspect: 0.38 + this.random() * 0.27, phase: this.random() * 1.3 + school.species * 2,
-          rate: rate + this.random() * 0.012, size: (school.species === 0 ? 0.48 : school.species === 1 ? 0.34 : 0.33) + this.random() * 0.27,
+          rate: rate + this.random() * 0.0012, size: (school.species === 0 ? 0.35 : school.species === 1 ? 0.26 : 0.3) + this.random() * 0.21,
           depthPhase: this.random() * Math.PI * 2 });
       }
     }
@@ -137,23 +170,33 @@ export class MarineLife {
 
   update(time: number, cameraPosition: THREE.Vector3, underwater: boolean): void {
     if (this.disposed) return;
+    this.animationTime.value = time;
+    const detailed = this.scannedRocks.update(cameraPosition, underwater || cameraPosition.y < 1.2);
+    if (detailed) for (const { mesh, matrices } of this.rockLods) {
+      let index = 0;
+      for (const matrix of matrices) if (!detailed.has(matrix)) mesh.setMatrixAt(index++, matrix);
+      mesh.count = index; updateInstanceBounds(mesh);
+    }
     for (const fish of this.fish) {
       const phase = time * fish.rate + fish.phase;
-      let x = fish.center.x + Math.cos(phase) * fish.radius;
-      let z = fish.center.z + Math.sin(phase) * fish.radius * fish.aspect;
+      const meander = Math.sin(time * 0.19 + fish.depthPhase) * 0.19;
+      let x = fish.center.x + Math.cos(phase) * fish.radius + meander;
+      let z = fish.center.z + Math.sin(phase) * fish.radius * fish.aspect + Math.sin(time * 0.13 + fish.depthPhase) * 0.15;
       let bottom = this.ground.heightAt(x, z);
       if (bottom > -1 || !Number.isFinite(bottom)) { x = fish.center.x; z = fish.center.z; bottom = this.ground.heightAt(x, z); }
       const y = Math.min(-0.55, Math.max(bottom + 0.55, fish.center.y + Math.sin(time * 0.6 + fish.depthPhase) * 0.55));
       this.position.set(x, y, z);
       const yaw = -Math.atan2(Math.cos(phase) * fish.aspect, -Math.sin(phase));
-      this.rotation.setFromAxisAngle(this.yAxis, yaw); this.scale.setScalar(fish.size);
+      const tailBeat = Math.sin(time * (6.3 + fish.rate * 10) + fish.depthPhase);
+      this.swimmingEuler.set(Math.sin(phase + fish.depthPhase) * 0.035, yaw + tailBeat * 0.011, Math.cos(time * 0.6 + fish.depthPhase) * 0.028);
+      this.rotation.setFromEuler(this.swimmingEuler); this.scale.setScalar(fish.size);
       this.matrix.compose(this.position, this.rotation, this.scale);
-      this.bodies[fish.species].setMatrixAt(fish.index, this.matrix); this.eyes.setMatrixAt(fish.eyeIndex, this.matrix);
-      this.localTail.makeRotationY(Math.sin(time * (6.3 + fish.rate * 10) + fish.depthPhase) * 0.35);
-      this.localTail.setPosition(-0.415, 0, 0); this.tailMatrix.multiplyMatrices(this.matrix, this.localTail);
+      this.bodies[fish.species].setMatrixAt(fish.index, this.matrix); this.fins[fish.species].setMatrixAt(fish.index, this.matrix); this.eyes.setMatrixAt(fish.eyeIndex, this.matrix);
+      this.localTail.makeRotationY(tailBeat * 0.23);
+      this.localTail.setPosition(-0.444, 0, 0); this.tailMatrix.multiplyMatrices(this.matrix, this.localTail);
       this.tails[fish.species].setMatrixAt(fish.index, this.tailMatrix);
     }
-    for (const mesh of [...this.bodies, ...this.tails, this.eyes]) updateInstanceBounds(mesh);
+    for (const mesh of [...this.bodies, ...this.fins, ...this.tails, this.eyes]) updateInstanceBounds(mesh);
     this.dust.visible = this.bubbles.visible = underwater;
     if (!underwater) return;
     const particles = this.dust.geometry.getAttribute('position') as THREE.BufferAttribute;
@@ -175,6 +218,6 @@ export class MarineLife {
 
   dispose(): void {
     if (this.disposed) return;
-    this.disposed = true; this.instances.forEach((mesh) => mesh.dispose()); this.resources.dispose(); this.group.clear(); this.fish.length = 0;
+    this.disposed = true; this.scannedRocks.dispose(); this.instances.forEach((mesh) => mesh.dispose()); this.resources.dispose(); this.group.clear(); this.fish.length = 0;
   }
 }
