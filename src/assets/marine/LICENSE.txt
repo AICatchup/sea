@@ -1,8 +1,22 @@
 Poly Haven boulder_01: CC0 1.0 Universal
 https://polyhaven.com/a/boulder_01
+
+Poly Haven namaqualand_boulder_02: CC0 1.0 Universal
+https://polyhaven.com/a/namaqualand_boulder_02
+
+Poly Haven namaqualand_boulder_03: CC0 1.0 Universal
+https://polyhaven.com/a/namaqualand_boulder_03
+
+Poly Haven coast_rocks_01: CC0 1.0 Universal
+https://polyhaven.com/a/coast_rocks_01
+
+Poly Haven coast_rocks_03: CC0 1.0 Universal
+https://polyhaven.com/a/coast_rocks_03
+
 https://polyhaven.com/license
 https://creativecommons.org/publicdomain/zero/1.0/
 
-Photogrammetry mesh and 2K PBR maps acquired via the official public API.
+Photogrammetry meshes and original 2K PBR maps from the official public API.
+Meshes reduced with attribute-aware meshoptimizer; UVs, normals and maps preserved.
 Bundled locally with no runtime network dependency.
 Powered by Poly Haven: https://polyhaven.com

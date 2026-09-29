@@ -1,51 +1,306 @@
 {
-  "asset": "boulder_01",
-  "source": "https://polyhaven.com/a/boulder_01",
-  "api": "https://api.polyhaven.com/files/boulder_01",
-  "license": "CC0-1.0",
-  "licenseURL": "https://polyhaven.com/license",
-  "acquired": "2026-09-29T22:49:12.125Z",
-  "textures": "2K JPEG albedo / OpenGL normal / ARM",
-  "triangles": 66122,
-  "sources": [
+  "assets": [
     {
-      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/boulder_01/boulder_01_2k.gltf",
-      "bytes": 2773,
-      "sha256": "52d118b56748a18509e4ec0075d07b254d72a0401793f22363c0bb3a682e7361",
-      "md5": "3ef4b3c88c898e12b096eeb40f1edbb9"
+      "asset": "boulder_01",
+      "source": "https://polyhaven.com/a/boulder_01",
+      "api": "https://api.polyhaven.com/files/boulder_01",
+      "license": "CC0-1.0",
+      "licenseURL": "https://polyhaven.com/license",
+      "acquired": "2026-09-29T23:14:10.723Z",
+      "textures": "2K JPEG albedo / OpenGL normal / ARM",
+      "triangles": 18000,
+      "simplification": [
+        {
+          "sourceTriangles": 66122,
+          "triangles": 18000,
+          "normalizedError": 0.002237571170553565,
+          "method": "Meshopt attribute-aware UV + normal preservation",
+          "targetTriangles": 18000
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/boulder_01/boulder_01_2k.gltf",
+          "bytes": 2773,
+          "sha256": "52d118b56748a18509e4ec0075d07b254d72a0401793f22363c0bb3a682e7361",
+          "md5": "3ef4b3c88c898e12b096eeb40f1edbb9"
+        },
+        {
+          "path": "textures/boulder_01_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_nor_gl_2k.jpg",
+          "bytes": 4649207,
+          "sha256": "5174b318712ac7725cbcb55d422607f9c66d7f8d035c5412ab897b5939e2db6b",
+          "md5": "73ee1783fca7605fd454f0af3e5b85fa"
+        },
+        {
+          "path": "textures/boulder_01_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_diff_2k.jpg",
+          "bytes": 3672483,
+          "sha256": "90bbaa17c1fe0254d2b0b6e5148264fa834953a72724d566f14af029eebe3ca3",
+          "md5": "63571077317c9a2d1db95894e0268a07"
+        },
+        {
+          "path": "boulder_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/boulder_01/boulder_01.bin",
+          "bytes": 2938808,
+          "sha256": "7f5b06503d62bd95bfe9c6b8a354a5cc8ff04a4d271a8cf87a3e3125db4232d7",
+          "md5": "27a19fa031d8b4c3a09261f19c444dc5"
+        },
+        {
+          "path": "textures/boulder_01_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_arm_2k.jpg",
+          "bytes": 2273068,
+          "sha256": "ab52859dde519b4822111aa60916b6d21f8a6966c67b6cec44d1cd0775b8a86a",
+          "md5": "94c796dfd73f72b11e557cb2c05ff51e"
+        }
+      ],
+      "output": {
+        "file": "boulder-01-2k.glb",
+        "bytes": 11345096,
+        "sha256": "c9ce15df5031723038f21924bd4af5ccfddd2862dca54883dfa7abb48f0bda92"
+      }
     },
     {
-      "path": "textures/boulder_01_nor_gl_2k.jpg",
-      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_nor_gl_2k.jpg",
-      "bytes": 4649207,
-      "sha256": "5174b318712ac7725cbcb55d422607f9c66d7f8d035c5412ab897b5939e2db6b",
-      "md5": "73ee1783fca7605fd454f0af3e5b85fa"
+      "asset": "namaqualand_boulder_02",
+      "source": "https://polyhaven.com/a/namaqualand_boulder_02",
+      "api": "https://api.polyhaven.com/files/namaqualand_boulder_02",
+      "license": "CC0-1.0",
+      "licenseURL": "https://polyhaven.com/license",
+      "acquired": "2026-09-29T23:23:25.561Z",
+      "textures": "2K JPEG albedo / OpenGL normal / ARM",
+      "triangles": 17995,
+      "simplification": [
+        {
+          "sourceTriangles": 97964,
+          "triangles": 17995,
+          "normalizedError": 0.0019522822694852948,
+          "method": "Meshopt attribute-aware UV + normal preservation",
+          "targetTriangles": 18000
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_02/namaqualand_boulder_02_2k.gltf",
+          "bytes": 2818,
+          "sha256": "e181b722c8c8bd56f98ab8883b283b3cb3c437c372af3b831aec2f94c22fe0f2",
+          "md5": "9193646b820fdbc76cb9c3c77f0c5c38"
+        },
+        {
+          "path": "namaqualand_boulder_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_02/namaqualand_boulder_02.bin",
+          "bytes": 2297768,
+          "sha256": "0f6daa7ec9b1a92207c0b09b737ff1eec904aebc1c1eada778afa6e5eacd55c0",
+          "md5": "aa8f2212633a07a7e9a805e90977f4fd"
+        },
+        {
+          "path": "textures/namaqualand_boulder_02_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_02/namaqualand_boulder_02_diff_2k.jpg",
+          "bytes": 3867934,
+          "sha256": "0f81c51224deb025079f10dad21530e77e42baad541eb766922fe8fc6e46a88e",
+          "md5": "0f37f02ceb397383a0d0bddfaef4441d"
+        },
+        {
+          "path": "textures/namaqualand_boulder_02_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_02/namaqualand_boulder_02_arm_2k.jpg",
+          "bytes": 2914937,
+          "sha256": "2314bc882e140adba4ee2eae2873f11458b359208b59240a04ae85f2e5766014",
+          "md5": "732a68f2aeb07223278987dfcafe83ac"
+        },
+        {
+          "path": "textures/namaqualand_boulder_02_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_02/namaqualand_boulder_02_nor_gl_2k.jpg",
+          "bytes": 3919158,
+          "sha256": "3067767374241dec6612ad60cc806cb9e30594f784d74f19a7cda4cdc2d28cc0",
+          "md5": "9591cab5cf9658a9eb23da834856a661"
+        }
+      ],
+      "output": {
+        "file": "namaqualand-boulder-02-2k.glb",
+        "bytes": 11271556,
+        "sha256": "1489de97fe99fea99895a8dd605fb4942692121e7e331904073a61241a778d7b"
+      }
     },
     {
-      "path": "textures/boulder_01_diff_2k.jpg",
-      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_diff_2k.jpg",
-      "bytes": 3672483,
-      "sha256": "90bbaa17c1fe0254d2b0b6e5148264fa834953a72724d566f14af029eebe3ca3",
-      "md5": "63571077317c9a2d1db95894e0268a07"
+      "asset": "namaqualand_boulder_03",
+      "source": "https://polyhaven.com/a/namaqualand_boulder_03",
+      "api": "https://api.polyhaven.com/files/namaqualand_boulder_03",
+      "license": "CC0-1.0",
+      "licenseURL": "https://polyhaven.com/license",
+      "acquired": "2026-09-29T23:23:26.209Z",
+      "textures": "2K JPEG albedo / OpenGL normal / ARM",
+      "triangles": 18000,
+      "simplification": [
+        {
+          "sourceTriangles": 64826,
+          "triangles": 18000,
+          "normalizedError": 0.0016193913761526346,
+          "method": "Meshopt attribute-aware UV + normal preservation",
+          "targetTriangles": 18000
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_03/namaqualand_boulder_03_2k.gltf",
+          "bytes": 2823,
+          "sha256": "5d135c8e3a74edf7f53ae04d41deed19582ed6ced6d629d5d51e730319ed0dcb",
+          "md5": "51e9fe01b1b5420b955488ba907497c8"
+        },
+        {
+          "path": "textures/namaqualand_boulder_03_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_arm_2k.jpg",
+          "bytes": 2441884,
+          "sha256": "24f443dd1c1da875a3653f0820d02e3140319fe199123765987d166ada3d1ddc",
+          "md5": "3c5421ec927e1f25d62c75ae69474402"
+        },
+        {
+          "path": "namaqualand_boulder_03.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_03/namaqualand_boulder_03.bin",
+          "bytes": 1450268,
+          "sha256": "d24151021ed310fe3207f1b5964bff22b583e77d2617427a88b5dcbc0447a475",
+          "md5": "ded61ea310a66144546eac2a891b6dba"
+        },
+        {
+          "path": "textures/namaqualand_boulder_03_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_nor_gl_2k.jpg",
+          "bytes": 2919390,
+          "sha256": "e83ccfe677a6c82aadd56d1e5138aa97823a23cde32573dd65dafb321fffeb33",
+          "md5": "28de2b985022f5329bc5ff47b8648e20"
+        },
+        {
+          "path": "textures/namaqualand_boulder_03_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_diff_2k.jpg",
+          "bytes": 3341422,
+          "sha256": "d7bfae01eed80a6318679f13a8be14253fa0f6338b93f6e2126946f86bea4f82",
+          "md5": "15932af831e44b675c18c3ef54398dc8"
+        }
+      ],
+      "output": {
+        "file": "namaqualand-boulder-03-2k.glb",
+        "bytes": 9221720,
+        "sha256": "1b6df6557941ee44f0774b0f8a411287aa7575626be2af5238a86824dfea6731"
+      }
     },
     {
-      "path": "boulder_01.bin",
-      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/boulder_01/boulder_01.bin",
-      "bytes": 2938808,
-      "sha256": "7f5b06503d62bd95bfe9c6b8a354a5cc8ff04a4d271a8cf87a3e3125db4232d7",
-      "md5": "27a19fa031d8b4c3a09261f19c444dc5"
+      "asset": "coast_rocks_01",
+      "source": "https://polyhaven.com/a/coast_rocks_01",
+      "api": "https://api.polyhaven.com/files/coast_rocks_01",
+      "license": "CC0-1.0",
+      "licenseURL": "https://polyhaven.com/license",
+      "acquired": "2026-09-29T23:14:11.996Z",
+      "textures": "2K JPEG albedo / OpenGL normal / ARM",
+      "triangles": 17999,
+      "simplification": [
+        {
+          "sourceTriangles": 679936,
+          "triangles": 17999,
+          "normalizedError": 0.0015049007488414645,
+          "method": "Meshopt attribute-aware UV + normal preservation",
+          "targetTriangles": 18000
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/coast_rocks_01/coast_rocks_01_2k.gltf",
+          "bytes": 2810,
+          "sha256": "9e75ec94594ce0a2e7625ed4339e2f2b35da192eb41630c59aaa8ccaa9e49240",
+          "md5": "d763b6ff59061342a2e0b85c43abecf6"
+        },
+        {
+          "path": "coast_rocks_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/coast_rocks_01/coast_rocks_01.bin",
+          "bytes": 19320352,
+          "sha256": "3d1c33b18fdcf0efebab46526e94d17efccbc3c9a06dc14b89b04b93109fa3d2",
+          "md5": "4cf9d5009388434a0520e1643127a725"
+        },
+        {
+          "path": "textures/coast_rocks_01_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/coast_rocks_01/coast_rocks_01_diff_2k.jpg",
+          "bytes": 3153413,
+          "sha256": "6c0f25720f0fa2142a569b5516a3539cd2cb3f02dc2312b3c1d2a9ae156d42fc",
+          "md5": "3f00b2ef63ccea7952236f1c6e32fa58"
+        },
+        {
+          "path": "textures/coast_rocks_01_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/coast_rocks_01/coast_rocks_01_arm_2k.jpg",
+          "bytes": 2284440,
+          "sha256": "3bccfb7e593a7944b1a3564170206765a98f0669a78ba9167b483fb3a6b109f0",
+          "md5": "e29f84556de4da79f3c08ddee3b7ad42"
+        },
+        {
+          "path": "textures/coast_rocks_01_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/coast_rocks_01/coast_rocks_01_nor_gl_2k.jpg",
+          "bytes": 3846383,
+          "sha256": "eb65a0b9f916825538471777f12c42ce20fd3fe59849d582d1557ea410e66dae",
+          "md5": "1a06be557b5709d355e20a3fea390c2a"
+        }
+      ],
+      "output": {
+        "file": "coast-rocks-01-2k.glb",
+        "bytes": 9832116,
+        "sha256": "3c8ae71b23589c22ad1b0b673b509a1be1a9d55f6d9076195f41aefcfa930200"
+      }
     },
     {
-      "path": "textures/boulder_01_arm_2k.jpg",
-      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_arm_2k.jpg",
-      "bytes": 2273068,
-      "sha256": "ab52859dde519b4822111aa60916b6d21f8a6966c67b6cec44d1cd0775b8a86a",
-      "md5": "94c796dfd73f72b11e557cb2c05ff51e"
+      "asset": "coast_rocks_03",
+      "source": "https://polyhaven.com/a/coast_rocks_03",
+      "api": "https://api.polyhaven.com/files/coast_rocks_03",
+      "license": "CC0-1.0",
+      "licenseURL": "https://polyhaven.com/license",
+      "acquired": "2026-09-29T23:14:13.712Z",
+      "textures": "2K JPEG albedo / OpenGL normal / ARM",
+      "triangles": 18000,
+      "simplification": [
+        {
+          "sourceTriangles": 813464,
+          "triangles": 18000,
+          "normalizedError": 0.0030880807898938656,
+          "method": "Meshopt attribute-aware UV + normal preservation",
+          "targetTriangles": 18000
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/coast_rocks_03/coast_rocks_03_2k.gltf",
+          "bytes": 2811,
+          "sha256": "b12da85ca435c27a3aea6c87dc15eca66690e888a3f1b781a97939b111f9d89e",
+          "md5": "78877cf5cb28d3e3ffdd234a0968893d"
+        },
+        {
+          "path": "textures/coast_rocks_03_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/coast_rocks_03/coast_rocks_03_arm_2k.jpg",
+          "bytes": 2818453,
+          "sha256": "1bd0c4794e9a7db859057df39c21210a6f1b6123a250fc7e7873afd622f43532",
+          "md5": "93dcb03b449fddcf43fafe00a5b1c0c2"
+        },
+        {
+          "path": "coast_rocks_03.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/coast_rocks_03/coast_rocks_03.bin",
+          "bytes": 23052416,
+          "sha256": "3936cfa8f679c237a1d9479a471c5008a219e7803aba142f2748ce6dbec54ca5",
+          "md5": "d2a51492a0132d36c2ff8947ed0b36b7"
+        },
+        {
+          "path": "textures/coast_rocks_03_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/coast_rocks_03/coast_rocks_03_nor_gl_2k.jpg",
+          "bytes": 4812731,
+          "sha256": "a9cafd4c0c515f9f08c7067723965ddc488fb0d60e8adc4fe11379062f6609d4",
+          "md5": "54fabb3f5be7137746ce7a0877139c4e"
+        },
+        {
+          "path": "textures/coast_rocks_03_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/coast_rocks_03/coast_rocks_03_diff_2k.jpg",
+          "bytes": 2215049,
+          "sha256": "b64a6afd0abc1dea881f570a0d2843532837731b33fb63119b76ab057a864bc0",
+          "md5": "70070beaf6ec79b094841ce401afee41"
+        }
+      ],
+      "output": {
+        "file": "coast-rocks-03-2k.glb",
+        "bytes": 10389264,
+        "sha256": "f0001e9f71059afcbeb0848fb572a1244790a9d6df1092a101d5c44e3573a4a5"
+      }
     }
   ],
-  "output": {
-    "file": "boulder-01-2k.glb",
-    "bytes": 13535468,
-    "sha256": "5bf8df0429db9d58c21b7526d1dcbd89fc342aaf4d0f33969a539cec6136d14f"
-  }
+  "totalBytes": 52059752,
+  "textureProcessing": "Original 2K JPEGs retained without resampling or recompression"
 }

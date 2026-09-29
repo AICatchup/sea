@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import type { GroundSampler } from './contracts';
 import { makeInstances, ModelResources, randomSeed, rockGeometry, standard, surfaceTexture, updateInstanceBounds } from './models/procedural.ts';
 import { encrustingGeometry, finGeometry, finMaterial, fishEyes, fishGeometry, fishMaterial, seagrassGeometry, seagrassMaterial, tailGeometry } from './models/marine.ts';
-import { ScannedRockField } from './scanned-rocks.ts';
+import { ScannedRockField, type ScannedRockLibrary } from './scanned-rocks.ts';
 
 interface Fish {
   species: number; index: number; eyeIndex: number; center: THREE.Vector3;
@@ -13,6 +13,7 @@ interface Fish {
 export class MarineLife {
   readonly group = new THREE.Group();
   readonly ready: Promise<void>;
+  readonly rockLibrary: ScannedRockLibrary;
   private readonly resources = new ModelResources();
   private readonly instances: THREE.InstancedMesh[] = [];
   private readonly fish: Fish[] = [];
@@ -41,7 +42,7 @@ export class MarineLife {
   constructor(private readonly ground: GroundSampler) {
     this.group.name = 'authored Tomari diving habitat';
     this.group.userData.provenance = 'Inferred seabed dressing and wrasse/damselfish/silver-shoal inspired fish, not surveyed fauna or coral.';
-    this.scannedRocks = this.populateSeabed(); this.ready = this.scannedRocks.ready;
+    this.scannedRocks = this.populateSeabed(); this.ready = this.scannedRocks.ready; this.rockLibrary = this.scannedRocks.library;
     this.populateFish();
     const membrane = finMaterial(this.resources, this.animationTime);
     const eyeMaterial = this.resources.material(new THREE.MeshPhysicalMaterial({ color: '#ffffff', vertexColors: true,
@@ -135,15 +136,15 @@ export class MarineLife {
     this.addInstances(seagrassGeometry(this.resources, 83, true), grass, kelpMatrices, 'brown coastal algae fronds');
     this.addInstances(encrustingGeometry(this.resources, 20), coral, coralMatrices, 'muted inferred encrusting organisms');
     this.group.userData.habitatCounts = { rocks: rocks.flat().length, seagrass: grassMatrices.length, algae: kelpMatrices.length, encrusting: coralMatrices.length };
-    return new ScannedRockField(this.group, this.resources, rocks.flat());
+    return new ScannedRockField(this.group, rocks.flat());
   }
 
   private findWaterCenter(x: number, z: number): THREE.Vector3 | null {
-    for (let radius = 0; radius <= 18; radius += 3) for (let step = 0; step < 8; step++) {
+    for (let radius = 0; radius <= 30; radius += 3) for (let step = 0; step < 8; step++) {
       const angle = step * Math.PI / 4;
       const candidateX = x + Math.cos(angle) * radius, candidateZ = z + Math.sin(angle) * radius;
       const height = this.ground.heightAt(candidateX, candidateZ);
-      if (height < -2 && height > -40 && Number.isFinite(height)) return new THREE.Vector3(candidateX, Math.max(height + 0.95, height * 0.42), candidateZ);
+      if (height < -1 && height > -40 && Number.isFinite(height)) return new THREE.Vector3(candidateX, Math.min(-0.38, Math.max(height + 0.38, height * 0.64)), candidateZ);
     }
     return null;
   }
@@ -183,8 +184,8 @@ export class MarineLife {
       let x = fish.center.x + Math.cos(phase) * fish.radius + meander;
       let z = fish.center.z + Math.sin(phase) * fish.radius * fish.aspect + Math.sin(time * 0.13 + fish.depthPhase) * 0.15;
       let bottom = this.ground.heightAt(x, z);
-      if (bottom > -1 || !Number.isFinite(bottom)) { x = fish.center.x; z = fish.center.z; bottom = this.ground.heightAt(x, z); }
-      const y = Math.min(-0.55, Math.max(bottom + 0.55, fish.center.y + Math.sin(time * 0.6 + fish.depthPhase) * 0.55));
+      if (bottom > -0.65 || !Number.isFinite(bottom)) { x = fish.center.x; z = fish.center.z; bottom = this.ground.heightAt(x, z); }
+      const y = Math.min(-0.3, Math.max(bottom + fish.size * 0.28 + 0.09, fish.center.y + Math.sin(time * 0.6 + fish.depthPhase) * 0.24));
       this.position.set(x, y, z);
       const yaw = -Math.atan2(Math.cos(phase) * fish.aspect, -Math.sin(phase));
       const tailBeat = Math.sin(time * (6.3 + fish.rate * 10) + fish.depthPhase);
