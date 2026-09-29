@@ -18,3 +18,25 @@ input[type=range]{height:24px;margin:3px 0 9px;background:transparent;touch-acti
 @media(max-width:550px){.header{padding-top:calc(18px + env(safe-area-inset-top))}.header-actions .icon-button{width:44px;height:44px}.header-actions{gap:0}.footer{bottom:env(safe-area-inset-bottom)}.environment{bottom:calc(85px + env(safe-area-inset-bottom))}.toast{top:calc(80px + env(safe-area-inset-top));white-space:normal}}
 @media(max-height:600px){.intro{display:none}.environment{max-height:calc(100dvh - 145px - env(safe-area-inset-top) - env(safe-area-inset-bottom));bottom:calc(75px + env(safe-area-inset-bottom))}.environment-body{max-height:calc(100dvh - 205px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}.header{padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:12px}.footer{height:60px}}
 @media(pointer:coarse){.preset{min-height:48px}.panel-footer button{min-width:44px;min-height:44px}.panel-footer select{min-height:44px}}
+
+/* The beach keeps its horizon open; its weather controls start folded. */
+.intro[hidden]{display:none}
+.interface{z-index:3}
+.toast,.leave-immersive{z-index:4}
+.header{padding:24px 36px}
+.brand-note{font-size:10px}
+.environment{top:94px;right:36px;bottom:auto;width:254px;max-height:calc(100dvh - 180px - env(safe-area-inset-top) - env(safe-area-inset-bottom));z-index:3}
+.environment.collapsed{width:144px}
+.environment-heading,.environment.collapsed .environment-heading{min-height:44px;padding:12px 18px}
+.environment-body{max-height:calc(100dvh - 230px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;padding:4px 18px 16px}
+.preset{min-height:48px}
+.panel-footer button{min-width:44px;min-height:44px}
+.panel-footer select{min-height:44px}
+.footer{left:36px;right:36px;height:64px}
+.interaction-hint{font-size:10px;letter-spacing:0}
+.interaction-hint span{margin:0 7px}
+.coordinates{letter-spacing:.04em}
+@media(max-width:1050px){.interaction-hint{font-size:9px}.interaction-hint span{margin:0 4px}}
+@media(max-width:900px){.interaction-hint{display:none}}
+@media(max-width:550px){.header{padding:calc(16px + env(safe-area-inset-top)) 18px 16px}.environment{top:calc(82px + env(safe-area-inset-top));right:18px;bottom:auto;width:min(286px,calc(100% - 36px))}.environment.collapsed{width:120px}.environment-heading,.environment.collapsed .environment-heading{padding:12px 14px;font-size:11px}.environment-body{padding:4px 16px 16px}.footer{left:18px;right:18px;height:60px}.brand>span:first-of-type{font-size:18px}.brand{gap:9px}.brand svg{width:28px}.toast{top:calc(74px + env(safe-area-inset-top))}}
+@media(max-height:550px){.header{padding-top:calc(10px + env(safe-area-inset-top));padding-bottom:10px}.environment{top:calc(68px + env(safe-area-inset-top));bottom:auto;max-height:calc(100dvh - 138px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}.environment-body{max-height:calc(100dvh - 190px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}.footer{height:52px}}
