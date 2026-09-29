@@ -69,9 +69,11 @@ test('depth maps store metre-valued half floats and preserve GSI cell order', ()
   assert.equal(result.origin.x, r.minX); assert.equal(result.origin.y, r.minZ);
   assert.equal(result.size.x, r.maxX - r.minX); assert.equal(result.size.y, r.maxZ - r.minZ);
   const values = result.texture.image.data as Uint16Array;
+  const width = result.texture.image.width;
+  assert.equal(width, (r.width - 1) * 8 + 1);
   for (const [ix, iz] of [[60, 140], [110, 60], [150, 190]]) {
     const field = world.elevation.tomari!, x = r.minX + ix * field.dx, z = r.minZ + iz * field.dz;
-    const i = (iz * r.width + ix) * 4;
+    const i = (iz * 8 * width + ix * 8) * 4;
     assert.ok(Math.abs(THREE.DataUtils.fromHalfFloat(values[i]) - world.heightAt(x, z)) < 0.045);
     assert.equal(THREE.DataUtils.fromHalfFloat(values[i + 3]), 1);
   }
@@ -83,12 +85,53 @@ test('depth maps store metre-valued half floats and preserve GSI cell order', ()
 test('terrain triangle budget and map outlines are bounded and useful', () => {
   const coast = world.group.children.filter(mesh => mesh.name.includes('DEM coast')) as THREE.Mesh[];
   const shikine = coast.filter(mesh => mesh.name.includes('式根島') || mesh.name.includes('泊'));
-  assert.ok(shikine.reduce((count, mesh) => count + mesh.geometry.index!.count / 3, 0) <= 250000);
+  assert.ok(shikine.reduce((count, mesh) => count + mesh.geometry.index!.count / 3, 0) <= 1100000);
   assert.equal(world.mapOutlines.length, 3);
   for (const outline of world.mapOutlines) {
     assert.ok(outline.points.length > 100 && outline.points.length < 1200);
     assert.ok(outline.points.every(([x, z]) => Number.isFinite(x) && Number.isFinite(z)));
   }
+});
+
+test('refined beach and cliff mesh use the exact collision triangles, with joined patch edges', () => {
+  const meshes = world.group.children.filter(mesh => mesh.name.includes('refined')) as THREE.Mesh[];
+  assert.equal(meshes.length, 2);
+  const coast = world.elevation.coast!;
+  assert.ok(coast.dx <= 1 && coast.dz <= 1);
+  assert.ok(world.elevation.beach!.dx <= .5 && world.elevation.beach!.dz <= .5);
+  for (const mesh of meshes) {
+    const positions = mesh.geometry.getAttribute('position'), indices = mesh.geometry.index!;
+    for (let i = 0; i < indices.count; i += 1593) {
+      const a = indices.getX(i), b = indices.getX(i + 1), c = indices.getX(i + 2);
+      const x = (positions.getX(a) + positions.getX(b) + positions.getX(c)) / 3;
+      const z = (positions.getZ(a) + positions.getZ(b) + positions.getZ(c)) / 3;
+      const y = (positions.getY(a) + positions.getY(b) + positions.getY(c)) / 3;
+      assert.ok(Math.abs(world.heightAt(x, z) - y) < .003, 'refined mesh and movement disagree');
+    }
+  }
+  for (const patch of [coast, world.elevation.beach!]) {
+    for (const [x, z, dx, dz] of [[patch.minX, 20, .0001, 0], [patch.maxX, 20, .0001, 0], [-40, patch.minZ, 0, .0001], [-40, patch.maxZ, 0, .0001]]) {
+      assert.ok(Math.abs(world.heightAt(x + dx, z + dz) - world.heightAt(x - dx, z - dz)) < .003, 'refinement edge is discontinuous');
+    }
+  }
+});
+
+test('bilinear GPU bathymetry agrees with the visible beach strand between texel centres', () => {
+  const map = world.waterMapFor(-36, 27), image = map.texture.image;
+  const data = image.data as Uint16Array, r = world.elevation.tomari!.raster;
+  let checked = 0;
+  for (let z = -28.37; z < 50; z += 4.73) for (let x = -96.29; x < 50; x += 5.21) {
+    const y = world.heightAt(x, z);
+    if (y < -2 || y > 3 || Math.abs(world.heightAt(x + 1, z) - world.heightAt(x - 1, z)) > .5) continue;
+    const px = (x - r.minX) / (r.maxX - r.minX) * (image.width - 1), pz = (z - r.minZ) / (r.maxZ - r.minZ) * (image.height - 1);
+    const ix = Math.floor(px), iz = Math.floor(pz), fx = px - ix, fz = pz - iz;
+    const at = (xx: number, zz: number) => THREE.DataUtils.fromHalfFloat(data[(zz * image.width + xx) * 4]);
+    const gpu = (at(ix, iz) * (1 - fx) + at(ix + 1, iz) * fx) * (1 - fz)
+      + (at(ix, iz + 1) * (1 - fx) + at(ix + 1, iz + 1) * fx) * fz;
+    assert.ok(Math.abs(gpu - y) < .035, `waterline sampler mismatch at ${x}, ${z}: ${gpu} vs ${y}`);
+    checked++;
+  }
+  assert.ok(checked > 150);
 });
 
 test('travel-island movement samples match visible coarse mesh surfaces', () => {

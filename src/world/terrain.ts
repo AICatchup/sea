@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { type MapOutline, type WorldDestination } from './contracts.ts';
 import { ElevationField, IslandElevation, sandAt, shelterAt, smoothstep } from './geodata.ts';
 import { DESTINATION_SEEDS } from './locations.ts';
+import { cliffOutcrops } from './cliff-detail.ts';
+import { CoastalFoliage } from './foliage.ts';
+import { ModelResources } from './models/procedural.ts';
 const atlasURL=new URL('../assets/tomari-atlas-v1.png',import.meta.url).href;
 
 interface WaterMap { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2; }
@@ -124,6 +127,14 @@ export class IslandWorld {
     this.textures.push(atlas);
     const terrainMaterial = makeTerrainMaterial(grain, atlas); this.materials.push(terrainMaterial);
     for (const field of this.elevation.fields) this.buildTerrain(field, terrainMaterial);
+    if (this.elevation.tomari && this.elevation.coast) {
+      this.buildTerrain(this.elevation.tomari, terrainMaterial, true);
+      this.buildTerrain(this.elevation.tomari, terrainMaterial, true, true);
+      const geometry = cliffOutcrops(this, this.elevation.coast);
+      const outcrops = new THREE.Mesh(geometry, terrainMaterial);
+      outcrops.name = 'Tomari jointed rhyolite ledges and fissures'; outcrops.castShadow = outcrops.receiveShadow = true;
+      this.geometries.push(geometry); this.group.add(outcrops);
+    }
     this.buildForest();
     this.spawnPoint = new THREE.Vector3(-36, this.heightAt(-36, 27) + 1.72, 27);
     this.destinations = DESTINATION_SEEDS.map(seed => {
@@ -146,9 +157,11 @@ export class IslandWorld {
       const result = { texture, origin: new THREE.Vector2(-30000, -30000), size: new THREE.Vector2(60000, 60000) };
       this.maps.set(id, result); return result;
     }
-    const r = field.raster, data = new Uint16Array(r.width * r.height * 4);
-    for (let iz = 0; iz < r.height; iz++) for (let ix = 0; ix < r.width; ix++) {
-      const px = r.minX + ix * field.dx, pz = r.minZ + iz * field.dz, i = (iz * r.width + ix) * 4;
+    const r = field.raster, subdivisions = r.id === 'tomari' ? 8 : 1;
+    const width = (r.width - 1) * subdivisions + 1, height = (r.height - 1) * subdivisions + 1;
+    const data = new Uint16Array(width * height * 4);
+    for (let iz = 0; iz < height; iz++) for (let ix = 0; ix < width; ix++) {
+      const px = r.minX + ix * field.dx / subdivisions, pz = r.minZ + iz * field.dz / subdivisions, i = (iz * width + ix) * 4;
       const ground = this.heightAt(px, pz);
       const sand = Math.max(sandAt(px, pz), (1 - smoothstep(0, 7, Math.abs(ground))) * (1 - smoothstep(20, 65, Math.abs(field.shoreAt(px, pz)))) * 0.45);
       data[i] = THREE.DataUtils.toHalfFloat(ground);
@@ -156,12 +169,13 @@ export class IslandWorld {
       data[i + 2] = THREE.DataUtils.toHalfFloat(sand);
       data[i + 3] = THREE.DataUtils.toHalfFloat(1);
     }
-    const texture = this.makeWaterTexture(data, r.width, r.height);
+    const texture = this.makeWaterTexture(data, width, height);
     const result = { texture, origin: new THREE.Vector2(r.minX, r.minZ), size: new THREE.Vector2(r.maxX - r.minX, r.maxZ - r.minZ) };
     this.maps.set(id, result); return result;
   }
 
   dispose(): void {
+    this.group.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
     for (const geometry of this.geometries) geometry.dispose();
     for (const material of this.materials) material.dispose();
     for (const texture of this.textures) texture.dispose();
@@ -177,14 +191,16 @@ export class IslandWorld {
     this.textures.push(texture); return texture;
   }
 
-  private buildTerrain(field: ElevationField, material: THREE.MeshStandardMaterial): void {
+  private buildTerrain(field: ElevationField, material: THREE.MeshStandardMaterial, fine = false, strand = false): void {
     const r = field.raster, detail = r.id === 'tomari', step = detail ? 1 : 2;
-    const nx = Math.ceil((r.width - 1) / step) + 1, nz = Math.ceil((r.height - 1) / step) + 1;
+    const patch = fine ? (strand ? this.elevation.beach! : this.elevation.coast!) : undefined;
+    const nx = patch?.width ?? Math.ceil((r.width - 1) / step) + 1, nz = patch?.height ?? Math.ceil((r.height - 1) / step) + 1;
     const positions = new Float32Array(nx * nz * 3), colors = new Float32Array(nx * nz * 3), uvs = new Float32Array(nx * nz * 2);
     const indices: number[] = [], scratch = new THREE.Color();
     const sand = new THREE.Color('#e2d4b6'), stone = new THREE.Color('#a3a396'), forest = new THREE.Color('#405342'), deepStone = new THREE.Color('#5c6457');
     for (let iz = 0; iz < nz; iz++) for (let ix = 0; ix < nx; ix++) {
-      const x = r.minX + Math.min(ix * step, r.width - 1) * field.dx, z = r.minZ + Math.min(iz * step, r.height - 1) * field.dz;
+      const x = patch ? patch.minX + ix * patch.dx : r.minX + Math.min(ix * step, r.width - 1) * field.dx;
+      const z = patch ? patch.minZ + iz * patch.dz : r.minZ + Math.min(iz * step, r.height - 1) * field.dz;
       const y = this.heightAt(x, z), slope = Math.hypot(this.heightAt(x + 3, z) - this.heightAt(x - 3, z), this.heightAt(x, z + 3) - this.heightAt(x, z - 3)) / 6;
       const i = iz * nx + ix, p = i * 3, uv = i * 2;
       positions[p] = x; positions[p + 1] = y; positions[p + 2] = z;
@@ -200,6 +216,8 @@ export class IslandWorld {
       const a = iz * nx + ix, b = a + 1, c = a + nx, d = c + 1;
       const mx = (positions[a * 3] + positions[d * 3]) * 0.5, mz = (positions[a * 3 + 2] + positions[d * 3 + 2]) * 0.5;
       if (r.id === 'shikine' && this.elevation.tomari?.contains(mx, mz)) continue;
+      if (detail && !fine && this.elevation.coast?.contains(mx, mz)) continue;
+      if (fine && !strand && this.elevation.beach?.contains(mx, mz)) continue;
       if (!detail && field.shoreAt(mx, mz) < -200) continue;
       indices.push(a, c, b, b, c, d);
     }
@@ -208,16 +226,16 @@ export class IslandWorld {
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     geometry.setIndex(indices); geometry.computeVertexNormals(); geometry.computeBoundingSphere();
-    const mesh = new THREE.Mesh(geometry, material); mesh.name = `${r.name} / ${detail ? '4m' : r.id === 'shikine' ? '16m' : '64m'} DEM coast`;
+    const mesh = new THREE.Mesh(geometry, material); mesh.name = `${r.name} / ${strand ? '0.5m refined' : fine ? '1m refined' : detail ? '4m' : r.id === 'shikine' ? '16m' : '64m'} DEM coast`;
     mesh.receiveShadow = true; mesh.castShadow = true;
-    mesh.userData = { source: 'GSI land elevations', seabed: 'Inferred', triangleCount: indices.length / 3 };
+    mesh.userData = { source: 'GSI land elevations', refinement: fine ? 'Authored 1m strand and rock relief, not a higher-resolution survey' : undefined, seabed: 'Inferred', triangleCount: indices.length / 3 };
     this.geometries.push(geometry); this.group.add(mesh);
   }
 
   private buildForest(): void {
     const close: { x: number; z: number; y: number; size: number; seed: number }[] = [], distant: typeof close = [];
     const accept = (x: number, z: number, local: boolean) => {
-      if (Math.hypot(x + 36, z - 27) < 250) return; // Foreground pine/brush belongs to the asset writer.
+      if (Math.hypot(x + 36, z - 27) < 295) return; // The authored continuous cover extends to 320m; these bands overlap.
       const y = this.heightAt(x, z), shore = this.elevation.shoreAt(x, z);
       if (y < 7 || shore < 7 || sandAt(x, z) > 0.18) return;
       const slope = Math.hypot(this.heightAt(x + 5, z) - this.heightAt(x - 5, z), this.heightAt(x, z + 5) - this.heightAt(x, z - 5)) / 10;
@@ -235,29 +253,23 @@ export class IslandWorld {
     }
     for (let z = -280; z < 210; z += 16) for (let x = -295; x < 230; x += 16) accept(x + random(x, z, 91) * 11, z + random(x, z, 94) * 11, true);
     close.splice(190); distant.splice(760);
-    const leaves = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.97, metalness: 0 });
-    const bark = new THREE.MeshStandardMaterial({ color: '#665a46', roughness: 1, metalness: 0 });
-    const localCrown = new THREE.SphereGeometry(1, 8, 4), farCrown = new THREE.IcosahedronGeometry(1, 0), trunk = new THREE.CylinderGeometry(0.10, 0.22, 1, 5);
-    this.materials.push(leaves, bark); this.geometries.push(localCrown, farCrown, trunk);
-    const count = close.length + distant.length;
-    const trunks = new THREE.InstancedMesh(trunk, bark, count), nearLeaves = new THREE.InstancedMesh(localCrown, leaves, close.length * 4), farLeaves = new THREE.InstancedMesh(farCrown, leaves, distant.length * 2);
-    const matrix = new THREE.Object3D(), tint = new THREE.Color(); let trunkIndex = 0;
-    const fill = (trees: typeof close, crowns: THREE.InstancedMesh, clusters: number) => {
-      for (let i = 0; i < trees.length; i++) {
-        const tree = trees[i], height = (4.8 + tree.seed * 2.5) * tree.size;
-        matrix.position.set(tree.x, tree.y + height * 0.42, tree.z); matrix.scale.set(tree.size, height * 0.86, tree.size);
-        matrix.rotation.set(0.04 * Math.sin(tree.x), tree.seed * Math.PI, -0.055); matrix.updateMatrix(); trunks.setMatrixAt(trunkIndex++, matrix.matrix);
-        for (let c = 0; c < clusters; c++) {
-          const angle = c * 2.39996 + tree.seed * 5, radius = c ? 1.6 * tree.size : 0;
-          matrix.position.set(tree.x + Math.cos(angle) * radius, tree.y + height - c * 0.4, tree.z + Math.sin(angle) * radius);
-          matrix.scale.set((2.6 - c * 0.18) * tree.size, (0.9 + tree.seed * 0.35) * tree.size, (2.3 - c * 0.12) * tree.size);
-          matrix.rotation.set(0, angle, 0.04 * Math.sin(angle)); matrix.updateMatrix(); crowns.setMatrixAt(i * clusters + c, matrix.matrix);
-          tint.setRGB(0.11 + tree.seed * 0.052, 0.15 + tree.seed * 0.07, 0.075 + tree.seed * 0.027); crowns.setColorAt(i * clusters + c, tint);
-        }
+    const resources = new ModelResources(), foliage = new CoastalFoliage(resources);
+    const trees = [...close, ...distant], matrix = new THREE.Object3D();
+    for (let variant = 0; variant < 3; variant++) {
+      const selected = trees.filter((_, i) => i % 3 === variant); if (!selected.length) continue;
+      const trunks = new THREE.InstancedMesh(foliage.pines[variant].bark, foliage.bark, selected.length);
+      const needles = new THREE.InstancedMesh(foliage.pines[variant].needles, foliage.leaves, selected.length);
+      selected.forEach((tree, i) => {
+        matrix.position.set(tree.x, tree.y - .16, tree.z); matrix.scale.set(tree.size, tree.size * .94, tree.size);
+        matrix.rotation.set(.015, tree.seed * Math.PI * 2, -.045); matrix.updateMatrix();
+        trunks.setMatrixAt(i, matrix.matrix); needles.setMatrixAt(i, matrix.matrix);
+      });
+      trunks.name = `Island black-pine branches ${variant}`; needles.name = `Island photographic pine sprays ${variant}`;
+      for (const mesh of [trunks, needles]) {
+        mesh.castShadow = true; mesh.receiveShadow = true; mesh.instanceMatrix.needsUpdate = true;
+        mesh.computeBoundingSphere(); this.group.add(mesh);
       }
-    };
-    fill(close, nearLeaves, 4); fill(distant, farLeaves, 2);
-    trunks.name = 'Procedural black-pine trunks'; nearLeaves.name = 'Wind-shaped Tomari pine crowns'; farLeaves.name = '式根島 evergreen cover';
-    for (const mesh of [trunks, nearLeaves, farLeaves]) { mesh.castShadow = true; mesh.receiveShadow = true; mesh.computeBoundingSphere(); this.group.add(mesh); }
+    }
+    this.materials.push(...resources.materials); this.geometries.push(...resources.geometries); this.textures.push(...resources.textures);
   }
 }

@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import type { GroundSampler, PlaceableKind } from './contracts';
 import { CoastalModels } from './models/props';
-import { makeInstances, ModelBatch, pineGeometries, randomSeed, updateInstanceBounds } from './models/procedural';
+import { makeInstances, ModelBatch, randomSeed, updateInstanceBounds } from './models/procedural';
+import { CoastalFoliage } from './foliage.ts';
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
 interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; }
@@ -12,7 +13,8 @@ export class AssetWorld {
   readonly group = new THREE.Group();
   readonly boat: THREE.Group;
   private readonly models = new CoastalModels();
-  private readonly pines = [13, 41, 79].map((seed) => pineGeometries(this.models.resources, seed));
+  private readonly foliage = new CoastalFoliage(this.models.resources);
+  private readonly pines = this.foliage.pines;
   private readonly placements: Placement[] = [];
   private readonly placementBatches = new Map<PlaceableKind, PlacementBatch[]>();
   private readonly instanceMeshes: THREE.InstancedMesh[] = [];
@@ -59,30 +61,33 @@ export class AssetWorld {
     const shrubs: THREE.Matrix4[][] = [[], [], []];
     const rocks: THREE.Matrix4[][] = [[], [], []];
     let treeCount = 0, shrubCount = 0, rockCount = 0;
-    for (let attempt = 0; attempt < 9500 && (treeCount < 420 || shrubCount < 620 || rockCount < 250); attempt++) {
-      const x = (random() - 0.5) * 530, z = -220 + random() * 470;
-      if ((x+36)*(x+36)+(z-27)*(z-27)>270*270) continue;
+    // Independent cover strata: a pine never suppresses the shrub layer below it.
+    for (let gz = -300; gz < 290; gz += 3.6) for (let gx = -355; gx < 320; gx += 3.6) {
+      const x = gx + (random() - .5) * 2.5, z = gz + (random() - .5) * 2.5;
+      if ((x + 36) ** 2 + (z - 27) ** 2 > 320 ** 2) continue;
       const height = this.ground.heightAt(x, z);
       if (!Number.isFinite(height)) continue;
       const variant = Math.floor(random() * 3), yaw = random() * Math.PI * 2;
       const slope = Math.hypot(this.ground.heightAt(x + 1.5, z) - this.ground.heightAt(x - 1.5, z),
         this.ground.heightAt(x, z + 1.5) - this.ground.heightAt(x, z - 1.5)) / 3;
-      const isHeadland = height>3 || x < -72 || x > 74 || z > 95;
-      if (treeCount < 420 && height > 3 && height < 58 && slope < 2.1 && isHeadland) {
-        const size = 0.68 + random() * 0.77;
-        trees[variant].push(this.transform(x, height - 0.14, z, size, yaw, 1.05, 0.85 + random() * 0.25, 1)); treeCount++;
-      } else if (shrubCount < 620 && height > 1.5 && height < 48 && isHeadland && slope < 2.8) {
-        shrubs[variant].push(this.transform(x, height - 0.035, z, 0.19 + random() * 0.16, yaw, 1.7, 0.65, 1.4)); shrubCount++;
+      const isHeadland = height > 3 || x < -72 || x > 74 || z > 95;
+      if (height > 3 && height < 68 && slope < 1.8 && isHeadland && random() < .15) {
+        const size = .78 + random() * .69;
+        trees[variant].push(this.transform(x, height - .18, z, size, yaw, 1.05, .78 + random() * .28, 1)); treeCount++;
       }
-      if (rockCount < 250 && height > -0.45 && height < 38 && isHeadland && random() < 0.57) {
+      if (height > 1.8 && height < 68 && isHeadland && slope < 2.05 && random() < .82) {
+        shrubs[variant].push(this.transform(x, height - .09, z, .8 + random() * .49, yaw, 1.24, .82, 1.12)); shrubCount++;
+      }
+      if (rockCount < 250 && height > -.45 && height < 38 && isHeadland && slope > .55 && random() < .055) {
         const size = .45+random()*1.8;
         rocks[variant].push(this.transform(x, height + size * 0.48, z, size, yaw, 1.15, 0.8 + random() * 0.45, 1)); rockCount++;
       }
     }
     for (let variant = 0; variant < 3; variant++) {
-      this.addInstances(this.pines[variant].bark, this.models.bark, trees[variant], `coastal pine trunks ${variant}`);
-      this.addInstances(this.pines[variant].needles, this.models.needles, trees[variant], `wind shaped evergreen crowns ${variant}`);
-      this.addInstances(this.pines[variant].needles, this.models.needles, shrubs[variant], `low coastal brush ${variant}`);
+      this.addInstances(this.pines[variant].bark, this.foliage.bark, trees[variant], `coastal pine trunks ${variant}`);
+      this.addInstances(this.pines[variant].needles, this.foliage.leaves, trees[variant], `wind shaped evergreen crowns ${variant}`);
+      this.addInstances(this.foliage.shrubs[variant].bark, this.foliage.bark, shrubs[variant], `coastal underbrush twigs ${variant}`);
+      this.addInstances(this.foliage.shrubs[variant].needles, this.foliage.leaves, shrubs[variant], `low coastal brush ${variant}`);
       this.addInstances(this.models.rocks[variant], this.models.stone, rocks[variant], `foreground pale rhyolite-like rocks ${variant}`);
     }
     this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount, rocks: rockCount };
@@ -144,7 +149,7 @@ export class AssetWorld {
 
   private pineTemplate(): THREE.Group {
     const group = new THREE.Group();
-    group.add(new THREE.Mesh(this.pines[0].bark, this.models.bark), new THREE.Mesh(this.pines[0].needles, this.models.needles)); return group;
+    group.add(new THREE.Mesh(this.pines[0].bark, this.foliage.bark), new THREE.Mesh(this.pines[0].needles, this.foliage.leaves)); return group;
   }
 
   private rockTemplate(): THREE.Group {

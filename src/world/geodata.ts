@@ -124,18 +124,96 @@ export class ElevationField {
     return fx + fz <= 1 ? a + (b - a) * fx + (c - a) * fz : d + (c - d) * (1 - fx) + (b - d) * (1 - fz);
   }
   shoreAt(x: number, z: number): number { return this.sample(this.signedShore, x, z); }
+
+  /** C1 interpolation removes the source-cell diagonals from the low sandy strand. */
+  smoothHeightAt(x: number, z: number): number {
+    const r = this.raster, px = clamp((x - r.minX) / this.dx, 0, r.width - 1), pz = clamp((z - r.minZ) / this.dz, 0, r.height - 1);
+    const ix = Math.floor(px), iz = Math.floor(pz), fx = px - ix, fz = pz - iz;
+    const cubic = (a: number, b: number, c: number, d: number, t: number) => {
+      const value = b + .5 * t * (c - a + t * (2 * a - 5 * b + 4 * c - d + t * (3 * (b - c) + d - a)));
+      return clamp(value, Math.min(b, c), Math.max(b, c)); // A shoreline filter must not invent a ridge or a pit.
+    };
+    const rows: number[] = [];
+    for (let dz = -1; dz <= 2; dz++) {
+      const row = clamp(iz + dz, 0, r.height - 1) * r.width;
+      rows.push(cubic(...[-1, 0, 1, 2].map(dx => this.ground[row + clamp(ix + dx, 0, r.width - 1)]) as [number, number, number, number], fx));
+    }
+    return cubic(rows[0], rows[1], rows[2], rows[3], fz);
+  }
+}
+
+/** An authored refinement, not additional measured elevation. All consumers use these exact triangles. */
+export class TomariCoastSurface {
+  readonly subdivision: number;
+  readonly sourceMinX: number;
+  readonly sourceMaxX: number;
+  readonly sourceMinZ: number;
+  readonly sourceMaxZ: number;
+  readonly minX: number;
+  readonly minZ: number;
+  readonly maxX: number;
+  readonly maxZ: number;
+  readonly dx: number;
+  readonly dz: number;
+  readonly width: number;
+  readonly height: number;
+  readonly ground: Float32Array;
+
+  constructor(field: ElevationField, baseHeightAt: (x: number, z: number) => number,
+    options = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
+    this.subdivision = options.subdivision;
+    this.sourceMinX = options.minX; this.sourceMaxX = options.maxX;
+    this.sourceMinZ = options.minZ; this.sourceMaxZ = options.maxZ;
+    this.minX = field.raster.minX + this.sourceMinX * field.dx;
+    this.minZ = field.raster.minZ + this.sourceMinZ * field.dz;
+    this.maxX = field.raster.minX + this.sourceMaxX * field.dx;
+    this.maxZ = field.raster.minZ + this.sourceMaxZ * field.dz;
+    this.dx = field.dx / this.subdivision; this.dz = field.dz / this.subdivision;
+    this.width = (this.sourceMaxX - this.sourceMinX) * this.subdivision + 1;
+    this.height = (this.sourceMaxZ - this.sourceMinZ) * this.subdivision + 1;
+    this.ground = new Float32Array(this.width * this.height);
+    for (let iz = 0; iz < this.height; iz++) for (let ix = 0; ix < this.width; ix++) {
+      const x = this.minX + ix * this.dx, z = this.minZ + iz * this.dz, y = baseHeightAt(x, z);
+      const edge = Math.min(x - this.minX, this.maxX - x, z - this.minZ, this.maxZ - z);
+      const join = smoothstep(0, 16, edge);
+      const beach = sandAt(x, z) * (1 - smoothstep(3, 7, Math.abs(y))) * join;
+      const gradient = Math.hypot(baseHeightAt(x + 2, z) - baseHeightAt(x - 2, z), baseHeightAt(x, z + 2) - baseHeightAt(x, z - 2)) / 4;
+      const cliff = smoothstep(.95, 1.6, gradient) * smoothstep(2, 6, y) * (1 - beach) * join;
+      // Metre-scale bedding and cross joints give steep, unwalkable faces a true silhouette.
+      const bedding = Math.sin(y * 3.4 + x * .22 + z * .11) * .23;
+      const joints = Math.sin(x * 2.1 + Math.sin(z * .47)) * Math.sin(z * 1.7 + y * .63) * .42;
+      this.ground[iz * this.width + ix] = y + (field.smoothHeightAt(x, z) - y) * beach + (bedding + joints) * cliff;
+    }
+  }
+
+  contains(x: number, z: number): boolean { return x >= this.minX && x <= this.maxX && z >= this.minZ && z <= this.maxZ; }
+  heightAt(x: number, z: number): number {
+    const px = clamp((x - this.minX) / this.dx, 0, this.width - 1), pz = clamp((z - this.minZ) / this.dz, 0, this.height - 1);
+    const ix = Math.min(this.width - 2, Math.floor(px)), iz = Math.min(this.height - 2, Math.floor(pz));
+    const fx = px - ix, fz = pz - iz, i = iz * this.width + ix;
+    const a = this.ground[i], b = this.ground[i + 1], c = this.ground[i + this.width], d = this.ground[i + this.width + 1];
+    return fx + fz <= 1 ? a + (b - a) * fx + (c - a) * fz : d + (c - d) * (1 - fx) + (b - d) * (1 - fz);
+  }
 }
 
 export class IslandElevation {
   readonly fields = ELEVATION_RASTERS.map(raster => new ElevationField(raster));
   readonly shikine = this.fields.find(field => field.raster.id === 'shikine')!;
   readonly tomari = this.fields.find(field => field.raster.id === 'tomari');
+  readonly coast = this.tomari ? new TomariCoastSurface(this.tomari, (x, z) => this.baseHeightAt(x, z)) : undefined;
+  readonly beach = this.tomari && this.coast ? new TomariCoastSurface(this.tomari, (x, z) => this.coast!.heightAt(x, z),
+    { subdivision: 8, minX: 80, maxX: 139, minZ: 95, maxZ: 143 }) : undefined;
 
   fieldAt(x: number, z: number): ElevationField | undefined {
     if (this.tomari?.contains(x, z)) return this.tomari;
     return this.fields.find(field => field !== this.tomari && field.contains(x, z));
   }
   heightAt(x: number, z: number): number {
+    if (this.beach?.contains(x, z)) return this.beach.heightAt(x, z);
+    if (this.coast?.contains(x, z)) return this.coast.heightAt(x, z);
+    return this.baseHeightAt(x, z);
+  }
+  private baseHeightAt(x: number, z: number): number {
     const field = this.fieldAt(x, z);
     if (!field) return -110;
     if (field !== this.tomari) return field.heightAt(x, z, 2);
