@@ -16,8 +16,16 @@ let ocean: Ocean;
 let activePreset: PresetName = 'golden';
 let windTimer = 0;
 let toastTimer = 0;
+let disposed = false;
+let available = true;
+const photoUrls = new Map<string, number>();
 
 function showError(message: string): void {
+  available = false;
+  void sound.setVisible(false).catch(() => {});
+  document.body.classList.remove('immersed');
+  element('leave-immersive').hidden = true;
+  element('interface').inert = true;
   element('unsupported').hidden = false;
   element('error-detail').textContent = message;
   element('loading').classList.add('done');
@@ -25,6 +33,7 @@ function showError(message: string): void {
 }
 
 function toast(message: string): void {
+  if (disposed) return;
   const toastElement = element('toast');
   clearTimeout(toastTimer);
   toastElement.textContent = message;
@@ -47,6 +56,7 @@ function updateRanges(): void {
 
 function togglePause(): void {
   ocean.paused = !ocean.paused;
+  void sound.setPaused(ocean.paused).catch(() => {});
   const button = element('pause');
   button.setAttribute('aria-pressed', String(ocean.paused));
   button.setAttribute('aria-label', ocean.paused ? '再生する' : '一時停止する');
@@ -64,10 +74,15 @@ function toggleImmersive(): void {
 
 try {
   ocean = new Ocean(element<HTMLCanvasElement>('ocean'));
+  sound.setWind(ocean.wind);
   Object.defineProperty(window, '__sea', { get: () => ocean.diagnostics, configurable: true });
   updateRanges();
   requestAnimationFrame(() => element('loading').classList.add('done'));
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) togglePause();
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (reducedMotion.matches) togglePause();
+  reducedMotion.addEventListener('change', event => {
+    if (event.matches && !ocean.paused) togglePause();
+  }, events);
   const panel = element('environment');
   const heading = element('environment-toggle');
   function setPanel(collapsed: boolean): void {
@@ -110,6 +125,7 @@ try {
     ocean.setQuality((event.target as HTMLSelectElement).value as Quality);
   }, events);
   element('reset-view').addEventListener('click', () => { ocean.resetView(); toast('水平線に、戻りました。'); }, events);
+  element('home').addEventListener('click', () => ocean.resetView(), events);
   element('pause').addEventListener('click', togglePause, events);
   element('immersive').addEventListener('click', toggleImmersive, events);
   element('leave-immersive').addEventListener('click', toggleImmersive, events);
@@ -118,46 +134,71 @@ try {
     button.disabled = true;
     try {
       const enabled = await sound.toggle();
+      if (disposed) return;
       button.setAttribute('aria-pressed', String(enabled));
       button.setAttribute('aria-label', enabled ? '波の音をオフにする' : '波の音をオンにする');
       toast(enabled ? '波の音を、そっと。' : '波の音を止めました。');
     } catch { toast('音を再生できませんでした。もう一度お試しください。'); }
-    finally { button.disabled = false; }
+    finally { if (!disposed) button.disabled = false; }
   }, events);
   element<HTMLButtonElement>('capture').addEventListener('click', async event => {
     const button = event.currentTarget as HTMLButtonElement;
     button.disabled = true;
+    let timeout = 0;
+    let cancelCapture: (() => void) | undefined;
     try {
-      const image = await ocean.capture();
+      const image = await Promise.race([
+        ocean.capture(),
+        new Promise<null>(resolve => {
+          timeout = window.setTimeout(() => resolve(null), 8000);
+          cancelCapture = () => resolve(null);
+          abort.signal.addEventListener('abort', cancelCapture, { once: true });
+        }),
+      ]);
+      if (disposed) return;
       if (!image) throw new Error('No capture');
       const url = URL.createObjectURL(image);
       const anchor = document.createElement('a');
       anchor.href = url;
       anchor.download = `sea-${activePreset}-${new Date().toISOString().replace(/[:.]/g, '-')}.png`;
-      anchor.click();
-      window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+      document.body.append(anchor);
+      photoUrls.set(url, window.setTimeout(() => {
+        URL.revokeObjectURL(url);
+        photoUrls.delete(url);
+      }, 10000));
+      try { anchor.click(); } finally { anchor.remove(); }
       toast('この瞬間の海を、保存しました。');
     } catch { toast('写真を保存できませんでした。もう一度お試しください。'); }
-    finally { button.disabled = false; }
+    finally {
+      clearTimeout(timeout);
+      if (cancelCapture) abort.signal.removeEventListener('abort', cancelCapture);
+      if (!disposed) button.disabled = false;
+    }
   }, events);
   document.addEventListener('keydown', event => {
     if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
     const target = event.target as HTMLElement;
-    if (target.closest('input,select,textarea,[contenteditable=true]')) return;
-    if (target.id === 'leave-immersive') return;
-    if (event.key.toLowerCase() === 'h') toggleImmersive();
+    if (event.key === 'Escape' && document.body.classList.contains('immersed')) {
+      event.preventDefault();
+      toggleImmersive();
+      return;
+    }
+    if (target.closest('input,select,textarea') || target.isContentEditable) return;
+    if (event.key.toLowerCase() === 'h') { event.preventDefault(); toggleImmersive(); }
     if (event.code === 'Space' && !target.closest('button,a')) { event.preventDefault(); togglePause(); }
   }, events);
-  // Escape / H also works after the immersive exit button receives focus.
-  element('leave-immersive').addEventListener('keydown', event => {
-    if (event.key === 'Escape' || event.key.toLowerCase() === 'h') { event.preventDefault(); toggleImmersive(); }
-  }, events);
-  document.addEventListener('visibilitychange', () => void sound.setVisible(!document.hidden).catch(() => {}), events);
+  document.addEventListener('visibilitychange', () => void sound.setVisible(!document.hidden && available).catch(() => {}), events);
   window.addEventListener('ocean-error', event => showError((event as CustomEvent<string>).detail), events);
   if (import.meta.hot) {
     import.meta.hot.dispose(() => {
+      disposed = true;
       clearTimeout(windTimer); clearTimeout(toastTimer);
       abort.abort(); ocean.dispose(); sound.dispose();
+      photoUrls.forEach((timer, url) => { clearTimeout(timer); URL.revokeObjectURL(url); });
+      photoUrls.clear();
+      document.body.classList.remove('immersed');
+      element('interface').inert = false;
+      element('leave-immersive').hidden = true;
     });
   }
 } catch (error) {
