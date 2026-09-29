@@ -74,7 +74,10 @@ export class Ocean {
   });
   private readonly postMaterial = new THREE.ShaderMaterial({
     uniforms: THREE.UniformsUtils.clone(FXAAShader.uniforms), vertexShader: FXAAShader.vertexShader,
-    fragmentShader: FXAAShader.fragmentShader, depthTest: false, depthWrite: false, toneMapped: false,
+    // This target has only mip level zero. Explicit LOD avoids implicit texture
+    // gradients inside FXAA's adaptive edge-search loop on D3D11.
+    fragmentShader: FXAAShader.fragmentShader.replace('return texture( tex2D, uv );', 'return textureLod( tex2D, uv, 0.0 );'),
+    depthTest: false, depthWrite: false, toneMapped: false,
   });
   private readonly postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.postMaterial);
 

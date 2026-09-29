@@ -52,30 +52,33 @@ export const atmosphere = /* glsl */ `
     float weather=noise(p.xz*0.34+vec2(6.4,1.8));
     float billows=volumeNoise(p*1.25+vec3(0.0,weather*0.55,0.0));
     float fine=volumeNoise(p*3.9+11.7);
-    float shape=weather*0.53+billows*0.35+mix(0.5,fine,detail)*0.12;
+    float shape=weather*0.53+mix(0.5,billows,0.3+0.7*sqrt(detail))*0.35+mix(0.5,fine,detail)*0.12;
     float threshold=mix(0.68,0.32,uCloudCoverage);
     float height=(p.y-1.43)/1.04;
     float profile=smoothstep(0.0,0.16,height)*(1.0-smoothstep(0.52,1.0,height));
     return max(shape-threshold,0.0)*profile*3.6;
   }
   vec3 volumeClouds(vec3 ray,vec3 sky) {
+    vec2 projectedRay=ray.xz/max(ray.y,0.015);
+    float projectionWidth=max(length(dFdx(projectedRay)),length(dFdy(projectedRay)));
     if(ray.y < 0.015) return sky;
     float start=2200.0/ray.y;
     float end=min(3800.0/ray.y,70000.0);
     if(end<=start) return sky;
-    float stepSize=(end-start)/24.0;
-    // Smooth, view-stable phase decorrelates slices without noisy pixel dithering.
-    float phase=(noise(ray.xz*220.0)-0.5)*0.65;
+    float stepSize=(end-start)/32.0;
     vec3 sum=vec3(0.0);
     float transmittance=1.0;
     float sunDot=max(dot(ray,uSunDirection),0.0);
     float forward=pow(sunDot,16.0)*0.13;
-    for(int i=0;i<24;i++) {
-      float distance=start+(float(i)+0.5+phase)*stepSize;
+    for(int i=0;i<32;i++) {
+      float distance=start+(float(i)+0.5)*stepSize;
       vec3 p=ray*distance*0.00065;
       p.xz+=vec2(uTime*0.0025,-uTime*0.0012);
-      float pixelWidth=max(length(dFdx(p)),length(dFdy(p)));
-      float detail=1.0-smoothstep(0.018,0.16,pixelWidth);
+      float pixelWidth=projectionWidth*(distance*ray.y*0.00065);
+      // Filter along the ray as well as across the pixel. Sub-step details
+      // otherwise form visible bands on distant cloud bases.
+      float sampleWidth=max(pixelWidth,stepSize*0.00065);
+      float detail=1.0-smoothstep(0.025,0.22,sampleWidth);
       float density=volumeDensity(p,detail);
       if(density>0.001) {
         float opticalDepth=density*stepSize*0.0031;
