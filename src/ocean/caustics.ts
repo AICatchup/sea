@@ -70,7 +70,10 @@ const photonVertex = /* glsl */ `
     float cell=sourceSpan/uPhotonResolution;
     // A finite Gaussian photon footprint integrates the sampling lattice. The
     // solar angular radius widens it with depth; wind adds unresolved roughness.
-    float radius=max(cell*.90,.14)+distance*.00465*(1.0+.016*uWind);
+    // The support must overlap several emitters (sigma is radius/sqrt(8)).
+    // A narrower footprint paints a checkerboard even through perfectly flat
+    // water; 1.7-cell support keeps the flat-water reconstruction within 2%.
+    float radius=max(cell*1.70,.14)+distance*.00465*(1.0+.016*uWind);
     float cosine=clamp(dot(-incident,normal),0.0,1.0);
     float reflection=.02037+.97963*pow(1.0-cosine,5.0);
     float flux=(1.0-reflection)*exp(-distance*.022);
