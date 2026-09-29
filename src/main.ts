@@ -51,7 +51,7 @@ function updateRanges(): void {
     input.style.setProperty('--fill', `${fraction * 100}%`);
   }
   element('wind-value').innerHTML = `${ocean.wind.toFixed(1)} <small>m/s</small>`;
-  element('swell-value').innerHTML = `${ocean.swell.toFixed(1)} <small>×</small>`;
+  element('swell-value').innerHTML = `${ocean.swell.toFixed(2)} <small>×</small>`;
 }
 
 function togglePause(): void {
@@ -118,7 +118,7 @@ try {
   element<HTMLInputElement>('swell').addEventListener('input', event => {
     const input = event.target as HTMLInputElement;
     ocean.setSwell(Number(input.value));
-    element('swell-value').innerHTML = `${ocean.swell.toFixed(1)} <small>×</small>`;
+    element('swell-value').innerHTML = `${ocean.swell.toFixed(2)} <small>×</small>`;
     input.style.setProperty('--fill', `${(ocean.swell - 0.3) / 1.7 * 100}%`);
   }, events);
   element<HTMLSelectElement>('quality').addEventListener('change', event => {

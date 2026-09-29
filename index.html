@@ -42,7 +42,7 @@
           <label class="range-label" for="wind"><span>風の強さ</span><output id="wind-value" for="wind">7.5 <small>m/s</small></output></label>
           <input type="range" id="wind" min="2" max="18" step="0.1" value="7.5" aria-label="風の強さ（メートル毎秒）" />
           <label class="range-label" for="swell"><span>うねり</span><output id="swell-value" for="swell">1.0 <small>×</small></output></label>
-          <input type="range" id="swell" min="0.3" max="2" step="0.05" value="1" aria-label="うねりの大きさ" />
+          <input type="range" id="swell" min="0.3" max="2" step="0.01" value="1" aria-label="うねりの大きさ" />
           <div class="panel-footer"><label for="quality">描画品質</label><select id="quality" aria-label="描画品質"><option value="auto">自動</option><option value="high">高</option><option value="medium">標準</option><option value="low">軽量</option></select><button id="reset-view" title="視点を戻す" aria-label="視点を戻す"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.5 7M3 4v7h7"/></svg></button></div>
         </div>
       </aside>
