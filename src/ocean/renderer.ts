@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 import { OceanSimulation } from './fft';
 import { oceanVertex, oceanFragment, skyVertex, skyFragment } from './shaders';
 import { presets, type PresetName } from './presets';
@@ -63,6 +64,19 @@ export class Ocean {
   private readonly viewDirection = new THREE.Vector3();
   private readonly target = new THREE.Vector3();
   private readonly materials: THREE.ShaderMaterial[];
+  private readonly pointers = new Map<number, { x: number; y: number }>();
+  private pinchStart = { distance: 0, height: 0 };
+  private contextLost = false;
+  private readonly postScene = new THREE.Scene();
+  private readonly postCamera = new THREE.Camera();
+  private readonly colorTarget = new THREE.WebGLRenderTarget(1, 1, {
+    minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: true,
+  });
+  private readonly postMaterial = new THREE.ShaderMaterial({
+    uniforms: THREE.UniformsUtils.clone(FXAAShader.uniforms), vertexShader: FXAAShader.vertexShader,
+    fragmentShader: FXAAShader.fragmentShader, depthTest: false, depthWrite: false, toneMapped: false,
+  });
+  private readonly postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.postMaterial);
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     const context = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'high-performance' });
@@ -97,6 +111,9 @@ export class Ocean {
     ocean.frustumCulled = false;
     this.scene.add(ocean);
     this.materials = [skyMaterial, oceanMaterial];
+    this.postQuad.frustumCulled = false;
+    this.postScene.add(this.postQuad);
+    this.postMaterial.uniforms.tDiffuse.value = this.colorTarget.texture;
     this.listen();
     this.resize();
     this.simulation.advance(this.time, 0, this.swell, this.uniforms.uChoppiness.value);
@@ -107,36 +124,60 @@ export class Ocean {
     const options = { signal: this.abort.signal };
     window.addEventListener('resize', () => this.resize(), options);
     this.canvas.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
       this.dragging = true;
       this.lastPointer = { x: event.clientX, y: event.clientY };
+      this.pointers.set(event.pointerId, { ...this.lastPointer });
+      if (this.pointers.size === 2) {
+        const [a, b] = [...this.pointers.values()];
+        this.pinchStart = { distance: Math.hypot(a.x - b.x, a.y - b.y), height: this.targetHeight };
+      }
       this.canvas.setPointerCapture(event.pointerId);
     }, options);
     this.canvas.addEventListener('pointermove', event => {
       if (!this.dragging) return;
+      if (!this.pointers.has(event.pointerId)) return;
+      this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (this.pointers.size >= 2) {
+        const [a, b] = [...this.pointers.values()];
+        const distance = Math.max(1, Math.hypot(a.x - b.x, a.y - b.y));
+        this.targetHeight = THREE.MathUtils.clamp(this.pinchStart.height * this.pinchStart.distance / distance, 2.2, 55);
+        return;
+      }
       this.targetYaw -= (event.clientX - this.lastPointer.x) * 0.0026;
       this.targetPitch = THREE.MathUtils.clamp(this.targetPitch + (event.clientY - this.lastPointer.y) * 0.0021, -0.65, 0.65);
       this.lastPointer = { x: event.clientX, y: event.clientY };
     }, options);
     for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) {
-      this.canvas.addEventListener(event, () => { this.dragging = false; }, options);
+      this.canvas.addEventListener(event, raw => {
+        const pointer = raw as PointerEvent;
+        this.pointers.delete(pointer.pointerId);
+        this.dragging = this.pointers.size > 0;
+        if (this.dragging) this.lastPointer = { ...this.pointers.values().next().value! };
+      }, options);
     }
     this.canvas.addEventListener('wheel', event => {
       event.preventDefault();
       this.targetHeight = THREE.MathUtils.clamp(this.targetHeight * Math.exp(event.deltaY * 0.0012), 2.2, 55);
     }, { ...options, passive: false });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) { cancelAnimationFrame(this.animationFrame); this.lastStamp = 0; }
-      else if (!this.disposed) { this.lastStamp = 0; this.animationFrame = requestAnimationFrame(this.frame); }
+      if (document.hidden) {
+        cancelAnimationFrame(this.animationFrame); this.lastStamp = 0;
+        this.captureNextFrame?.(null); this.captureNextFrame = null;
+      }
+      else if (!this.disposed && !this.contextLost) { this.lastStamp = 0; this.animationFrame = requestAnimationFrame(this.frame); }
     }, options);
     this.canvas.addEventListener('webglcontextlost', event => {
       event.preventDefault();
+      this.contextLost = true;
       cancelAnimationFrame(this.animationFrame);
+      this.captureNextFrame?.(null); this.captureNextFrame = null;
       window.dispatchEvent(new CustomEvent('ocean-error', { detail: 'GPUとの接続が中断されました。ページを再読み込みしてください。' }));
     }, options);
   }
 
   private frame = (stamp: number): void => {
-    if (this.disposed) return;
+    if (this.disposed || this.contextLost) return;
     const elapsed = this.lastStamp === 0 ? 1 / 60 : (stamp - this.lastStamp) / 1000;
     const delta = Math.min(elapsed, 0.05);
     this.lastStamp = stamp;
@@ -162,8 +203,10 @@ export class Ocean {
     this.uniforms.uSwell.value = this.swell;
     this.uniforms.uWind.value = this.wind;
     this.renderer.info.reset();
-    this.renderer.setRenderTarget(null);
+    this.renderer.setRenderTarget(this.colorTarget);
     this.renderer.render(this.scene, this.camera);
+    this.renderer.setRenderTarget(null);
+    this.renderer.render(this.postScene, this.postCamera);
     this.frames++;
     if (this.captureNextFrame) {
       this.canvas.toBlob(this.captureNextFrame, 'image/png');
@@ -186,9 +229,12 @@ export class Ocean {
     const width = window.innerWidth, height = window.innerHeight;
     const scale = { auto: this.automaticScale, high: 1.25, medium: 0.9, low: 0.6 }[this.quality];
     const ratio = Math.min(window.devicePixelRatio, 1.8) * scale;
-    const budgetRatio = Math.min(ratio, Math.sqrt(3200000 / (width * height)));
+    const pixelBudget = this.quality === 'high' ? 5500000 : 3200000;
+    const budgetRatio = Math.min(ratio, Math.sqrt(pixelBudget / (width * height)));
     this.renderer.setPixelRatio(budgetRatio);
     this.renderer.setSize(width, height, false);
+    this.colorTarget.setSize(this.canvas.width, this.canvas.height);
+    this.postMaterial.uniforms.resolution.value.set(1 / this.canvas.width, 1 / this.canvas.height);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
   }
@@ -220,6 +266,8 @@ export class Ocean {
   }
   resetView(): void { this.targetYaw = 0; this.targetPitch = -0.075; this.targetHeight = 3.6; }
   capture(): Promise<Blob | null> {
+    if (this.disposed || this.contextLost || document.hidden) return Promise.resolve(null);
+    this.captureNextFrame?.(null);
     return new Promise(resolve => { this.captureNextFrame = resolve; });
   }
   get diagnostics() {
@@ -237,6 +285,7 @@ export class Ocean {
     this.simulation.dispose();
     this.scene.traverse(object => { if (object instanceof THREE.Mesh) object.geometry.dispose(); });
     this.materials.forEach(material => material.dispose());
+    this.colorTarget.dispose(); this.postMaterial.dispose(); this.postQuad.geometry.dispose();
     this.renderer.dispose();
     this.captureNextFrame?.(null);
   }
