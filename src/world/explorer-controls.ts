@@ -54,7 +54,8 @@ export class ExplorerControls {
     const tomari = destinations.find(destination => destination.id === 'tomari');
     const anchor = findNearbyWater(ground, tomari ?? spawn, BOAT_MIN_DEPTH, 500);
     this.anchor = new THREE.Vector3(anchor?.x ?? spawn.x, 0, anchor?.z ?? spawn.z);
-    this.state = { mode: 'walk', position: spawn.clone(), yaw: 0, pitch: this.targetPitch,
+    this.targetYaw = tomari?.heading ?? 0;
+    this.state = { mode: 'walk', position: spawn.clone(), yaw: this.targetYaw, pitch: this.targetPitch,
       speed: 0, oxygen: 1, depth: 0, boatPosition: this.anchor.clone(), boatYaw: tomari?.heading ?? 0,
       voyageTarget: null, voyageRemaining: 0, message: '泊海岸へようこそ。ドラッグで見回し、WASD・矢印キーで移動します。' };
     this.originalTouchAction = canvas.style.touchAction;
@@ -239,7 +240,8 @@ export class ExplorerControls {
     this.resetInput(new Event('reset'));
     this.cancelVoyage(); this.state.mode = 'walk'; this.state.position.copy(this.spawn);
     this.state.boatPosition.copy(this.anchor); this.state.boatYaw = this.destinations.find(destination => destination.id === 'tomari')?.heading ?? 0;
-    this.targetYaw = 0; this.targetPitch = -0.035; this.state.yaw = 0; this.state.pitch = this.targetPitch;
+    this.targetYaw = this.destinations.find(destination => destination.id === 'tomari')?.heading ?? 0;
+    this.targetPitch = -0.035; this.state.yaw = this.targetYaw; this.state.pitch = this.targetPitch;
     this.state.depth = 0; this.state.oxygen = 1; this.jumpVelocity = 0; this.autoAscent = false;
     this.state.message = '泊海岸へ戻りました。浜から海へ歩いて入り、潜水や船の旅を楽しめます。';
   }

@@ -62,8 +62,8 @@ export const atmosphere = /* glsl */ `
     vec2 projectedRay=ray.xz/max(ray.y,0.015);
     float projectionWidth=max(length(dFdx(projectedRay)),length(dFdy(projectedRay)));
     if(ray.y < 0.015) return sky;
-    float start=2200.0/ray.y;
-    float end=min(3800.0/ray.y,70000.0);
+    float start=(2200.0-cameraPosition.y)/ray.y;
+    float end=min((3800.0-cameraPosition.y)/ray.y,70000.0);
     if(end<=start) return sky;
     float stepSize=(end-start)/32.0;
     vec3 sum=vec3(0.0);
@@ -72,7 +72,7 @@ export const atmosphere = /* glsl */ `
     float forward=pow(sunDot,16.0)*0.13;
     for(int i=0;i<32;i++) {
       float distance=start+(float(i)+0.5)*stepSize;
-      vec3 p=ray*distance*0.00065;
+      vec3 p=(cameraPosition+ray*distance)*0.00065;
       p.xz+=vec2(uTime*0.0025,-uTime*0.0012);
       float pixelWidth=projectionWidth*(distance*ray.y*0.00065);
       // Filter along the ray as well as across the pixel. Sub-step details
@@ -105,6 +105,7 @@ export const atmosphere = /* glsl */ `
     float cloud=0.0;
     if(ray.y > 0.006 && !disk) {
       vec2 p = ray.xz * (1.8 / max(ray.y,0.055));
+      p += cameraPosition.xz*0.00065;
       p += vec2(uTime*0.0025,-uTime*0.0012);
       float density = cloudField(p);
       float threshold = mix(0.69,0.29,uCloudCoverage);
@@ -130,7 +131,7 @@ export const atmosphere = /* glsl */ `
     if(disk) {
       vec3 withClouds=volumeClouds(ray,sky);
       // Local extinction also masks the solar disk through the cloud volume.
-      float cloudAtSun=volumeDensity(ray*(3000.0/max(ray.y,0.015))*0.00065,0.0);
+      float cloudAtSun=volumeDensity((cameraPosition+ray*((3000.0-cameraPosition.y)/max(ray.y,0.015)))*0.00065,0.0);
       cloud=1.0-exp(-cloudAtSun*9.0);
       sky=withClouds;
     }
@@ -163,22 +164,34 @@ export const skyFragment = /* glsl */ `
     vec4 projected = uInverseProjection * vec4(vNdc,1.0,1.0);
     vec3 direction = normalize(mat3(uCameraWorld) * (projected.xyz / projected.w));
     vec3 sky = skyRadiance(direction,true);
-    gl_FragColor=vec4(displayColor(sky),1.0);
+    gl_FragColor=vec4(sky,1.0);
   }
 `;
 
 export const oceanVertex = /* glsl */ `
   uniform sampler2D uLongWaves, uShortWaves;
+  uniform sampler2D uBathymetry;
+  uniform vec4 uBathyBounds;
+  uniform vec2 uBathyResolution;
   uniform float uSwell, uChoppiness;
   varying vec3 vWorld;
   varying vec2 vOcean;
   varying float vDistance;
+  vec3 vertexCoast(vec2 p){
+    vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
+    if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return vec3(-110.0,1.0,0.0);
+    uv=uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution;
+    return texture2D(uBathymetry,uv).rgb;
+  }
   void main() {
     vec2 origin = position.xz + cameraPosition.xz;
     float distanceToEye = length(position.xz);
     float shortFade = 1.0-smoothstep(110.0,500.0,distanceToEye);
     vec3 displacement = texture2D(uLongWaves,origin/384.0).xyz
       + texture2D(uShortWaves,origin/24.0).xyz*shortFade;
+    vec3 coast=vertexCoast(origin);
+    float shoal=(0.10+0.90*smoothstep(0.0,18.0,-coast.x))*clamp(coast.y,0.08,1.0);
+    displacement*=shoal;
     vec3 world=vec3(origin.x,0.0,origin.y);
     world.xz += displacement.xz*uChoppiness*uSwell;
     world.y = displacement.y*uSwell;
@@ -194,6 +207,10 @@ export const oceanVertex = /* glsl */ `
 export const oceanFragment = /* glsl */ `
   precision highp float;
   uniform sampler2D uLongWaves, uShortWaves;
+  uniform sampler2D uBathymetry, uSceneColor, uSceneDepth;
+  uniform vec4 uBathyBounds;
+  uniform vec2 uBathyResolution, uResolution, uNearFar;
+  uniform float uUnderwater;
   uniform float uSwell, uChoppiness, uWind;
   uniform vec3 uWaterTint;
   varying vec3 vWorld;
@@ -201,10 +218,23 @@ export const oceanFragment = /* glsl */ `
   varying float vDistance;
   ${atmosphere}
 
-  vec3 longDisplacement(vec2 p) { return texture2D(uLongWaves,p/384.0).xyz; }
-  vec3 shortDisplacement(vec2 p) { return texture2D(uShortWaves,p/24.0).xyz; }
+  vec3 coastAt(vec2 p){
+    vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
+    if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return vec3(-110.0,1.0,0.0);
+    uv=uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution;
+    return texture2D(uBathymetry,uv).rgb;
+  }
+  float shoalAt(vec2 p){vec3 c=coastAt(p);return (.10+.90*smoothstep(0.0,18.0,-c.x))*clamp(c.y,.08,1.0);}
+  vec3 longDisplacement(vec2 p) { return texture2D(uLongWaves,p/384.0).xyz*shoalAt(p); }
+  vec3 shortDisplacement(vec2 p) { return texture2D(uShortWaves,p/24.0).xyz*shoalAt(p); }
+  float linearDepth(float d){float n=uNearFar.x,f=uNearFar.y;return 2.0*n*f/(f+n-(d*2.0-1.0)*(f-n));}
 
   void main() {
+    vec2 screenUV=gl_FragCoord.xy/uResolution;
+    float opaqueDepth=texture2D(uSceneDepth,screenUV).r;
+    if(gl_FragCoord.z>opaqueDepth+0.0000001)discard;
+    vec3 coast=coastAt(vOcean);
+    if(coast.x>vWorld.y+0.03)discard;
     float footprint = max(length(dFdx(vOcean)),length(dFdy(vOcean)));
     // Widen the slope stencil with the pixel footprint: distant waves retain
     // their swell while unresolved capillary and whitecap detail falls away.
@@ -233,6 +263,18 @@ export const oceanFragment = /* glsl */ `
     normal=normalize(normal);
 
     vec3 view=normalize(cameraPosition-vWorld);
+    if(uUnderwater>0.5){
+      vec3 belowNormal=-normal;
+      vec3 through=refract(-view,belowNormal,1.333);
+      float incidence=max(dot(belowNormal,view),0.0);
+      float belowFresnel=0.02037+0.97963*pow(1.0-incidence,5.0);
+      vec3 underwaterColor=vec3(0.012,0.085,0.11);
+      if(dot(through,through)>0.001){
+        vec3 skylight=skyRadiance(normalize(through),true);
+        underwaterColor=mix(skylight,underwaterColor,belowFresnel);
+      }
+      gl_FragColor=vec4(underwaterColor,1.0);return;
+    }
     float nV=max(dot(normal,view),0.001);
     vec3 reflected=reflect(-view,normal);
     float skyVisibility=smoothstep(-0.10,0.09,reflected.y);
@@ -250,6 +292,17 @@ export const oceanFragment = /* glsl */ `
     vec3 scattering=vec3(0.007,0.069,0.058)*uWaterTint;
     float translucent=pow(crest,2.0)*(0.25+backlight*0.75);
     vec3 body=deep + scattering*(0.15+sunFacing*0.30+translucent*0.70);
+    float surfaceDistance=linearDepth(gl_FragCoord.z);
+    vec2 refractionUV=clamp(screenUV+normal.xz*.011*clamp(-coast.x/8.0,0.0,1.0),vec2(.001),vec2(.999));
+    float behindDepth=texture2D(uSceneDepth,refractionUV).r;
+    if(linearDepth(behindDepth)<surfaceDistance+.06){refractionUV=screenUV;behindDepth=opaqueDepth;}
+    float opticalPath=clamp(linearDepth(behindDepth)-surfaceDistance,0.0,65.0);
+    vec3 absorption=vec3(.245,.085,.034);
+    vec3 transmission=exp(-absorption*opticalPath);
+    vec3 waterScatter=vec3(.009,.082,.101)*uWaterTint;
+    vec3 refractedColor=texture2D(uSceneColor,refractionUV).rgb*transmission+waterScatter*(1.0-transmission);
+    float visibleBottom=behindDepth<.999999?1.0:0.0;
+    body=mix(body,refractedColor,visibleBottom);
     body*=mix(1.0,0.60,uStorm);
     vec3 color=mix(body,reflection,fresnel);
 
@@ -285,11 +338,19 @@ export const oceanFragment = /* glsl */ `
     foam*=1.0-smoothstep(0.35,3.2,footprint);
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
     color=mix(color,foamColor,clamp(foam,0.0,0.85));
+    float shoreDepth=max(0.0,-coast.x);
+    float shoreFoam=(1.0-smoothstep(.025,.24,shoreDepth))*smoothstep(.0,.04,shoreDepth);
+    shoreFoam*=.12+.10*sin(uTime*1.3+vOcean.x*.035);
+    color=mix(color,uCloudColor*.55,shoreFoam);
 
     // Air scattering uses the same atmosphere as the visible sky.
     float fog=1.0-exp(-vDistance*mix(0.00017,0.00062,uStorm));
     vec3 horizon=clearSkyRadiance(normalize(vec3(-view.x,0.005,-view.z)));
     color=mix(color,horizon,clamp(fog,0.0,0.995));
-    gl_FragColor=vec4(displayColor(color),1.0);
+    gl_FragColor=vec4(color,1.0);
   }
 `;
+
+export const environmentVertex = `varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+export const environmentFragment = `precision highp float;varying vec3 vDirection;${atmosphere}
+void main(){vec3 ray=normalize(vDirection);vec3 c=skyRadiance(ray,true);if(ray.y<0.0)c=mix(c,vec3(.025,.035,.018),smoothstep(0.0,.35,-ray.y));gl_FragColor=vec4(c,1.0);}`;

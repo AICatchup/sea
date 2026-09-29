@@ -59,23 +59,23 @@ export class AssetWorld {
     const shrubs: THREE.Matrix4[][] = [[], [], []];
     const rocks: THREE.Matrix4[][] = [[], [], []];
     let treeCount = 0, shrubCount = 0, rockCount = 0;
-    for (let attempt = 0; attempt < 4200 && (treeCount < 168 || shrubCount < 142 || rockCount < 116); attempt++) {
-      const x = (random() - 0.5) * 500, z = -135 + random() * 370;
-      if (x * x + z * z > 250 * 250) continue;
+    for (let attempt = 0; attempt < 9500 && (treeCount < 420 || shrubCount < 620 || rockCount < 250); attempt++) {
+      const x = (random() - 0.5) * 530, z = -220 + random() * 470;
+      if ((x+36)*(x+36)+(z-27)*(z-27)>270*270) continue;
       const height = this.ground.heightAt(x, z);
       if (!Number.isFinite(height)) continue;
       const variant = Math.floor(random() * 3), yaw = random() * Math.PI * 2;
       const slope = Math.hypot(this.ground.heightAt(x + 1.5, z) - this.ground.heightAt(x - 1.5, z),
         this.ground.heightAt(x, z + 1.5) - this.ground.heightAt(x, z - 1.5)) / 3;
-      const isHeadland = x < -72 || x > 74 || z > 95;
-      if (treeCount < 168 && height > 3 && height < 58 && slope < 2.1 && isHeadland) {
+      const isHeadland = height>3 || x < -72 || x > 74 || z > 95;
+      if (treeCount < 420 && height > 3 && height < 58 && slope < 2.1 && isHeadland) {
         const size = 0.68 + random() * 0.77;
         trees[variant].push(this.transform(x, height - 0.14, z, size, yaw, 1.05, 0.85 + random() * 0.25, 1)); treeCount++;
-      } else if (shrubCount < 142 && height > 1.5 && height < 48 && isHeadland && slope < 2.8) {
+      } else if (shrubCount < 620 && height > 1.5 && height < 48 && isHeadland && slope < 2.8) {
         shrubs[variant].push(this.transform(x, height - 0.035, z, 0.19 + random() * 0.16, yaw, 1.7, 0.65, 1.4)); shrubCount++;
       }
-      if (rockCount < 116 && height > -0.45 && height < 28 && isHeadland && random() < 0.37) {
-        const size = 0.35 + random() * 1.3;
+      if (rockCount < 250 && height > -0.45 && height < 38 && isHeadland && random() < 0.57) {
+        const size = .45+random()*1.8;
         rocks[variant].push(this.transform(x, height + size * 0.48, z, size, yaw, 1.15, 0.8 + random() * 0.45, 1)); rockCount++;
       }
     }

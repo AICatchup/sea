@@ -2,6 +2,7 @@ import './style.css';
 import { Ocean, type Quality } from './ocean/renderer';
 import { presets, type PresetName } from './ocean/presets';
 import { SurfAudio } from './audio';
+import { AdventureUI } from './ui/adventure-ui';
 
 function element<T extends HTMLElement>(id: string): T {
   const result = document.getElementById(id);
@@ -13,7 +14,9 @@ const sound = new SurfAudio();
 const abort = new AbortController();
 const events = { signal: abort.signal };
 let ocean: Ocean;
-let activePreset: PresetName = 'golden';
+let activePreset: PresetName = 'day';
+let adventureUI: AdventureUI;
+let uiFrame = 0;
 let windTimer = 0;
 let toastTimer = 0;
 let disposed = false;
@@ -74,6 +77,22 @@ function toggleImmersive(): void {
 
 try {
   ocean = new Ocean(element<HTMLCanvasElement>('ocean'));
+  const focus = () => element('ocean').focus({ preventScroll: true });
+  adventureUI = new AdventureUI({
+    mode: mode => { ocean.adventure.setMode(mode); focus(); },
+    home: () => { ocean.resetView(); focus(); },
+    navigate: id => { ocean.adventure.navigate(id); focus(); },
+    place: kind => { ocean.place(kind); focus(); },
+    undo: () => { ocean.assets.undoPlacement(); focus(); },
+    move: (x, forward) => ocean.adventure.setMove(x, forward),
+    vertical: direction => ocean.adventure.setVertical(direction),
+  }, ocean.world.destinations, ocean.world.mapOutlines);
+  const updateUI = () => {
+    if (disposed) return;
+    adventureUI.update(ocean.adventure.state, ocean.assets.placedCount);
+    uiFrame = requestAnimationFrame(updateUI);
+  };
+  uiFrame = requestAnimationFrame(updateUI);
   sound.setWind(ocean.wind);
   Object.defineProperty(window, '__sea', { get: () => ocean.diagnostics, configurable: true });
   updateRanges();
@@ -185,7 +204,7 @@ try {
     }
     if (target.closest('input,select,textarea') || target.isContentEditable) return;
     if (event.key.toLowerCase() === 'h') { event.preventDefault(); toggleImmersive(); }
-    if (event.code === 'Space' && !target.closest('button,a')) { event.preventDefault(); togglePause(); }
+    if (event.code === 'KeyP' && !target.closest('button,a')) { event.preventDefault(); togglePause(); }
   }, events);
   document.addEventListener('visibilitychange', () => void sound.setVisible(!document.hidden && available).catch(() => {}), events);
   window.addEventListener('ocean-error', event => showError((event as CustomEvent<string>).detail), events);
@@ -193,6 +212,7 @@ try {
     import.meta.hot.dispose(() => {
       disposed = true;
       clearTimeout(windTimer); clearTimeout(toastTimer);
+      cancelAnimationFrame(uiFrame); adventureUI.dispose();
       abort.abort(); ocean.dispose(); sound.dispose();
       photoUrls.forEach((timer, url) => { clearTimeout(timer); URL.revokeObjectURL(url); });
       photoUrls.clear();
