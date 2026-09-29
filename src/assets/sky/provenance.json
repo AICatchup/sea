@@ -1,0 +1,20 @@
+{
+  "asset": "kloofendal_48d_partly_cloudy_puresky",
+  "title": "Kloofendal 48d Partly Cloudy (Pure Sky)",
+  "authors": {
+    "Greg Zaal": "Original",
+    "Jarod Guest": "Sky edits"
+  },
+  "sourcePage": "https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky",
+  "sourceApi": "https://api.polyhaven.com/files/kloofendal_48d_partly_cloudy_puresky",
+  "download": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/kloofendal_48d_partly_cloudy_puresky_2k.hdr",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://polyhaven.com/license",
+  "bytes": 5451493,
+  "md5": "2eba3a4d7eeb23cbfbeca364c97e7980",
+  "sha256": "5244534e9cf5b606f2ff513aa00ddb161b0a4826ffd88a0d3bd03ac29247d198",
+  "retrievedAt": "2026-09-29T22:57:12.806Z",
+  "description": "Free 16K unclipped HDRI - midday partly-cloudy pure sky with bright sun, high-contrast natural light and crisp clouds for realistic outdoor lighting.",
+  "geography": "Photographed at Kloofendal, South Africa. Used only as a sky/lighting source, not as Shikinejima location evidence.",
+  "edits": "Unmodified Poly Haven 2K RGBE HDR bytes. Exposure and azimuth are runtime lighting parameters."
+}
