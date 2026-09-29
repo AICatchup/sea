@@ -33,12 +33,17 @@ export function createSpectrum(options: SpectrumOptions): Float32Array {
   let energy = 0;
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
+      // The represented Nyquist frequencies have no distinct -k partner.
+      // Remove them so height and both odd displacement fields stay Hermitian.
+      if (x === 0 || y === 0) continue;
       const kx = (x - size / 2) * waveStep;
       const kz = (y - size / 2) * waveStep;
       const k = Math.hypot(kx, kz);
       if (k < 1e-6) continue;
       const direction = (kx * 0.8 + kz * 0.6) / k;
-      const directional = 0.12 + 0.88 * direction ** 2;
+      // Long waves have a clear wind alignment; ripples spread more widely.
+      const spreading = 4 - 2 * smoothstep(0.25, 2.0, k);
+      const directional = 0.035 + 0.965 * Math.abs(direction) ** spreading;
       const lowBand = minWaveNumber === 0 ? 1 : smoothstep(minWaveNumber * 0.75, minWaveNumber * 1.25, k);
       const highBand = 1 - smoothstep(maxWaveNumber * 0.75, maxWaveNumber, k);
       const phillips = Math.exp(-1 / (k * largestWave) ** 2) / k ** 4
