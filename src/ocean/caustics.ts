@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { capillarySampling } from './surface-detail';
+import { capillarySampling, shoreWaveSampling } from './surface-detail';
 
 export interface CausticBathymetry {
   /** R: seabed height in metres, G: local wave shelter, as in oceanVertex. */
@@ -24,6 +24,7 @@ const photonVertex = /* glsl */ `
   varying float vEnergy;
   const float PI = 3.14159265359;
   ${capillarySampling}
+  ${shoreWaveSampling}
   vec2 bathyUv(vec2 p) {
     return (p-uBathyBounds.xy)/uBathyBounds.zw;
   }
@@ -35,7 +36,7 @@ const photonVertex = /* glsl */ `
   }
   vec3 surfaceAt(vec2 p) {
     vec2 coast=coastAt(p);
-    float shoal=(.10+.90*smoothstep(0.0,18.0,-coast.x))*clamp(coast.y,.08,1.0);
+    float shoal=shoreWaveScale(coast,uSwell,uWind);
     vec3 d=(texture2D(uLongWaves,p/384.0).xyz+texture2D(uShortWaves,p/24.0).xyz)*shoal*uSwell;
     return vec3(p.x+d.x*uChoppiness,d.y,p.y+d.z*uChoppiness);
   }
@@ -79,7 +80,9 @@ const photonVertex = /* glsl */ `
     float radius=max(cell*1.70,.14)+distance*.00465*(1.0+.016*uWind);
     float cosine=clamp(dot(-incident,normal),0.0,1.0);
     float reflection=.02037+.97963*pow(1.0-cosine,5.0);
-    float flux=(1.0-reflection)*exp(-distance*.022);
+    // Scalar geometric focusing only. Receiver materials apply wavelength-
+    // dependent Beer absorption along the refracted path, exactly once.
+    float flux=(1.0-reflection);
     flux*=smoothstep(.025,.12,uSunDirection.y);
     float valid=step(floorY,-.035)*step(.02,-ray.y)*step(distance,80.0);
     // Integral of exp(-4*r^2) over the unit disk; hence conserved photon energy.
@@ -132,7 +135,7 @@ const integrateFragment = /* glsl */ `
 
 /**
  * Photon-density caustics from the SAME FFT displacement textures as the ocean.
- * R is refracted irradiance relative to a flat, perfectly transmitting surface.
+ * R is geometric irradiance relative to a flat, perfectly transmitting surface.
  * This is an XZ seabed projection, not a volume solution for suspended objects.
  */
 export class WaveCaustics {
@@ -286,8 +289,8 @@ export const waveCausticsSampling = /* glsl */ `
     vec2 edge=min(uv,1.0-uv);
     float valid=smoothstep(0.0,.04,min(edge.x,edge.y));
     float energy=texture2D(uCaustics,clamp(uv,0.0,1.0)).r;
-    // The light is already attenuated along the water path. Keep the value
-    // linear; tone mapping belongs to the scene compositor.
+    // Keep geometric energy linear; spectral attenuation belongs to the
+    // receiver and tone mapping belongs to the scene compositor.
     return mix(1.0,energy,valid);
   }
 `;

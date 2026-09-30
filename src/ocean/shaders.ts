@@ -1,5 +1,5 @@
 import { photographicSkySampling } from './photographic-sky';
-import { capillarySampling } from './surface-detail';
+import { capillarySampling, shoreWaveSampling } from './surface-detail';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -179,10 +179,11 @@ export const oceanVertex = /* glsl */ `
   uniform sampler2D uBathymetry;
   uniform vec4 uBathyBounds;
   uniform vec2 uBathyResolution;
-  uniform float uSwell, uChoppiness;
+  uniform float uSwell, uChoppiness, uWind;
   varying vec3 vWorld;
   varying vec2 vOcean;
   varying float vDistance;
+  ${shoreWaveSampling}
   vec3 vertexCoast(vec2 p){
     vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
     if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return vec3(-110.0,1.0,0.0);
@@ -196,7 +197,7 @@ export const oceanVertex = /* glsl */ `
     vec3 displacement = texture2D(uLongWaves,origin/384.0).xyz
       + texture2D(uShortWaves,origin/24.0).xyz*shortFade;
     vec3 coast=vertexCoast(origin);
-    float shoal=(0.10+0.90*smoothstep(0.0,18.0,-coast.x))*clamp(coast.y,0.08,1.0);
+    float shoal=shoreWaveScale(coast.rg,uSwell,uWind);
     displacement*=shoal;
     vec3 world=vec3(origin.x,0.0,origin.y);
     world.xz += displacement.xz*uChoppiness*uSwell;
@@ -213,7 +214,11 @@ export const oceanVertex = /* glsl */ `
 export const oceanFragment = /* glsl */ `
   precision highp float;
   uniform sampler2D uLongWaves, uShortWaves;
-  uniform sampler2D uBathymetry, uSceneColor, uSceneDepth, uReflection;
+  uniform sampler2D uBathymetry, uSceneColor, uSceneDepth, uSceneOcclusion, uReflection;
+  uniform sampler2DShadow uSunShadow;
+  uniform mat4 uSunShadowMatrix;
+  uniform vec2 uSunShadowTexel, uReflectionResolution;
+  uniform float uShadowReady;
   uniform mat4 uReflectionMatrix;
   uniform float uHasReflection;
   uniform vec4 uBathyBounds;
@@ -225,6 +230,7 @@ export const oceanFragment = /* glsl */ `
   varying vec2 vOcean;
   varying float vDistance;
   ${atmosphere}
+  ${shoreWaveSampling}
 
   vec3 coastAt(vec2 p){
     vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
@@ -232,10 +238,18 @@ export const oceanFragment = /* glsl */ `
     uv=uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution;
     return texture2D(uBathymetry,uv).rgb;
   }
-  float shoalAt(vec2 p){vec3 c=coastAt(p);return (.10+.90*smoothstep(0.0,18.0,-c.x))*clamp(c.y,.08,1.0);}
+  float shoalAt(vec2 p){return shoreWaveScale(coastAt(p).rg,uSwell,uWind);}
   vec3 longDisplacement(vec2 p) { return texture2D(uLongWaves,p/384.0).xyz*shoalAt(p); }
   vec3 shortDisplacement(vec2 p) { return texture2D(uShortWaves,p/24.0).xyz*shoalAt(p); }
   float linearDepth(float d){float n=uNearFar.x,f=uNearFar.y;return 2.0*n*f/(f+n-(d*2.0-1.0)*(f-n));}
+  float surfaceSunVisibility(vec3 p){
+    if(uShadowReady<.5)return 1.0;
+    vec4 projected=uSunShadowMatrix*vec4(p,1);vec3 q=projected.xyz/projected.w;
+    if(any(lessThan(q,vec3(0)))||any(greaterThan(q,vec3(1))))return 1.0;
+    vec2 s=uSunShadowTexel*.8;float depth=q.z-.00015;
+    return .25*(texture(uSunShadow,vec3(q.xy+s,depth))+texture(uSunShadow,vec3(q.xy-s,depth))
+      +texture(uSunShadow,vec3(q.xy+vec2(s.x,-s.y),depth))+texture(uSunShadow,vec3(q.xy+vec2(-s.x,s.y),depth)));
+  }
   ${capillarySampling}
 
   void main() {
@@ -259,11 +273,16 @@ export const oceanFragment = /* glsl */ `
     vec3 tangentZ=vec3(dz.x*chop,dz.y*uSwell,1.0+dz.z*chop);
     vec3 normal=normalize(cross(tangentZ,tangentX));
     normal.y=max(abs(normal.y),0.14);
-    normal.xz*=1.0/(1.0+footprint*0.022);
-    // Band-limit capillary detail to the pixel footprint to avoid distant shimmer.
-    float microFade=1.0-smoothstep(0.035,0.36,footprint);
-    normal.xz-=capillarySurfaceSlope(vOcean,uTime)*microFade*(0.45+uWind*0.035);
+    // Metric stochastic detail is shared with the photon caustics. Pixel
+    // filtering removes unresolved slopes, while retaining their variance.
+    float missingVariance;
+    float microScale=.45+uWind*.035;
+    normal.xz-=capillarySurfaceSlopeFiltered(vOcean,uTime,footprint,missingVariance)*microScale;
     normal=normalize(normal);
+    float normalVariation=max(dot(dFdx(normal),dFdx(normal)),dot(dFdy(normal),dFdy(normal)));
+    float slopeVariance=.0007+.0012*clamp(uWind/12.0,0.0,1.0)+missingVariance*microScale*microScale;
+    slopeVariance+=.0030*(1.0-shortFade*shortFade)+normalVariation*.25;
+    float roughnessAlpha=clamp(sqrt(slopeVariance),.035,.24);
 
     vec3 view=normalize(cameraPosition-vWorld);
     if(uUnderwater>0.5){
@@ -271,7 +290,7 @@ export const oceanFragment = /* glsl */ `
       vec3 through=refract(-view,belowNormal,1.333);
       float incidence=max(dot(belowNormal,view),0.0);
       float belowFresnel=0.02037+0.97963*pow(1.0-incidence,5.0);
-      vec3 underwaterColor=vec3(0.012,0.085,0.11);
+      vec3 underwaterColor=vec3(0.006,0.024,0.039);
       if(dot(through,through)>0.001){
         vec3 skylight=skyRadiance(normalize(through),true);
         underwaterColor=mix(skylight,underwaterColor,belowFresnel);
@@ -289,26 +308,35 @@ export const oceanFragment = /* glsl */ `
     float fresnel=0.02037+0.97963*pow(1.0-nV,5.0);
     vec3 reflection=mix(interreflection,skyRadiance(reflected,false),skyVisibility);
     vec4 reflectedPoint=uReflectionMatrix*vec4(vWorld,1.0);
-    vec2 reflectedUV=reflectedPoint.xy/max(reflectedPoint.w,.0001)+normal.xz*.005;
+    vec2 reflectedUV=reflectedPoint.xy/max(reflectedPoint.w,.0001)
+      +normal.xz*(.012+.12*(1.0-nV))/max(.35,nV);
     float reflectionValid=reflectedPoint.w>0.0&&all(greaterThan(reflectedUV,vec2(.006)))&&all(lessThan(reflectedUV,vec2(.994)))?1.0:0.0;
-    vec3 reflectedScene=texture2D(uReflection,clamp(reflectedUV,.002,.998)).rgb;
+    // The reflected cone gets wider with microfacet slope variance and grazing
+    // incidence. HDR mip filtering integrates radiance, before tone mapping.
+    float coneRadius=roughnessAlpha*(.032+.145*(1.0-nV));
+    float pixelCone=max(length(dFdx(reflectedUV)*uReflectionResolution),length(dFdy(reflectedUV)*uReflectionResolution));
+    float reflectionLod=clamp(log2(max(pixelCone,coneRadius*max(uReflectionResolution.x,uReflectionResolution.y))),0.0,8.0);
+    vec3 reflectedScene=textureLod(uReflection,clamp(reflectedUV,.002,.998),reflectionLod).rgb;
     reflection=mix(reflection,reflectedScene,reflectionValid*uHasReflection*skyVisibility);
     float crest=clamp(vWorld.y/(0.35+uWind*uWind*0.010)+0.38,0.0,1.0);
     float sunFacing=max(dot(normal,uSunDirection),0.0);
     float backlight=pow(max(dot(view,-uSunDirection),0.0),4.0);
-    vec3 deep=vec3(0.003,0.018,0.026)*uWaterTint;
-    vec3 scattering=vec3(0.007,0.069,0.058)*uWaterTint;
+    float sunVisibility=surfaceSunVisibility(vWorld+vec3(0,.04,0));
+    vec3 deep=vec3(0.002,0.010,0.024)*uWaterTint;
+    vec3 scattering=vec3(0.004,0.028,0.040)*uWaterTint;
     float translucent=pow(crest,2.0)*(0.25+backlight*0.75);
-    vec3 body=deep + scattering*(0.15+sunFacing*0.30+translucent*0.70);
+    vec3 body=deep + scattering*(0.12+sunFacing*sunVisibility*.35+translucent*.55);
     float surfaceDistance=linearDepth(gl_FragCoord.z);
     vec2 refractionUV=clamp(screenUV+normal.xz*.011*clamp(-coast.x/8.0,0.0,1.0),vec2(.001),vec2(.999));
     float behindDepth=texture2D(uSceneDepth,refractionUV).r;
     if(linearDepth(behindDepth)<surfaceDistance+.06){refractionUV=screenUV;behindDepth=opaqueDepth;}
-    float opticalPath=clamp(linearDepth(behindDepth)-surfaceDistance,0.0,65.0);
-    vec3 absorption=vec3(.245,.085,.034);
+    float rayCos=max(.12,abs((viewMatrix*vec4(-view,0.0)).z));
+    float opticalPath=clamp((linearDepth(behindDepth)-surfaceDistance)/rayCos,0.0,90.0);
+    vec3 absorption=vec3(.105,.021,.012);
     vec3 transmission=exp(-absorption*opticalPath);
-    vec3 waterScatter=vec3(.009,.082,.101)*uWaterTint;
-    vec3 refractedColor=texture2D(uSceneColor,refractionUV).rgb*transmission+waterScatter*(1.0-transmission);
+    vec3 waterScatter=vec3(.003,.026,.041)*uWaterTint;
+    float bottomContact=texture2D(uSceneOcclusion,refractionUV).r;
+    vec3 refractedColor=texture2D(uSceneColor,refractionUV).rgb*bottomContact*transmission+waterScatter*(1.0-transmission);
     float visibleBottom=behindDepth<.999999?1.0:0.0;
     body=mix(body,refractedColor,visibleBottom);
     body*=mix(1.0,0.60,uStorm);
@@ -319,10 +347,9 @@ export const oceanFragment = /* glsl */ `
     float nH=max(dot(normal,halfVector),0.0);
     float nL=max(dot(normal,uSunDirection),0.0001);
     float vH=max(dot(view,halfVector),0.0);
-    float roughness=0.145+0.035*uStorm+min(0.16,footprint*0.045);
     // Include the finite solar disk and unresolved normal variance. This
     // creates a broad, broken sun road instead of clipped needle-like stripes.
-    float alpha=roughness*roughness+0.003;
+    float alpha=roughnessAlpha+.012*uStorm;
     float a2=alpha*alpha;
     float denominator=nH*nH*(a2-1.0)+1.0;
     float distribution=a2/(PI*denominator*denominator+0.0000005);
@@ -331,7 +358,7 @@ export const oceanFragment = /* glsl */ `
     float solarF=0.02037+0.97963*pow(1.0-vH,5.0);
     float specular=distribution*geometryV*geometryL*solarF/(4.0*nV);
     float lit=smoothstep(-0.01,0.035,dot(normal,uSunDirection));
-    color+=uSunColor*min(specular,5.0)*1.55*lit*mix(1.0,0.10,uStorm);
+    color+=uSunColor*min(specular,5.0)*1.1*lit*sunVisibility*mix(1.0,0.10,uStorm);
 
     float foam0=texture2D(uLongWaves,vOcean/384.0).a;
     float foam1=texture2D(uShortWaves,vOcean/24.0).a*shortFade;
@@ -347,13 +374,16 @@ export const oceanFragment = /* glsl */ `
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
     color=mix(color,foamColor,clamp(foam,0.0,0.85));
     float shoreDepth=max(0.0,-coast.x);
-    float shoreFoam=(1.0-smoothstep(.025,.24,shoreDepth))*smoothstep(.0,.04,shoreDepth);
-    shoreFoam*=.12+.10*sin(uTime*1.3+vOcean.x*.035);
+    float shallowBreaking=(1.0-smoothstep(.6,3.8,shoreDepth))*smoothstep(.10,.38,shoreDepth);
+    float crestArrival=smoothstep(.06,.18+shoreDepth*.10,vWorld.y);
+    float shoreFoam=shallowBreaking*crestArrival*coast.y*pores*.48;
+    shoreFoam+=(1.0-smoothstep(.025,.28,shoreDepth))*smoothstep(.0,.04,shoreDepth)
+      *(.08+.07*noise(vOcean*.55+vec2(uTime*.11,-uTime*.08)));
     color=mix(color,uCloudColor*.55,shoreFoam);
 
     // Air scattering uses the same atmosphere as the visible sky.
-    float fog=1.0-exp(-vDistance*mix(0.00017,0.00062,uStorm));
-    vec3 horizon=clearSkyRadiance(normalize(vec3(-view.x,0.005,-view.z)));
+    float fog=1.0-exp(-vDistance*mix(0.000045,0.00042,uStorm));
+    vec3 horizon=skyRadiance(normalize(vec3(-view.x,0.005,-view.z)),false);
     color=mix(color,horizon,clamp(fog,0.0,0.995));
     gl_FragColor=vec4(color,1.0);
   }

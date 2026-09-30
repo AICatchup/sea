@@ -1,20 +1,48 @@
-/** Shared centimetre-scale slopes: sunlight and visible water use the same surface. */
+/** Stochastic metric height derivatives shared by water and photon refraction.
+ * Unresolved bands contribute slope variance to the reflection BRDF. */
 export const capillarySampling=/* glsl */`
-  float capillaryHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-  float capillaryNoise(vec2 p){
-    vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
-    return mix(mix(capillaryHash(i),capillaryHash(i+vec2(1,0)),f.x),mix(capillaryHash(i+vec2(0,1)),capillaryHash(i+1.0),f.x),f.y);
+  float capillaryHash(vec2 p){
+    vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);
+    return fract((q.x+q.y)*q.z);
   }
-  float capillaryHeight(vec2 p,float time){
-    vec2 drift=vec2(time*.23,-time*.18);
-    return capillaryNoise(p*6.3+drift)*.008+capillaryNoise(p*12.7-drift*.7+vec2(9.2,5.7))*.003;
+  vec3 capillaryNoiseGradient(vec2 p){
+    vec2 i=floor(p),f=fract(p),u=f*f*(3.0-2.0*f),du=6.0*f*(1.0-f);
+    float a=capillaryHash(i),b=capillaryHash(i+vec2(1,0));
+    float c=capillaryHash(i+vec2(0,1)),d=capillaryHash(i+vec2(1));
+    float crossTerm=a-b-c+d;
+    return vec3(a+(b-a)*u.x+(c-a)*u.y+crossTerm*u.x*u.y,
+      du.x*((b-a)+crossTerm*u.y),du.y*((c-a)+crossTerm*u.x));
+  }
+  vec2 capillaryBand(vec2 p,float time,float frequency,float amplitude,mat2 frame,vec2 drift){
+    vec3 field=capillaryNoiseGradient(frame*p*frequency+drift*time);
+    return (field.yz*frame)*(frequency*amplitude);
+  }
+  vec2 capillarySurfaceSlopeFiltered(vec2 p,float time,float footprint,out float missingVariance){
+    // Differently drifting, rotated bands prevent phase-locked parallel ripples.
+    vec4 fade=exp(-pow(vec4(.85,3.1,9.7,27.5)*footprint*1.55,vec4(2)));
+    vec2 slope=capillaryBand(p,time,.85,.052,mat2(.91,.28,-.28,.91),vec2(.13,-.09))*fade.x;
+    slope+=capillaryBand(p,time,3.1,.018,mat2(.64,-.77,.77,.64),vec2(-.28,.17))*fade.y;
+    slope+=capillaryBand(p,time,9.7,.006,mat2(.93,.37,-.37,.93),vec2(.38,.31))*fade.z;
+    slope+=capillaryBand(p,time,27.5,.0026,mat2(.46,.89,-.89,.46),vec2(-.45,.62))*fade.w;
+    // Mean squared slope of each cubic-noise band (CPU quadrature calibrated).
+    missingVariance=dot(vec4(.000530,.000934,.001016,.001536),1.0-fade*fade);
+    return slope;
   }
   vec2 capillarySurfaceSlope(vec2 p,float time){
-    float phase=capillaryNoise(p*.42+vec2(time*.025,0))*3.8,t=time*2.1;
-    vec2 slope=vec2(.80,.60)*cos(dot(p,vec2(.80,.60))*19.0+t+phase)*.03375;
-    slope+=vec2(-.36,.93)*cos(dot(p,vec2(-.36,.93))*31.0-t*1.37+phase)*.02070;
-    slope+=vec2(.93,-.37)*cos(dot(p,vec2(.93,-.37))*47.0+t*1.61-phase)*.01125;
-    slope+=vec2(capillaryHeight(p+vec2(.018,0),time)-capillaryHeight(p-vec2(.018,0),time),capillaryHeight(p+vec2(0,.018),time)-capillaryHeight(p-vec2(0,.018),time))/.036;
-    return slope;
+    float unused;return capillarySurfaceSlopeFiltered(p,time,0.0,unused);
+  }
+`;
+
+/** Finite-depth energy transport with a depth-limited breaker envelope.
+ * G remains geographic shelter, so open beaches retain swell unlike bays.
+ * Shared verbatim by geometry, shading, photon tracing and CPU-height cache.
+ */
+export const shoreWaveSampling=/* glsl */`
+  float shoreWaveScale(vec2 coast,float swell,float wind){
+    float depth=max(0.0,-coast.x);
+    float transport=pow(clamp(18.0/max(depth,1.0),1.0,8.0),.125);
+    float nominalAmplitude=max(.08,swell*(.10+wind*wind*.013));
+    float breakingCap=min(1.0,depth*.38/nominalAmplitude);
+    return transport*breakingCap*smoothstep(.015,.22,depth)*clamp(coast.y,.08,1.0);
   }
 `;
