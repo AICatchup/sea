@@ -18,6 +18,7 @@ import { shoreWaveSampling } from './surface-detail';
 import { WorldCollision, withWorldCollision } from '../world/world-collision';
 import { WorldSolidBinding } from '../world/world-solid-binding';
 import { ShoreSpray } from './shore-spray';
+import { buildPhotoCoastPresentation } from '../world/photo-coast-presentation';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -128,6 +129,7 @@ export class Ocean {
   visualCaptureLocked=false;
   readonly collision=new WorldCollision();
   private readonly solidBinding=new WorldSolidBinding(this.collision);
+  private photoCoast:ReturnType<typeof buildPhotoCoastPresentation>|null=null;
   private solidContactReady=false;
   private readonly spray:ShoreSpray;
   readonly renderer:THREE.WebGLRenderer;
@@ -269,11 +271,20 @@ export class Ocean {
       if(this.disposed)return;
       this.assets.hydrateRockPlacements(variants);
       prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
+      if(new URLSearchParams(location.search).get('coast')==='photo'){
+        this.photoCoast=buildPhotoCoastPresentation(this.world,variants);
+        this.photoCoast.group.traverse(object=>{if(object instanceof THREE.Mesh)object.castShadow=true;});
+        this.scannedCoast.add(this.photoCoast.group);
+        if(this.photoCoast.diagnostics.instances){
+          const authored=this.world.group.getObjectByName('Tomari jointed rhyolite ledges and fissures');
+          if(authored){authored.visible=false;authored.userData.worldSolid=false;}
+        }
+      }
       let seed=31851;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
       const helper=new THREE.Object3D();
       for(const variant of variants){
         const matrices:THREE.Matrix4[]=[];
-        for(let attempt=0;attempt<900&&matrices.length<(variant.kind==='shelf'?30:20);attempt++){
+        for(let attempt=0;attempt<900&&!this.photoCoast&&matrices.length<(variant.kind==='shelf'?30:20);attempt++){
           const x=-260+random()*470,z=-230+random()*340,h=this.world.heightAt(x,z);
           const dx=(this.world.heightAt(x+1,z)-this.world.heightAt(x-1,z))*.5;
           const dz=(this.world.heightAt(x,z+1)-this.world.heightAt(x,z-1))*.5;
@@ -436,7 +447,9 @@ export class Ocean {
   resize():void{
     const width=window.innerWidth,height=window.innerHeight;
     const scale={auto:this.automaticScale,high:1,medium:.85,low:.55}[this.quality];
-    const ratio=Math.min(window.devicePixelRatio,this.quality==='high'?1:1.65)*scale;
+    // High quality owns one drawing-buffer pixel per CSS pixel before the budget
+    // cap; fractional browser zoom must not silently turn 1280 into 1279.
+    const ratio=(this.quality==='high'?1:Math.min(window.devicePixelRatio,1.65))*scale;
     const budget=this.quality==='high'?4200000:2300000;
     this.renderer.setPixelRatio(Math.min(ratio,Math.sqrt(budget/(width*height))));
     this.renderer.setSize(width,height,false);this.compositor.resize(this.canvas.width,this.canvas.height);
@@ -471,7 +484,7 @@ export class Ocean {
   }
   undoPlacement():void{this.assets.undoPlacement();this.syncSolids();}
   private syncSolids():void{
-    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup]);
+    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup]);
     this.solidContactReady=true;
   }
   capture():Promise<Blob|null>{
@@ -505,7 +518,7 @@ export class Ocean {
   }
   get diagnostics(){
     const state=this.adventure.state;
-    return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,
+    return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,preset:this.currentPreset,
       visualCaptureLocked:this.visualCaptureLocked,
       resolution:[this.canvas.width,this.canvas.height],camera:{yaw:state.yaw,pitch:state.pitch,height:state.position.y,x:state.position.x,z:state.position.z},
       adventure:{mode:state.mode,depth:state.depth,oxygen:state.oxygen,speed:state.speed,placed:this.assets.placedCount,
@@ -514,7 +527,8 @@ export class Ocean {
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
-      spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,
+      spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,habushiGround:this.world.habushiGround.diagnostics,
+      photoCoast:this.photoCoast?{instances:this.photoCoast.diagnostics.instances,triangles:this.photoCoast.diagnostics.triangles,draws:this.photoCoast.diagnostics.draws,roles:this.photoCoast.diagnostics.roles}:null,
       scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),
       ground:this.world.heightAt(state.position.x,state.position.z),programs:this.renderer.info.programs?.length,
       draws:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles};
@@ -522,7 +536,7 @@ export class Ocean {
   dispose():void{
     if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.animationFrame);this.abort.abort();
     this.captureNextFrame?.(null);this.captureNextFrame=null;
-    this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
+    this.photoCoast?.dispose();this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();
     this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();

@@ -3,6 +3,7 @@ import { Ocean, type Quality } from './ocean/renderer';
 import { presets, type PresetName } from './ocean/presets';
 import { SurfAudio } from './audio';
 import { AdventureUI } from './ui/adventure-ui';
+import { captureNamed, captureMatrix, CAPTURE_PROFILES, type CaptureState, type SceneCaptureHost } from './qa/scene-capture';
 
 function element<T extends HTMLElement>(id: string): T {
   const result = document.getElementById(id);
@@ -101,6 +102,39 @@ try {
   sound.setWind(ocean.wind);
   Object.defineProperty(window, '__sea', { get: () => ocean.diagnostics, configurable: true });
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaOptics',{value:()=>ocean.probeOptics(),configurable:true});
+  const captureOnly=new URLSearchParams(location.search).get('capture')==='1';
+  const capturePNG=async():Promise<string|null>=>{
+    const blob=await ocean.capture();if(!blob)return null;
+    return await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});
+  };
+  type SavedCapture=CaptureState&{wind:number;swell:number;eyeY:number;oxygen:number;stamina:number;action:typeof ocean.adventure.state.avatarAction};
+  const captureHost:SceneCaptureHost={
+    ready:ocean.ready,
+    readState(){
+      const d=ocean.diagnostics,s=ocean.adventure.state;
+      if(!captureOnly||s.mode==='boat'||s.voyageTarget||s.speed>.01)throw new Error('Use a dedicated idle QA instance with capture=1');
+      return {pose:{x:s.position.x,z:s.position.z,yaw:s.yaw,pitch:s.pitch,mode:s.mode,depth:s.depth},
+        camera:[...ocean.camera.position.toArray(),...ocean.camera.quaternion.toArray()],width:d.resolution[0],height:d.resolution[1],
+        quality:d.quality,preset:d.preset,paused:d.paused,locked:d.visualCaptureLocked,hidden:document.hidden,disposed,
+        wind:d.wind,swell:d.swell,eyeY:s.position.y,oxygen:s.oxygen,stamina:s.stamina??1,action:s.avatarAction} as SavedCapture;
+    },
+    restoreState(raw){
+      const s=raw as SavedCapture,p=s.pose;
+      ocean.setPreset(s.preset as PresetName);ocean.setWind(s.wind);ocean.setSwell(s.swell);ocean.setQuality(s.quality as Quality);ocean.paused=s.paused;
+      ocean.adventure.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);
+      ocean.adventure.state.position.y=s.eyeY;ocean.adventure.state.oxygen=s.oxygen;ocean.adventure.state.stamina=s.stamina;ocean.adventure.state.avatarAction=s.action;
+      ocean.visualCaptureLocked=s.locked;
+    },
+    setQuality:q=>ocean.setQuality(q as Quality),setPreset:p=>{if(!(p in presets))throw new Error('Unknown capture preset');ocean.setPreset(p as PresetName);},
+    setPaused:p=>{ocean.paused=p;},visualLock:p=>{ocean.visualCaptureLocked=p;},
+    viewpoint(x,z,yaw,pitch,mode,depth){
+      ocean.adventure.viewpoint(x,z,yaw,pitch,mode,depth);ocean.adventure.state.viewOffset?.set(0,0,0);
+      ocean.adventure.state.avatarAction=mode==='dive'?'dive':mode==='swim'?'swim':'idle';
+      ocean.adventure.state.immersion=mode==='walk'?Math.max(0,Math.min(1,(1.64-ocean.adventure.state.position.y)/1.64)):1;
+    },
+    capturePixels:capturePNG,
+    nextFrame:()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))),
+  };
   // Development-only observation/replay seam. It uses the same controller input
   // as the touch controls; bookmarks are QA starts, never normal travel actions.
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
@@ -117,12 +151,9 @@ try {
     objectAt:(x:number,y:number)=>ocean.probeFoliage(x,y,false),
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
-    async capturePixels(){
-      const blob=await ocean.capture();if(!blob)return null;
-      return await new Promise<string>((resolve,reject)=>{
-        const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);
-      });
-    },
+    capturePixels:capturePNG,
+    captureNamed:(name:string)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');return captureNamed(captureHost,profile,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
+    captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),
   }});
   updateRanges();
   void ocean.ready.then(() => {

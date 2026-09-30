@@ -9,6 +9,7 @@ import { loadSandTextures } from './sand-material.ts';
 import { makeTerrainMaterial } from './coast-material.ts';
 import { NiijimaCoast } from './niijima-coast.ts';
 import { HabushiMainGate } from './habushi-main-gate.ts';
+import { HabushiGround } from './habushi-ground.ts';
 const atlasURL=new URL('../assets/tomari-atlas-v1.png',import.meta.url).href;
 
 interface WaterMap { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2; }
@@ -71,6 +72,7 @@ export class IslandWorld {
   readonly cliffCollisionProxies: CliffCollisionProxy[] = [];
   readonly niijimaCoast:NiijimaCoast;
   readonly habushiGate:HabushiMainGate;
+  readonly habushiGround:HabushiGround;
   private readonly maps = new Map<string, WaterMap>();
   private readonly niijimaShaderMaps = new WeakMap<THREE.Texture, WaterMap>();
   private readonly textures: THREE.Texture[] = [];
@@ -91,6 +93,8 @@ export class IslandWorld {
     this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial);this.group.add(this.niijimaCoast.group);
     this.habushiGate=new HabushiMainGate(this.niijimaCoast);
     this.niijimaCoast.applyGrading(this.habushiGate.grading);this.group.add(this.habushiGate.group);
+    this.habushiGround=new HabushiGround(this.habushiGate);
+    this.niijimaCoast.applyGrading(this.habushiGround.grading);this.group.add(this.habushiGround.group);
     for (const field of this.elevation.fields) this.buildTerrain(field, terrainMaterial);
     if (this.elevation.tomari && this.elevation.coast) {
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true);
@@ -163,6 +167,7 @@ export class IslandWorld {
   }
 
   dispose(): void {
+    this.habushiGround.dispose();
     this.habushiGate.dispose();
     this.niijimaCoast.dispose();
     this.group.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
