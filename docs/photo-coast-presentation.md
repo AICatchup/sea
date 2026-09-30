@@ -1,0 +1,15 @@
+# CC0 scan coast candidate
+
+`buildPhotoCoastPresentation(ground, variants, options?)` receives the already loaded `ScannedRockLibrary.ready` variants. It produces a static `Group`, diagnostics and an idempotent `dispose`. No loader, texture, renderer, camera or frame update is added. All source geometry/material resources are borrowed. Disposal releases only instance resources and detaches children.
+
+This is an authored assembly of Poly Haven CC0 scans on a Tomari elevation support field. It is **not a measured photogrammetric reconstruction of Tomari**. The reference photograph was inspected only; its pixels are not included in this candidate.
+
+Each coastal shelf's normalized physical footprint remains approximately 8 m, multiplied uniformly by 0.85–1.45. A rigid frame maps local scan Y to the terrain surface normal and local X/Z to the scarp plane, including a bounded joint rotation. The original irregular scan topology and photo UV remain shared in front, side and rear views. Small talus uses the 2 m normalized boulders at 0.8–1.3 scale. No synthetic extrusion, scan flattening, spherical mountain enlargement or camera facing geometry is used.
+
+Support uses local slopes, uphill continuation and a normal-offset search for approximately 64% exposed scan vertices with an embedded back. It excludes low/crown/flat terrain. The strand guard checks **all actual transformed vertices**, plus conservative AABB bottom corners, against elevation/sand limits. AABB intersection rejects near-total repeated occupancy. These are conservative placement tests, not a watertight contact proof. Limited shared embedded volumes can remain.
+
+The budget is based on actual index/position counts, capped at 1,500,000 triangles and 10 source draws. Budget allocation interleaves the bounded coastline deterministically rather than filling one edge first. `diagnostics.patches` returns every actual transformed patch box, role, source ID, physical scale and sampled occupancy for camera-region analysis. `diagnostics.sourceBounds` reports normalized metre extents alongside original pre-normalization source dimensions. These are asset dimensions, not a verified field survey scale.
+
+Integration must replace the old authored hero presentation as appropriate, and register **this group's actual InstancedMesh geometry** with WorldCollision before opaque surfaces are accepted as navigable. The helper does not alter the macro terrain, sand, boat path, native controller or collision system. It owns no BVH; collision may share its existing per-geometry BVH over borrowed scan geometry.
+
+Validation: `node --experimental-strip-types --test tests/photo-coast-presentation.test.ts` reads all five bundled GLB position/index/UV streams on CPU and reproduces the production normalization. It checks counts/bounds, strand clearance, shared resources, source bytes/UV/bounds remaining unchanged after repeated disposal, and empty/flat/nonfinite/malformed/zero-budget cases. `tsc --noEmit` checks the production API. Root rendering and collision acceptance remain required: no GPU, browser, device/FPS, continuous walking or visual similarity PASS is claimed here.
