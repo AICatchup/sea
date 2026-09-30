@@ -106,7 +106,7 @@ export class AdventureUI {
         <canvas class="adventure-map" role="img" aria-label="島の輪郭、目的地、現在地を示す地図"></canvas>
         <div class="adventure-map-key"><span><i></i>現在地</span><span><i></i>目的地</span></div>
         <div class="adventure-destinations" role="group" aria-label="船の行き先"></div>
-        <p class="adventure-map-note">船に乗ったら、行き先を選んで出航。沖の長い航海は約17倍の時間圧縮。</p>
+        <p class="adventure-map-note">船のそばで乗船したら、行き先を選んで出航。航海中も自由に操船できます。</p>
         <a class="adventure-reference" href="https://www.google.com/maps/search/?api=1&query=34.3359808,139.2117451" target="_blank" rel="noopener noreferrer">実際の泊海水浴場を地図で見る <span aria-hidden="true">↗</span></a>
         <a class="adventure-reference" href="https://maps.gsi.go.jp/development/demtile.html" target="_blank" rel="noopener noreferrer">地形：国土地理院の標高タイルを加工して作成</a>
       </section>

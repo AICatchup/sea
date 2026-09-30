@@ -113,6 +113,38 @@ export class NiijimaCoast implements GroundSampler {
     return this.surfaces[0].heightAt(x, z);
   }
 
+  /** Flatten only a built landmark's finite footprint, including its rendered
+   * height grids and depth texture. This is authored grading, not source DEM. */
+  applyGrading(grade:{center:{x:number;z:number};level:number;halfWidth:number;halfDepth:number;feather:number;rotation:number}):void{
+    const c=Math.cos(grade.rotation),s=Math.sin(grade.rotation);
+    const weight=(x:number,z:number):number=>{
+      const dx=x-grade.center.x,dz=z-grade.center.z;
+      const localX=c*dx-s*dz,localZ=s*dx+c*dz;
+      const outside=Math.max(Math.abs(localX)-grade.halfWidth,Math.abs(localZ)-grade.halfDepth);
+      return 1-ease(0,grade.feather,outside);
+    };
+    for(const surface of this.surfaces){
+      for(let iz=0;iz<surface.height;iz++)for(let ix=0;ix<surface.width;ix++){
+        const x=surface.bounds.minX+ix*surface.dx,z=surface.bounds.minZ+iz*surface.dz,w=weight(x,z);
+        if(w>0){const index=iz*surface.width+ix;surface.ground[index]+=(grade.level-surface.ground[index])*w;}
+      }
+    }
+    for(const geometry of this.geometries){
+      const positions=geometry.getAttribute('position'),normals=geometry.getAttribute('normal');let changed=false;
+      for(let i=0;i<positions.count;i++){
+        const x=positions.getX(i),z=positions.getZ(i);
+        // Include the normal transition immediately outside the grading edge.
+        if(Math.hypot(x-grade.center.x,z-grade.center.z)>Math.hypot(grade.halfWidth,grade.halfDepth)+grade.feather+2)continue;
+        positions.setY(i,this.heightAt(x,z));
+        const nx=this.heightAt(x-.5,z)-this.heightAt(x+.5,z),nz=this.heightAt(x,z-.5)-this.heightAt(x,z+.5),length=Math.hypot(nx,1,nz);
+        normals.setXYZ(i,nx/length,1/length,nz/length);changed=true;
+      }
+      if(changed){positions.needsUpdate=true;normals.needsUpdate=true;geometry.computeBoundingSphere();geometry.computeBoundingBox();}
+    }
+    for(const map of this.maps.values())map.texture.dispose();this.maps.clear();
+    this.group.userData.landmarkGrading={...grade,provenance:'Authored bounded foundation level; not a surveyed elevation'};
+  }
+
   waterMap(x = 5990, z = -1600): { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 } {
     const dx = step.x / 8, dz = step.z / 8, span = 2048, stride = 1536;
     const tileX = Math.round((x - this.bounds.minX) / dx / stride), tileZ = Math.round((z - this.bounds.minZ) / dz / stride), key = `${tileX}:${tileZ}`;

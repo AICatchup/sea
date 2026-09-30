@@ -15,6 +15,9 @@ import { loadPhotographicSky } from './photographic-sky';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { FirstPersonBody } from '../world/player-body';
 import { shoreWaveSampling } from './surface-detail';
+import { WorldCollision, withWorldCollision } from '../world/world-collision';
+import { WorldSolidBinding } from '../world/world-solid-binding';
+import { ShoreSpray } from './shore-spray';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -121,6 +124,10 @@ function makeOceanGrid(): THREE.BufferGeometry {
 }
 
 export class Ocean {
+  readonly collision=new WorldCollision();
+  private readonly solidBinding=new WorldSolidBinding(this.collision);
+  private solidContactReady=false;
+  private readonly spray:ShoreSpray;
   readonly renderer:THREE.WebGLRenderer;
   readonly camera=new THREE.PerspectiveCamera(62,1,.12,35000);
   readonly simulation:OceanSimulation;
@@ -184,9 +191,13 @@ export class Ocean {
     this.simulation=new OceanSimulation(this.renderer,this.wind);
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld();
+    this.spray=new ShoreSpray(this.renderer,this.world);this.scene.add(this.spray.group);
     this.assets=new AssetWorld(this.world);
     this.marine=new MarineLife(this.world);
-    this.adventure=new ExplorerControls(canvas,this.world,this.world.destinations,this.world.spawnPoint);
+    const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),
+      bodySegmentBlocked:(from:Parameters<IslandWorld['bodySegmentBlocked']>[0],to:Parameters<IslandWorld['bodySegmentBlocked']>[1],radius?:number,height?:number)=>
+        this.solidContactReady?false:this.world.bodySegmentBlocked(from,to,radius,height)};
+    this.adventure=new ExplorerControls(canvas,withWorldCollision(ground,this.collision),this.world.destinations,this.world.spawnPoint);
     (this.adventure as ExplorerControls&{setWaterHeightSampler?:(sample:(x:number,z:number)=>number)=>void})
       .setWaterHeightSampler?.(this.waterHeights.sample);
     const p=presets.day;
@@ -321,6 +332,7 @@ export class Ocean {
     });
     this.ready=Promise.allSettled([worldReady,assetReady,marineReady,coastReady,skyReady]).then(results=>{
       for(const result of results)if(result.status==='rejected')console.warn('A photographic asset could not load',result.reason);
+      if(!this.disposed)this.syncSolids();
     });
   }
 
@@ -329,7 +341,7 @@ export class Ocean {
     if(!target){
       const envScene=new THREE.Scene();
       const geometry=new THREE.SphereGeometry(1,24,16);
-      const material=new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:environmentVertex,
+      const material=new THREE.ShaderMaterial({uniforms:{...this.uniforms,uEnvironmentSolarRemoval:{value:new URLSearchParams(location.search).get('ibl')==='solar'?0:1}},vertexShader:environmentVertex,
         fragmentShader:environmentFragment,side:THREE.BackSide,depthWrite:false,toneMapped:false});
       const sphere=new THREE.Mesh(geometry,material);envScene.add(sphere);
       const cube=new THREE.WebGLCubeRenderTarget(64,{type:THREE.HalfFloatType,generateMipmaps:false});
@@ -388,6 +400,7 @@ export class Ocean {
     this.caustics.update(this.time,this.paused?0:delta,textures[0],textures[1],waterMap,this.camera.position,this.uniforms.uSunDirection.value,this.swell,this.wind,1.55);
     this.uniforms.uCaustics.value=this.caustics.texture;
     this.uniforms.uTime.value=this.time;this.uniforms.uSwell.value=this.swell;this.uniforms.uWind.value=this.wind;
+    this.spray.update(this.time,this.paused?0:delta,this.camera,this.uniforms);
     this.sun.position.copy(this.camera.position).addScaledVector(this.uniforms.uSunDirection.value,650);
     this.sun.target.position.copy(this.camera.position);
     const solarColor=this.uniforms.uSunColor.value as THREE.Vector3;
@@ -452,6 +465,12 @@ export class Ocean {
     const x=state.position.x+Math.sin(state.yaw)*8,z=state.position.z-Math.cos(state.yaw)*8;
     this.assets.place(kind,x,z,state.yaw);
     prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
+    this.syncSolids();
+  }
+  undoPlacement():void{this.assets.undoPlacement();this.syncSolids();}
+  private syncSolids():void{
+    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup]);
+    this.solidContactReady=true;
   }
   capture():Promise<Blob|null>{
     if(this.disposed||this.contextLost||document.hidden)return Promise.resolve(null);
@@ -463,8 +482,12 @@ export class Ocean {
     return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,
       resolution:[this.canvas.width,this.canvas.height],camera:{yaw:state.yaw,pitch:state.pitch,height:state.position.y,x:state.position.x,z:state.position.z},
       adventure:{mode:state.mode,depth:state.depth,oxygen:state.oxygen,speed:state.speed,placed:this.assets.placedCount,
-        voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message},
+        voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
+        boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
+        grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,
+      worldSolids:this.solidBinding.stats,collision:this.collision.stats,
+      spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,
       scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),
       ground:this.world.heightAt(state.position.x,state.position.z),programs:this.renderer.info.programs?.length,
       draws:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles};
@@ -474,6 +497,7 @@ export class Ocean {
     this.captureNextFrame?.(null);this.captureNextFrame=null;
     this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
     this.reefGeometries.forEach(geometry=>geometry.dispose());
+    this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();
     this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
     this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();

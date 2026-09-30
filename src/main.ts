@@ -88,7 +88,7 @@ try {
     interact: () => { ocean.adventure.interact(); focus(); },
     navigate: id => { ocean.adventure.navigate(id); focus(); },
     place: kind => { ocean.place(kind); focus(); },
-    undo: () => { ocean.assets.undoPlacement(); focus(); },
+    undo: () => { ocean.undoPlacement(); focus(); },
     move: (x, forward) => ocean.adventure.setMove(x, forward),
     vertical: direction => ocean.adventure.setVertical(direction),
   }, ocean.world.destinations, ocean.world.mapOutlines);
@@ -101,6 +101,19 @@ try {
   sound.setWind(ocean.wind);
   Object.defineProperty(window, '__sea', { get: () => ocean.diagnostics, configurable: true });
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaOptics',{value:()=>ocean.probeOptics(),configurable:true});
+  // Development-only observation/replay seam. It uses the same controller input
+  // as the touch controls; bookmarks are QA starts, never normal travel actions.
+  if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
+    viewpoint:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>ocean.adventure.viewpoint(x,z,yaw,pitch,mode,depth),
+    async moveFor(x:number,forward:number,vertical:number,milliseconds:number){
+      ocean.adventure.setMove(x,forward);ocean.adventure.setVertical(vertical);
+      try{await new Promise(resolve=>setTimeout(resolve,Math.max(0,Math.min(5000,milliseconds))));}
+      finally{ocean.adventure.setMove(0,0);ocean.adventure.setVertical(0);}
+      return ocean.diagnostics;
+    },
+    interact:()=>ocean.adventure.interact(),navigate:(id:string)=>ocean.adventure.navigate(id),
+    ground:(x:number,z:number)=>ocean.world.heightAt(x,z),
+  }});
   updateRanges();
   void ocean.ready.then(() => {
     if (!disposed) requestAnimationFrame(() => element('loading').classList.add('done'));

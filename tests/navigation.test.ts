@@ -211,7 +211,7 @@ test('one world connects beach approach, smooth boarding, voyage and nearby wate
   advance(controls, 1); assert.equal(state.mode, 'boat'); assert.ok(state.position.y < 1.6);
   controls.navigate('arrival'); assert.equal(state.voyageTarget, 'arrival');
   controls.update(1 / 60, 32); assert.ok(state.boatPosition.distanceTo(anchor) < .1);
-  assert.ok(state.message.includes('17倍')); advance(controls, 40);
+  assert.ok(state.message.includes('出航')); advance(controls, state.voyageRemaining/12+30);
   assert.equal(state.voyageTarget, null); assert.ok(pointDistance(state.boatPosition, destinations[1]) < .1);
   const boatEye = state.position.clone(), boat = state.boatPosition.clone();
   controls.interact(); assert.ok(state.position.equals(boatEye)); advance(controls, 1.5);
@@ -266,7 +266,8 @@ test('planned clearance survives different frame offsets and manual input cancel
     controls.navigate('arrival'); advance(controls, 2); controls.setMove(1, 0); controls.update(frameDelta, 3);
     assert.equal(state.voyageTarget, null); assert.ok(state.speed <= 12);
     controls.setMove(0, 0); controls.navigate('arrival'); let elapsed = 0;
-    while (state.voyageTarget && elapsed < 40) { controls.update(frameDelta, elapsed); elapsed += frameDelta; assert.ok(isNavigableWater(sea, state.boatPosition)); }
+    const maximumSeconds=state.voyageRemaining/12+30;
+    while (state.voyageTarget && elapsed < maximumSeconds) { controls.update(frameDelta, elapsed); elapsed += frameDelta; assert.ok(isNavigableWater(sea, state.boatPosition)); }
     assert.equal(state.voyageTarget, null); assert.ok(state.message.includes('到着'));
     assert.ok(pointDistance(state.boatPosition, destinations[1]) < .1); controls.dispose();
   }
@@ -345,8 +346,12 @@ test('integrated GSI terrain supports the actual coves and neighbour-island voya
     assert.equal(state.mode, 'boat', destination.id);
     controls.navigate(destination.id);
     let elapsed = 0;
-    while (state.voyageTarget && elapsed < 125) { controls.update(1 / 60, elapsed); elapsed += 1 / 60; }
-    assert.ok(elapsed < 125, `${destination.id}: ${elapsed.toFixed(1)} seconds`);
+    const maximumSeconds=state.voyageRemaining/12+90;
+    while (state.voyageTarget && elapsed < maximumSeconds) {
+      controls.update(1 / 60, elapsed); elapsed += 1 / 60;
+      assert.ok(state.speed<=12.001,'automatic voyages use the same physical vessel speed as manual sailing');
+    }
+    assert.ok(elapsed < maximumSeconds, `${destination.id}: ${elapsed.toFixed(1)} seconds`);
     assert.equal(state.voyageTarget, null, destination.id);
     const arrival = findNearbyWater(ground, destination, ROUTE_MIN_DEPTH, 180, ROUTE_RADIUS)!;
     assert.ok(pointDistance(state.boatPosition, arrival) < .1, `${destination.id}: ${state.message}, gap=${pointDistance(state.boatPosition, arrival)}`);

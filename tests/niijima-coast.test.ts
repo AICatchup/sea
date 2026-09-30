@@ -142,6 +142,22 @@ test('water tiles stay bounded, match their shared samples and replace owned cac
   coast.waterMap(7000, -7500); assert.equal(removed, 1);
 });
 
+test('bounded landmark grading changes rendered and sampled ground together and preserves distant coast',()=>{
+  const centre=geoToWorld(34.3764393,139.2755897),level=coast.heightAt(centre.x,centre.z);
+  const far={x:5990,z:-1600},before=coast.heightAt(far.x,far.z);
+  coast.applyGrading({center:centre,level,halfWidth:20,halfDepth:11,feather:5,rotation:-Math.PI/2});
+  assert.equal(coast.heightAt(far.x,far.z),before);
+  for(let z=centre.z-16;z<=centre.z+16;z+=2)for(let x=centre.x-8;x<=centre.x+8;x+=2){
+    assert.ok(Math.abs(coast.heightAt(x,z)-level)<.002,'the built footprint is level');
+  }
+  for(const mesh of coast.group.children as THREE.Mesh[]){
+    const pos=mesh.geometry.getAttribute('position');
+    for(let i=0;i<pos.count;i++)if(Math.hypot(pos.getX(i)-centre.x,pos.getZ(i)-centre.z)<24){
+      assert.ok(Math.abs(pos.getY(i)-coast.heightAt(pos.getX(i),pos.getZ(i)))<.003,'visible grading matches physical samples');
+    }
+  }
+});
+
 test('disposing Niijima releases only owned geometry, material and texture', () => {
   let borrowedDisposals = 0, materialDisposals = 0, geometryDisposals = 0, textureDisposals = 0;
   borrowed.addEventListener('dispose', () => borrowedDisposals++);

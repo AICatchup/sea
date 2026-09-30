@@ -17,6 +17,7 @@ function blocked(collision:WorldCollision,x:number):boolean {
 }
 test('binding selects actual cliffs, fixtures, scans and placements while excluding DEM, foliage and boat',()=>{
   const world=new THREE.Group(),scanned=new THREE.Group(),props=new THREE.Group();
+  world.name='式根島・泊 / GSI land DEM with inferred seabed';
   world.add(mesh('Island DEM',0),mesh('Tomari jointed rhyolite ledges and fissures',10));
   const fixture=new THREE.Group();fixture.name='authored beach adventure fixtures';fixture.add(mesh('',20));props.add(fixture);
   props.add(mesh('placed chair',30),mesh('placed umbrella',40),mesh('placed tank',50),mesh('placed rock',60),mesh('placed scanned boulder_01',70));

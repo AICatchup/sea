@@ -391,4 +391,20 @@ export const oceanFragment = /* glsl */ `
 
 export const environmentVertex = `varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
 export const environmentFragment = `precision highp float;varying vec3 vDirection;${atmosphere}
-void main(){vec3 ray=normalize(vDirection);vec3 c=skyRadiance(ray,true);if(ray.y<0.0)c=mix(c,vec3(.025,.035,.018),smoothstep(0.0,.35,-ray.y));gl_FragColor=vec4(c,1.0);}`;
+uniform float uEnvironmentSolarRemoval;
+void main(){
+  vec3 ray=normalize(vDirection);vec3 c=skyRadiance(ray,true);
+  // A 64px cubemap cannot integrate the half-degree solar disk accurately.
+  // Its direct energy is provided by the matching directional light. Keep the
+  // photographed sky/cloud radiance, replacing only the small solar cone with
+  // neighboring sky before PMREM convolution; display/reflection sky is intact.
+  float cone=1.0-smoothstep(.009,.023,length(ray-uSunDirection));
+  if(cone>.001&&uEnvironmentSolarRemoval>.5){
+    vec3 axis=normalize(cross(uSunDirection,abs(uSunDirection.y)<.95?vec3(0,1,0):vec3(1,0,0)));
+    vec3 other=cross(uSunDirection,axis);
+    vec3 sky=(skyRadiance(normalize(ray+axis*.045),true)+skyRadiance(normalize(ray-axis*.045),true)
+      +skyRadiance(normalize(ray+other*.045),true)+skyRadiance(normalize(ray-other*.045),true))*.25;
+    c=mix(c,sky,cone);
+  }
+  if(ray.y<0.0)c=mix(c,vec3(.025,.035,.018),smoothstep(0.0,.35,-ray.y));gl_FragColor=vec4(c,1.0);
+}`;

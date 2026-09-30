@@ -19,10 +19,10 @@ function geometrySignature(geometry: THREE.BufferGeometry): string {
   return `${geometry.uuid}:${positions?.count}:${version}:${index?.count}:${index?.version}:${geometry.drawRange.start}:${geometry.drawRange.count}`;
 }
 function excluded(object: THREE.Object3D, root: THREE.Group): boolean {
-  for(let current:THREE.Object3D|null=object;current && current!==root.parent;current=current.parent) {
+  for(let current:THREE.Object3D|null=object;current && current!==root;current=current.parent) {
     if(current.userData.worldSolid===false || current.userData.foliageLod || excludedName.test(current.name)) return true;
   }
-  return false;
+  return root.userData.worldSolid===false;
 }
 function beneath(object: THREE.Object3D, root: THREE.Group, name: string): boolean {
   for(let current:THREE.Object3D|null=object;current && current!==root.parent;current=current.parent) if(current.name===name) return true;

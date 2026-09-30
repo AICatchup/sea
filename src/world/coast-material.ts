@@ -79,7 +79,7 @@ function makeLegacyTerrainMaterial(texture: THREE.DataTexture, atlas: THREE.Text
 export const COAST_ROCK_SURFACE = Object.freeze({
   tileSpanMeters: 2.7,
   normalStrength: 0.86,
-  albedoGain: 2.2,
+  albedoGain: 1.35,
   paletteDesaturation: 0.90,
   dryRoughnessRange: [0.70, 0.96] as const,
   wetRoughnessRange: [0.27, 0.53] as const,
@@ -96,6 +96,8 @@ export const COAST_ROCK_TEXTURE_URLS = Object.freeze({
 
 /** World-anchored scanned rock; caller-owned sand, grain and atlas stay caller-owned. */
 function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet): THREE.MeshStandardMaterial {
+  const baselineGain=typeof location!=='undefined'&&new URLSearchParams(location.search).get('coast')==='v4-white';
+  const albedoGain=baselineGain?2.2:COAST_ROCK_SURFACE.albedoGain;
   const material = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.94, metalness: 0 });
   material.name = 'Tomari: scanned fractured cliff / physical coastal sand';
   const loader = typeof document === 'undefined' ? undefined : new THREE.TextureLoader();
@@ -266,7 +268,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
       float rockWetness = max(immersed, splash * (.64 + .36 * coastalCavity));
       float sandDry = smoothstep(-.18, .83, waterHeight);
       float rockLuma = dot(rockPhoto, vec3(.2126, .7152, .0722));
-      vec3 paleRock = min(mix(rockPhoto, vec3(rockLuma) * vec3(1.04, 1.025, .99), ${COAST_ROCK_SURFACE.paletteDesaturation}) * ${COAST_ROCK_SURFACE.albedoGain}, vec3(.86));
+      vec3 paleRock = min(mix(rockPhoto, vec3(rockLuma) * vec3(1.04, 1.025, .99), ${COAST_ROCK_SURFACE.paletteDesaturation}) * ${albedoGain}, vec3(.86));
       paleRock *= mix(1.0, .57, rockWetness);
       vec3 stoneColor = mix(vec3(.34, .335, .315) * mix(1.0, .57, rockWetness), paleRock, uCoastRockReady);
       vec2 sandUV = vec2(vCoastPoint.x, -vCoastPoint.z) * ${SAND_SURFACE.tilesPerMeter};
@@ -304,7 +306,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
         reflectedLight.indirectSpecular *= computeSpecularOcclusion(saturate(dot(geometryNormal, geometryViewDir)), coastOcclusion, material.roughness);
       #endif`);
   };
-  material.customProgramCacheKey = () => 'tomari-scanned-coast-world-stochastic-pbr-v4';
+  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}`;
   return material;
 }
 

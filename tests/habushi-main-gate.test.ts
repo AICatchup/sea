@@ -5,7 +5,7 @@ import { HabushiMainGate, HABUSHI_GATE_SPEC } from '../src/world/habushi-main-ga
 import { geoToWorld } from '../src/world/contracts.ts';
 import { WorldCollision } from '../src/world/world-collision.ts';
 
-test('gate has surveyed anchor, four physical apertures, finite stair scale and bounded resources', () => {
+test('gate has an official-linked anchor, four physical apertures, finite stair scale and bounded resources', () => {
   const gate = new HabushiMainGate({ heightAt: () => 8 });
   const p = geoToWorld(HABUSHI_GATE_SPEC.lat, HABUSHI_GATE_SPEC.lon);
   assert.equal(gate.group.position.x, p.x); assert.equal(gate.group.position.z, p.z);

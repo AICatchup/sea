@@ -8,7 +8,7 @@ const EYE_HEIGHT = PLAYER_DIMENSIONS.eyeHeight;
 const SURFACE_EYE = 0.34;
 const MAX_DIVE_DEPTH = 60;
 const MANUAL_BOAT_SPEED = 12;
-const VOYAGE_SPEED = MANUAL_BOAT_SPEED * 17;
+const VOYAGE_SPEED = MANUAL_BOAT_SPEED;
 const MAX_STEP = .32;
 const clamp = (value: number, min: number, max: number): number => Math.max(min, Math.min(max, value));
 const angleDifference = (a: number, b: number): number => Math.atan2(Math.sin(a - b), Math.cos(a - b));
@@ -196,7 +196,7 @@ export class ExplorerControls {
       boat.z + Math.sin(yaw) * distance * side);
   }
   private boatEye(): THREE.Vector3 {
-    return new THREE.Vector3(.48, 1.45, .89)
+    return new THREE.Vector3(.48, 1.45, .76)
       .applyEuler(new THREE.Euler(this.state.boatPitch ?? 0, -this.state.boatYaw, this.state.boatRoll ?? 0))
       .add(this.state.boatPosition);
   }
@@ -271,7 +271,7 @@ export class ExplorerControls {
     if (route.distance < 7) { this.cancelVoyage(`${destination.label}に到着しています。Eで下船できます。`); return; }
     this.route = route.points; this.waypoint = 1; this.boatVelocity = Math.max(0, this.boatVelocity);
     this.state.voyageTarget = destination.id; this.state.voyageRemaining = route.distance;
-    this.state.message = `${destination.label}へ出航。沖の長い航海は約17倍の時間圧縮。WASDで手動操船に戻ります。`;
+    this.state.message = `${destination.label}へ出航。WASDで手動操船に戻ります。`;
   }
   /** Reset/bookmarks exist for diagnostics; normal play never calls them. */
   home(): void {
@@ -380,10 +380,8 @@ export class ExplorerControls {
       const heading = Math.atan2(target.x - boat.x, -(target.z - boat.z));
       this.state.boatYaw += angleDifference(heading, this.state.boatYaw) * Math.min(1, dt * 4);
       if (this.lastTime - this.lastLookTime > 3) this.targetYaw += angleDifference(heading, this.targetYaw) * Math.min(1, dt * 3);
-      // Shore passages remain physical steering speed; compression rises gradually offshore.
-      const shoreSpeed = (this.waypoint === 1 && pointDistance(boat, this.route[0]) < 55)
-        || (this.waypoint === this.route.length - 1 && distance < 70) ? MANUAL_BOAT_SPEED : VOYAGE_SPEED;
-      this.boatVelocity = approach(this.boatVelocity, shoreSpeed, dt * (shoreSpeed > this.boatVelocity ? 38 : 65));
+      // Automatic and manual sailing share the same vessel speed and inertia.
+      this.boatVelocity = approach(this.boatVelocity, VOYAGE_SPEED, dt * (VOYAGE_SPEED > this.boatVelocity ? 4.2 : 6.5));
       const travel = Math.min(distance, this.boatVelocity * dt);
       const next = { x: boat.x + (target.x - boat.x) / distance * travel, z: boat.z + (target.z - boat.z) / distance * travel };
       if (!waterSegmentClear(this.ground, boat, next)) {
