@@ -68,6 +68,10 @@ camera.position.set(.48,1.45,.76);
 for(let i=0;i<180;i++)body.update(state,camera,1/60,i/60);
 const ankles=mesh.skeleton.bones.filter(x=>x.name.endsWith('ankle')).map(x=>x.getWorldPosition(new THREE.Vector3()));
 assert.ok(ankles.every(x=>x.y>.14&&x.y<.24),'seated feet remain above boat floor');
+const ankleIndices=new Set(mesh.skeleton.bones.map((x,i)=>x.name.endsWith('ankle')?i:-1).filter(i=>i>=0));
+let bootFloor=Infinity;
+for(let i=0;i<position.count;i++)if(ankleIndices.has(skinIndex.getX(i))&&skinWeight.getX(i)>.99){a.fromBufferAttribute(position,i);mesh.applyBoneTransform(i,a);a.applyMatrix4(mesh.matrixWorld);bootFloor=Math.min(bootFloor,a.y);}
+assert.ok(bootFloor>.106&&bootFloor<.125,`boot contact at the boat's .1125 m floor: ${bootFloor}`);
 const wrists=mesh.skeleton.bones.filter(x=>x.name.endsWith('wrist')).map(x=>x.getWorldPosition(new THREE.Vector3()));
 const wristBefore=wrists.map(x=>x.clone());state.yaw=.8;
 for(let i=0;i<180;i++)body.update(state,camera,1/60,i/60);

@@ -569,9 +569,9 @@ export class FirstPersonBody {
     for (let i = 0; i < this.legs.length; i++) {
       const phase = this.phase + (i === 0 ? 0 : Math.PI), step = Math.sin(phase), leg = this.legs[i];
       const flutter = Math.sin(time * 4.2 + i * Math.PI), airborne = state.grounded === false ? moving : 0;
-      leg.upper.rotation.set(step * (.31 * walk + .49 * run) + flutter * water * .13 + airborne * .12 + climb * (i === 0 ? .53 : .21) + helm * 1.157,
+      leg.upper.rotation.set(step * (.31 * walk + .49 * run) + flutter * water * .13 + airborne * .12 + climb * (i === 0 ? .53 : .21) + helm * 1.087,
         0, (i === 0 ? -.015 : .015) * (1 - water));
-      leg.lower.rotation.set(-Math.max(0, -step) * (.52 * walk + .88 * run) - .12 * water - .36 * airborne - climb * .67 - helm * 1.157, 0, 0);
+      leg.lower.rotation.set(-Math.max(0, -step) * (.52 * walk + .88 * run) - .12 * water - .36 * airborne - climb * .67 - helm * 1.087, 0, 0);
       leg.end.rotation.set(step * .10 * moving + water * .22 + climb * .12, 0, 0);
     }
     this.anchor(camera);
