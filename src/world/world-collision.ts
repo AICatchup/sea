@@ -5,9 +5,9 @@ const SKIN = .001;
 const CELL_SIZE = 12;
 const MAX_HASH_CELLS = 256;
 interface Node { box: THREE.Box3; triangles?: THREE.Triangle[]; left?: Node; right?: Node; }
-interface SharedBVH { node: Node; triangles: number; references: number; }
+interface SharedBVH { node: Node; triangles: number; references: number; closedShell: boolean; }
 interface Entry { id: number; box: THREE.Box3; node: Node; cells: string[];
-  matrix: THREE.Matrix4; inverse: THREE.Matrix4; reflected: boolean; cacheKey: string; triangles: number; }
+  matrix: THREE.Matrix4; inverse: THREE.Matrix4; reflected: boolean; cacheKey: string; triangles: number; closedShell: boolean; }
 interface Distance { distance: number; normal: THREE.Vector3; point: THREE.Vector3; }
 interface Capsule { start: THREE.Vector3; end: THREE.Vector3; radius: number; }
 export interface CollisionStats {
@@ -58,8 +58,28 @@ function rayTriangles(node:Node,ray:THREE.Ray,result:THREE.Triangle[]):void {
   if(node.triangles) result.push(...node.triangles);
   else {rayTriangles(node.left!,ray,result);rayTriangles(node.right!,ray,result);}
 }
+/** Conservative welded-edge certificate, computed once per shared geometry revision.
+ * Open photogrammetry is still a collision surface, but cannot define an interior.
+ * Multiple overlapping closed bodies may share edges; their oriented sums cancel.
+ */
+function closedShell(triangles:readonly THREE.Triangle[]):boolean {
+  const vertices=new Map<string,number>(),edges=new Map<string,number>();
+  const vertex=(p:THREE.Vector3):number=>{
+    const key=`${Math.round(p.x*1e7)},${Math.round(p.y*1e7)},${Math.round(p.z*1e7)}`;
+    let id=vertices.get(key);if(id===undefined){id=vertices.size;vertices.set(key,id);}return id;
+  };
+  for(const triangle of triangles) {
+    const ids=[vertex(triangle.a),vertex(triangle.b),vertex(triangle.c)];
+    if(new Set(ids).size<3)return false;
+    for(let i=0;i<3;i++) {
+      const a=ids[i],b=ids[(i+1)%3],key=a<b?`${a}:${b}`:`${b}:${a}`;
+      edges.set(key,(edges.get(key)??0)+(a<b?1:-1));
+    }
+  }
+  return edges.size>0 && [...edges.values()].every(sum=>sum===0);
+}
 function enclosed(entry:Entry,p:THREE.Vector3):boolean {
-  if(!entry.box.containsPoint(p)) return false;
+  if(!entry.closedShell || !entry.box.containsPoint(p)) return false;
   // Containment is affine-invariant; ray parity can use the shared local BVH.
   const local=p.clone().applyMatrix4(entry.inverse);
   // A finish batch can contain overlapping closed stair/rail volumes. Deduplicated
@@ -203,14 +223,14 @@ export class WorldCollision {
       if(!triangles.length) throw new Error('Collision mesh has no nondegenerate triangles');
       const node=build(triangles);
       if(![...node.box.min.toArray(),...node.box.max.toArray()].every(Number.isFinite)) throw new Error('Invalid collision bounds');
-      shared={node,triangles:triangles.length,references:0};this.bvhs.set(key,shared);this.storedTriangleCount+=triangles.length;
+      shared={node,triangles:triangles.length,references:0,closedShell:closedShell(triangles)};this.bvhs.set(key,shared);this.storedTriangleCount+=triangles.length;
     }
     const id=this.nextId++,box=shared.node.box.clone().applyMatrix4(matrix);
     if(![...box.min.toArray(),...box.max.toArray()].every(Number.isFinite)) {
       if(!shared.references) {this.bvhs.delete(key);this.storedTriangleCount-=shared.triangles;}
       throw new Error('Invalid collision world bounds');
     }
-    const entry:Entry={id,box,node:shared.node,cells:[],matrix,inverse:matrix.clone().invert(),reflected:determinant<0,cacheKey:key,triangles:shared.triangles};
+    const entry:Entry={id,box,node:shared.node,cells:[],matrix,inverse:matrix.clone().invert(),reflected:determinant<0,cacheKey:key,triangles:shared.triangles,closedShell:shared.closedShell};
     shared.references++;this.entries.set(id, entry);this.triangleCount+=shared.triangles;
     const { min, max } = box, x0 = Math.floor(min.x / CELL_SIZE), x1 = Math.floor(max.x / CELL_SIZE), z0 = Math.floor(min.z / CELL_SIZE), z1 = Math.floor(max.z / CELL_SIZE);
     if ((x1-x0+1)*(z1-z0+1) > MAX_HASH_CELLS) this.large.add(id);

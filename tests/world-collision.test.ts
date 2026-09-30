@@ -5,6 +5,21 @@ import * as THREE from 'three';
 import { WorldCollision, withWorldCollision } from '../src/world/world-collision.ts';
 
 const box=(min:number[],max:number[])=>new THREE.Box3(new THREE.Vector3(...min),new THREE.Vector3(...max));
+test('open scanned-like corner surfaces collide but cannot invent an interior in empty space',()=>{
+  const source=new THREE.BoxGeometry(10,10,10).toNonIndexed(),positions=source.getAttribute('position'),vertices:number[]=[];
+  for(let i=0;i<positions.count;i+=3) {
+    const points=[0,1,2].map(k=>new THREE.Vector3().fromBufferAttribute(positions,i+k));
+    const normal=new THREE.Triangle(points[0],points[1],points[2]).getNormal(new THREE.Vector3());
+    if(normal.x>.5 || normal.y>.5 || normal.z>.5) for(const p of points) vertices.push(...p.toArray());
+  }
+  const geometry=new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(vertices,3)),mesh=new THREE.Mesh(geometry);
+  const solids=new WorldCollision();solids.addMesh(mesh);
+  const feet={x:0,y:0,z:0};
+  assert.deepEqual(solids.resolveBody(feet,.38,1.72,.08),feet,'non-contact empty space is not enclosed');
+  assert.equal(solids.sweepBody(feet,{x:1,y:0,z:0},.38,1.72).blocked,false);
+  assert.equal(solids.sweepBody(feet,{x:6,y:0,z:0},.38,1.72).blocked,true,'the actual open wall still stops a body');
+  solids.dispose();geometry.dispose();source.dispose();
+});
 test('glancing body sweep never returns an unverified endpoint after conservative iterations exhaust',()=>{
   const solids=new WorldCollision();solids.addBox(box([0,-1,-10],[.1,4,10]));
   const hit=solids.sweepBody({x:-.3,y:0,z:0},{x:-.22,y:0,z:.3},.28,1.7);
