@@ -1,0 +1,20 @@
+{
+  "asset": "FirstPersonBody coastal diver",
+  "source": "Original parametric 3D anatomy authored for this repository in src/world/player-body.ts",
+  "created": "2026-09-30",
+  "externalModels": [],
+  "externalTextures": [],
+  "likeness": "Generic adult; no photographed person, celebrity or user likeness",
+  "textureMethod": "Deterministic locally generated pore and neoprene weave normal/roughness fields",
+  "geometry": "Closed three-dimensional torso, neck, head, articulated limbs, palms, ten fingers, nails, webbing, boots and fitted dive equipment",
+  "scale": {
+    "heightMetres": 1.75,
+    "eyeHeightMetres": 1.64,
+    "shoulderWidthMetres": 0.45,
+    "controllerRadiusMetres": 0.25,
+    "renderGearReachBehindAnatomicalOriginMetres": 0.28
+  },
+  "physics": "Render-only. Physics, ground contact, immersion and camera viewOffset are supplied by the adventure controller.",
+  "resourceOwnership": "FirstPersonBody owns and disposes its one geometry, skeleton, seven materials and four generated textures. No shared scene resources are disposed.",
+  "evidence": "CPU checks verify mesh thickness, winding, finite transforms, continuity and disposal. GPU appearance must be checked separately; no photoreal achievement is claimed by these checks."
+}
