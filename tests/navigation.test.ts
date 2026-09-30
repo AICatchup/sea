@@ -6,6 +6,7 @@ import { ExplorerControls } from '../src/world/explorer-controls.ts';
 import { BOAT_MIN_DEPTH, WORLD_LIMIT, findNearbyWater, footSegmentClear, isNavigableWater,
   planWaterRoute, pointDistance, waterSegmentClear, ROUTE_MIN_DEPTH, ROUTE_RADIUS } from '../src/world/navigation.ts';
 import type { GroundSampler, WorldDestination } from '../src/world/contracts.ts';
+import { WorldCollision, withWorldCollision } from '../src/world/world-collision.ts';
 
 class TestDocument extends EventTarget {
   hidden = false;
@@ -87,6 +88,31 @@ test('cliffs block swept walking while gentle slopes remain walkable', () => {
   controls.setMove(1, 0); advance(controls, 2);
   assert.ok(state.position.x < 3);
   assert.ok(Math.abs(state.position.y - 1.64) < 0.01);
+  controls.dispose();
+});
+
+test('solid stairs step up and down, tall walls block and a jump lands on a rock',()=>{
+  const solids=new WorldCollision();
+  for(let i=0;i<3;i++) solids.addBox(new THREE.Box3(new THREE.Vector3(1+i*.7,0,-1),new THREE.Vector3(1.7+i*.7,(i+1)*.25,1)));
+  const {controls,state}=setup(withWorldCollision({heightAt:()=>0},solids));
+  controls.setMove(1,0);advance(controls,1.7);
+  assert.ok(state.position.x>2.4,`stairs ascended: ${state.position.toArray()}`);assert.ok(state.position.y>2.38);assert.equal(state.grounded,true);
+  controls.setMove(-1,0);advance(controls,2);assert.ok(state.position.x<1);assert.ok(Math.abs(state.position.y-1.64)<.01);
+  controls.dispose();solids.clear();
+  solids.addBox(new THREE.Box3(new THREE.Vector3(1,0,-1),new THREE.Vector3(3,.7,1)));
+  const jump=setup(withWorldCollision({heightAt:()=>0},solids));jump.controls.setMove(1,0);advance(jump.controls,.7);
+  assert.ok(jump.state.position.x<1);key(jump.canvas,'keydown','Space');advance(jump.controls,1);
+  assert.ok(jump.state.position.x>1.3 && jump.state.position.x<3);assert.ok(Math.abs(jump.state.position.y-2.34)<.01);assert.equal(jump.state.grounded,true);
+  jump.controls.dispose();solids.clear();solids.addBox(new THREE.Box3(new THREE.Vector3(1,0,-1),new THREE.Vector3(2,3,1)));
+  const tall=setup(withWorldCollision({heightAt:()=>0},solids));tall.controls.setMove(1,0);key(tall.canvas,'keydown','Space');advance(tall.controls,2);
+  assert.ok(tall.state.position.x<.76);tall.controls.dispose();
+});
+
+test('vertical diving and rising stop against submerged rock faces without changing horizontal location',()=>{
+  const solids=new WorldCollision();solids.addBox(new THREE.Box3(new THREE.Vector3(-2,-5,-2),new THREE.Vector3(2,-3,2)));
+  const {controls,state}=setup(withWorldCollision({heightAt:()=>-20},solids));controls.viewpoint(0,0,0,0,'dive',1);
+  controls.setVertical(-1);advance(controls,3);assert.ok(state.position.y>=-2.751);assert.ok(state.position.y< -2.7);assert.ok(Math.abs(state.position.x)<.01 && Math.abs(state.position.z)<.01);
+  controls.viewpoint(0,0,0,0,'dive',7);controls.setVertical(1);advance(controls,3);assert.ok(state.position.y<=-5.249);assert.ok(state.position.y>-5.3);
   controls.dispose();
 });
 
@@ -199,6 +225,16 @@ test('the placed hull blocks swimming through the vessel while its ladder remain
   assert.ok(state.position.x >= boat.x + 1.3); assert.equal(state.interactionLabel, '船に乗る');
   controls.viewpoint(boat.x + 4, boat.z, 0, 0, 'dive', 3); controls.setMove(-1, 0); advance(controls, 3);
   assert.ok(state.position.x < boat.x); controls.dispose();
+});
+
+test('solid furniture blocks the boarding arc and removal restores the same physical ladder',()=>{
+  const solids=new WorldCollision(),{controls,state}=setup(withWorldCollision({heightAt:()=>-20},solids));
+  const boat=state.boatPosition.clone();controls.viewpoint(boat.x+1.7,boat.z,0,0,'swim');
+  const obstacle=solids.addBox(new THREE.Box3(new THREE.Vector3(boat.x+.5,-2,boat.z-.4),new THREE.Vector3(boat.x+1.2,3,boat.z+.4)));
+  const start=state.position.clone();controls.interact();advance(controls,1.7);
+  assert.notEqual(state.mode,'boat');assert.ok(state.position.distanceTo(start)<.01);
+  solids.remove(obstacle);controls.interact();advance(controls,1.7);assert.equal(state.mode,'boat');
+  controls.dispose();
 });
 
 test('manual boat accelerates, coasts, reads water attitude and stops before grounding', () => {

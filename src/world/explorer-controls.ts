@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { AdventureState, GroundSampler, TravelMode, WorldDestination } from './contracts.ts';
+import type { AdventureState, BodyPoint, BodyPose, GroundSampler, TravelMode, WorldDestination } from './contracts.ts';
 import { PLAYER_DIMENSIONS } from './contracts.ts';
 import { ROUTE_MIN_DEPTH, ROUTE_RADIUS, clampWorld, findNearbyWater, footSegmentClear, groundHeight,
   isNavigableWater, planWaterRoute, pointDistance, waterSegmentClear, type NavigationPoint } from './navigation.ts';
@@ -9,6 +9,7 @@ const SURFACE_EYE = 0.34;
 const MAX_DIVE_DEPTH = 60;
 const MANUAL_BOAT_SPEED = 12;
 const VOYAGE_SPEED = MANUAL_BOAT_SPEED * 17;
+const MAX_STEP = .32;
 const clamp = (value: number, min: number, max: number): number => Math.max(min, Math.min(max, value));
 const angleDifference = (a: number, b: number): number => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 const approach = (value: number, target: number, maximum: number): number => value + clamp(target - value, -maximum, maximum);
@@ -203,7 +204,19 @@ export class ExplorerControls {
     if (this.boarding || this.state.mode === 'boat' || !isNavigableWater(this.ground, this.state.boatPosition)) return false;
     const p = this.state.position, surface = this.waterAt(p.x, p.z);
     return p.y > surface - 0.7 && p.y < surface + 3 && Math.min(pointDistance(p, this.boardingPoint()),
-      pointDistance(p, this.boardingPoint(-1))) < 2.2;
+      pointDistance(p, this.boardingPoint(-1))) < 2.2 && this.boardingPathClear(p,this.boatEye());
+  }
+  private boardingPathClear(from:THREE.Vector3,to:THREE.Vector3):boolean {
+    if(!this.ground.sweepBody) return true;
+    let previous=from.clone();
+    for(let i=1;i<=24;i++) {
+      const progress=i/24,t=progress*progress*(3-2*progress),next=from.clone().lerp(to,t);
+      next.y+=Math.sin(progress*Math.PI)*.27;
+      if(this.ground.sweepBody({x:previous.x,y:previous.y-EYE_HEIGHT,z:previous.z},
+        {x:next.x,y:next.y-EYE_HEIGHT,z:next.z},PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height).blocked) return false;
+      previous=next;
+    }
+    return true;
   }
   private clearsBoat(point: NavigationPoint): boolean {
     if (!isNavigableWater(this.ground, this.state.boatPosition)) return true;
@@ -232,6 +245,7 @@ export class ExplorerControls {
         const water = this.waterAt(point.x, point.z);
         if (floor > water + 0.7 || !Number.isFinite(floor)) continue;
         point.y = floor >= water - 1.3 ? floor + EYE_HEIGHT : water + SURFACE_EYE;
+        if(!this.boardingPathClear(this.state.position,point)) continue;
         target = point; break;
       }
       if (!target) { this.state.message = '舷側の足元が塞がっています。少し沖へ移動してください。'; return; }
@@ -328,6 +342,16 @@ export class ExplorerControls {
     if (!motion.leaving) motion.to.copy(this.boatEye());
     this.state.position.lerpVectors(motion.from, motion.to, t);
     this.state.position.y += Math.sin(progress * Math.PI) * .27;
+    const contact=this.ground.sweepBody?.({x:before.x,y:before.y-EYE_HEIGHT,z:before.z},
+      {x:this.state.position.x,y:this.state.position.y-EYE_HEIGHT,z:this.state.position.z},PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height);
+    if(contact?.blocked) {
+      this.state.position.set(contact.position.x,contact.position.y+EYE_HEIGHT,contact.position.z);
+      this.boarding=null;this.velocity.set(0,0,0);this.state.speed=0;this.state.boardingProgress=0;
+      const floor=this.supportAt(this.state.position.x,this.state.position.z,this.state.position.y-EYE_HEIGHT,.03);
+      this.state.mode=floor>=this.waterAt(this.state.position.x,this.state.position.z)-1.3?'walk':'swim';
+      this.state.message='はしごの移動先に岩や物があります。空いている舷側へ回ってください。';
+      return;
+    }
     this.velocity.copy(this.state.position).sub(before).divideScalar(dt);
     this.state.boardingProgress = progress; this.state.avatarAction = 'climb'; this.state.grounded = false;
     this.state.speed = this.velocity.length();
@@ -394,7 +418,7 @@ export class ExplorerControls {
   }
   private updatePerson(dt: number, input: MotionInput, resourceDelta: number): void {
     const p = this.state.position, water = this.waterAt(p.x, p.z);
-    const floorBefore = groundHeight(this.ground, p.x, p.z);
+    const floorBefore = this.supportAt(p.x, p.z, p.y - EYE_HEIGHT, .03);
     const previous = this.state.mode;
     const swimming = floorBefore < water - 1.3 && p.y < water + .64;
     const immersion = clamp((water - (p.y - EYE_HEIGHT)) / EYE_HEIGHT, 0, 1);
@@ -406,22 +430,49 @@ export class ExplorerControls {
     const acceleration = swimming ? 3.2 : this.state.grounded ? 9 : 2;
     this.velocity.x = approach(this.velocity.x, targetX, acceleration * dt);
     this.velocity.z = approach(this.velocity.z, targetZ, acceleration * dt);
-    const next = clampWorld({ x: p.x + this.velocity.x * dt, z: p.z + this.velocity.z * dt });
-    const canMove = (point: NavigationPoint): boolean => {
-      if (!this.clearsBoat(point)) return false;
-      const footY=p.y-EYE_HEIGHT;
-      if(this.ground.bodySegmentBlocked?.({x:p.x,y:footY,z:p.z},{x:point.x,y:footY,z:point.z},PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height))return false;
-      const floor = groundHeight(this.ground, point.x, point.z);
-      if (swimming) return Number.isFinite(floor) && floor + .55 < p.y;
-      return [[0, 0], [PLAYER_DIMENSIONS.radius, 0], [-PLAYER_DIMENSIONS.radius, 0], [0, PLAYER_DIMENSIONS.radius], [0, -PLAYER_DIMENSIONS.radius]]
-        .every(([dx, dz]) => footSegmentClear(this.ground, { x: p.x + dx, z: p.z + dz }, { x: point.x + dx, z: point.z + dz }));
-    };
-    if (canMove(next)) { p.x = next.x; p.z = next.z; }
-    else {
-      if (canMove({ x: next.x, z: p.z })) p.x = next.x; else this.velocity.x = 0;
-      if (canMove({ x: p.x, z: next.z })) p.z = next.z; else this.velocity.z = 0;
+    const pose: BodyPose | undefined = swimming ? { direction: { x: Math.sin(this.state.yaw), y: 0, z: -Math.cos(this.state.yaw) } } : undefined;
+    // A swimmer has a horizontal torso capsule centred below the eyes. The 1.75m
+    // length stays embodied, while the vertical envelope is only its 0.5m diameter.
+    const feetFor = (eye: BodyPoint): BodyPoint => swimming
+      ? { x: eye.x - pose!.direction.x * .85, y: eye.y - PLAYER_DIMENSIONS.radius, z: eye.z - pose!.direction.z * .85 }
+      : { x: eye.x, y: eye.y - EYE_HEIGHT, z: eye.z };
+    const resolve = this.ground.resolveBody?.(feetFor(p), PLAYER_DIMENSIONS.radius, PLAYER_DIMENSIONS.height, .08, pose);
+    if (resolve) {
+      const feet = feetFor(p); p.x += resolve.x-feet.x; p.y += resolve.y-feet.y; p.z += resolve.z-feet.z;
     }
-    const floor = groundHeight(this.ground, p.x, p.z), surface = this.waterAt(p.x, p.z);
+    const next = clampWorld({ x: p.x + this.velocity.x * dt, z: p.z + this.velocity.z * dt });
+    const clearBody = (from: BodyPoint, to: BodyPoint): boolean => {
+      const a=feetFor(from), b=feetFor(to);
+      if(this.ground.bodySegmentBlocked?.(a,b,PLAYER_DIMENSIONS.radius,swimming ? PLAYER_DIMENSIONS.radius*2 : PLAYER_DIMENSIONS.height)) return false;
+      return !this.ground.sweepBody?.(a,b,PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height,pose).blocked;
+    };
+    const canMove = (target: NavigationPoint): number | null => {
+      if (!this.clearsBoat(target)) return null;
+      const floor = groundHeight(this.ground, target.x, target.z);
+      if (swimming) return Number.isFinite(floor) && floor + .55 < p.y
+        && clearBody(p,{x:target.x,y:p.y,z:target.z}) ? p.y : null;
+      const terrainClear = [[0, 0], [PLAYER_DIMENSIONS.radius, 0], [-PLAYER_DIMENSIONS.radius, 0], [0, PLAYER_DIMENSIONS.radius], [0, -PLAYER_DIMENSIONS.radius]]
+        .every(([dx, dz]) => footSegmentClear(this.ground, { x: p.x + dx, z: p.z + dz }, { x: target.x + dx, z: target.z + dz }));
+      if(!terrainClear) return null;
+      const targetEye={x:target.x,y:p.y,z:target.z};
+      if(clearBody(p,targetEye)) return p.y;
+      if(!this.state.grounded || this.velocity.y>.1) return null;
+      const support=this.supportAt(target.x,target.z,p.y-EYE_HEIGHT,MAX_STEP);
+      const rise=support+EYE_HEIGHT-p.y;
+      if(!(rise>.002 && rise<=MAX_STEP+.002)) return null;
+      const raised={x:p.x,y:p.y+rise+.003,z:p.z}, across={x:target.x,y:raised.y,z:target.z};
+      if(!clearBody(p,raised) || !clearBody(raised,across)) return null;
+      return support+EYE_HEIGHT;
+    };
+    const movedY=canMove(next);
+    if (movedY!==null) { p.x = next.x; p.z = next.z; p.y=movedY; }
+    else {
+      const xY=canMove({x:next.x,z:p.z});
+      if(xY!==null) {p.x=next.x;p.y=xY;} else this.velocity.x=0;
+      const zY=canMove({x:p.x,z:next.z});
+      if(zY!==null) {p.z=next.z;p.y=zY;} else this.velocity.z=0;
+    }
+    const floor = this.supportAt(p.x,p.z,p.y-EYE_HEIGHT,.03), surface = this.waterAt(p.x, p.z);
     const inDeepWater = floor < surface - 1.3 && p.y < surface + .64;
     if (inDeepWater) {
       this.jumpRequested = false; this.state.grounded = false;
@@ -433,7 +484,7 @@ export class ExplorerControls {
       else if (p.y >= surface - .4) targetY = (surface + SURFACE_EYE - p.y) * 3;
       else targetY = .08; // Slight positive buoyancy; neutral swimming never drops a frame-sized metre.
       this.velocity.y = approach(this.velocity.y, targetY, 4.8 * dt);
-      p.y += this.velocity.y * dt;
+      this.moveVertical(this.velocity.y * dt,feetFor,pose);
       const minimum = Math.max(surface - MAX_DIVE_DEPTH, floor + .75), maximum = surface + SURFACE_EYE;
       if (p.y < minimum) { p.y = minimum; this.velocity.y = Math.max(0, this.velocity.y); }
       if (p.y > maximum) { p.y = maximum; this.velocity.y = Math.min(0, this.velocity.y); }
@@ -450,8 +501,8 @@ export class ExplorerControls {
       const standingY = floor + EYE_HEIGHT;
       if (this.jumpRequested && this.state.grounded) { this.velocity.y = 4.7; this.state.grounded = false; }
       this.jumpRequested = false;
-      this.velocity.y -= 9.81 * dt; p.y += this.velocity.y * dt;
-      if (p.y <= standingY) { p.y = standingY; this.velocity.y = 0; this.state.grounded = true; }
+      this.velocity.y -= 9.81 * dt; this.moveVertical(this.velocity.y * dt,feetFor,pose);
+      if (p.y <= standingY+.005 && this.velocity.y<=0) { p.y = standingY; this.velocity.y = 0; this.state.grounded = true; }
       else this.state.grounded = false;
       this.state.oxygen = Math.min(1, this.state.oxygen + resourceDelta * .085); this.autoAscent = false;
     }
@@ -472,6 +523,20 @@ export class ExplorerControls {
     offset.z = 0;
     this.state.avatarAction = this.state.mode === 'dive' ? 'dive' : this.state.mode === 'swim' ? 'swim'
       : walking ? running ? 'run' : 'walk' : 'idle';
+  }
+  private supportAt(x:number,z:number,feetY:number,maxRise:number):number {
+    const floor=groundHeight(this.ground,x,z);
+    const support=this.ground.supportHeightAt?.(x,z,feetY,maxRise,PLAYER_DIMENSIONS.radius);
+    return support===null || support===undefined ? floor : Math.max(floor,support);
+  }
+  private moveVertical(delta:number,feetFor:(eye:BodyPoint)=>BodyPoint,pose?:BodyPose):void {
+    const p=this.state.position,from=feetFor(p),to={...from,y:from.y+delta};
+    const hit=this.ground.sweepBody?.(from,to,PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height,pose);
+    if(hit) {
+      p.y+=hit.position.y-from.y;
+      if(hit.blocked) {this.velocity.y=0;if(delta<0 && hit.normal.y>.64) this.state.grounded=true;}
+    } else if(!this.ground.bodySegmentBlocked?.(from,to,PLAYER_DIMENSIONS.radius,pose ? PLAYER_DIMENSIONS.radius*2 : PLAYER_DIMENSIONS.height)) p.y+=delta;
+    else this.velocity.y=0;
   }
   dispose(): void {
     if (this.disposed) return;

@@ -13,6 +13,21 @@ export function worldToGeo(x: number, z: number): { lat: number; lon: number } {
 export interface GroundSampler {
   heightAt(x: number, z: number): number;
   bodySegmentBlocked?(from:{x:number;y:number;z:number},to:{x:number;y:number;z:number},radius?:number,bodyHeight?:number):boolean;
+  /** Feet-space capsule sweep. A direction gives the capsule axis for a swimming pose. */
+  sweepBody?(from: BodyPoint, to: BodyPoint, radius?: number, height?: number, pose?: BodyPose): BodySweep;
+  /** Highest walkable solid surface at/below feetY + maxRise, or null when absent. */
+  supportHeightAt?(x: number, z: number, feetY: number, maxRise?: number, radius?: number): number | null;
+  /** Correct a newly introduced overlap locally; maxPush bounds displacement per call. */
+  resolveBody?(feet: BodyPoint, radius?: number, height?: number, maxPush?: number, pose?: BodyPose): BodyPoint;
+}
+export interface BodyPoint { x: number; y: number; z: number; }
+export interface BodyPose { direction: BodyPoint; }
+export interface BodySweep {
+  position: BodyPoint;
+  fraction: number;
+  blocked: boolean;
+  normal: BodyPoint;
+  colliderId?: number;
 }
 export const PLAYER_DIMENSIONS = { height: 1.75, eyeHeight: 1.64, radius: .25 } as const;
 export type TravelMode = 'walk' | 'swim' | 'dive' | 'boat';
