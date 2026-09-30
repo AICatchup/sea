@@ -46,3 +46,31 @@ export const shoreWaveSampling=/* glsl */`
     return transport*breakingCap*smoothstep(.015,.22,depth)*clamp(coast.y,.08,1.0);
   }
 `;
+
+/** Optional observable only. Include shoreWaveSampling before this snippet.
+ * rawFftHeight is the caller's long+short .y BEFORE shore scale and uSwell.
+ * H=2*positive crest is a symmetric-wave proxy, not measured individual H.
+ * Does not alter displacement, phase, depth cap or existing J-based energy. */
+export const shoreBreakerDissipationSampling=/* glsl */`
+  float shoreBreakerDissipation(float rawFftHeight,vec2 coast,float swell,float wind){
+    float depth=-coast.x;
+    // Existing surf-particle domain and protected-cove boundary. Comparisons
+    // also reject NaN; finite physical parameter bounds reject infinities.
+    if(!(depth>=.2&&depth<=3.8&&coast.y>=.18&&coast.y<=1.0&&
+         rawFftHeight>0.0&&rawFftHeight<1000000.0&&
+         swell>0.0&&swell<=4.0&&wind>=0.0&&wind<=35.0))return 0.0;
+    float transport=pow(clamp(18.0/max(depth,1.0),1.0,8.0),.125);
+    float uncappedScale=transport*smoothstep(.015,.22,depth)*clamp(coast.y,.08,1.0);
+    float uncappedCrest=rawFftHeight*swell*uncappedScale;
+    float heightProxy=2.0*uncappedCrest;
+    float limitingHeight=.73*depth;
+    if(!(heightProxy>limitingHeight))return 0.0;
+    float retained=clamp(shoreWaveScale(coast,swell,wind)/uncappedScale,0.0,1.0);
+    float capLoss=1.0-retained*retained;
+    float thresholdRatio=limitingHeight/heightProxy;
+    float depthExcess=1.0-thresholdRatio*thresholdRatio;
+    // Intersection of energy actually removed by the existing amplitude cap
+    // and energy beyond the depth-height envelope; continuous at onset.
+    return clamp(min(capLoss,depthExcess),0.0,1.0);
+  }
+`;
