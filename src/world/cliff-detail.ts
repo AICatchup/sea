@@ -29,9 +29,9 @@ export function cliffBodySegmentBlocked(
 export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number}):THREE.BufferGeometry {
   const positions:number[]=[],colors:number[]=[],uvs:number[]=[],proxies:CliffCollisionProxy[]=[];
   const familyCounts={plates:0,columns:0,buttresses:0},regions={west:0,centre:0,east:0};
-  const stride=6.4,triangleLimit=85000;
+  const stride=4.7,triangleLimit=80000;
   let eligible=0,count=0,pieces=0,rejectedStrand=0,maxProtrusion=0,maxFaceWidth=0,minVisibleY=Infinity;
-  let sampledCliffArea=0,authoredFaceArea=0;
+  let sampledCliffArea=0,authoredFaceArea=0,exposedFaceArea=0,buriedFaceArea=0;
   const triangle=(a:THREE.Vector3,b:THREE.Vector3,c:THREE.Vector3,shade:number)=>{
     for(const p of[a,b,c]){positions.push(p.x,p.y,p.z);colors.push(shade,shade*.995,shade*1.018);uvs.push(p.x*.2,p.y*.2);}
   };
@@ -47,27 +47,33 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
     const px=x+(random(13)-.5)*3.2,pz=z+(random(17)-.5)*3.2,y=ground.heightAt(px,pz);
     if(y<5 || y>56 || sandAt(px,pz)>.48)continue;
     const gradient=slopeAt(px,pz);
-    if(gradient.magnitude<1.22)continue;
+    if(gradient.magnitude<.78)continue;
     eligible++;sampledCliffArea+=stride*stride*Math.hypot(1,gradient.magnitude);
     // Select only coast-facing scarps, leaving most of the larger coherent field visible.
-    if(random(31)<.29)continue;
-    normal.set(-gradient.gx,0,-gradient.gz).normalize();
-    tangent.set(-gradient.gz,0,gradient.gx).normalize();vertical.set(0,1,0);
+    if(random(31)<.12)continue;
+    // Use the *surface* normal. A purely horizontal extrusion with a vertical
+    // panel buries its upper half in a DEM slope and barely changes the view.
+    normal.set(-gradient.gx,1,-gradient.gz).normalize();
+    tangent.set(-gradient.gz,0,gradient.gx).normalize();vertical.crossVectors(normal,tangent).normalize();
     const dip=(jointRandom(Math.floor(px/28),Math.floor(pz/22),11)-.5)*.24;
     tangent.applyAxisAngle(normal,dip);vertical.applyAxisAngle(normal,dip);
     const family=jointRandom(Math.floor(px/19),Math.floor(pz/23),37);
     const familyName=family<.44?'plates':family<.72?'columns':'buttresses';
-    // Full widths 5-12m, heights 3-11m: these alter form at beach-view distances.
-    const width=familyName==='plates'?3.4+random(41)*2.3:familyName==='columns'?1.4+random(41)*1.3:2.8+random(41)*1.8;
+    // Unequal metre-scale fracture groups affect form at beach-view distances.
+    const width=familyName==='plates'?2.6+random(41)*1.9:familyName==='columns'?1.4+random(41)*1.3:2.8+random(41)*1.8;
     const height=familyName==='plates'?1.1+random(43)*1.1:familyName==='columns'?3+random(43)*2.3:2.1+random(43)*2;
-    const depth=.8+random(47)*1.6;
+    const depth=1.6+random(47)*1.8;
     const split=familyName==='plates'?2+(random(51)>.7?1:0):random(51)>.61?2:1;
     const gap=.22+random(53)*.38,shade=.58+random(81)*.16;
     const centre=new THREE.Vector3(px,y,pz);
     let emitted=0;
+    const weights=Array.from({length:split},(_,part)=>.55+random(101+part)*.9);
+    const totalWeight=weights.reduce((sum,weight)=>sum+weight,0);
+    let edgeOffset=-width;
     for(let part=0;part<split;part++){
-      const halfWidth=(width*2-gap*(split-1))/(2*split);
-      const partOffset=-width+halfWidth+part*(halfWidth*2+gap);
+      const halfWidth=(width*2-gap*(split-1))*weights[part]/(2*totalWeight);
+      const partOffset=edgeOffset+halfWidth;
+      edgeOffset+=halfWidth*2+gap;
       const partCentre=centre.clone().addScaledVector(tangent,partOffset).addScaledVector(normal,(part%2?-.18:.12)*depth);
       // Unequal oblique fracture planes; no radially inflated rounded centre.
       const outline=familyName==='columns'
@@ -76,14 +82,29 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
           ?[[-1,-.85],[-.43,-1],[.75,-.83],[1,-.34],[.64,.82],[.17,1],[-.81,.53],[-1,.04]]
           :[[-1,-.69],[-.69,-1],[.74,-.81],[1,-.44],[.85,.61],[.52,1],[-.77,.79],[-1,.30]];
       const back:THREE.Vector3[]=[],front:THREE.Vector3[]=[],bevel:THREE.Vector3[]=[];
-      const tiltU=(random(61)-.5)*.22,tiltV=(random(67)-.5)*.16;
-      for(let i=0;i<outline.length;i++){
-        const [uu,vv]=outline[i],u=uu*halfWidth,v=vv*height;
-        const planeDepth=depth+u*tiltU+v*tiltV;
-        const a=partCentre.clone().addScaledVector(tangent,u).addScaledVector(vertical,v).addScaledVector(normal,-Math.max(4,depth*2.4));
-        a.y=Math.min(a.y,ground.heightAt(a.x,a.z)-.5);back.push(a);
-        front.push(partCentre.clone().addScaledVector(tangent,u*.94).addScaledVector(vertical,v*.96).addScaledVector(normal,planeDepth*.73));
-        bevel.push(partCentre.clone().addScaledVector(tangent,u*.81).addScaledVector(vertical,v*.87).addScaledVector(normal,planeDepth));
+      const tiltU=(random(61)-.5)*.30,tiltV=(random(67)-.5)*.24;
+      const at=(u:number,v:number,d:number)=>partCentre.clone().addScaledVector(tangent,u)
+        .addScaledVector(vertical,v).addScaledVector(normal,d);
+      // Find a single support plane outside the irregular underlying scarp.
+      // The face stays planar, but is guaranteed to stand out at every corner.
+      let support=0,embed=4;
+      for(const [uu,vv] of outline){
+        const u=uu*halfWidth,v=vv*height;
+        let d=0,p=at(u*.94,v*.96,d);
+        while(p.y<ground.heightAt(p.x,p.z)+.28 && d<5){d+=.25;p=at(u*.94,v*.96,d);}
+        support=Math.max(support,d);
+        d=4;p=at(u,v,-d);
+        while(p.y>ground.heightAt(p.x,p.z)-.5 && d<14){d+=.5;p=at(u,v,-d);}
+        embed=Math.max(embed,d);
+      }
+      // Avoid unsupported fragments crossing a crest, rather than stretching a
+      // giant artificial slab across a valley. Broad source shape stays intact.
+      if(support>2.5 || embed>=14)continue;
+      for(const [uu,vv] of outline){
+        const u=uu*halfWidth,v=vv*height,planeDepth=depth*(1+uu*tiltU+vv*tiltV);
+        back.push(at(u,v,-embed));
+        front.push(at(u*.94,v*.96,support+planeDepth*.68));
+        bevel.push(at(u*.81,v*.87,support+planeDepth));
       }
       // No new body-height walls across the strand or the navigable sea.
       if([...front,...bevel].some(p=>p.y<2.2 || (sandAt(p.x,p.z)>.6 && ground.heightAt(p.x,p.z)<5))){rejectedStrand++;continue;}
@@ -98,13 +119,25 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
       for(const p of exposed){minVisibleY=Math.min(minVisibleY,p.y);maxProtrusion=Math.max(maxProtrusion,p.clone().sub(centre).dot(normal));}
       proxies.push(proxy);
       // A single planar central face plus shallow chamfers. Every winding faces outward.
-      for(let i=1;i+1<bevel.length;i++)triangle(bevel[0],bevel[i],bevel[i+1],shade+.025);
+      for(let i=1;i+1<bevel.length;i++){
+        triangle(bevel[0],bevel[i],bevel[i+1],shade+.025);
+        // Reverse winding closes the embedded back: collisions see a solid
+        // watertight volume, including approaches from above and behind.
+        triangle(back[0],back[i+1],back[i],shade-.10);
+      }
       for(let i=0;i<outline.length;i++){
         const j=(i+1)%outline.length;
         triangle(back[i],back[j],front[j],shade-.085);triangle(back[i],front[j],front[i],shade-.085);
         triangle(front[i],front[j],bevel[j],shade-.015);triangle(front[i],bevel[j],bevel[i],shade-.015);
       }
-      authoredFaceArea+=halfWidth*height*4*.82;pieces++;emitted++;
+      authoredFaceArea+=halfWidth*height*4*.82;
+      for(let i=1;i+1<bevel.length;i++){
+        const a=bevel[0],b=bevel[i],c=bevel[i+1];
+        const area=b.clone().sub(a).cross(c.clone().sub(a)).length()*.5;
+        const mid=a.clone().add(b).add(c).multiplyScalar(1/3);
+        if(mid.y>ground.heightAt(mid.x,mid.z)+.05)exposedFaceArea+=area;else buriedFaceArea+=area;
+      }
+      pieces++;emitted++;
     }
     if(emitted){count++;familyCounts[familyName]++;regions[px<-90?'west':px>90?'east':'centre']++;maxFaceWidth=Math.max(maxFaceWidth,width*2);}
   }
@@ -115,9 +148,9 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
   geometry.computeVertexNormals();geometry.computeBoundingSphere();
   geometry.userData={outcropCount:count,rockPieces:pieces,triangleCount:positions.length/9,triangleLimit,familyCounts,regions,
     eligibleSteepFaceSamples:eligible,rejectedStrandPieces:rejectedStrand,sampledCliffAreaM2:sampledCliffArea,authoredFaceAreaM2:authoredFaceArea,
-    maxNormalProtrusionM:maxProtrusion,maxFaceWidthM:maxFaceWidth,minExposedVertexHeightM:Number.isFinite(minVisibleY)?minVisibleY:null,
+    exposedCentralFaceAreaM2:exposedFaceArea,buriedCentralFaceAreaM2:buriedFaceArea,closedVolumes:true,maxNormalProtrusionM:maxProtrusion,maxFaceWidthM:maxFaceWidth,minExposedVertexHeightM:Number.isFinite(minVisibleY)?minVisibleY:null,
     collisionProxies:proxies,collision:'Complete rock-volume AABBs; swept upright-body helper uses foot height in world metres',
-    provenance:'Authored structural scarp panels, open joints and embedded overhangs; not surveyed geometry'};
+    provenance:'Authored metre-scale fracture shelves, closed overhang volumes and embedded backs; source DEM unchanged, not surveyed rhyolite geometry'};
   return geometry;
 }
 
