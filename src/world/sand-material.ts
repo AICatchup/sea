@@ -21,6 +21,7 @@ export const SAND_SURFACE = Object.freeze({
 });
 
 export interface SandTextureSet {
+  ready:Promise<void>;
   albedo: THREE.Texture;
   normalGL: THREE.Texture;
   arm: THREE.Texture;
@@ -30,9 +31,11 @@ export interface SandTextureSet {
 
 /** Start image loading without blocking terrain construction; safe for CPU-only tests. */
 export function loadSandTextures(anisotropy = 8): SandTextureSet {
+  const pending:Promise<void>[]=[];
   const loader = typeof document === 'undefined' ? undefined : new THREE.TextureLoader();
   const load = (role: keyof typeof SAND_TEXTURE_URLS, colorSpace: THREE.ColorSpace) => {
-    const texture = loader ? loader.load(SAND_TEXTURE_URLS[role]) : new THREE.Texture();
+    let texture=new THREE.Texture();
+    if(loader)pending.push(new Promise<void>((resolve,reject)=>{texture=loader.load(SAND_TEXTURE_URLS[role],()=>resolve(),undefined,reject);}));
     texture.name = `Poly Haven Sand 02 / ${role}`;
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.minFilter = THREE.LinearMipmapLinearFilter;
@@ -46,5 +49,5 @@ export function loadSandTextures(anisotropy = 8): SandTextureSet {
   const albedo = load('albedo', THREE.SRGBColorSpace);
   const normalGL = load('normalGL', THREE.NoColorSpace);
   const arm = load('arm', THREE.NoColorSpace);
-  return { albedo, normalGL, arm, textures: [albedo, normalGL, arm] };
+  return { albedo, normalGL, arm, ready:Promise.all(pending).then(()=>{}), textures: [albedo, normalGL, arm] };
 }

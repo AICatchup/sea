@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { capillarySampling } from './surface-detail';
 
 export interface CausticBathymetry {
   /** R: seabed height in metres, G: local wave shelter, as in oceanVertex. */
@@ -19,9 +20,10 @@ const photonVertex = /* glsl */ `
   uniform vec4 uBounds, uBathyBounds;
   uniform vec2 uBathyResolution;
   uniform vec3 uSunDirection;
-  uniform float uSwell, uChoppiness, uWind, uResolution, uPhotonResolution;
+  uniform float uSwell, uChoppiness, uWind, uResolution, uPhotonResolution, uTime;
   varying float vEnergy;
   const float PI = 3.14159265359;
+  ${capillarySampling}
   vec2 bathyUv(vec2 p) {
     return (p-uBathyBounds.xy)/uBathyBounds.zw;
   }
@@ -57,6 +59,7 @@ const photonVertex = /* glsl */ `
     vec3 dz=surfaceAt(parameter+vec2(0.0,stepLength))-surfaceAt(parameter-vec2(0.0,stepLength));
     vec3 normal=normalize(cross(dz,dx));
     if(normal.y<0.0) normal=-normal;
+    normal.xz-=capillarySurfaceSlope(parameter,uTime)*(.45+uWind*.035);normal=normalize(normal);
     vec3 ray=refract(incident,normal,1.0/1.333);
     // Intersect the metric seabed. Re-sampling catches slopes and sandy banks.
     float floorY=coastAt(surface.xz).r;
@@ -178,7 +181,7 @@ export class WaveCaustics {
         uLongWaves: { value: null }, uShortWaves: { value: null }, uBathymetry: { value: null },
         uBounds: { value: this.bounds }, uBathyBounds: { value: new THREE.Vector4() },
         uBathyResolution: { value: new THREE.Vector2() }, uSunDirection: { value: new THREE.Vector3(0, 1, 0) },
-        uSwell: { value: 1 }, uChoppiness: { value: 1.55 }, uWind: { value: 8 },
+        uSwell: { value: 1 }, uChoppiness: { value: 1.55 }, uWind: { value: 8 }, uTime:{value:0},
         uResolution: { value: this.resolution }, uPhotonResolution: { value: count },
       },
     });
@@ -204,6 +207,17 @@ export class WaveCaustics {
 
   get texture(): THREE.Texture { return this.history[this.historyIndex].texture; }
 
+  /** Explicit developer probe; never called in the frame loop. */
+  readEnergy():{min:number;max:number;mean:number;rms:number;center:number}{
+    const pixels=new Uint16Array(this.resolution*this.resolution*4);
+    this.renderer.readRenderTargetPixels(this.history[this.historyIndex],0,0,this.resolution,this.resolution,pixels);
+    let min=Infinity,max=0,sum=0,squares=0;
+    for(let i=0;i<pixels.length;i+=4){const value=THREE.DataUtils.fromHalfFloat(pixels[i]);min=Math.min(min,value);max=Math.max(max,value);sum+=value;squares+=value*value;}
+    const count=pixels.length/4,mean=sum/count;
+    const index=(Math.floor(this.resolution/2)*this.resolution+Math.floor(this.resolution/2))*4;
+    return {min,max,mean,rms:Math.sqrt(Math.max(0,squares/count-mean*mean)),center:THREE.DataUtils.fromHalfFloat(pixels[index])};
+  }
+
   update(time: number, delta: number, longWaves: THREE.Texture, shortWaves: THREE.Texture,
     bathymetry: CausticBathymetry, cameraPosition: THREE.Vector3, sunDirection: THREE.Vector3,
     swell: number, wind: number, choppiness = 1.55): void {
@@ -224,6 +238,7 @@ export class WaveCaustics {
     u.uBathyResolution.value.set(image.width, image.height);
     u.uSunDirection.value.copy(sunDirection).normalize();
     u.uSwell.value = swell; u.uWind.value = wind; u.uChoppiness.value = choppiness;
+    u.uTime.value=time;
     const continuous = this.initialized && delta > 0 && time >= this.previousTime && time - this.previousTime < .12
       && this.previousSun.dot(u.uSunDirection.value) > .9999 && Math.abs(this.previousSwell - swell) < .02
       && Math.abs(this.previousWind - wind) < .2 && Math.abs(this.previousChoppiness - choppiness) < .02;

@@ -57,6 +57,8 @@ export class AdventureUI {
   private readonly journeyProgress: HTMLProgressElement;
   private readonly message: HTMLElement;
   private readonly map: HTMLCanvasElement;
+  private readonly locationName:HTMLElement;
+  private readonly locationIsland:HTMLElement;
   private readonly held = new Map<string, HeldControl>();
   private readonly destinationById: Map<string, WorldDestination>;
   private readonly mapBounds: { minX: number; maxX: number; minZ: number; maxZ: number };
@@ -118,6 +120,7 @@ export class AdventureUI {
       <div class="adventure-touch-pad" role="group" aria-label="移動"><span class="adventure-touch-label">移動</span><button type="button" data-direction="forward" aria-label="前へ進む">${icon('up')}</button><button type="button" data-direction="left" aria-label="左へ進む">${icon('left')}</button><button type="button" data-direction="back" aria-label="後ろへ進む">${icon('down')}</button><button type="button" data-direction="right" aria-label="右へ進む">${icon('right')}</button></div>
       <div class="adventure-touch-vertical" role="group" aria-label="水中で上下へ移動" hidden><button type="button" data-direction="up" aria-label="水面へ上がる">${icon('up')}<span>上へ</span></button><button type="button" data-direction="down" aria-label="深く潜る">${icon('down')}<span>下へ</span></button></div>`;
     const find = <T extends HTMLElement>(selector: string): T => this.root.querySelector<T>(selector)!;
+    this.locationName=find('.adventure-location h1');this.locationIsland=find('.adventure-location span');
     this.modes = Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-mode]'));
     this.placePanel = find('#adventure-place-panel');
     this.voyagePanel = find('#adventure-voyage-panel');
@@ -260,6 +263,13 @@ export class AdventureUI {
     const now = performance.now();
     if (now - this.lastUpdate < 200 && this.mode === state.mode && this.target === state.voyageTarget && this.placedCount === placedCount && this.lastMessage === state.message) return;
     this.lastUpdate = now;
+    let nearest:WorldDestination|undefined,distance=Infinity;
+    for(const destination of this.destinationById.values()){
+      const candidate=Math.hypot(state.position.x-destination.x,state.position.z-destination.z);
+      if(candidate<distance){distance=candidate;nearest=destination;}
+    }
+    text(this.locationIsland,distance<650?nearest?.island??'伊豆諸島':'伊豆諸島');
+    text(this.locationName,distance<650?nearest?.label??'海の旅':'島のあいだ');
     if (this.mode !== state.mode) {
       this.mode = state.mode;
       this.modes.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === state.mode)));

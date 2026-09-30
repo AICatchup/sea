@@ -71,12 +71,18 @@ function toggleImmersive(): void {
   element('interface').inert = immersive;
   element('leave-immersive').hidden = !immersive;
   element('immersive').setAttribute('aria-pressed', String(immersive));
-  if (immersive) element('leave-immersive').focus({ preventScroll: true });
+  if (immersive) element('ocean').focus({ preventScroll: true });
   else element('immersive').focus({ preventScroll: true });
 }
 
 try {
   ocean = new Ocean(element<HTMLCanvasElement>('ocean'));
+  const view=new URLSearchParams(location.search).get('view');
+  if(view==='dive')ocean.adventure.viewpoint(-145,-113,-.45,-.28,'dive',4.5);
+  if(view==='reef')ocean.adventure.viewpoint(-140,-110,-.5,-.42,'dive',5);
+  if(view==='lookout')ocean.adventure.viewpoint(-25,36,-.52,-.25);
+  if(view==='shore')ocean.adventure.viewpoint(-42,9,-.56,-.24);
+  if(view==='cliff')ocean.adventure.viewpoint(-86,-22,-1.6,.10);
   const focus = () => element('ocean').focus({ preventScroll: true });
   adventureUI = new AdventureUI({
     mode: mode => { ocean.adventure.setMode(mode); focus(); },
@@ -95,8 +101,11 @@ try {
   uiFrame = requestAnimationFrame(updateUI);
   sound.setWind(ocean.wind);
   Object.defineProperty(window, '__sea', { get: () => ocean.diagnostics, configurable: true });
+  if(import.meta.env.DEV)Object.defineProperty(window,'__seaOptics',{value:()=>ocean.probeOptics(),configurable:true});
   updateRanges();
-  requestAnimationFrame(() => element('loading').classList.add('done'));
+  void ocean.ready.then(() => {
+    if (!disposed) requestAnimationFrame(() => element('loading').classList.add('done'));
+  });
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (reducedMotion.matches) togglePause();
   reducedMotion.addEventListener('change', event => {

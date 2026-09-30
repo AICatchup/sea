@@ -274,6 +274,7 @@ export class MarineLife {
       { x: -36, z: -23, species: 1, count: 34 }, { x: -85, z: -45, species: 0, count: 35 },
       { x: 10, z: -56, species: 2, count: 52 }, { x: -119, z: -85, species: 2, count: 48 },
       { x: -43, z: -97, species: 0, count: 33 }, { x: 34, z: -103, species: 1, count: 31 },
+      { x: -142, z: -127, species: 1, count: 22 },
     ];
     const counts = [0, 0, 0];
     for (const school of schools) {

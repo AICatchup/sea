@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import type { GroundSampler, PlaceableKind } from './contracts';
 import { CoastalModels } from './models/props';
-import { makeInstances, ModelBatch, randomSeed, updateInstanceBounds } from './models/procedural';
+import { makeInstances, ModelBatch, randomSeed, rockGeometry, standard, updateInstanceBounds } from './models/procedural';
 import { CoastalFoliage } from './foliage.ts';
+import type { ScannedRockVariant } from './scanned-rocks.ts';
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
-interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; }
+interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; variant?: number; }
 interface FloatingMarker { object: THREE.Object3D; phase: number; }
 
 /** Foreground authored assets. Cliff shape/elevation and distant vegetation belong to the terrain. */
@@ -39,6 +40,7 @@ export class AssetWorld {
     this.group.add(this.boat); this.lastBoatPosition.copy(this.boat.position);
     this.populateHeadlands();
     this.populateBeach();
+    this.populateStrand();
     this.preparePlacementBatches();
   }
 
@@ -59,28 +61,24 @@ export class AssetWorld {
     const random = randomSeed(0x544f4d41);
     const trees: THREE.Matrix4[][] = [[], [], []];
     const shrubs: THREE.Matrix4[][] = [[], [], []];
-    const rocks: THREE.Matrix4[][] = [[], [], []];
-    let treeCount = 0, shrubCount = 0, rockCount = 0;
+    let treeCount = 0, shrubCount = 0;
     // Independent cover strata: a pine never suppresses the shrub layer below it.
     for (let gz = -300; gz < 290; gz += 3.6) for (let gx = -355; gx < 320; gx += 3.6) {
       const x = gx + (random() - .5) * 2.5, z = gz + (random() - .5) * 2.5;
       if ((x + 36) ** 2 + (z - 27) ** 2 > 320 ** 2) continue;
       const height = this.ground.heightAt(x, z);
       if (!Number.isFinite(height)) continue;
+      if (Math.hypot(x + 25, z - 36) < 6) continue;
       const variant = Math.floor(random() * 3), yaw = random() * Math.PI * 2;
       const slope = Math.hypot(this.ground.heightAt(x + 1.5, z) - this.ground.heightAt(x - 1.5, z),
         this.ground.heightAt(x, z + 1.5) - this.ground.heightAt(x, z - 1.5)) / 3;
       const isHeadland = height > 3 || x < -72 || x > 74 || z > 95;
-      if (height > 3 && height < 68 && slope < 1.8 && isHeadland && random() < .15) {
+      if (height > 3 && height < 68 && slope < 1.8 && isHeadland && random() < (height > 12 ? .28 : .15)) {
         const size = .78 + random() * .69;
         trees[variant].push(this.transform(x, height - .18, z, size, yaw, 1.05, .78 + random() * .28, 1)); treeCount++;
       }
       if (height > 1.8 && height < 68 && isHeadland && slope < 2.05 && random() < .82) {
         shrubs[variant].push(this.transform(x, height - .09, z, .8 + random() * .49, yaw, 1.24, .82, 1.12)); shrubCount++;
-      }
-      if (rockCount < 250 && height > -.45 && height < 38 && isHeadland && slope > .55 && random() < .055) {
-        const size = .45+random()*1.8;
-        rocks[variant].push(this.transform(x, height + size * 0.48, z, size, yaw, 1.15, 0.8 + random() * 0.45, 1)); rockCount++;
       }
     }
     for (let variant = 0; variant < 3; variant++) {
@@ -88,9 +86,27 @@ export class AssetWorld {
       this.addInstances(this.pines[variant].needles, this.foliage.leaves, trees[variant], `wind shaped evergreen crowns ${variant}`);
       this.addInstances(this.foliage.shrubs[variant].bark, this.foliage.bark, shrubs[variant], `coastal underbrush twigs ${variant}`);
       this.addInstances(this.foliage.shrubs[variant].needles, this.foliage.leaves, shrubs[variant], `low coastal brush ${variant}`);
-      this.addInstances(this.models.rocks[variant], this.models.stone, rocks[variant], `foreground pale rhyolite-like rocks ${variant}`);
     }
-    this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount, rocks: rockCount };
+    this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount };
+  }
+
+  /** Small strand debris is clustered and varied, rather than an evenly tiled gravel carpet. */
+  private populateStrand(): void {
+    const random=randomSeed(0x50454242), matrices:THREE.Matrix4[][]=[[],[],[]];
+    for(let i=0;i<4200;i++){
+      const x=-110+random()*150,z=-32+random()*72,h=this.ground.heightAt(x,z);
+      const slope=Math.hypot(this.ground.heightAt(x+.3,z)-this.ground.heightAt(x-.3,z),this.ground.heightAt(x,z+.3)-this.ground.heightAt(x,z-.3))/.6;
+      if(h<-.9||h>2.6||slope>.45)continue;
+      const density=.4+.3*Math.sin(x*.15+Math.sin(z*.25)*2)+.2*Math.sin(z*.5);
+      if(random()>density)continue;
+      const size=.014+Math.pow(random(),3)*.15;
+      matrices[i%3].push(this.transform(x,h+size*.18,z,size,random()*Math.PI*2,.8+random()*.6,.36+random()*.35,.8+random()*.7));
+    }
+    for(let variant=0;variant<3;variant++){
+      const material=standard(this.models.resources,['#a39a84','#6c7265','#bcbaa4'][variant],.9);
+      material.vertexColors=true;
+      this.addInstances(rockGeometry(this.models.resources,713+variant*81,2),material,matrices[variant],'irregular strand pebbles '+variant);
+    }
   }
 
   private findBeachPoint(targetX: number, targetZ: number): THREE.Vector3 | null {
@@ -173,6 +189,23 @@ export class AssetWorld {
     }
   }
 
+  /** Scan resources stay owned by MarineLife; this class owns only instance buffers. */
+  hydrateRockPlacements(variants:readonly ScannedRockVariant[]):void {
+    const boulders=variants.filter(variant=>variant.kind==='boulder').slice(0,3);
+    if(this.disposed||!boulders.length)return;
+    for(const batch of this.placementBatches.get('rock')??[]){
+      this.group.remove(batch.mesh);batch.mesh.dispose();
+      const index=this.instanceMeshes.indexOf(batch.mesh);if(index>=0)this.instanceMeshes.splice(index,1);
+    }
+    const batches=boulders.map((variant,index)=>{
+      const mesh=makeInstances(variant.geometry,variant.material,AssetWorld.capacity,'placed scanned '+variant.id);
+      mesh.count=0;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      this.group.add(mesh);this.instanceMeshes.push(mesh);
+      return {mesh,local:new THREE.Matrix4().makeScale(.8,.8,.8),variant:index};
+    });
+    this.placementBatches.set('rock',batches);this.rebuildPlacements(0);
+  }
+
   place(kind: PlaceableKind, x: number, z: number, yaw: number): void {
     if (this.disposed || this.placements.length >= AssetWorld.capacity || !this.placementBatches.has(kind)
       || ![x, z, yaw].every(Number.isFinite)) return;
@@ -187,21 +220,22 @@ export class AssetWorld {
   }
 
   private rebuildPlacements(time: number): void {
-    const indices = new Map<PlaceableKind, number>();
-    for (const kind of this.placementBatches.keys()) indices.set(kind, 0);
+    const indices = new Map<PlacementBatch, number>();
+    for (const batches of this.placementBatches.values())for(const batch of batches)indices.set(batch,0);
     for (let index = 0; index < this.placements.length; index++) {
       const placement = this.placements[index];
-      const instanceIndex = indices.get(placement.kind)!;
       const bob = placement.kind === 'buoy' ? Math.sin(time * 1.6 + index * 2.7) * 0.055 : 0;
       this.position.set(placement.x, placement.y + bob, placement.z);
       this.quaternion.setFromAxisAngle(this.yAxis, placement.yaw); this.matrix.compose(this.position, this.quaternion, this.scale);
       for (const batch of this.placementBatches.get(placement.kind)!) {
+        if(batch.variant!==undefined&&batch.variant!==index%3)continue;
+        const instanceIndex=indices.get(batch)!;
         this.localMatrix.multiplyMatrices(this.matrix, batch.local); batch.mesh.setMatrixAt(instanceIndex, this.localMatrix);
+        indices.set(batch,instanceIndex+1);
       }
-      indices.set(placement.kind, instanceIndex + 1);
     }
-    for (const [kind, batches] of this.placementBatches) for (const batch of batches) {
-      batch.mesh.count = indices.get(kind)!; updateInstanceBounds(batch.mesh);
+    for (const batches of this.placementBatches.values()) for (const batch of batches) {
+      batch.mesh.count = indices.get(batch)!; updateInstanceBounds(batch.mesh);
     }
   }
 

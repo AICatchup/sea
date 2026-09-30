@@ -37,6 +37,19 @@ function key(canvas: TestCanvas, type: string, code: string, target?: object): E
   return event;
 }
 
+test('paused ambient motion holds dive air while intentional swimming remains available', () => {
+  const { controls, state } = setup({ heightAt: () => -20 });
+  controls.viewpoint(0, 0, 0, 0, 'dive', 4);
+  controls.setMove(0, 1);
+  for (let frame = 0; frame < 120; frame++) controls.update(1 / 60, 34, true);
+  assert.equal(state.oxygen, 1);
+  assert.ok(state.position.z < -2);
+  controls.setMove(0, 0);
+  advance(controls, 2);
+  assert.ok(state.oxygen < 1);
+  controls.dispose();
+});
+
 test('water route detours around land and every resulting segment clears the hull', () => {
   const ground: GroundSampler = { heightAt: (x, z) => x >= 20 && x <= 80 && Math.abs(z) < 25 ? 12 : -30 };
   const start = { x: 0, z: 0 }, goal = { x: 100, z: 0 };

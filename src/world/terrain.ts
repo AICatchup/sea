@@ -5,6 +5,7 @@ import { DESTINATION_SEEDS } from './locations.ts';
 import { cliffOutcrops } from './cliff-detail.ts';
 import { CoastalFoliage } from './foliage.ts';
 import { ModelResources } from './models/procedural.ts';
+import { loadSandTextures, SAND_SURFACE, type SandTextureSet } from './sand-material.ts';
 const atlasURL=new URL('../assets/tomari-atlas-v1.png',import.meta.url).href;
 
 interface WaterMap { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2; }
@@ -28,17 +29,23 @@ function detailTexture(): THREE.DataTexture {
 }
 
 /** Standard lit material. Only texture projection and grain are extended; the renderer owns grading. */
-function makeTerrainMaterial(texture: THREE.DataTexture, atlas: THREE.Texture): THREE.MeshStandardMaterial {
+function makeTerrainMaterial(texture: THREE.DataTexture, atlas: THREE.Texture, sand:SandTextureSet): THREE.MeshStandardMaterial {
   const material = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.94, metalness: 0, bumpMap: texture, bumpScale: 0 });
   material.name = 'GSI coast: rhyolite / sand / evergreen';
+  const sandReady={value:0};
+  void sand.ready.then(()=>{sandReady.value=1;}).catch(error=>console.warn('Scanned sand unavailable; authored strand retained',error));
   material.onBeforeCompile = shader => {
     shader.uniforms.uCoastDetail = { value: texture };
     shader.uniforms.uCoastAtlas = { value: atlas };
+    shader.uniforms.uSandAlbedo={value:sand.albedo};shader.uniforms.uSandNormal={value:sand.normalGL};
+    shader.uniforms.uSandARM={value:sand.arm};shader.uniforms.uSandReady=sandReady;
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vCoastPoint;\nvarying vec3 vCoastAxis;');
     shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvCoastPoint = position; vCoastAxis = normal;');
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       uniform sampler2D uCoastDetail;
       uniform sampler2D uCoastAtlas;
+      uniform sampler2D uSandAlbedo, uSandNormal, uSandARM;
+      uniform float uSandReady;
       varying vec3 vCoastPoint;
       varying vec3 vCoastAxis;
       vec3 coastTile(vec2 p, vec2 tile) {
@@ -62,17 +69,35 @@ function makeTerrainMaterial(texture: THREE.DataTexture, atlas: THREE.Texture): 
       float axisUp=abs(normalize(vCoastAxis).y);
       float sandMix=(1.0-smoothstep(1.7,7.0,vCoastPoint.y))*smoothstep(.58,.88,axisUp);
       float greenMix=smoothstep(5.0,18.0,vCoastPoint.y)*smoothstep(.65,.92,axisUp);
-      vec3 stoneColor=cliffAlbedo(vCoastPoint,vCoastAxis)*.83;
-      vec3 drySand=coastTile(vCoastPoint.xz*.38,vec2(1,1))*.78;
-      vec3 wetSand=coastTile(vCoastPoint.xz*.38,vec2(1,0))*.83;
-      vec3 sandColor=mix(wetSand,drySand,smoothstep(-.25,.8,vCoastPoint.y));
+      vec3 stoneColor=cliffAlbedo(vCoastPoint,vCoastAxis)*.34;
+      vec3 drySand=coastTile(vCoastPoint.xz*2.7,vec2(1,1))*.55;
+      vec3 wetSand=coastTile(vCoastPoint.xz*2.7,vec2(1,0))*.74;
+      float dryFactor=smoothstep(-.25,.8,vCoastPoint.y);
+      vec2 sandUV=vec2(vCoastPoint.x,-vCoastPoint.z)*${SAND_SURFACE.tilesPerMeter};
+      vec3 sandPhoto=texture2D(uSandAlbedo,sandUV).rgb;
+      float sandLuma=dot(sandPhoto,vec3(.2126,.7152,.0722));
+      vec3 scannedSand=mix(sandPhoto,vec3(sandLuma)*vec3(1.05,1.025,.94),.7)*2.2;
+      scannedSand*=mix(.62,1.0,dryFactor);
+      vec3 sandColor=mix(mix(wetSand,drySand,dryFactor),scannedSand,uSandReady);
       vec3 greenColor=coastTile(vCoastPoint.xz*.18,vec2(0,0))*.58;
       diffuseColor.rgb=mix(mix(stoneColor,greenColor,greenMix),sandColor,sandMix);`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
       float stoneRelief = dot(cliffAlbedo(vCoastPoint,vCoastAxis),vec3(.3,.5,.2));
       float microRelief=coastGrain(vCoastPoint,vCoastAxis,.75);
       float relief=stoneRelief*.8+microRelief*.2;
-      normal = perturbNormalArb(-vViewPosition, normal, vec2(dFdx(relief), dFdy(relief)) * .62, faceDirection);`);
+      vec3 rockNormal=perturbNormalArb(-vViewPosition, normal, vec2(dFdx(relief), dFdy(relief)) * .62, faceDirection);
+      vec3 q0=dFdx(-vViewPosition),q1=dFdy(-vViewPosition);
+      vec2 st0=dFdx(sandUV),st1=dFdy(sandUV);
+      vec3 tangent=cross(q1,normal)*st0.x+cross(normal,q0)*st1.x;
+      vec3 bitangent=cross(q1,normal)*st0.y+cross(normal,q0)*st1.y;
+      float frameScale=inversesqrt(max(max(dot(tangent,tangent),dot(bitangent,bitangent)),1e-12));
+      vec3 microNormal=texture2D(uSandNormal,sandUV).xyz*2.0-1.0;
+      microNormal.xy*=mix(.32,.60,dryFactor);
+      vec3 sandNormal=normalize(tangent*frameScale*microNormal.x+bitangent*frameScale*microNormal.y+normal*microNormal.z);
+      normal=normalize(mix(rockNormal,sandNormal,sandMix*uSandReady));`);
+    shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
+      vec3 sandARM=texture2D(uSandARM,sandUV).rgb;
+      roughnessFactor=mix(roughnessFactor,mix(.36,.92,dryFactor)*mix(.82,1.0,sandARM.g),sandMix*uSandReady);`);
   };
   material.customProgramCacheKey = () => 'gsi-coast-generated-photographic-v2';
   return material;
@@ -113,6 +138,7 @@ export class IslandWorld {
   readonly destinations: WorldDestination[];
   readonly mapOutlines: MapOutline[];
   readonly spawnPoint: THREE.Vector3;
+  readonly ready:Promise<void>;
   readonly elevation = new IslandElevation();
   private readonly maps = new Map<string, WaterMap>();
   private readonly textures: THREE.Texture[] = [];
@@ -122,10 +148,14 @@ export class IslandWorld {
   constructor() {
     this.group.name = '式根島・泊 / GSI land DEM with inferred seabed';
     const grain = detailTexture(); this.textures.push(grain);
-    const atlas=typeof document==='undefined'?new THREE.Texture():new THREE.TextureLoader().load(atlasURL);atlas.colorSpace=THREE.SRGBColorSpace;
+    let atlas=new THREE.Texture();let atlasReady=Promise.resolve();
+    if(typeof document!=='undefined')atlasReady=new Promise<void>((resolve,reject)=>{atlas=new THREE.TextureLoader().load(atlasURL,()=>resolve(),undefined,reject);});
+    atlas.colorSpace=THREE.SRGBColorSpace;
     atlas.anisotropy=8;atlas.minFilter=THREE.LinearMipmapLinearFilter;atlas.magFilter=THREE.LinearFilter;
     this.textures.push(atlas);
-    const terrainMaterial = makeTerrainMaterial(grain, atlas); this.materials.push(terrainMaterial);
+    const sand=loadSandTextures();this.textures.push(...sand.textures);
+    this.ready=Promise.allSettled([atlasReady,sand.ready]).then(()=>{});
+    const terrainMaterial = makeTerrainMaterial(grain, atlas, sand); this.materials.push(terrainMaterial);
     for (const field of this.elevation.fields) this.buildTerrain(field, terrainMaterial);
     if (this.elevation.tomari && this.elevation.coast) {
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true);

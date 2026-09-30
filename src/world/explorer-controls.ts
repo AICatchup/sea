@@ -246,7 +246,18 @@ export class ExplorerControls {
     this.state.message = '泊海岸へ戻りました。浜から海へ歩いて入り、潜水や船の旅を楽しめます。';
   }
 
-  update(delta: number, time: number): void {
+  /** Named scenic entries are used by shared view links and visual QA. */
+  viewpoint(x:number,z:number,yaw:number,pitch:number,mode:TravelMode='walk',depth=4):void{
+    if(this.disposed||![x,z,yaw,pitch,depth].every(Number.isFinite))return;
+    this.resetInput(new Event('reset'));this.cancelVoyage();this.jumpVelocity=0;this.autoAscent=false;
+    const bottom=groundHeight(this.ground,x,z);
+    this.state.mode=mode;this.state.position.set(x,mode==='dive'?Math.max(bottom+.65,-depth):bottom+EYE_HEIGHT,z);
+    this.targetYaw=yaw;this.state.yaw=yaw;this.targetPitch=clamp(pitch,-1.35,1.35);this.state.pitch=this.targetPitch;
+    this.state.depth=Math.max(0,-this.state.position.y);this.state.speed=0;this.state.oxygen=1;
+    this.state.message=mode==='dive'?'岩場の海中へ。ドラッグで見回し、WASDで泳ぎます。':'浜の景色へ。ドラッグで見回し、WASDで歩けます。';
+  }
+
+  update(delta: number, time: number, ambientPaused = false): void {
     if (this.disposed || this.doc.hidden || !Number.isFinite(delta) || delta <= 0) return;
     this.lastTime = Number.isFinite(time) ? time : this.lastTime;
     const dt = Math.min(delta, 0.12);
@@ -261,7 +272,7 @@ export class ExplorerControls {
     const steps = Math.ceil(dt / 0.025);
     for (let step = 0; step < steps; step++) {
       if (this.state.mode === 'boat') this.updateBoat(dt / steps, input.x, input.forward);
-      else this.updatePerson(dt / steps, input);
+      else this.updatePerson(dt / steps, input, ambientPaused ? 0 : dt / steps);
     }
     this.state.boatPosition.y = Math.sin(this.lastTime * 1.13) * 0.13 + Math.sin(this.lastTime * 2.31 + 0.8) * 0.055;
     if (this.state.mode === 'boat') this.state.position.set(this.state.boatPosition.x, this.state.boatPosition.y + 1.9, this.state.boatPosition.z);
@@ -320,7 +331,7 @@ export class ExplorerControls {
     this.cancelVoyage(`${label}の海岸付近へ到着しました。Eで泳いで下船、浜へ近づくと上陸できます。`);
   }
 
-  private updatePerson(dt: number, input: { x: number; forward: number; vertical: number; running: boolean }): void {
+  private updatePerson(dt: number, input: { x: number; forward: number; vertical: number; running: boolean }, resourceDelta = dt): void {
     const position = this.state.position;
     const beforeX = position.x, beforeY = position.y, beforeZ = position.z;
     const mode = this.state.mode;
@@ -369,13 +380,13 @@ export class ExplorerControls {
       const vertical = this.autoAscent ? 1.8 : input.vertical * 2.1 + input.forward * Math.sin(this.state.pitch) * speed;
       position.y = clamp(position.y + vertical * dt, Math.max(-MAX_DIVE_DEPTH, floor + 0.85), SURFACE_EYE);
       if (position.y > -0.4) {
-        this.state.oxygen = Math.min(1, this.state.oxygen + dt * 0.085);
+        this.state.oxygen = Math.min(1, this.state.oxygen + resourceDelta * 0.085);
         if (this.autoAscent || position.y >= SURFACE_EYE - 0.03) {
           this.state.mode = 'swim'; position.y = SURFACE_EYE; this.autoAscent = false;
           this.state.message = '水面へ戻りました。酸素を回復しながら泳げます。';
         }
       } else {
-        this.state.oxygen -= dt * (this.autoAscent ? 0.001 : 0.005 + Math.max(0, -position.y) * 0.000055);
+        this.state.oxygen -= resourceDelta * (this.autoAscent ? 0.001 : 0.005 + Math.max(0, -position.y) * 0.000055);
         if (this.autoAscent) this.state.message = '酸素が少なくなったため、ゆっくり自動浮上しています。';
         else if (this.state.oxygen < 0.3) this.state.message = '酸素が少なくなっています。Spaceで水面へ戻りましょう。';
       }

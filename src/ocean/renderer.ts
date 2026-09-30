@@ -9,6 +9,10 @@ import { ExplorerControls } from '../world/explorer-controls';
 import { SceneCompositor } from './compositor';
 import { prepareWorldMaterials } from './world-materials';
 import type { PlaceableKind } from '../world/contracts';
+import { Reflector } from 'three/addons/objects/Reflector.js';
+import { WaveCaustics } from './caustics';
+import { loadPhotographicSky } from './photographic-sky';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -45,6 +49,7 @@ export class Ocean {
   readonly marine:MarineLife;
   readonly adventure:ExplorerControls;
   readonly uniforms:Uniforms;
+  readonly ready:Promise<void>;
   private readonly compositor:SceneCompositor;
   private readonly sun=new THREE.DirectionalLight(0xfff5df,2.2);
   private readonly fill=new THREE.HemisphereLight(0xb9d9f0,0x666247,.6);
@@ -55,6 +60,16 @@ export class Ocean {
   private readonly target=new THREE.Vector3();
   private readonly materials:THREE.ShaderMaterial[];
   private readonly meshGeometries:THREE.BufferGeometry[];
+  private readonly reflection=new Reflector(new THREE.PlaneGeometry(2,2),{textureWidth:512,textureHeight:320,multisample:0,clipBias:.001});
+  private readonly reflectionMatrix=new THREE.Matrix4();
+  private readonly reflectionBias=new THREE.Matrix4().set(.5,0,0,.5,0,.5,0,.5,0,0,.5,.5,0,0,0,1);
+  private readonly reflectionContext=new THREE.Group();
+  private readonly scannedCoast=new THREE.Group();
+  private readonly scannedCoastInstances:THREE.InstancedMesh[]=[];
+  private readonly reefGeometries:THREE.BufferGeometry[]=[];
+  private readonly caustics:WaveCaustics;
+  private photographicSky:Awaited<ReturnType<typeof loadPhotographicSky>>|null=null;
+  private currentPreset:PresetName='day';
   private animationFrame=0;
   private disposed=false;
   private contextLost=false;
@@ -99,31 +114,112 @@ export class Ocean {
       uBathymetry:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
       uSceneColor:{value:null},uSceneDepth:{value:null},uResolution:{value:new THREE.Vector2()},
       uNearFar:{value:new THREE.Vector2(this.camera.near,this.camera.far)},uUnderwater:{value:0},
+      uReflection:{value:this.reflection.getRenderTarget().texture},uReflectionMatrix:{value:this.reflectionMatrix},uHasReflection:{value:0},
+      uCaustics:{value:null},uCausticBounds:{value:new THREE.Vector4()},
+      uSkyTexture:{value:null},uSkyRotation:{value:0},uSkyExposure:{value:1},uUseSky:{value:0},
     };
+    this.caustics=new WaveCaustics(this.renderer,{span:32});
+    this.uniforms.uCaustics.value=this.caustics.texture;this.uniforms.uCausticBounds.value=this.caustics.bounds;
     this.compositor=new SceneCompositor(this.renderer,this.uniforms.uExposure,this.uniforms.uUnderwater,this.uniforms.uTime);
+    this.compositor.setWaterOptics(this.camera,this.sun,this.uniforms.uSunDirection,this.uniforms.uSunColor);
     this.uniforms.uSceneColor.value=this.compositor.landTarget.texture;
     this.uniforms.uSceneDepth.value=this.compositor.landTarget.depthTexture;
     const skyMat=new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:skyVertex,fragmentShader:skyFragment,
       depthTest:false,depthWrite:false,toneMapped:false});
     const skyGeometry=new THREE.PlaneGeometry(2,2);
-    const sky=new THREE.Mesh(skyGeometry,skyMat);sky.frustumCulled=false;sky.renderOrder=-10;this.scene.add(sky);
+    const sky=new THREE.Mesh(skyGeometry,skyMat);sky.frustumCulled=false;sky.renderOrder=-10;
+    sky.onBeforeRender=(_renderer,_scene,viewCamera)=>{
+      this.uniforms.uCameraWorld.value=viewCamera.matrixWorld;
+      this.uniforms.uInverseProjection.value=this.camera.projectionMatrixInverse;
+    };
+    this.scene.add(sky);
     const seaMat=new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:oceanVertex,fragmentShader:oceanFragment,
       side:THREE.DoubleSide,toneMapped:false});
     const seaGeometry=makeOceanGrid();
     const sea=new THREE.Mesh(seaGeometry,seaMat);sea.frustumCulled=false;this.waterScene.add(sea);
     this.materials=[skyMat,seaMat];this.meshGeometries=[skyGeometry,seaGeometry];
     this.scene.add(this.world.group,this.assets.group,this.marine.group,this.sun,this.sun.target,this.fill);
-    prepareWorldMaterials(this.world.group,this.uniforms.uTime);
-    prepareWorldMaterials(this.assets.group,this.uniforms.uTime);
-    prepareWorldMaterials(this.marine.group,this.uniforms.uTime);
+    this.scene.add(this.scannedCoast);
+    prepareWorldMaterials(this.world.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds});
+    prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds});
+    prepareWorldMaterials(this.marine.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds});
     this.sun.castShadow=true;this.sun.shadow.mapSize.set(2048,2048);
     Object.assign(this.sun.shadow.camera,{left:-220,right:220,top:220,bottom:-220,near:1,far:1500});
     this.sun.shadow.bias=-.00012;this.sun.shadow.normalBias=.15;
     this.scene.fog=new THREE.FogExp2(new THREE.Color().setRGB(...p.horizon),.000028);
     this.pmrem=new THREE.PMREMGenerator(this.renderer);
+    this.reflection.rotation.x=-Math.PI/2;this.reflection.updateMatrixWorld(true);
     this.listen();this.resize();this.refreshEnvironment('day');
     this.simulation.advance(this.time,0,this.swell,1.55);
     this.frame(0);
+    const marineReady=this.marine.ready.then(()=>{
+      if(this.disposed)return;
+      prepareWorldMaterials(this.marine.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds});
+    });
+    const coastReady=this.marine.rockLibrary.ready.then(variants=>{
+      if(this.disposed)return;
+      this.assets.hydrateRockPlacements(variants);
+      prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds});
+      let seed=31851;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+      const helper=new THREE.Object3D();
+      for(const variant of variants){
+        const matrices:THREE.Matrix4[]=[];
+        for(let attempt=0;attempt<900&&matrices.length<(variant.kind==='shelf'?30:20);attempt++){
+          const x=-260+random()*470,z=-230+random()*340,h=this.world.heightAt(x,z);
+          const dx=(this.world.heightAt(x+1,z)-this.world.heightAt(x-1,z))*.5;
+          const dz=(this.world.heightAt(x,z+1)-this.world.heightAt(x,z-1))*.5;
+          const slope=Math.hypot(dx,dz);
+          if(h<.2||h>24||slope<.4||slope>2.4)continue;
+          const s=variant.kind==='shelf'?.55+random()*.70:.7+random()*1.4;
+          const normal=new THREE.Vector3(-dx,1,-dz).normalize();
+          helper.position.set(x,h,z).addScaledVector(normal,variant.kind==='shelf'?-.85*s:-.45*s);helper.scale.set(s,.85*s,s);
+          helper.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),normal);
+          helper.rotateY(random()*Math.PI*2);helper.updateMatrix();matrices.push(helper.matrix.clone());
+        }
+        if(variant.kind==='shelf'){
+          const patches:THREE.BufferGeometry[]=[];
+          for(const [x,z] of [[-138,-119],[-147,-125],[-157,-117],[-130,-132],[-167,-137],[-155,-150]]){
+            const px=x+(random()-.5)*5,pz=z+(random()-.5)*5,h=this.world.heightAt(px,pz),s=.70+random()*.35;
+            if(h> -3.8||h< -16)continue;
+            helper.position.set(px,h-.20,pz);helper.scale.set(s,.5*s,s);
+            helper.rotation.set((random()-.5)*.08,random()*Math.PI*2,(random()-.5)*.08);
+            helper.updateMatrix();
+            const patch=variant.geometry.clone(),source=variant.geometry.getAttribute('position');
+            patch.applyMatrix4(helper.matrix);
+            const vertices=patch.getAttribute('position');
+            for(let i=0;i<vertices.count;i++){
+              const vx=vertices.getX(i),vz=vertices.getZ(i);
+              vertices.setY(i,this.world.heightAt(vx,vz)-.30+source.getY(i)*s*.5);
+            }
+            patch.computeVertexNormals();patches.push(patch);
+          }
+          if(patches.length){
+            const geometry=mergeGeometries(patches,false)!;patches.forEach(patch=>patch.dispose());
+            geometry.computeBoundingSphere();this.reefGeometries.push(geometry);
+            const reef=new THREE.Mesh(geometry,variant.material);reef.name='Ground-conforming scanned rocky habitat '+variant.id;
+            reef.castShadow=reef.receiveShadow=true;this.scannedCoast.add(reef);
+          }
+        }
+        if(!matrices.length)continue;
+        const instances=new THREE.InstancedMesh(variant.geometry,variant.material,matrices.length);
+        matrices.forEach((matrix,index)=>instances.setMatrixAt(index,matrix));
+        instances.name='Photo-scanned cliff outcrops '+variant.id;instances.castShadow=true;instances.receiveShadow=true;
+        instances.computeBoundingSphere();this.scannedCoastInstances.push(instances);this.scannedCoast.add(instances);
+      }
+      prepareWorldMaterials(this.scannedCoast,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds});
+    });
+    const skyReady=loadPhotographicSky(1.70).then(sky=>{
+      if(this.disposed){sky.texture.dispose();return;}
+      this.photographicSky=sky;
+      this.uniforms.uSkyTexture.value=sky.texture;this.uniforms.uSkyRotation.value=sky.rotation;this.uniforms.uSkyExposure.value=sky.exposure;
+      if(this.currentPreset==='day'){
+        this.uniforms.uUseSky.value=1;this.uniforms.uSunDirection.value.copy(sky.sun);
+        this.environmentTargets.get('day')?.dispose();this.environmentTargets.delete('day');this.refreshEnvironment('day');
+      }
+    }).catch(error=>console.warn('Photographic sky unavailable; procedural atmosphere retained',error));
+    this.ready=Promise.allSettled([this.world.ready,marineReady,coastReady,skyReady]).then(results=>{
+      for(const result of results)if(result.status==='rejected')console.warn('A photographic asset could not load',result.reason);
+    });
   }
 
   private refreshEnvironment(name:PresetName):void{
@@ -167,7 +263,7 @@ export class Ocean {
       this.simulation.advance(this.time,delta,this.swell,this.uniforms.uChoppiness.value);
     }
     // Reduced ambient motion never prevents intentional walking or looking.
-    this.adventure.update(delta,this.time);
+    this.adventure.update(delta,this.time,this.paused);
     const state=this.adventure.state;
     this.camera.position.copy(state.position);
     this.direction.set(Math.sin(state.yaw)*Math.cos(state.pitch),Math.sin(state.pitch),-Math.cos(state.yaw)*Math.cos(state.pitch));
@@ -183,6 +279,8 @@ export class Ocean {
     const image=waterMap.texture.image as {width:number;height:number};
     this.uniforms.uBathyResolution.value.set(image.width,image.height);
     const textures=this.simulation.textures;this.uniforms.uLongWaves.value=textures[0];this.uniforms.uShortWaves.value=textures[1];
+    this.caustics.update(this.time,this.paused?0:delta,textures[0],textures[1],waterMap,this.camera.position,this.uniforms.uSunDirection.value,this.swell,this.wind,1.55);
+    this.uniforms.uCaustics.value=this.caustics.texture;
     this.uniforms.uTime.value=this.time;this.uniforms.uSwell.value=this.swell;this.uniforms.uWind.value=this.wind;
     this.sun.position.copy(this.camera.position).addScaledVector(this.uniforms.uSunDirection.value,650);
     this.sun.target.position.copy(this.camera.position);
@@ -191,6 +289,13 @@ export class Ocean {
     this.fill.intensity=.26+this.uniforms.uExposure.value*.18;
     if(this.frames%4===0)this.renderer.shadowMap.needsUpdate=true;
     this.renderer.info.reset();
+    if(underwater<.5&&this.frames%3===0){
+      this.renderer.setClearColor(0,1);
+      this.reflection.onBeforeRender(this.renderer,this.scene,this.camera,this.reflection.geometry,this.reflection.material as THREE.Material,this.reflectionContext);
+      const reflectedCamera=this.reflection.getReflectionCamera(this.camera);
+      this.reflectionMatrix.copy(this.reflectionBias).multiply(reflectedCamera.projectionMatrix).multiply(reflectedCamera.matrixWorldInverse);
+      this.uniforms.uHasReflection.value=1;
+    }
     this.compositor.render(this.scene,this.waterScene,this.camera);this.frames++;
     if(this.captureNextFrame){this.canvas.toBlob(this.captureNextFrame,'image/png');this.captureNextFrame=null;}
     this.measureTime+=elapsed;this.measureFrames++;
@@ -212,6 +317,7 @@ export class Ocean {
     const budget=this.quality==='high'?4200000:2300000;
     this.renderer.setPixelRatio(Math.min(ratio,Math.sqrt(budget/(width*height))));
     this.renderer.setSize(width,height,false);this.compositor.resize(this.canvas.width,this.canvas.height);
+    this.reflection.getRenderTarget().setSize(Math.max(192,Math.round(this.canvas.width*.42)),Math.max(128,Math.round(this.canvas.height*.42)));
     this.uniforms.uResolution.value.set(this.canvas.width,this.canvas.height);
     this.camera.aspect=width/height;this.camera.updateProjectionMatrix();
   }
@@ -219,11 +325,13 @@ export class Ocean {
   setWind(wind:number):void{this.wind=THREE.MathUtils.clamp(wind,2,18);this.simulation.setWind(this.wind);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
   setSwell(swell:number):void{this.swell=THREE.MathUtils.clamp(swell,.3,2);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
   setPreset(name:PresetName):void{
+    this.currentPreset=name;this.uniforms.uUseSky.value=name==='day'&&this.photographicSky?1:0;
     const p=presets[name];this.setWind(p.wind);this.setSwell(p.swell);
     for(const [key,value] of Object.entries({uSunDirection:p.sun,uSunColor:p.sunColor,uZenith:p.zenith,uHorizon:p.horizon,uCloudColor:p.cloud,uWaterTint:p.water})){
       this.uniforms[key].value.set(...value);
     }
     this.uniforms.uSunDirection.value.normalize();this.uniforms.uCloudCoverage.value=p.coverage;
+    if(name==='day'&&this.photographicSky)this.uniforms.uSunDirection.value.copy(this.photographicSky.sun);
     this.uniforms.uExposure.value=p.exposure;this.uniforms.uStorm.value=p.storm;
     if(this.scene.fog instanceof THREE.FogExp2){this.scene.fog.color.setRGB(...p.horizon);this.scene.fog.density=.000028+.00009*p.storm;}
     this.refreshEnvironment(name);
@@ -233,26 +341,32 @@ export class Ocean {
     const state=this.adventure.state;
     const x=state.position.x+Math.sin(state.yaw)*8,z=state.position.z-Math.cos(state.yaw)*8;
     this.assets.place(kind,x,z,state.yaw);
-    prepareWorldMaterials(this.assets.group,this.uniforms.uTime);
+    prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds});
   }
   capture():Promise<Blob|null>{
     if(this.disposed||this.contextLost||document.hidden)return Promise.resolve(null);
     this.captureNextFrame?.(null);return new Promise(resolve=>{this.captureNextFrame=resolve;});
   }
+  probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
   get diagnostics(){
     const state=this.adventure.state;
     return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,
       resolution:[this.canvas.width,this.canvas.height],camera:{yaw:state.yaw,pitch:state.pitch,height:state.position.y,x:state.position.x,z:state.position.z},
       adventure:{mode:state.mode,depth:state.depth,oxygen:state.oxygen,speed:state.speed,placed:this.assets.placedCount,
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message},
+      photographicSky:!!this.photographicSky,marineScans:this.marine.group.userData.scannedRocks,
+      scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),
       ground:this.world.heightAt(state.position.x,state.position.z),programs:this.renderer.info.programs?.length,
       draws:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles};
   }
   dispose():void{
     if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.animationFrame);this.abort.abort();
     this.captureNextFrame?.(null);this.captureNextFrame=null;
+    this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
+    this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.adventure.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
-    this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();this.renderer.dispose();
+    this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();
+    this.caustics.dispose();this.reflection.dispose();this.reflection.geometry.dispose();this.photographicSky?.texture.dispose();this.renderer.dispose();
   }
 }
