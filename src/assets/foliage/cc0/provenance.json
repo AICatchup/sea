@@ -1,0 +1,545 @@
+{
+  "assets": [
+    {
+      "asset": "pine_sapling_small",
+      "source": "https://polyhaven.com/a/pine_sapling_small",
+      "api": "https://api.polyhaven.com/files/pine_sapling_small",
+      "license": "CC0-1.0",
+      "licenseURL": "https://polyhaven.com/license",
+      "acquired": "2026-09-30T05:27:51.920Z",
+      "originalBounds": [
+        {
+          "variant": 0,
+          "nativeMin": [
+            -0.2652446925640106,
+            0.0009154988802038133,
+            -0.3313728868961334
+          ],
+          "nativeMax": [
+            0.26351654529571533,
+            1.0465238094329834,
+            0.39897364377975464
+          ]
+        },
+        {
+          "variant": 1,
+          "nativeMin": [
+            -0.36030644178390503,
+            -0.015484155155718327,
+            -0.3713758885860443
+          ],
+          "nativeMax": [
+            0.4273671805858612,
+            1.283473253250122,
+            0.3560454249382019
+          ]
+        },
+        {
+          "variant": 2,
+          "nativeMin": [
+            -0.23103249073028564,
+            0.000687308085616678,
+            -0.32069259881973267
+          ],
+          "nativeMax": [
+            0.28175342082977295,
+            0.9620128870010376,
+            0.2592729330062866
+          ]
+        }
+      ],
+      "outputBounds": [
+        {
+          "name": "pine_near_0",
+          "min": [
+            -2.6993095874786377,
+            -0.002586960094049573,
+            -3.283647060394287
+          ],
+          "max": [
+            2.899169683456421,
+            6.052215576171875,
+            3.344025135040283
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "pine_mid_0",
+          "min": [
+            -2.6146249771118164,
+            -0.002586960094049573,
+            -3.1846635341644287
+          ],
+          "max": [
+            2.775714635848999,
+            6.026135444641113,
+            3.3063244819641113
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "pine_near_1",
+          "min": [
+            -2.2650439739227295,
+            -0.0038794635329395533,
+            -3.2896227836608887
+          ],
+          "max": [
+            2.7532875537872314,
+            6.227988243103027,
+            2.9394781589508057
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "pine_mid_1",
+          "min": [
+            -2.2088303565979004,
+            -0.0038794635329395533,
+            -3.0523853302001953
+          ],
+          "max": [
+            2.715628147125244,
+            6.227988243103027,
+            2.715914487838745
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "pine_near_2",
+          "min": [
+            -2.3987815380096436,
+            -0.0016078670741990209,
+            -2.634753942489624
+          ],
+          "max": [
+            3.386000156402588,
+            6.403879165649414,
+            2.4783637523651123
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "pine_mid_2",
+          "min": [
+            -2.3987815380096436,
+            -0.0016078670741990209,
+            -2.563349723815918
+          ],
+          "max": [
+            3.3562824726104736,
+            6.341658592224121,
+            2.4783637523651123
+          ],
+          "units": "metres"
+        }
+      ],
+      "reductions": [
+        {
+          "variant": 0,
+          "level": "near",
+          "material": 0,
+          "sourceTriangles": 486,
+          "target": 540,
+          "triangles": 486,
+          "normalizedError": 0
+        },
+        {
+          "variant": 0,
+          "level": "near",
+          "material": 1,
+          "sourceTriangles": 121749,
+          "target": 16000,
+          "triangles": 15991,
+          "normalizedError": 0.002013077726587653
+        },
+        {
+          "variant": 0,
+          "level": "mid",
+          "material": 0,
+          "sourceTriangles": 486,
+          "target": 240,
+          "triangles": 240,
+          "normalizedError": 0.004080132581293583
+        },
+        {
+          "variant": 0,
+          "level": "mid",
+          "material": 1,
+          "sourceTriangles": 121749,
+          "target": 2200,
+          "triangles": 2200,
+          "normalizedError": 0.00495135085657239
+        },
+        {
+          "variant": 1,
+          "level": "near",
+          "material": 0,
+          "sourceTriangles": 540,
+          "target": 540,
+          "triangles": 540,
+          "normalizedError": 0
+        },
+        {
+          "variant": 1,
+          "level": "near",
+          "material": 1,
+          "sourceTriangles": 141966,
+          "target": 16000,
+          "triangles": 15982,
+          "normalizedError": 0.0021835030056536198
+        },
+        {
+          "variant": 1,
+          "level": "mid",
+          "material": 0,
+          "sourceTriangles": 540,
+          "target": 240,
+          "triangles": 239,
+          "normalizedError": 0.003819296369329095
+        },
+        {
+          "variant": 1,
+          "level": "mid",
+          "material": 1,
+          "sourceTriangles": 141966,
+          "target": 2200,
+          "triangles": 2200,
+          "normalizedError": 0.004979382269084454
+        },
+        {
+          "variant": 2,
+          "level": "near",
+          "material": 0,
+          "sourceTriangles": 528,
+          "target": 540,
+          "triangles": 528,
+          "normalizedError": 0
+        },
+        {
+          "variant": 2,
+          "level": "near",
+          "material": 1,
+          "sourceTriangles": 132875,
+          "target": 16000,
+          "triangles": 15978,
+          "normalizedError": 0.0024413603823632
+        },
+        {
+          "variant": 2,
+          "level": "mid",
+          "material": 0,
+          "sourceTriangles": 528,
+          "target": 240,
+          "triangles": 240,
+          "normalizedError": 0.0036278904881328344
+        },
+        {
+          "variant": 2,
+          "level": "mid",
+          "material": 1,
+          "sourceTriangles": 132875,
+          "target": 2200,
+          "triangles": 2200,
+          "normalizedError": 0.005693749058991671
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/pine_sapling_small/pine_sapling_small_1k.gltf",
+          "bytes": 11442,
+          "sha256": "f358c01926861dd082f32dba60f7c9fba232b585a985cf38c0d2229eecf4bc48",
+          "md5": "237a7672645631550ae571743aa9f55b"
+        },
+        {
+          "path": "textures/pine_sapling_small_twig_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_sapling_small/pine_sapling_small_twig_arm_1k.jpg",
+          "bytes": 394056,
+          "sha256": "2eb0aa44124b5a4ae9401e00b23b3c916f4c3f421616ce1bb932f248fc061288",
+          "md5": "b5062030fc42ec7bd12eb3f052054104"
+        },
+        {
+          "path": "textures/pine_sapling_small_twig_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_sapling_small/pine_sapling_small_twig_diff_1k.jpg",
+          "bytes": 477942,
+          "sha256": "54af7d6fb664b5a38bcb118b557bc50e01e86ec54d6f1a573c3e32c649a53362",
+          "md5": "dacc918bb421968e9ccc1956d78a2dbe"
+        },
+        {
+          "path": "textures/pine_sapling_small_bark_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_sapling_small/pine_sapling_small_bark_nor_gl_1k.jpg",
+          "bytes": 1016849,
+          "sha256": "05c46455531781b6cf18cae0648cf627f60ee942adaa8bcbfd1592fc2506a9e0",
+          "md5": "bb6e3a6eea777d992cef48fabfdc538c"
+        },
+        {
+          "path": "pine_sapling_small.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/pine_sapling_small/pine_sapling_small.bin",
+          "bytes": 17771796,
+          "sha256": "b4d2fc73d53f1d8717eb5ef9a2c66957d2a53152787e543aace88fcd6fca94ef",
+          "md5": "76dd1802d8de128c812f2e124a258b35"
+        },
+        {
+          "path": "textures/pine_sapling_small_bark_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_sapling_small/pine_sapling_small_bark_diff_1k.jpg",
+          "bytes": 725265,
+          "sha256": "5c76836b01c3536fa0e24207b67bf4f3315b53ebe2b4ecc6f08dfcf3f8d74929",
+          "md5": "7d3a558ed614c7e75594c7be3bf80311"
+        },
+        {
+          "path": "textures/pine_sapling_small_bark_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_sapling_small/pine_sapling_small_bark_arm_1k.jpg",
+          "bytes": 801278,
+          "sha256": "336a4680cd571b6076b67afee2310b290b8900d9d126eb39ec1ae92e95be2ea9",
+          "md5": "21d1abd15e40951825a4f3da110b20ea"
+        },
+        {
+          "path": "textures/pine_sapling_small_twig_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_sapling_small/pine_sapling_small_twig_nor_gl_1k.jpg",
+          "bytes": 692711,
+          "sha256": "76af87821d7ff00e25768d5d97a449394fe64a21ae55d099da7f5ed46d9098c8",
+          "md5": "eebc5a81f8f6231d8e18ec4ad7292798"
+        }
+      ],
+      "output": {
+        "file": "pine-lod-1k.glb",
+        "bytes": 7683408,
+        "sha256": "612fe7b4acadd7de86631546a29ac37a4d6bc8945ea8cd4cd945b10c474ace9f"
+      }
+    },
+    {
+      "asset": "shrub_02",
+      "source": "https://polyhaven.com/a/shrub_02",
+      "api": "https://api.polyhaven.com/files/shrub_02",
+      "license": "CC0-1.0",
+      "licenseURL": "https://polyhaven.com/license",
+      "acquired": "2026-09-30T05:27:52.092Z",
+      "originalBounds": [
+        {
+          "variant": 0,
+          "nativeMin": [
+            -0.9439988136291504,
+            -0.03012576885521412,
+            -0.863244354724884
+          ],
+          "nativeMax": [
+            0.6156559586524963,
+            1.6821810007095337,
+            0.42684367299079895
+          ]
+        },
+        {
+          "variant": 1,
+          "nativeMin": [
+            -0.4038015305995941,
+            -0.10226154327392578,
+            -1.0773800611495972
+          ],
+          "nativeMax": [
+            0.9647624492645264,
+            1.0844767093658447,
+            0.30848613381385803
+          ]
+        },
+        {
+          "variant": 2,
+          "nativeMin": [
+            -0.8910231590270996,
+            -0.2947101294994354,
+            -1.22649085521698
+          ],
+          "nativeMax": [
+            1.287977695465088,
+            0.8719967007637024,
+            0.24143657088279724
+          ]
+        }
+      ],
+      "outputBounds": [
+        {
+          "name": "shrub_near_0",
+          "min": [
+            -0.569281280040741,
+            0.0013615392381325364,
+            -0.4708881676197052
+          ],
+          "max": [
+            0.569281280040741,
+            1.25,
+            0.4708881676197052
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "shrub_mid_0",
+          "min": [
+            -0.569281280040741,
+            0.0013615392381325364,
+            -0.4708881676197052
+          ],
+          "max": [
+            0.569281280040741,
+            1.25,
+            0.45406287908554077
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "shrub_near_1",
+          "min": [
+            -0.605437695980072,
+            0,
+            -0.6130920052528381
+          ],
+          "max": [
+            0.605437695980072,
+            1.0499999523162842,
+            0.6124688982963562
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "shrub_mid_1",
+          "min": [
+            -0.605437695980072,
+            0.0038563846610486507,
+            -0.6130920052528381
+          ],
+          "max": [
+            0.6020469665527344,
+            1.0499999523162842,
+            0.6124688982963562
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "shrub_near_2",
+          "min": [
+            -0.7937515377998352,
+            0,
+            -0.5347265601158142
+          ],
+          "max": [
+            0.7937515377998352,
+            0.8500000238418579,
+            0.5347265601158142
+          ],
+          "units": "metres"
+        },
+        {
+          "name": "shrub_mid_2",
+          "min": [
+            -0.7937515377998352,
+            0,
+            -0.5347265601158142
+          ],
+          "max": [
+            0.7937515377998352,
+            0.8500000238418579,
+            0.5347265601158142
+          ],
+          "units": "metres"
+        }
+      ],
+      "reductions": [
+        {
+          "variant": 0,
+          "level": "near",
+          "material": 0,
+          "sourceTriangles": 7590,
+          "target": 2300,
+          "triangles": 2299,
+          "normalizedError": 0.0019517712062224746
+        },
+        {
+          "variant": 0,
+          "level": "mid",
+          "material": 0,
+          "sourceTriangles": 7590,
+          "target": 440,
+          "triangles": 420,
+          "normalizedError": 0.006147726904600859
+        },
+        {
+          "variant": 1,
+          "level": "near",
+          "material": 0,
+          "sourceTriangles": 5242,
+          "target": 2300,
+          "triangles": 2297,
+          "normalizedError": 0.0016551786102354527
+        },
+        {
+          "variant": 1,
+          "level": "mid",
+          "material": 0,
+          "sourceTriangles": 5242,
+          "target": 440,
+          "triangles": 416,
+          "normalizedError": 0.0063092950731515884
+        },
+        {
+          "variant": 2,
+          "level": "near",
+          "material": 0,
+          "sourceTriangles": 9234,
+          "target": 2300,
+          "triangles": 2293,
+          "normalizedError": 0.001655701780691743
+        },
+        {
+          "variant": 2,
+          "level": "mid",
+          "material": 0,
+          "sourceTriangles": 9234,
+          "target": 440,
+          "triangles": 434,
+          "normalizedError": 0.005459142383188009
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/shrub_02/shrub_02_1k.gltf",
+          "bytes": 8083,
+          "sha256": "99de0a70fe88ad414615cc8d8e020617c8512e2abfe08b911b153a6fcc40d93e",
+          "md5": "8f7254d279c0c49c0b3edfe260aa5c86"
+        },
+        {
+          "path": "textures/shrub_02_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/shrub_02/shrub_02_arm_1k.jpg",
+          "bytes": 313715,
+          "sha256": "7186bf604d5c02f873aef6de2346cc06b6fa48f47d054edbef36d2c3772c0890",
+          "md5": "28c218aeb7cab930d99ee16578984241"
+        },
+        {
+          "path": "textures/shrub_02_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/shrub_02/shrub_02_nor_gl_1k.jpg",
+          "bytes": 490815,
+          "sha256": "54c24e433365d5410223b7ebd2b33042b80831f80976e10768114db5ef6911d7",
+          "md5": "51a7f2db7e06a207171fd725585241d5"
+        },
+        {
+          "path": "shrub_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/shrub_02/shrub_02.bin",
+          "bytes": 758692,
+          "sha256": "5c1b79da1cfdbac90599542ccd1f75ba433a3a4d356b1ea03655adb39b0e2c96",
+          "md5": "683b5475238310899eac1458520903e6"
+        },
+        {
+          "path": "textures/shrub_02_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/shrub_02/shrub_02_diff_1k.jpg",
+          "bytes": 395120,
+          "sha256": "9956eff294034d70516d867e9668428a23d782feb3d4c34061dce5e44bacd5a8",
+          "md5": "3f4ae281928de030c7d4e41ad5b88a8b"
+        }
+      ],
+      "output": {
+        "file": "shrub-lod-1k.glb",
+        "bytes": 1557272,
+        "sha256": "87851af16f1469c9be887e5782eb75c44f87fe729221ae3372121828b2373c91"
+      }
+    }
+  ],
+  "totalBytes": 9240680,
+  "textureProcessing": "Original 1K JPEG diffuse/OpenGL normal/ARM bytes retained; indexed UV/normal-aware mesh reduction"
+}

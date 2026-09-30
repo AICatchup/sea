@@ -1,84 +1,152 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { cylinderBetween, ModelResources, randomSeed, surfaceTexture } from './models/procedural.ts';
 
-const atlasURL = new URL('../assets/foliage/tomari-black-pine-v1.png', import.meta.url).href;
+const sourceAssets = [
+  { kind: 'pine', url: new URL('../assets/foliage/cc0/pine-lod-1k.glb', import.meta.url).href },
+  { kind: 'shrub', url: new URL('../assets/foliage/cc0/shrub-lod-1k.glb', import.meta.url).href },
+] as const;
 export interface FoliageGeometry { bark: THREE.BufferGeometry; needles: THREE.BufferGeometry; }
+export interface FoliagePart { geometry: THREE.BufferGeometry; material: THREE.MeshStandardMaterial; }
+export interface FoliageVariant { parts: readonly FoliagePart[]; triangles: number; }
+export interface FoliageLevels { near: FoliageVariant[]; mid: FoliageVariant[]; far: FoliageVariant[]; }
 
-/** Photographic alpha sprays retain needles and open branch structure from every viewing direction. */
+/** True 3D branches / needles nearby; authored small-volume crown proxies beyond 100m. */
 export class CoastalFoliage {
   readonly resources: ModelResources;
   readonly bark: THREE.MeshStandardMaterial;
   readonly leaves: THREE.MeshStandardMaterial;
+  // Backward-compatible cheap geometry for terrain's static island forest.
   readonly pines: FoliageGeometry[];
   readonly shrubs: FoliageGeometry[];
+  readonly pineLevels: FoliageLevels;
+  readonly shrubLevels: FoliageLevels;
+  private disposed = false;
 
   constructor(resources: ModelResources) {
     this.resources = resources;
-    const atlas = resources.texture(typeof document === 'undefined' ? new THREE.Texture() : new THREE.TextureLoader().load(atlasURL));
-    atlas.name = 'Authored photographic black-pine / evergreen alpha atlas';
-    atlas.colorSpace = THREE.SRGBColorSpace; atlas.anisotropy = 8;
-    atlas.minFilter = THREE.LinearMipmapLinearFilter; atlas.magFilter = THREE.LinearFilter;
-    this.leaves = resources.material(new THREE.MeshStandardMaterial({
-      map: atlas, color: '#e0e4d6', roughness: .84, metalness: 0,
-      side: THREE.DoubleSide, shadowSide: THREE.DoubleSide, alphaTest: .35, alphaToCoverage: true,
-      depthWrite: true, transparent: false, dithering: true,
-    }));
-    this.leaves.name = 'Pine needles and evergreen leaves / alpha cutout';
-    this.bark = resources.material(new THREE.MeshStandardMaterial({ color: '#b8b4a9', roughness: .98,
-      map: surfaceTexture(resources, '#787b70', 'bark', 1707) }));
+    this.leaves = resources.material(new THREE.MeshStandardMaterial({ color: '#32492b', roughness: .9,
+      metalness: 0, vertexColors: true, dithering: true }));
+    this.leaves.name = 'Distant shaded 3D evergreen crown proxy';
+    this.bark = resources.material(new THREE.MeshStandardMaterial({ color: '#999384', roughness: .98,
+      map: surfaceTexture(resources, '#777163', 'bark', 1707) }));
     this.pines = [13, 41, 79].map(seed => this.pine(seed));
     this.shrubs = [19, 53, 83].map(seed => this.shrub(seed));
+    const variants = (sources: FoliageGeometry[]) => sources.map(g => ({ parts: [{ geometry: g.bark, material: this.bark }, { geometry: g.needles, material: this.leaves }], triangles: this.triangles(g.bark) + this.triangles(g.needles) }));
+    const pines = variants(this.pines), shrubs = variants(this.shrubs);
+    const crowns = (sources: FoliageGeometry[]) => sources.map(g => ({ parts: [{ geometry: g.needles, material: this.leaves }], triangles: this.triangles(g.needles) }));
+    // Fine twigs and trunks vanish inside the dense distant canopy; no invisible branch cost.
+    this.pineLevels = { near: pines, mid: pines, far: crowns(this.pines) };
+    this.shrubLevels = { near: shrubs, mid: shrubs, far: crowns(this.shrubs) };
   }
 
-  private card(width: number, height: number, tile: number, point: THREE.Vector3, rotation: THREE.Euler): THREE.BufferGeometry {
-    const geometry = new THREE.PlaneGeometry(width, height);
-    const uv = geometry.getAttribute('uv'), tx = tile % 2, ty = tile < 2 ? 1 : 0;
-    for (let i = 0; i < uv.count; i++) uv.setXY(i, (tx + .015 + uv.getX(i) * .97) * .5, (ty + .015 + uv.getY(i) * .97) * .5);
-    geometry.applyQuaternion(new THREE.Quaternion().setFromEuler(rotation)); geometry.translate(point.x, point.y, point.z);
-    return geometry;
+  private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }
+
+  /** AssetWorld alone owns and loads the original photographic maps and 3D LODs. */
+  async loadDetailed(): Promise<void> {
+    if (typeof document === 'undefined') return;
+    for (const source of sourceAssets) {
+      const gltf = await new GLTFLoader().loadAsync(source.url);
+      if (this.disposed) {
+        const abandoned = new ModelResources();
+        gltf.scene.traverse(child => { if (child instanceof THREE.Mesh) {
+          abandoned.geometry(child.geometry);
+          for (const material of Array.isArray(child.material) ? child.material : [child.material]) {
+            abandoned.material(material); for (const value of Object.values(material)) if (value instanceof THREE.Texture) abandoned.texture(value);
+          }
+        } }); abandoned.dispose(); return;
+      }
+      // One parse creates all LODs; each shared map and material is registered once.
+      const variants: Record<'near' | 'mid', FoliageVariant[]> = { near: [], mid: [] };
+      for (const level of ['near', 'mid'] as const) for (let variant = 0; variant < 3; variant++) {
+        const object = gltf.scene.getObjectByName(`${source.kind}_${level}_${variant}`);
+        if (!object) throw new Error(`Missing ${source.kind} ${level} ${variant}`);
+        const parts: FoliagePart[] = [];
+        object.traverse(child => {
+          if (!(child instanceof THREE.Mesh)) return;
+          const material = (Array.isArray(child.material) ? child.material[0] : child.material) as THREE.MeshStandardMaterial;
+          material.color.set('#ffffff'); material.roughness = .92; material.metalness = 0;
+          material.alphaTest = 0; // Individual modeled needles/leaves; no rectangular alpha sheets.
+          material.transparent = false; material.depthWrite = true; material.dithering = true;
+          material.shadowSide = THREE.DoubleSide; material.side = THREE.DoubleSide;
+          material.normalScale.set(.55, .55); material.aoMapIntensity = .65;
+          material.userData.source = `https://polyhaven.com/a/${source.kind === 'pine' ? 'pine_sapling_small' : 'shrub_02'}`;
+          material.userData.license = 'CC0-1.0'; material.userData.geometry = 'Individual modeled needles / leaves; no tree billboards';
+          if (source.kind === 'shrub' || material.name.includes('twig')) {
+            // Thin leaves scatter a small amount of sunlight from behind. Keep rough diffuse
+            // response and shadow attenuation; no emissive/baked-light foliage or refraction pass.
+            material.onBeforeCompile = shader => {
+              shader.fragmentShader = shader.fragmentShader.replace('#include <shadowmap_pars_fragment>', '#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>');
+              shader.fragmentShader = shader.fragmentShader.replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
+              #if NUM_DIR_LIGHTS > 0
+                float leafBacklight = pow(max(0.0, -dot(geometryNormal, directionalLights[0].direction)), 2.0);
+                reflectedLight.directDiffuse += diffuseColor.rgb * directionalLights[0].color * leafBacklight * 0.045 * getShadowMask();
+              #endif`);
+            };
+            material.customProgramCacheKey = () => 'coastal-thin-leaves-v1';
+          }
+          for (const [key, value] of Object.entries(material)) if (value instanceof THREE.Texture) {
+            value.colorSpace = key === 'map' ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+            value.anisotropy = 8; this.resources.texture(value);
+          }
+          this.resources.material(material);
+          const geometry = this.resources.geometry(child.geometry); geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+          parts.push({ geometry, material });
+        });
+        variants[level].push({ parts, triangles: parts.reduce((sum, p) => sum + this.triangles(p.geometry), 0) });
+      }
+      const levels = source.kind === 'pine' ? this.pineLevels : this.shrubLevels;
+      levels.near = variants.near; levels.mid = variants.mid;
+    }
+  }
+
+  dispose(): void { this.disposed = true; }
+
+  private volume(point: THREE.Vector3, scale: THREE.Vector3, seed: number): THREE.BufferGeometry {
+    // Far-only asymmetric sprays have actual thickness and never face the camera.
+    const g = new THREE.TetrahedronGeometry(1, 0), p = g.getAttribute('position'), colors = new Float32Array(p.count * 3);
+    const random = randomSeed(seed);
+    for (let i = 0; i < p.count; i++) { const shade = .68 + random() * .42; colors.set([shade * .91, shade, shade * .82], i * 3); }
+    g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    g.scale(scale.x, scale.y, scale.z); g.rotateY(seed * .71); g.translate(point.x, point.y, point.z); return g;
   }
 
   private finish(bark: THREE.BufferGeometry[], leaves: THREE.BufferGeometry[]): FoliageGeometry {
-    const joinedBark = mergeGeometries(bark, false)!, joinedLeaves = mergeGeometries(leaves, false)!;
-    for (const geometry of [...bark, ...leaves]) geometry.dispose();
-    joinedBark.computeBoundingSphere(); joinedLeaves.computeBoundingSphere();
-    return { bark: this.resources.geometry(joinedBark), needles: this.resources.geometry(joinedLeaves) };
+    const merge = (parts: THREE.BufferGeometry[]) => {
+      const expanded = parts.map(g => g.index ? g.toNonIndexed() : g);
+      const joined = mergeGeometries(expanded, false)!;
+      parts.forEach(g => g.dispose()); expanded.forEach((g, i) => { if (g !== parts[i]) g.dispose(); });
+      joined.computeBoundingBox(); joined.computeBoundingSphere(); return this.resources.geometry(joined);
+    };
+    return { bark: merge(bark), needles: merge(leaves) };
   }
 
   private pine(seed: number): FoliageGeometry {
     const random = randomSeed(seed), bark: THREE.BufferGeometry[] = [], leaves: THREE.BufferGeometry[] = [];
-    const height = 5.0 + random() * 1.15;
-    const trunk = [new THREE.Vector3(), new THREE.Vector3(.12, height * .31, -.13),
-      new THREE.Vector3(.29, height * .62, -.05), new THREE.Vector3(.46, height, .18)];
-    for (let i = 1; i < trunk.length; i++) bark.push(cylinderBetween(trunk[i - 1], trunk[i], .17 - i * .032, .145 - i * .036, 7));
-    for (let i = 0; i < 12; i++) {
-      const angle = i * 2.39996 + random() * .8, level = height * (.44 + random() * .48);
-      const spread = 1.4 + random() * 1.4 - (level / height - .44) * .7;
-      const origin = new THREE.Vector3(level * .06, level, 0);
-      const elbow = new THREE.Vector3(Math.cos(angle) * spread * .67 + .2, level - .10, Math.sin(angle) * spread * .53);
-      const tip = new THREE.Vector3(Math.cos(angle) * spread + .26, level + .35, Math.sin(angle) * spread * .83);
-      bark.push(cylinderBetween(origin, elbow, .074, .028, 4), cylinderBetween(elbow, tip, .03, .008, 4));
-      const width = 1.65 + random() * 1.2;
-      leaves.push(this.card(width, width * .69, i % 2, tip, new THREE.Euler(-1.03 + random() * .3, angle, -.2 + random() * .4)));
-      leaves.push(this.card(width * .9, width * .62, (i + 1) % 2, tip.clone().add(new THREE.Vector3(.08, .08, -.06)), new THREE.Euler(-.25, angle + Math.PI / 2, .1)));
-      leaves.push(this.card(width * .78, width * .56, i % 2, tip.clone().lerp(elbow, .18), new THREE.Euler(.24, angle - .48, -.12)));
-    }
-    for (let i = 0; i < 4; i++) {
-      const angle = i * Math.PI * .5 + random();
-      bark.push(cylinderBetween(new THREE.Vector3(Math.cos(angle) * .6, .04, Math.sin(angle) * .6), new THREE.Vector3(.03, .58, .02), .043, .075, 4));
+    const height = 5.75 + random() * .6, lean = .35 + random() * .7;
+    const shoulder = new THREE.Vector3(lean * .45, 3.35, -.15), top = new THREE.Vector3(lean, height, .1);
+    bark.push(cylinderBetween(new THREE.Vector3(), shoulder, .16, .08, 3), cylinderBetween(shoulder, top, .08, .015, 3));
+    for (let i = 0; i < 7; i++) {
+      const angle = i * 2.39996 + random() * .7, spread = 1.35 + random() * 1.1;
+      const origin = shoulder.clone().lerp(top, random() * .8);
+      const tip = new THREE.Vector3(Math.cos(angle) * spread + lean, height - .9 + random() * .8, Math.sin(angle) * spread * .85);
+      bark.push(cylinderBetween(origin, tip, .045, .005, 3));
+      for (let j = 0; j < 3; j++) {
+        const point = tip.clone().lerp(origin, j * .12); point.y += j * .13;
+        leaves.push(this.volume(point, new THREE.Vector3(.72 + random() * .34, .39 + random() * .15, .52 + random() * .27), seed + i * 7 + j));
+      }
     }
     return this.finish(bark, leaves);
   }
 
   private shrub(seed: number): FoliageGeometry {
     const random = randomSeed(seed), bark: THREE.BufferGeometry[] = [], leaves: THREE.BufferGeometry[] = [];
-    for (let i = 0; i < 5; i++) {
-      const angle = i * 2.39996, spread = .45 + random() * .46, height = .62 + random() * .68;
-      const tip = new THREE.Vector3(Math.cos(angle) * spread, height, Math.sin(angle) * spread);
-      bark.push(cylinderBetween(new THREE.Vector3(0, .02, 0), tip, .021, .005, 3));
-      for (let c = 0; c < 2; c++) leaves.push(this.card(1.25 + random() * .55, .9 + random() * .32, 2 + i % 2,
-        tip.clone().multiplyScalar(.81), new THREE.Euler(-.45 + c * .85, angle + c * Math.PI / 2, -.1 + random() * .2)));
+    for (let i = 0; i < 3; i++) {
+      const angle = i * 2.39996, tip = new THREE.Vector3(Math.cos(angle) * .48, .6 + random() * .3, Math.sin(angle) * .48);
+      bark.push(cylinderBetween(new THREE.Vector3(0, .02, 0), tip, .018, .002, 3));
+      leaves.push(this.volume(tip, new THREE.Vector3(.58, .4, .49), seed + i));
+      leaves.push(this.volume(tip.clone().multiplyScalar(.7), new THREE.Vector3(.5, .37, .51), seed + i + 71));
     }
     return this.finish(bark, leaves);
   }

@@ -3,6 +3,7 @@ import type { GroundSampler, PlaceableKind } from './contracts';
 import { CoastalModels } from './models/props';
 import { makeInstances, ModelBatch, randomSeed, rockGeometry, standard, updateInstanceBounds } from './models/procedural';
 import { CoastalFoliage } from './foliage.ts';
+import { FoliageLodField } from './foliage-lod.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
@@ -16,11 +17,16 @@ export class AssetWorld {
   private readonly models = new CoastalModels();
   private readonly foliage = new CoastalFoliage(this.models.resources);
   private readonly pines = this.foliage.pines;
+  private pineField!: FoliageLodField;
+  private shrubField!: FoliageLodField;
+  readonly ready: Promise<void>;
   private readonly placements: Placement[] = [];
   private readonly placementBatches = new Map<PlaceableKind, PlacementBatch[]>();
   private readonly instanceMeshes: THREE.InstancedMesh[] = [];
   private readonly floatingMarkers: FloatingMarker[] = [];
   private readonly lastBoatPosition = new THREE.Vector3();
+  private readonly foliagePosition = new THREE.Vector3(-36, 1.72, 27);
+  private lastPineSignature = '';
   private previousTime = 0;
   private disposed = false;
   private readonly matrix = new THREE.Matrix4();
@@ -42,6 +48,13 @@ export class AssetWorld {
     this.populateBeach();
     this.populateStrand();
     this.preparePlacementBatches();
+    this.group.userData.foliage = { status: typeof document === 'undefined' ? 'cpu-proxies' : 'loading', source: 'Poly Haven CC0 pine_sapling_small / shrub_02', photoPass: false };
+    this.ready = this.foliage.loadDetailed().then(() => {
+      if (this.disposed || typeof document === 'undefined') return;
+      this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels);
+      this.pineField.update(this.foliagePosition, true); this.shrubField.update(this.foliagePosition, true);
+      this.group.userData.foliage.status = 'ready';
+    }).catch((error: unknown) => { if (!this.disposed) this.group.userData.foliage.status = `proxy fallback: ${error instanceof Error ? error.message : String(error)}`; });
   }
 
   get placedCount(): number { return this.placements.length; }
@@ -81,12 +94,11 @@ export class AssetWorld {
         shrubs[variant].push(this.transform(x, height - .09, z, .8 + random() * .49, yaw, 1.24, .82, 1.12)); shrubCount++;
       }
     }
-    for (let variant = 0; variant < 3; variant++) {
-      this.addInstances(this.pines[variant].bark, this.foliage.bark, trees[variant], `coastal pine trunks ${variant}`);
-      this.addInstances(this.pines[variant].needles, this.foliage.leaves, trees[variant], `wind shaped evergreen crowns ${variant}`);
-      this.addInstances(this.foliage.shrubs[variant].bark, this.foliage.bark, shrubs[variant], `coastal underbrush twigs ${variant}`);
-      this.addInstances(this.foliage.shrubs[variant].needles, this.foliage.leaves, shrubs[variant], `low coastal brush ${variant}`);
-    }
+    // Same deterministic transforms, now partitioned into mutually exclusive distance bands.
+    this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, trees,
+      { nearDistance: 42, midDistance: 115, nearCapacity: 40, midCapacity: 72 });
+    this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
+      { nearDistance: 21, midDistance: 63, nearCapacity: 36, midCapacity: 120 });
     this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount };
   }
 
@@ -225,6 +237,9 @@ export class AssetWorld {
   }
 
   private rebuildPlacements(time: number): void {
+    const placedPines: THREE.Matrix4[][] = [[], [], []];
+    const pineSignature = this.placements.map((p, index) => p.kind === 'pine' ? `${index}:${p.x}:${p.y}:${p.z}:${p.yaw}` : '').join('|');
+    const updatePines = pineSignature !== this.lastPineSignature;
     const indices = new Map<PlacementBatch, number>();
     for (const batches of this.placementBatches.values())for(const batch of batches)indices.set(batch,0);
     for (let index = 0; index < this.placements.length; index++) {
@@ -232,6 +247,7 @@ export class AssetWorld {
       const bob = placement.kind === 'buoy' ? Math.sin(time * 1.6 + index * 2.7) * 0.055 : 0;
       this.position.set(placement.x, placement.y + bob, placement.z);
       this.quaternion.setFromAxisAngle(this.yAxis, placement.yaw); this.matrix.compose(this.position, this.quaternion, this.scale);
+      if (placement.kind === 'pine') { if (updatePines) placedPines[index % 3].push(this.matrix.clone()); continue; }
       for (const batch of this.placementBatches.get(placement.kind)!) {
         if(batch.variant!==undefined&&batch.variant!==index%3)continue;
         const instanceIndex=indices.get(batch)!;
@@ -242,10 +258,13 @@ export class AssetWorld {
     for (const batches of this.placementBatches.values()) for (const batch of batches) {
       batch.mesh.count = indices.get(batch)!; updateInstanceBounds(batch.mesh);
     }
+    if (updatePines) { this.lastPineSignature = pineSignature; this.pineField.setDynamic(placedPines); this.pineField.update(this.foliagePosition, true); }
   }
 
   update(time: number, position: THREE.Vector3, underwater: boolean): void {
     if (this.disposed) return;
+    this.foliagePosition.copy(position);
+    this.pineField.update(position); this.shrubField.update(position);
     for (const marker of this.floatingMarkers) {
       marker.object.position.y = 0.06 + Math.sin(time * 1.55 + marker.phase) * 0.052;
       marker.object.rotation.z = Math.sin(time * 1.05 + marker.phase) * 0.04;
@@ -263,6 +282,7 @@ export class AssetWorld {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true; this.instanceMeshes.forEach((mesh) => mesh.dispose());
+    this.foliage.dispose(); this.pineField.dispose(); this.shrubField.dispose();
     this.models.resources.dispose(); this.group.clear(); this.placements.length = 0; this.placementBatches.clear();
   }
 }

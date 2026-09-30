@@ -1,0 +1,9 @@
+Poly Haven pine_sapling_small and shrub_02: CC0 1.0 Universal
+https://polyhaven.com/a/pine_sapling_small
+https://polyhaven.com/a/shrub_02
+https://polyhaven.com/license
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Powered by Poly Haven: https://polyhaven.com
+Offline originals verified against API sizes and MD5, with SHA256 recorded.
+Meshes reduced with meshoptimizer. Coastal pine crown shape is an authored adaptation; no Google photograph pixels are included.
