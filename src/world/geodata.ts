@@ -1,20 +1,10 @@
 import { ELEVATION_RASTERS, GEODATA_PROVENANCE } from './geodata.generated.ts';
+import { structuralCoastHeight } from './coast-structure.ts';
 export { GEODATA_PROVENANCE };
 
 export const NODATA = -32768;
 export type ElevationRaster = (typeof ELEVATION_RASTERS)[number];
 const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
-function rockNoise(x:number,y:number,z:number):number {
-  const ix=Math.floor(x),iy=Math.floor(y),iz=Math.floor(z);
-  const ease=(value:number)=>value*value*(3-2*value),fx=ease(x-ix),fy=ease(y-iy),fz=ease(z-iz);
-  const hash=(a:number,b:number,c:number)=>{
-    let value=Math.imul(a,73856093)^Math.imul(b,19349663)^Math.imul(c,83492791);
-    value=Math.imul(value^(value>>>13),1274126177);return ((value^(value>>>16))>>>0)/4294967295;
-  };
-  const mix=(a:number,b:number,t:number)=>a+(b-a)*t;
-  return mix(mix(mix(hash(ix,iy,iz),hash(ix+1,iy,iz),fx),mix(hash(ix,iy+1,iz),hash(ix+1,iy+1,iz),fx),fy),
-    mix(mix(hash(ix,iy,iz+1),hash(ix+1,iy,iz+1),fx),mix(hash(ix,iy+1,iz+1),hash(ix+1,iy+1,iz+1),fx),fy),fz);
-}
 export function smoothstep(low: number, high: number, value: number): number {
   const t = clamp((value - low) / (high - low), 0, 1);
   return t * t * (3 - 2 * t);
@@ -188,12 +178,9 @@ export class TomariCoastSurface {
       const edge = Math.min(x - this.minX, this.maxX - x, z - this.minZ, this.maxZ - z);
       const join = smoothstep(0, 16, edge);
       const beach = sandAt(x, z) * (1 - smoothstep(3, 7, Math.abs(y))) * join;
-      const gradient = Math.hypot(baseHeightAt(x + 2, z) - baseHeightAt(x - 2, z), baseHeightAt(x, z + 2) - baseHeightAt(x, z - 2)) / 4;
-      const cliff = smoothstep(.95, 1.6, gradient) * smoothstep(2, 6, y) * (1 - beach) * join;
-      // Metre-scale bedding and cross joints give steep, unwalkable faces a true silhouette.
-      const bedding = (rockNoise(x*.54,y*.43,z*.54)-.5)*1.1;
-      const joints = (rockNoise(x*1.23+31,y*.91,z*1.23-17)-.5)*.34;
-      this.ground[iz * this.width + ix] = y + (field.smoothHeightAt(x, z) - y) * beach + (bedding + joints) * cliff;
+      // The nested 0.5m strand interpolates this surface, rather than applying the scarp twice.
+      const rock = options.subdivision <= 4 ? structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z)) : y;
+      this.ground[iz * this.width + ix] = y + (field.smoothHeightAt(x, z) - y) * beach + (rock-y)*(1-beach)*join;
     }
   }
 

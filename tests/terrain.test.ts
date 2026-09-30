@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { geoToWorld, worldToGeo } from '../src/world/contracts.ts';
 import { IslandWorld } from '../src/world/terrain.ts';
 import { GEODATA_PROVENANCE, IslandElevation, shelterAt } from '../src/world/geodata.ts';
+import { cliffBodySegmentBlocked } from '../src/world/cliff-detail.ts';
 
 const world = new IslandWorld();
 
@@ -146,4 +147,23 @@ test('travel-island movement samples match visible coarse mesh surfaces', () => 
       assert.ok(Math.abs(world.heightAt(x, z) - visibleHeight) < 0.025, `${mesh.name}: movement clips visible ground`);
     }
   }
+});
+
+test('non-heightfield cliff volumes have conservative swept-body collision without obstructing the sandy exit', () => {
+  const cliff=world.group.children.find(mesh=>mesh.name.includes('jointed rhyolite')) as THREE.Mesh;
+  const metrics=cliff.geometry.userData;
+  assert.ok(metrics.outcropCount>90 && metrics.outcropCount<1000);
+  assert.ok(metrics.maxFaceWidthM>8, 'structural panels must affect a distant silhouette');
+  assert.ok(metrics.minExposedVertexHeightM>=2.2, 'new ledges clip the strand or sea');
+  assert.equal(world.cliffCollisionProxies.length,metrics.rockPieces);
+  for(const proxy of world.cliffCollisionProxies){
+    const y=(proxy.minY+proxy.maxY)*.5;
+    assert.ok(world.bodySegmentBlocked({x:proxy.minX-2,y,z:(proxy.minZ+proxy.maxZ)*.5},
+      {x:proxy.maxX+2,y,z:(proxy.minZ+proxy.maxZ)*.5}), 'a whole-frame approach tunnels through rock');
+  }
+  for(let z=27;z>-32;z--)assert.equal(world.bodySegmentBlocked(
+    {x:-36,y:world.heightAt(-36,z),z},{x:-36,y:world.heightAt(-36,z-1),z:z-1}),false);
+  const thin=[{minX:0,maxX:.08,minY:2,maxY:4,minZ:-1,maxZ:1}];
+  assert.equal(cliffBodySegmentBlocked(thin,{x:-5,y:2.2,z:0},{x:5,y:2.2,z:0}),true);
+  assert.equal(cliffBodySegmentBlocked(thin,{x:-5,y:-1,z:0},{x:5,y:-1,z:0}),false);
 });

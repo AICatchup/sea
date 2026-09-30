@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { type MapOutline, type WorldDestination } from './contracts.ts';
 import { ElevationField, IslandElevation, sandAt, shelterAt, smoothstep } from './geodata.ts';
 import { DESTINATION_SEEDS } from './locations.ts';
-import { cliffOutcrops } from './cliff-detail.ts';
+import { cliffOutcrops, cliffBodySegmentBlocked, type CliffCollisionProxy, type BodyPoint } from './cliff-detail.ts';
 import { CoastalFoliage } from './foliage.ts';
 import { ModelResources } from './models/procedural.ts';
 import { loadSandTextures } from './sand-material.ts';
@@ -66,6 +66,7 @@ export class IslandWorld {
   readonly spawnPoint: THREE.Vector3;
   readonly ready:Promise<void>;
   readonly elevation = new IslandElevation();
+  readonly cliffCollisionProxies: CliffCollisionProxy[] = [];
   private readonly maps = new Map<string, WaterMap>();
   private readonly textures: THREE.Texture[] = [];
   private readonly materials: THREE.Material[] = [];
@@ -87,6 +88,7 @@ export class IslandWorld {
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true);
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true, true);
       const geometry = cliffOutcrops(this, this.elevation.coast);
+      this.cliffCollisionProxies.push(...geometry.userData.collisionProxies as CliffCollisionProxy[]);
       const outcrops = new THREE.Mesh(geometry, terrainMaterial);
       outcrops.name = 'Tomari jointed rhyolite ledges and fissures'; outcrops.castShadow = outcrops.receiveShadow = true;
       this.geometries.push(geometry); this.group.add(outcrops);
@@ -101,6 +103,10 @@ export class IslandWorld {
   }
 
   heightAt(x: number, z: number): number { return this.elevation.heightAt(x, z); }
+  /** Inputs are the feet position, not the camera position. Conservative collision for non-heightfield ledges. */
+  bodySegmentBlocked(from: BodyPoint, to: BodyPoint, radius = .38, bodyHeight = 1.72): boolean {
+    return cliffBodySegmentBlocked(this.cliffCollisionProxies, from, to, radius, bodyHeight);
+  }
   update(_time: number): void { /* Terrain is static; wave shelter and water depth are sampled by the ocean. */ }
 
   waterMapFor(x: number, z: number): WaterMap {
