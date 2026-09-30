@@ -12,6 +12,7 @@ export interface PhotoCoastPatch {
   variant:string; role:'scarp'|'shelf'|'talus'; bounds:THREE.Box3;
   /** Sampled actual scan vertices; this is an occupancy estimate, not a watertight certificate. */
   exposedFraction:number; embeddedFraction:number; scale:number;
+  physicalSpan:number; priority:boolean; family:'broad-shelf'|'raised-shelf'|'joint-body'|'talus';
 }
 
 /** Rigid CC0 scan assembly. No source UV, normals, topology or materials are changed.
@@ -26,6 +27,8 @@ export function buildPhotoCoastPresentation(
   const diagnostics={provenance:'Poly Haven CC0 scans; authored Tomari placement; not measured Tomari photogrammetry',
     triangles:0,draws:0,instances:0,textureAdditions:0,eligible:0,rejectedSupport:0,rejectedStrand:0,
     rejectedOverlap:0,rejectedBudget:0,invalidVariants:0,patches,bounds:new THREE.Box3(),
+    priorityInstances:0,priorityFacingSupportArea:0,priorityFacingPatchArea:0,priorityFacingCoverageEstimate:0,
+    families:{'broad-shelf':0,'raised-shelf':0,'joint-body':0,talus:0},
     roles:{scarp:0,shelf:0,talus:0},sourceBounds:[] as {id:string;bounds:THREE.Box3;normalizedMetres:THREE.Vector3;originalDimensions:THREE.Vector3}[]};
   group.userData.photoCoast=diagnostics;
   const bounds=options.bounds??{minX:-255,maxX:225,minZ:-190,maxZ:45};
@@ -55,32 +58,54 @@ export function buildPhotoCoastPresentation(
     const gz=(ground.heightAt(x,z+2)-ground.heightAt(x,z-2))/4;
     return {gx,gz,slope:Math.hypot(gx,gz)};
   };
-  const candidates:{x:number;z:number;y:number;gx:number;gz:number;slope:number;ix:number;iz:number}[]=[];
-  for(let iz=0,z=bounds.minZ+8;z<bounds.maxZ-8;z+=6.8,iz++)for(let ix=0,x=bounds.minX+8;x<bounds.maxX-8;x+=6.8,ix++){
-    const px=x+(jointRandom(ix,iz,3)-.5)*3,pz=z+(jointRandom(ix,iz,5)-.5)*3;
+  const candidates:{x:number;z:number;y:number;gx:number;gz:number;slope:number;ix:number;iz:number;priority:boolean}[]=[];
+  const priorityAt=(x:number,z:number)=>x>=-160&&x<=-85&&z>=-95&&z<=15;
+  const referenceCamera=new THREE.Vector3(-86,ground.heightAt(-86,-22)+1.64,-22);
+  for(const region of [{...bounds,stride:6.8,priority:false},{minX:-160,maxX:-85,minZ:-95,maxZ:15,stride:2.8,priority:true}]){
+  for(let iz=0,z=region.minZ+3;z<region.maxZ-3;z+=region.stride,iz++)for(let ix=0,x=region.minX+3;x<region.maxX-3;x+=region.stride,ix++){
+    if(x<bounds.minX||x>bounds.maxX||z<bounds.minZ||z>bounds.maxZ || (!region.priority&&priorityAt(x,z)))continue;
+    const px=x+(jointRandom(ix,iz,3)-.5)*region.stride*.35,pz=z+(jointRandom(ix,iz,5)-.5)*region.stride*.35;
     const y=ground.heightAt(px,pz),g=gradient(px,pz);
     if(!Number.isFinite(y) || !Number.isFinite(g.slope) || y<2.2 || y>44 || g.slope<.65)continue;
     // Avoid crowns: the support must continue uphill for at least one scan footprint.
     if(ground.heightAt(px+g.gx/g.slope*5,pz+g.gz/g.slope*5)<y+2)continue;
-    candidates.push({x:px,z:pz,y,...g,ix,iz});
-  }
-  // Interleave the whole coast deterministically before spending the budget, rather than
-  // exhausting it on the first western row. No camera state participates.
-  candidates.sort((a,b)=>jointRandom(a.ix,a.iz,91)-jointRandom(b.ix,b.iz,91));
+    candidates.push({x:px,z:pz,y,...g,ix,iz,priority:region.priority});
+    if(region.priority){const normal=new THREE.Vector3(-g.gx,1,-g.gz).normalize();
+      const facing=Math.max(0,normal.dot(referenceCamera.clone().sub(new THREE.Vector3(px,y,pz)).normalize()));
+      diagnostics.priorityFacingSupportArea+=region.stride**2*Math.hypot(1,g.slope)*facing;}
+  }}
+  // Prioritize the geographically bounded west scarp, reserving 22% for the
+  // other coasts. No current camera state participates in placement.
+  const coveFacing=(c:typeof candidates[number])=>{
+    const dx=-58-c.x,dz=-25-c.z;
+    return (-c.gx*dx-c.gz*dz)/(Math.max(.001,Math.hypot(dx,dz))*Math.hypot(1,c.slope));
+  };
+  // Geographic cove-facing priority, independent of the current render camera.
+  candidates.sort((a,b)=>Number(b.priority)-Number(a.priority)||(a.priority&&b.priority?
+    Math.floor(coveFacing(b)*4)-Math.floor(coveFacing(a)*4):0)||jointRandom(a.ix,a.iz,91)-jointRandom(b.ix,b.iz,91));
+  let priorityTriangles=0;
   for(const c of candidates){
     diagnostics.eligible++;
     const role:PhotoCoastPatch['role']=c.y<7?'talus':c.slope>1.25?'scarp':'shelf';
-    const pool=valid.filter(s=>s.v.kind===(role==='talus'?'boulder':'shelf'));
+    const family:PhotoCoastPatch['family']=role==='talus'?'talus':jointRandom(c.ix,c.iz,23)<.23?'joint-body':jointRandom(c.ix,c.iz,29)<.45?'raised-shelf':'broad-shelf';
+    const pool=valid.filter(s=>s.v.kind===(family==='talus'||family==='joint-body'?'boulder':'shelf'));
     if(!pool.length)continue;
     const source=pool[Math.floor(jointRandom(c.ix,c.iz,11)*pool.length)%pool.length];
     if(diagnostics.triangles+source.triangles>budget){diagnostics.rejectedBudget++;continue;}
-    // Shelf scans retain their broad real topology, at 0.85–1.45 normalized physical scale.
-    // Talus is kept small; it cannot become an inflated spherical mountain.
-    const scale=role==='talus'?.8+jointRandom(c.ix,c.iz,17)*.5:.85+jointRandom(c.ix,c.iz,17)*.6;
+    if(c.priority&&priorityTriangles+source.triangles>budget*.78){diagnostics.rejectedBudget++;continue;}
+    // Derive scale from actual normalized geometry extents, not original GLB dimensions.
+    // Broad/raised shelves and distinct joint bodies form a bounded 4–10 m hierarchy.
+    const targetSpan=family==='talus'?1.6+jointRandom(c.ix,c.iz,17)*1.6:
+      family==='joint-body'?4+jointRandom(c.ix,c.iz,17)*2.4:family==='raised-shelf'?6+jointRandom(c.ix,c.iz,17)*2:8+jointRandom(c.ix,c.iz,17)*2;
+    const scale=targetSpan/Math.max(source.size.x,source.size.z);
     const normal=new THREE.Vector3(-c.gx,1,-c.gz).normalize();
     const tangent=new THREE.Vector3(-c.gz,0,c.gx).normalize();
     tangent.applyAxisAngle(normal,(jointRandom(c.ix,c.iz,19)-.5)*.65);
     const along=new THREE.Vector3().crossVectors(tangent,normal).normalize();
+    // A raised shelf uses the intact scan's broad face at an oblique dip, giving
+    // actual metre-scale thickness/steps rather than a flat skin on a noisy DEM.
+    const dip=family==='raised-shelf'?.24+jointRandom(c.ix,c.iz,31)*.22:family==='joint-body'?(jointRandom(c.ix,c.iz,31)-.5)*.7:0;
+    normal.applyAxisAngle(tangent,dip);along.applyAxisAngle(tangent,dip);
     const basis=new THREE.Matrix4().makeBasis(tangent,normal,along);
     const rotation=new THREE.Quaternion().setFromRotationMatrix(basis);
     const center=source.box.getCenter(new THREE.Vector3());
@@ -90,7 +115,7 @@ export function buildPhotoCoastPresentation(
     // Search along the physical support normal for an embedded back and exposed relief.
     // This cannot guarantee exact watertight contact; diagnostics expose the residual.
     let best: {matrix:THREE.Matrix4;exposed:number;embedded:number;error:number}|undefined;
-    for(let offset=-3;offset<=3;offset+=.25){
+    for(let offset=-5;offset<=5;offset+=.25){
       const matrix=matrixAt(offset); let exposed=0,embedded=0,finite=true;
       for(const vertex of source.samples){const p=vertex.clone().applyMatrix4(matrix),h=ground.heightAt(p.x,p.z);
         if(!Number.isFinite(h)){finite=false;break;} if(p.y>h+.06)exposed++;else embedded++;}
@@ -114,7 +139,14 @@ export function buildPhotoCoastPresentation(
       diagnostics.rejectedOverlap++;continue;
     }
     source.matrices.push(best.matrix);
-    patches.push({variant:source.v.id,role,bounds:actualBox,exposedFraction:best.exposed,embeddedFraction:best.embedded,scale});
+    patches.push({variant:source.v.id,role,bounds:actualBox,exposedFraction:best.exposed,embeddedFraction:best.embedded,scale,
+      physicalSpan:targetSpan,priority:c.priority,family});
+    diagnostics.families[family]++;
+    if(c.priority){priorityTriangles+=source.triangles;diagnostics.priorityInstances++;
+      const facing=Math.max(0,normal.dot(referenceCamera.clone().sub(anchor).normalize()));
+      // A conservative projected rectangle times sampled exposure, capped by support
+      // area below. This is an area estimate; it does not prove pixel coverage/occlusion.
+      diagnostics.priorityFacingPatchArea+=source.size.x*source.size.z*scale**2*best.exposed*facing;}
     diagnostics.bounds.union(actualBox);diagnostics.triangles+=source.triangles;diagnostics.roles[role]++;
   }
   for(const source of valid){
@@ -127,6 +159,7 @@ export function buildPhotoCoastPresentation(
     meshes.push(mesh);group.add(mesh);
   }
   diagnostics.instances=patches.length;diagnostics.draws=meshes.length;
+  diagnostics.priorityFacingCoverageEstimate=Math.min(1,diagnostics.priorityFacingPatchArea/Math.max(1,diagnostics.priorityFacingSupportArea));
   let disposed=false;
   return {group,diagnostics,dispose(){if(disposed)return;disposed=true;
     // InstancedMesh.dispose frees instance resources only; borrowed geometry/material stay alive.

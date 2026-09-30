@@ -39,10 +39,13 @@ test('actual bundled scans form bounded terrain-fixed patches without mutating b
   let sourceDisposals=0;variants.forEach(v=>{v.geometry.addEventListener('dispose',()=>sourceDisposals++);v.material.addEventListener('dispose',()=>sourceDisposals++);});
   const result=buildPhotoCoastPresentation(ground,variants);
   const d=result.diagnostics;
-  console.log('photo coast actual scan CPU diagnostics',JSON.stringify({instances:d.instances,triangles:d.triangles,draws:d.draws,roles:d.roles,eligible:d.eligible,rejectedSupport:d.rejectedSupport,rejectedStrand:d.rejectedStrand,rejectedOverlap:d.rejectedOverlap,rejectedBudget:d.rejectedBudget,bounds:d.bounds}));
+  console.log('photo coast actual scan CPU diagnostics',JSON.stringify({instances:d.instances,triangles:d.triangles,draws:d.draws,roles:d.roles,eligible:d.eligible,rejectedSupport:d.rejectedSupport,rejectedStrand:d.rejectedStrand,rejectedOverlap:d.rejectedOverlap,rejectedBudget:d.rejectedBudget,bounds:d.bounds,
+    priorityInstances:d.priorityInstances,families:d.families,facingSupportArea:d.priorityFacingSupportArea,facingPatchArea:d.priorityFacingPatchArea,facingCoverageEstimate:d.priorityFacingCoverageEstimate,sourceSpans:d.sourceBounds.map(s=>({id:s.id,size:s.normalizedMetres})),prioritySpanRange:d.patches.filter(p=>p.priority).map(p=>p.physicalSpan).sort((a,b)=>a-b).filter((_,i,a)=>i===0||i===a.length-1)}));
   assert.ok(d.instances>20);assert.ok(d.triangles<=1_500_000);assert.ok(d.draws<=10);assert.equal(d.textureAdditions,0);
   assert.match(d.provenance,/not measured Tomari/);
-  for(const p of d.patches){assert.ok(p.exposedFraction>=.38);assert.ok(p.embeddedFraction>=.12);assert.ok(p.bounds.min.y>=2);assert.ok(p.scale<=1.45);
+  assert.ok(d.priorityInstances>=40);assert.ok(d.priorityFacingPatchArea>300);assert.ok(d.priorityFacingCoverageEstimate>.45);
+  assert.ok(Object.values(d.families).every(count=>count>0));
+  for(const p of d.patches){assert.ok(p.exposedFraction>=.38);assert.ok(p.embeddedFraction>=.12);assert.ok(p.bounds.min.y>=2);assert.ok(p.physicalSpan<=10);
     for(const x of [p.bounds.min.x,p.bounds.max.x])for(const z of [p.bounds.min.z,p.bounds.max.z])assert.ok(p.bounds.min.y>=9||sandAt(x,z)<=.48);
   }
   for(const child of result.group.children){assert.ok(child instanceof THREE.InstancedMesh);assert.ok(variants.some(v=>v.geometry===child.geometry&&v.material===child.material));assert.ok(child.boundingBox&&!child.boundingBox.isEmpty());}
