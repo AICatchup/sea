@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "asset": "sand_02",
+  "title": "Sand 02",
+  "authors": [
+    "Charlotte Baglioni"
+  ],
+  "source": "Poly Haven",
+  "sourcePage": "https://polyhaven.com/a/sand_02",
+  "license": "CC0-1.0",
+  "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "sourceLicenseURL": "https://polyhaven.com/license",
+  "apiDocumentationURL": "https://github.com/Poly-Haven/Public-API/blob/master/swagger.yml",
+  "apiTermsURL": "https://github.com/Poly-Haven/Public-API/blob/master/ToS.md",
+  "endpoints": {
+    "info": "https://api.polyhaven.com/info/sand_02",
+    "files": "https://api.polyhaven.com/files/sand_02"
+  },
+  "acquiredAt": "2026-09-30T00:43:13.479Z",
+  "apiFilesHash": "e4b4c84cec65751c379c57d51d2c60dc40fd3828",
+  "dimensionsMillimeters": [
+    2140.000104904175,
+    2140.000104904175
+  ],
+  "tileSpanMeters": [
+    2.14,
+    2.14
+  ],
+  "resolution": "2k",
+  "channels": {
+    "arm": {
+      "R": "ambient occlusion",
+      "G": "roughness",
+      "B": "metalness"
+    },
+    "normalGL": "OpenGL tangent-space +Y"
+  },
+  "processing": "None. Original official 2K JPG download bytes, no crops, resizes, recoloring or recompression.",
+  "totalTextureBytes": 12192138,
+  "importCapBytes": 25000000,
+  "files": [
+    {
+      "role": "albedo",
+      "name": "sand_02_diff_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sand_02/sand_02_diff_2k.jpg",
+      "bytes": 4368947,
+      "sourceMD5": "eca5f74e4fcce418dbd62804bda875dc",
+      "sha256": "8d19fa2a0bdec258e9d6a84afcb7ea866506e6b461d75e65792d0865c0043b88",
+      "width": 2048,
+      "height": 2048,
+      "colorSpace": "sRGB",
+      "headerHex": "ffd8ffe000104a464946000101000048"
+    },
+    {
+      "role": "normalGL",
+      "name": "sand_02_nor_gl_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sand_02/sand_02_nor_gl_2k.jpg",
+      "bytes": 5297796,
+      "sourceMD5": "77ccbb7448750bd46a9c59858ff35733",
+      "sha256": "5c9d6190fa352c6a2f6183a4283148655d4f300804573891bae50ad8acec332e",
+      "width": 2048,
+      "height": 2048,
+      "colorSpace": "linear-data",
+      "headerHex": "ffd8ffe000104a464946000101000001"
+    },
+    {
+      "role": "arm",
+      "name": "sand_02_arm_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sand_02/sand_02_arm_2k.jpg",
+      "bytes": 2525395,
+      "sourceMD5": "f09c4369f5573d3c11fcf65d8e1069da",
+      "sha256": "f964c01e90381210f7f1a0e48a8a63368607c28efe733e161f09ba6e53077052",
+      "width": 2048,
+      "height": 2048,
+      "colorSpace": "linear-data",
+      "headerHex": "ffd8ffe000104a464946000101000001"
+    }
+  ]
+}
