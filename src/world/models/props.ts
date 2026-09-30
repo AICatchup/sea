@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { addBoatCushion, boatUpholsteryMaterial } from './boat-upholstery';
 import { ModelBatch, ModelResources, rockGeometry, standard, surfaceTexture } from './procedural';
 
 export class CoastalModels {
@@ -208,17 +209,18 @@ export class CoastalModels {
         batch.rod(this.rope, new THREE.Vector3(side * 1.085, 0.34, z), new THREE.Vector3(side * 1.03, 0.52, z), 0.008);
       }
     }
+    // Independent boat upholstery keeps shared beach chair and umbrella cloth unchanged.
+    const upholstery = boatUpholsteryMaterial(this.resources);
     // Bow casting seat and aft bench, thick cushions with a restrained blue piping line.
     batch.box(this.white, 0, 0.23, -1.77, 1.32, 0.23, 0.8);
-    batch.box(this.canvas, 0, 0.37, -1.77, 1.32, 0.075, 0.8);
+    addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(0, 0.37, -1.77), 1.32, 0.075, 0.8);
     batch.box(this.white, 0, 0.28, 1.89, 1.64, 0.28, 0.57);
-    batch.box(this.canvas, 0, 0.45, 1.89, 1.66, 0.08, 0.58);
-    batch.box(this.canvas, 0, 0.69, 2.18, 1.6, 0.28, 0.08);
-    batch.box(this.blue, 0, 0.456, 2.14, 1.59, 0.024, 0.029);
+    addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(0, 0.45, 1.89), 1.66, 0.08, 0.58);
+    addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(0, 0.69, 2.18), 1.6, 0.08, 0.28, new THREE.Euler(Math.PI / 2, 0, 0), 2);
     for (const x of [-0.48, 0.48]) {
       batch.rod(this.metal, new THREE.Vector3(x, 0.1, 0.89), new THREE.Vector3(x, 0.62, 0.89), 0.048);
-      batch.box(this.canvas, x, 0.64, 0.89, 0.54, 0.115, 0.52);
-      batch.box(this.canvas, x, 0.87, 1.11, 0.51, 0.44, 0.105, -0.12);
+      addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(x, 0.64, 0.89), 0.54, 0.115, 0.52, undefined, x * 7);
+      addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(x, 0.87, 1.11), 0.51, 0.105, 0.44, new THREE.Euler(Math.PI / 2 - 0.12, 0, 0), x * 11);
     }
     batch.box(this.white, 0.35, 0.57, -0.15, 0.7, 0.84, 0.64);
     batch.box(this.blue, 0.35, 1.015, -0.105, 0.62, 0.05, 0.56, 0.13);
