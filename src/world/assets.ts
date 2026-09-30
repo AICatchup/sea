@@ -85,8 +85,9 @@ export class AssetWorld {
       if (!Number.isFinite(height)) continue;
       if (Math.hypot(x + 25, z - 36) < 6) continue;
       const variant = Math.floor(random() * 3), yaw = random() * Math.PI * 2;
-      const slope = Math.hypot(this.ground.heightAt(x + 1.5, z) - this.ground.heightAt(x - 1.5, z),
-        this.ground.heightAt(x, z + 1.5) - this.ground.heightAt(x, z - 1.5)) / 3;
+      const gradientX = (this.ground.heightAt(x + 1.5, z) - this.ground.heightAt(x - 1.5, z)) / 3;
+      const gradientZ = (this.ground.heightAt(x, z + 1.5) - this.ground.heightAt(x, z - 1.5)) / 3;
+      const slope = Math.hypot(gradientX, gradientZ);
       const isHeadland = height > 3 || x < -72 || x > 74 || z > 95;
       // Wind-shaped cover follows crests and soil pockets, leaving lower vertical rock exposed.
       // Low-frequency clusters overlap low, wide wind-shaped crowns. The native leaf/branch
@@ -98,7 +99,18 @@ export class AssetWorld {
       }
       if (height > 3.1 && height < 68 && isHeadland && slope < 1.75 && random() < (.67 + cluster * .3)) {
         const low = random() < .43, size = .88 + random() * .46;
-        shrubs[variant].push(this.transform(x, height - .015, z, size, yaw, low ? 3.35 : 2.32, low ? .27 + random() * .12 : .69 + random() * .35, low ? 2.85 : 1.98));
+        const matrix = this.transform(x, height - .015, z, size, yaw, low ? 3.35 : 2.32, low ? .27 + random() * .12 : .69 + random() * .35, low ? 2.85 : 1.98);
+        if (low) {
+          // Low native leaf clusters follow soil support instead of cutting a horizontal
+          // plane through slopes. Limit lean to 35 degrees; woody shrubs remain upright.
+          const lean = Math.min(1, Math.tan(35 * Math.PI / 180) / Math.max(.001, slope));
+          const support = new THREE.Vector3(-gradientX * lean, 1, -gradientZ * lean).normalize();
+          const orientation = new THREE.Quaternion().setFromUnitVectors(this.yAxis, support)
+            .multiply(new THREE.Quaternion().setFromAxisAngle(this.yAxis, yaw));
+          const scale = new THREE.Vector3().setFromMatrixScale(matrix);
+          matrix.compose(new THREE.Vector3(x, height - .015, z), orientation, scale);
+        }
+        shrubs[variant].push(matrix);
         shrubCount++; if (low) groundCoverCount++;
       }
     }
