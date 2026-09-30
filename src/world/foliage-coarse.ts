@@ -1,0 +1,73 @@
+import * as THREE from 'three';
+// @ts-expect-error Three bundles the official meshoptimizer JS/WASM helper without typings.
+import { MeshoptSimplifier } from 'three/addons/libs/meshopt_simplifier.module.js';
+import type { FoliagePart, FoliageVariant } from './foliage.ts';
+import type { ModelResources } from './models/procedural.ts';
+
+/** Preserve subpixel needle coverage after decimation, without filling crown gaps or adding blobs. */
+function preserveNeedleCoverage(positions: Float32Array, indices: Uint32Array): { components: number; maxDisplacement: number } {
+  const count = positions.length / 3, parents = Uint32Array.from({ length: count }, (_, i) => i);
+  const find = (i: number): number => { let root = i; while (parents[root] !== root) root = parents[root]; while (parents[i] !== i) { const next = parents[i]; parents[i] = root; i = next; } return root; };
+  const join = (a: number, b: number) => { parents[find(b)] = find(a); };
+  const welded = new Map<string, number>();
+  for (let i = 0; i < count; i++) {
+    const key = `${Math.round(positions[i * 3] * 1e5)},${Math.round(positions[i * 3 + 1] * 1e5)},${Math.round(positions[i * 3 + 2] * 1e5)}`;
+    const previous = welded.get(key); if (previous !== undefined) join(i, previous); else welded.set(key, i);
+  }
+  for (let i = 0; i < indices.length; i += 3) { join(indices[i], indices[i + 1]); join(indices[i], indices[i + 2]); }
+  const groups = new Map<number, number[]>();
+  for (let i = 0; i < count; i++) { const root = find(i), list = groups.get(root) ?? []; list.push(i); groups.set(root, list); }
+  let maxDisplacement = 0;
+  for (const vertices of groups.values()) {
+    const center = new THREE.Vector3(); vertices.forEach(i => { center.x += positions[i * 3]; center.y += positions[i * 3 + 1]; center.z += positions[i * 3 + 2]; }); center.multiplyScalar(1 / vertices.length);
+    let radius = 0;
+    vertices.forEach(i => { radius = Math.max(radius, Math.hypot(positions[i * 3] - center.x, positions[i * 3 + 1] - center.y, positions[i * 3 + 2] - center.z)); });
+    // Each original disconnected needle/fascicle stays a separate real 3D component.
+    // Uniform scaling preserves its original normals and UVs. The 15cm displacement cap
+    // is below two screen pixels at 100m and cannot turn a branch into an oversized card.
+    const factor = Math.min(3.6, 1 + .15 / Math.max(1e-6, radius));
+    vertices.forEach(i => {
+      const x = positions[i * 3] - center.x, y = positions[i * 3 + 1] - center.y, z = positions[i * 3 + 2] - center.z;
+      positions[i * 3] = center.x + x * factor; positions[i * 3 + 1] = center.y + y * factor; positions[i * 3 + 2] = center.z + z * factor;
+      maxDisplacement = Math.max(maxDisplacement, Math.hypot(x, y, z) * (factor - 1));
+    });
+  }
+  return { components: groups.size, maxDisplacement };
+}
+
+/** Reduce the original all-angle model, retaining original UVs and a connected woody hierarchy. */
+export async function coarseFoliage(source: FoliageVariant, resources: ModelResources, kind: 'pine' | 'shrub', cancelled = () => false): Promise<FoliageVariant> {
+  await MeshoptSimplifier.ready;
+  if (cancelled()) return { parts: [], triangles: 0 };
+  const parts: FoliagePart[] = [];
+  for (const part of source.parts) {
+    const g = part.geometry;
+    const p = g.getAttribute('position'), n = g.getAttribute('normal'), uv = g.getAttribute('uv');
+    const positions = new Float32Array(p.array), normals = new Float32Array(n.array), uvs = new Float32Array(uv.array);
+    const indices = g.index ? new Uint32Array(g.index.array) : Uint32Array.from({ length: p.count }, (_, i) => i);
+    const bark = kind === 'pine' && part.material.name.includes('bark');
+    const target = kind === 'shrub' ? 24 : bark ? 72 : 160;
+    const attributes = new Float32Array(p.count * 5);
+    for (let i = 0; i < p.count; i++) attributes.set([normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2], uvs[i * 2], uvs[i * 2 + 1]], i * 5);
+    const [reduced, error] = MeshoptSimplifier.simplifyWithAttributes(indices, positions, 3, attributes, 5,
+      [.05, .05, .05, .2, .2], null, Math.min(indices.length, target * 3), .16, ['Permissive']);
+    const [remap, count] = MeshoptSimplifier.compactMesh(reduced);
+    const compact = (array: Float32Array, stride: number) => {
+      const out = new Float32Array(count * stride);
+      for (let i = 0; i < remap.length; i++) if (remap[i] !== 0xffffffff) for (let axis = 0; axis < stride; axis++) out[remap[i] * stride + axis] = array[i * stride + axis];
+      return out;
+    };
+    const geometry = new THREE.BufferGeometry();
+    const reducedPositions = compact(positions, 3);
+    const coverage = kind === 'pine' && !bark ? preserveNeedleCoverage(reducedPositions, new Uint32Array(reduced)) : undefined;
+    geometry.setAttribute('position', new THREE.BufferAttribute(reducedPositions, 3));
+    geometry.setAttribute('normal', new THREE.BufferAttribute(compact(normals, 3), 3));
+    geometry.setAttribute('uv', new THREE.BufferAttribute(compact(uvs, 2), 2));
+    geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(reduced), 1));
+    geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+    geometry.userData = { source: part.material.userData.source, derivation: 'UV/normal-aware reduction of CC0 middle model', targetTriangles: target,
+      triangles: reduced.length / 3, normalizedError: error, kind: bark ? 'connected woody hierarchy' : 'original needle / leaf geometry', coverage };
+    resources.geometry(geometry); parts.push({ geometry, material: part.material });
+  }
+  return { parts, triangles: parts.reduce((sum, p) => sum + (p.geometry.index!.count / 3), 0) };
+}

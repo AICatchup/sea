@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { cylinderBetween, ModelResources, randomSeed, surfaceTexture } from './models/procedural.ts';
+import { coarseFoliage } from './foliage-coarse.ts';
 
 const sourceAssets = [
   { kind: 'pine', url: new URL('../assets/foliage/cc0/pine-lod-1k.glb', import.meta.url).href },
@@ -12,7 +13,7 @@ export interface FoliagePart { geometry: THREE.BufferGeometry; material: THREE.M
 export interface FoliageVariant { parts: readonly FoliagePart[]; triangles: number; }
 export interface FoliageLevels { near: FoliageVariant[]; mid: FoliageVariant[]; far: FoliageVariant[]; }
 
-/** True 3D branches / needles nearby; authored small-volume crown proxies beyond 100m. */
+/** All ready distance bands use the same original CC0 branch/needle/leaf topology. */
 export class CoastalFoliage {
   readonly resources: ModelResources;
   readonly bark: THREE.MeshStandardMaterial;
@@ -35,10 +36,8 @@ export class CoastalFoliage {
     this.shrubs = [19, 53, 83].map(seed => this.shrub(seed));
     const variants = (sources: FoliageGeometry[]) => sources.map(g => ({ parts: [{ geometry: g.bark, material: this.bark }, { geometry: g.needles, material: this.leaves }], triangles: this.triangles(g.bark) + this.triangles(g.needles) }));
     const pines = variants(this.pines), shrubs = variants(this.shrubs);
-    const crowns = (sources: FoliageGeometry[]) => sources.map(g => ({ parts: [{ geometry: g.needles, material: this.leaves }], triangles: this.triangles(g.needles) }));
-    // Fine twigs and trunks vanish inside the dense distant canopy; no invisible branch cost.
-    this.pineLevels = { near: pines, mid: pines, far: crowns(this.pines) };
-    this.shrubLevels = { near: shrubs, mid: shrubs, far: crowns(this.shrubs) };
+    this.pineLevels = { near: pines, mid: pines, far: pines };
+    this.shrubLevels = { near: shrubs, mid: shrubs, far: shrubs };
   }
 
   private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }
@@ -98,6 +97,8 @@ export class CoastalFoliage {
       }
       const levels = source.kind === 'pine' ? this.pineLevels : this.shrubLevels;
       levels.near = variants.near; levels.mid = variants.mid;
+      levels.far = await Promise.all(variants.mid.map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed)));
+      if (this.disposed) return;
     }
   }
 

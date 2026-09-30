@@ -4,6 +4,7 @@ import { CoastalModels } from './models/props';
 import { makeInstances, ModelBatch, randomSeed, rockGeometry, standard, updateInstanceBounds } from './models/procedural';
 import { CoastalFoliage } from './foliage.ts';
 import { FoliageLodField } from './foliage-lod.ts';
+import type { TrunkProxy } from './foliage-lod.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
@@ -58,6 +59,7 @@ export class AssetWorld {
   }
 
   get placedCount(): number { return this.placements.length; }
+  getTrunkProxies(): readonly TrunkProxy[] { return this.pineField.getTrunkProxies(); }
 
   private addInstances(geometry: THREE.BufferGeometry, material: THREE.Material, positions: THREE.Matrix4[], name: string): void {
     if (!positions.length) return;
@@ -96,9 +98,9 @@ export class AssetWorld {
     }
     // Same deterministic transforms, now partitioned into mutually exclusive distance bands.
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, trees,
-      { nearDistance: 42, midDistance: 115, nearCapacity: 40, midCapacity: 72 });
+      { nearDistance: 30, midDistance: 190, nearCapacity: 24, midCapacity: 180, triangleBudget: 1_410_000 });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
-      { nearDistance: 21, midDistance: 63, nearCapacity: 36, midCapacity: 120 });
+      { nearDistance: 21, midDistance: 75, nearCapacity: 36, midCapacity: 120, triangleBudget: 380_000 });
     this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount };
   }
 
