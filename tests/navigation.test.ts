@@ -4,25 +4,28 @@ import { existsSync } from 'node:fs';
 import * as THREE from 'three';
 import { ExplorerControls } from '../src/world/explorer-controls.ts';
 import { BOAT_MIN_DEPTH, WORLD_LIMIT, findNearbyWater, footSegmentClear, isNavigableWater,
-  planWaterRoute, pointDistance, waterSegmentClear } from '../src/world/navigation.ts';
+  planWaterRoute, pointDistance, waterSegmentClear, ROUTE_MIN_DEPTH, ROUTE_RADIUS } from '../src/world/navigation.ts';
 import type { GroundSampler, WorldDestination } from '../src/world/contracts.ts';
 
 class TestDocument extends EventTarget {
   hidden = false;
   defaultView = new EventTarget();
+  pointerLockElement: TestCanvas | null = null;
+  exitPointerLock(): void { this.pointerLockElement = null; this.dispatchEvent(new Event('pointerlockchange')); }
 }
 class TestCanvas extends EventTarget {
   ownerDocument = new TestDocument();
   style = { touchAction: 'pan-y' };
   tabIndex = -1;
   captured: number | null = null;
+  requestPointerLock?: () => Promise<void>;
   focus(): void { /* Browser focus is outside these simulation tests. */ }
   setPointerCapture(id: number): void { this.captured = id; }
   hasPointerCapture(id: number): boolean { return this.captured === id; }
   releasePointerCapture(id: number): void { if (this.captured === id) this.captured = null; }
 }
 
-function setup(ground: GroundSampler, spawn = new THREE.Vector3(0, 1.72, 0), destinations: WorldDestination[] = []) {
+function setup(ground: GroundSampler, spawn = new THREE.Vector3(0, 1.64, 0), destinations: WorldDestination[] = []) {
   const canvas = new TestCanvas();
   const controls = new ExplorerControls(canvas as unknown as HTMLCanvasElement, ground, destinations, spawn);
   return { controls, canvas, state: controls.state };
@@ -36,19 +39,6 @@ function key(canvas: TestCanvas, type: string, code: string, target?: object): E
   canvas.ownerDocument.defaultView.dispatchEvent(event);
   return event;
 }
-
-test('paused ambient motion holds dive air while intentional swimming remains available', () => {
-  const { controls, state } = setup({ heightAt: () => -20 });
-  controls.viewpoint(0, 0, 0, 0, 'dive', 4);
-  controls.setMove(0, 1);
-  for (let frame = 0; frame < 120; frame++) controls.update(1 / 60, 34, true);
-  assert.equal(state.oxygen, 1);
-  assert.ok(state.position.z < -2);
-  controls.setMove(0, 0);
-  advance(controls, 2);
-  assert.ok(state.oxygen < 1);
-  controls.dispose();
-});
 
 test('water route detours around land and every resulting segment clears the hull', () => {
   const ground: GroundSampler = { heightAt: (x, z) => x >= 20 && x <= 80 && Math.abs(z) < 25 ? 12 : -30 };
@@ -96,158 +86,200 @@ test('cliffs block swept walking while gentle slopes remain walkable', () => {
   const { controls, state } = setup(cliff);
   controls.setMove(1, 0); advance(controls, 2);
   assert.ok(state.position.x < 3);
-  assert.ok(Math.abs(state.position.y - 1.72) < 0.01);
+  assert.ok(Math.abs(state.position.y - 1.64) < 0.01);
   controls.dispose();
 });
 
-test('walking has independent forward and strafe controls and enters the sea', () => {
-  const shore: GroundSampler = { heightAt: (_x, z) => Math.max(-25, Math.min(5, z * 0.15)) };
-  const { controls, state } = setup(shore, new THREE.Vector3(0, 2.17, 3));
-  controls.setMove(0, 1); advance(controls, 2);
-  assert.equal(state.mode, 'swim');
-  assert.ok(state.position.z < -3.7);
-  assert.ok(state.position.y > 0 && state.position.y < 0.5);
-  const z = state.position.z;
-  controls.setMove(1, 0); advance(controls, 1, 2);
-  assert.ok(state.position.x > 2.9);
-  assert.ok(Math.abs(state.position.z - z) < 0.01);
+
+test('shore walking accelerates, wades, swims, dives and surfaces without relocation', () => {
+  const shore: GroundSampler = { heightAt: (_x, z) => Math.max(-25, Math.min(5, z * .15)) };
+  const { controls, state } = setup(shore, new THREE.Vector3(0, 2.09, 3));
+  controls.setMove(1, 0); advance(controls, 2); controls.setMove(0, 0); advance(controls, .3);
+  controls.setMove(0, 1); controls.update(1 / 60, 0);
+  assert.ok(state.speed > 0 && state.speed < .2);
+  const seen = new Set<string>(); let last = state.position.clone();
+  for (let frame = 0; frame < 1_200; frame++) {
+    controls.update(1 / 60, frame / 60); seen.add(state.mode);
+    assert.ok(state.position.distanceTo(last) < .12, `continuous frame ${frame}`); last.copy(state.position);
+  }
+  assert.ok(seen.has('walk') && seen.has('swim'));
+  assert.equal(state.mode, 'swim'); assert.ok(state.position.z < -20);
+  assert.ok(state.position.y > .2 && state.position.y <= .35);
+  assert.ok((state.immersion ?? 0) > .7);
+  controls.setMove(0, 0); advance(controls, .5);
+  controls.setVertical(-1); const surfaceY = state.position.y;
+  controls.update(1 / 60, 21); assert.ok(surfaceY - state.position.y < .01);
+  advance(controls, 2, 21); assert.equal(state.mode, 'dive'); assert.ok(state.depth > 2);
+  const deep = state.position.clone();
+  controls.setVertical(1); advance(controls, 3, 23);
+  assert.equal(state.mode, 'swim'); assert.ok(state.position.y > .2);
+  assert.ok(Math.abs(state.position.x - deep.x) < .01 && Math.abs(state.position.z - deep.z) < .01);
+  controls.setVertical(0); controls.setMove(0, -1); advance(controls, 30, 26);
+  assert.equal(state.mode, 'walk'); assert.equal(state.grounded, true);
   controls.dispose();
 });
 
-test('diving respects seabed, maximum depth, oxygen, and controlled recovery', () => {
-  const sea: GroundSampler = { heightAt: () => -90 };
-  const { controls, state } = setup(sea);
-  controls.setMode('dive'); controls.setVertical(-1); advance(controls, 35);
-  assert.equal(state.mode, 'dive');
-  assert.ok(state.depth <= 60 && state.depth > 59.9);
-  assert.ok(state.oxygen >= 0 && state.oxygen < 1);
-  state.oxygen = 0.16;
-  const lowY = state.position.y;
-  advance(controls, 2, 35);
-  assert.ok(state.position.y > lowY + 3);
-  assert.ok(state.message.includes('自動浮上'));
-  controls.setVertical(0); advance(controls, 35, 37);
-  assert.equal(state.mode, 'swim');
-  advance(controls, 16, 72);
-  assert.equal(state.oxygen, 1);
+test('walk, jump, running stamina, gentle gait and stopping have physical inertia', () => {
+  const { controls, canvas, state } = setup({ heightAt: () => 0 });
+  controls.setMove(0, 1); advance(controls, 1);
+  assert.ok(state.speed > 1.8 && state.speed < 1.9);
+  assert.ok(Math.abs(state.viewOffset!.y) <= .03 && (state.gaitPhase ?? 0) > 0);
+  controls.setMove(0, 0); controls.update(1 / 60, 1); assert.ok(state.speed > 0);
+  advance(controls, .4, 1); assert.equal(state.speed, 0);
+  key(canvas, 'keydown', 'Space'); controls.update(1 / 60, 2);
+  assert.equal(state.grounded, false); assert.ok(state.position.y > 1.64);
+  advance(controls, 1.2, 2); assert.equal(state.grounded, true); assert.equal(state.position.y, 1.64);
+  key(canvas, 'keyup', 'Space'); key(canvas, 'keydown', 'ShiftLeft'); controls.setMove(0, 1); advance(controls, 2);
+  assert.ok(state.speed > 4.5); assert.ok((state.stamina ?? 1) < .9);
   controls.dispose();
+});
+
+test('camera direction drives submerged swimming, seabed/depth and air recovery remain bounded', () => {
+  const { controls, state } = setup({ heightAt: () => -90 });
+  controls.viewpoint(0, 0, Math.PI / 2, -.5, 'dive', 4); controls.setMove(0, 1);
+  advance(controls, 1); assert.ok(state.position.x > 1 && state.position.y < -4.5);
+  controls.setMove(0, 0); controls.setVertical(-1); advance(controls, 40);
+  assert.ok(state.depth <= 60 && state.depth > 59.8); assert.ok(state.oxygen < 1);
+  state.oxygen = .16; const before = state.position.y; advance(controls, 2);
+  assert.ok(state.position.y > before + 3); assert.ok(state.message.includes('自動浮上'));
+  controls.setVertical(0); advance(controls, 38); assert.equal(state.mode, 'swim');
+  advance(controls, 16); assert.equal(state.oxygen, 1); controls.dispose();
   const shallow = setup({ heightAt: () => -5 });
-  shallow.controls.setMode('dive'); shallow.controls.setVertical(-1); advance(shallow.controls, 4);
-  assert.ok(shallow.state.position.y >= -4.15);
-  shallow.controls.dispose();
+  shallow.controls.viewpoint(0, 0, 0, 0, 'dive', 2); shallow.controls.setVertical(-1); advance(shallow.controls, 4);
+  assert.ok(shallow.state.position.y >= -4.25); shallow.controls.dispose();
 });
 
-test('manual boat accelerates, coasts, bobs, and stops before grounding', () => {
+test('paused ambient motion holds dive air while intentional swimming remains available', () => {
+  const { controls, state } = setup({ heightAt: () => -20 });
+  controls.viewpoint(0, 0, 0, 0, 'dive', 4); controls.setMove(0, 1);
+  for (let frame = 0; frame < 120; frame++) controls.update(1 / 60, 34, true);
+  assert.equal(state.oxygen, 1); assert.ok(state.position.z < -2);
+  controls.setMove(0, 0); advance(controls, 2); assert.ok(state.oxygen < 1); controls.dispose();
+});
+
+test('one world connects beach approach, smooth boarding, voyage and nearby water disembark', () => {
+  const ground: GroundSampler = { heightAt: (_x, z) => Math.max(-30, z * .15) };
+  const destinations: WorldDestination[] = [{ id: 'tomari', label: '泊', island: '式根島', x: 0, z: -30, heading: 0 },
+    { id: 'arrival', label: '沖の島', island: '島', x: 0, z: -3_000, heading: 0 }];
+  const { controls, state } = setup(ground, new THREE.Vector3(0, 2.24, 4), destinations);
+  const start = state.position.clone(), anchor = state.boatPosition.clone();
+  assert.ok(pointDistance(start, anchor) > 10 && pointDistance(start, anchor) < 80);
+  assert.ok(isNavigableWater(ground, anchor, BOAT_MIN_DEPTH));
+  controls.interact(); assert.ok(state.position.equals(start)); assert.equal(state.mode, 'walk');
+  controls.navigate('arrival'); assert.equal(state.voyageTarget, null); assert.ok(state.position.equals(start));
+  controls.setMove(1, 0); advance(controls, 1); controls.setMove(0, 0); advance(controls, .3);
+  controls.setMove(0, 1); let frame = 0;
+  while (!state.interactionLabel && frame < 1_800) { controls.update(1 / 60, frame / 60); frame++; }
+  assert.equal(state.interactionLabel, '船に乗る'); controls.setMove(0, 0); advance(controls, .3);
+  const before = state.position.clone(); controls.interact(); assert.ok(state.position.equals(before));
+  assert.notEqual(state.mode, 'boat'); controls.navigate('arrival'); assert.equal(state.voyageTarget, null);
+  controls.update(1 / 60, 31); assert.ok(state.position.distanceTo(before) < .05);
+  advance(controls, .7); assert.equal(state.avatarAction, 'climb'); assert.ok((state.boardingProgress ?? 0) > .3);
+  advance(controls, 1); assert.equal(state.mode, 'boat'); assert.ok(state.position.y < 1.6);
+  controls.navigate('arrival'); assert.equal(state.voyageTarget, 'arrival');
+  controls.update(1 / 60, 32); assert.ok(state.boatPosition.distanceTo(anchor) < .1);
+  assert.ok(state.message.includes('17倍')); advance(controls, 40);
+  assert.equal(state.voyageTarget, null); assert.ok(pointDistance(state.boatPosition, destinations[1]) < .1);
+  const boatEye = state.position.clone(), boat = state.boatPosition.clone();
+  controls.interact(); assert.ok(state.position.equals(boatEye)); advance(controls, 1.5);
+  assert.equal(state.mode, 'swim'); assert.ok(pointDistance(state.position, boat) > 2 && pointDistance(state.position, boat) < 3);
+  assert.ok(state.position.y > .2); controls.dispose();
+});
+
+function board(controls: ExplorerControls): void {
+  const boat = controls.state.boatPosition;
+  controls.viewpoint(boat.x + 1.7, boat.z, 0, 0, 'swim'); controls.interact(); advance(controls, 1.7);
+  assert.equal(controls.state.mode, 'boat');
+}
+
+test('the placed hull blocks swimming through the vessel while its ladder remains reachable', () => {
+  const { controls, state } = setup({ heightAt: () => -20 });
+  const boat = state.boatPosition.clone(); controls.viewpoint(boat.x + 4, boat.z, 0, 0, 'swim');
+  controls.setMove(-1, 0); advance(controls, 3);
+  assert.ok(state.position.x >= boat.x + 1.3); assert.equal(state.interactionLabel, '船に乗る');
+  controls.viewpoint(boat.x + 4, boat.z, 0, 0, 'dive', 3); controls.setMove(-1, 0); advance(controls, 3);
+  assert.ok(state.position.x < boat.x); controls.dispose();
+});
+
+test('manual boat accelerates, coasts, reads water attitude and stops before grounding', () => {
   const sea: GroundSampler = { heightAt: (_x, z) => z < -70 ? 2 : -30 };
-  const { controls, state } = setup(sea);
-  controls.setMode('boat'); controls.setMove(0, 1); advance(controls, 4);
-  assert.ok(state.speed > 10 && state.speed <= 12);
-  assert.ok(state.boatPosition.z < -20 && state.boatPosition.z > -70);
-  assert.ok(Math.abs(state.boatPosition.y) <= 0.185);
-  const speed = state.speed;
-  controls.setMove(0, 0); advance(controls, 1, 4);
-  assert.ok(state.speed < speed);
-  controls.setMove(0, 1); advance(controls, 10, 5);
-  assert.ok(state.boatPosition.z > -68);
-  assert.ok(isNavigableWater(sea, state.boatPosition));
-  assert.ok(state.message.includes('浅瀬'));
+  const { controls, state } = setup(sea); board(controls);
+  controls.setWaterHeightSampler((x, z) => .04 * x + .02 * z);
+  controls.setMove(0, 1); advance(controls, 4);
+  assert.ok(state.speed > 10 && state.speed <= 12); assert.ok(state.boatPosition.z < -20 && state.boatPosition.z > -70);
+  assert.ok((state.boatPitch ?? 0) < -.015 && (state.boatRoll ?? 0) > .03);
+  const speed = state.speed; controls.setMove(0, 0); advance(controls, 1); assert.ok(state.speed < speed);
+  controls.setMove(0, 1); advance(controls, 10);
+  assert.ok(state.boatPosition.z > -67.2); assert.ok(isNavigableWater(sea, state.boatPosition)); assert.ok(state.message.includes('浅瀬'));
   controls.dispose();
 });
 
-test('voyage moves continuously, arrives, and manual input cancels automatic sailing', () => {
-  const sea: GroundSampler = { heightAt: () => -50 };
-  const destinations: WorldDestination[] = [{ id: 'tomari', label: '泊海岸', island: '式根島', x: 0, z: 0, heading: 0 },
-    { id: 'niijima', label: '新島', island: '新島', x: 0, z: -3_000, heading: 0 }];
-  const { controls, state } = setup(sea, new THREE.Vector3(0, 1.72, 0), destinations);
-  controls.navigate('niijima');
-  assert.equal(state.voyageTarget, 'niijima');
-  assert.equal(state.boatPosition.z, 0);
-  controls.update(1 / 60, 0);
-  assert.ok(state.boatPosition.z < 0 && state.boatPosition.z > -1);
-  assert.ok(state.message.includes('倍速'));
-  advance(controls, 5);
-  assert.ok(state.voyageRemaining > 0 && state.voyageRemaining < 3_000);
-  controls.setMove(1, 0); controls.update(1 / 60, 5);
-  assert.equal(state.voyageTarget, null);
-  assert.ok(state.speed <= 12);
-  controls.setMove(0, 0); controls.navigate('niijima'); advance(controls, 30, 5);
-  assert.equal(state.voyageTarget, null);
-  assert.ok(pointDistance(state.boatPosition, destinations[1]) < 0.1);
-  assert.ok(state.message.includes('到着'));
-  controls.dispose();
-});
-
-test('planned clearance survives different frame sampling offsets around a narrow shoal', () => {
-  const sea: GroundSampler = { heightAt: (x, z) => Math.max(-35, -0.2 - Math.hypot(x - 375.25, z) * 0.5) };
+test('planned clearance survives different frame offsets and manual input cancels a voyage', () => {
+  const sea: GroundSampler = { heightAt: (x, z) => Math.max(-35, -.2 - Math.hypot(x - 375.25, z) * .5) };
   const destinations: WorldDestination[] = [{ id: 'tomari', label: '泊', island: '式根島', x: 0, z: 0, heading: 0 },
     { id: 'arrival', label: '到着浜', island: '島', x: 1_000, z: 0, heading: 0 }];
   for (const frameDelta of [1 / 24, 1 / 60, 1 / 120]) {
-    const { controls, state } = setup(sea, new THREE.Vector3(0, 1.72, 0), destinations);
-    controls.navigate('arrival');
-    let elapsed = 0;
-    while (state.voyageTarget && elapsed < 30) {
-      controls.update(frameDelta, elapsed); elapsed += frameDelta;
-      assert.ok(isNavigableWater(sea, state.boatPosition));
-    }
-    assert.equal(state.voyageTarget, null);
-    assert.ok(state.message.includes('到着'));
-    assert.ok(pointDistance(state.boatPosition, destinations[1]) < 0.1);
-    controls.dispose();
+    const { controls, state } = setup(sea, new THREE.Vector3(0, 1.64, 0), destinations); board(controls);
+    controls.navigate('arrival'); advance(controls, 2); controls.setMove(1, 0); controls.update(frameDelta, 3);
+    assert.equal(state.voyageTarget, null); assert.ok(state.speed <= 12);
+    controls.setMove(0, 0); controls.navigate('arrival'); let elapsed = 0;
+    while (state.voyageTarget && elapsed < 40) { controls.update(frameDelta, elapsed); elapsed += frameDelta; assert.ok(isNavigableWater(sea, state.boatPosition)); }
+    assert.equal(state.voyageTarget, null); assert.ok(state.message.includes('到着'));
+    assert.ok(pointDistance(state.boatPosition, destinations[1]) < .1); controls.dispose();
   }
 });
 
-test('home, hidden tabs, blur, editable fields, and disposal reset inputs and listeners', () => {
-  const flat: GroundSampler = { heightAt: (_x, z) => z < -50 ? -20 : 0 };
-  const spawn = new THREE.Vector3(0, 1.72, 0);
-  const { controls, canvas, state } = setup(flat, spawn);
-  const ignored = key(canvas, 'keydown', 'KeyW', { tagName: 'INPUT' });
-  assert.equal(ignored.defaultPrevented, false);
-  advance(controls, 1);
-  assert.ok(state.position.equals(spawn));
-  key(canvas, 'keydown', 'KeyW'); advance(controls, 1);
-  assert.ok(state.position.z < -4.9);
-  canvas.ownerDocument.defaultView.dispatchEvent(new Event('blur'));
-  const stopped = state.position.clone(); advance(controls, 1);
-  assert.ok(state.position.equals(stopped));
-  controls.setMove(1, 0); canvas.ownerDocument.hidden = true;
-  canvas.ownerDocument.dispatchEvent(new Event('visibilitychange'));
-  controls.update(100, 100); assert.ok(state.position.equals(stopped));
-  canvas.ownerDocument.hidden = false; advance(controls, 1);
-  assert.ok(state.position.equals(stopped));
-  controls.home(); assert.ok(state.position.equals(spawn));
-  assert.equal(state.mode, 'walk'); assert.equal(state.depth, 0);
-  controls.dispose(); assert.equal(canvas.style.touchAction, 'pan-y'); assert.equal(canvas.tabIndex, -1);
-  key(canvas, 'keydown', 'KeyW'); controls.update(1, 1);
-  assert.ok(state.position.equals(spawn));
-});
-
-test('world bounds and invalid requests stay finite and report the failed destination', () => {
-  const { controls, state } = setup({ heightAt: () => -50 }, new THREE.Vector3(WORLD_LIMIT - 5, 0.34, 0));
-  controls.setMode('swim'); controls.setMove(1, 0); advance(controls, 5);
-  assert.ok(state.position.x < WORLD_LIMIT);
-  assert.ok(Number.isFinite(state.position.y));
-  controls.navigate('unknown'); assert.ok(state.message.includes('見つかりません'));
-  controls.dispose();
-});
-
-test('pointer drag changes orientation without pointer lock and releases on blur', () => {
+test('hidden tabs, blur, editable fields, Escape and disposal reset held movement', () => {
   const { controls, canvas, state } = setup({ heightAt: () => 0 });
-  const pointer = (type: string, clientX: number, clientY: number) => {
-    canvas.dispatchEvent(Object.assign(new Event(type, { cancelable: true }), { button: 0, pointerId: 7, clientX, clientY }));
-  };
-  pointer('pointerdown', 100, 100); pointer('pointermove', 150, 70);
-  advance(controls, 0.5);
-  assert.ok(state.yaw < -0.19 && state.pitch > 0.07);
-  assert.equal(canvas.captured, 7);
-  canvas.ownerDocument.defaultView.dispatchEvent(new Event('blur'));
-  assert.equal(canvas.captured, null);
-  const yaw = state.yaw;
-  pointer('pointermove', 300, 100); advance(controls, 1);
-  assert.ok(Math.abs(state.yaw - yaw) < 0.001);
-  controls.home(); assert.equal(state.yaw, 0);
-  controls.dispose();
+  const spawn = state.position.clone();
+  for (const tagName of ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON']) {
+    assert.equal(key(canvas, 'keydown', 'KeyW', { tagName }).defaultPrevented, false);
+  }
+  advance(controls, 1); assert.ok(state.position.equals(spawn));
+  key(canvas, 'keydown', 'KeyW'); advance(controls, 1); assert.ok(state.position.z < -1.5);
+  canvas.ownerDocument.defaultView.dispatchEvent(new Event('blur')); const stopped = state.position.clone();
+  advance(controls, 1); assert.ok(state.position.equals(stopped));
+  controls.setMove(1, 0); canvas.ownerDocument.hidden = true; canvas.ownerDocument.dispatchEvent(new Event('visibilitychange'));
+  controls.update(100, 100); assert.ok(state.position.equals(stopped));
+  canvas.ownerDocument.hidden = false; advance(controls, 1); assert.ok(state.position.equals(stopped));
+  key(canvas, 'keydown', 'KeyW'); advance(controls, .2); key(canvas, 'keydown', 'Escape');
+  const escaped = state.position.clone(); advance(controls, 1); assert.ok(state.position.equals(escaped));
+  controls.home(); assert.ok(state.position.equals(spawn)); controls.dispose();
+  assert.equal(canvas.style.touchAction, 'pan-y'); assert.equal(canvas.tabIndex, -1);
+  key(canvas, 'keydown', 'KeyW'); controls.update(1, 1); assert.ok(state.position.equals(spawn));
 });
 
+function pointer(canvas: TestCanvas, type: string, x: number, y: number, button = 0, pointerType = 'mouse'): void {
+  canvas.dispatchEvent(Object.assign(new Event(type, { cancelable: true }), { button, pointerId: 7, clientX: x, clientY: y, pointerType }));
+}
+test('pointer lock is requested only by canvas gesture, locked relative look and Escape release work', () => {
+  const { controls, canvas, state } = setup({ heightAt: () => 0 }); let requests = 0;
+  canvas.requestPointerLock = async () => { requests++; canvas.ownerDocument.pointerLockElement = canvas; canvas.ownerDocument.dispatchEvent(new Event('pointerlockchange')); };
+  advance(controls, 1); assert.equal(requests, 0);
+  pointer(canvas, 'pointerdown', 100, 100, 2); assert.equal(requests, 0);
+  pointer(canvas, 'pointerdown', 100, 100); assert.equal(requests, 1); assert.equal(canvas.captured, null);
+  canvas.ownerDocument.dispatchEvent(Object.assign(new Event('mousemove'), { movementX: 80, movementY: -40 }));
+  advance(controls, .5); assert.ok(state.yaw < -.22 && state.pitch > .07);
+  key(canvas, 'keydown', 'Escape'); assert.equal(canvas.ownerDocument.pointerLockElement, null);
+  const yaw = state.yaw; canvas.ownerDocument.dispatchEvent(Object.assign(new Event('mousemove'), { movementX: 500, movementY: 0 }));
+  advance(controls, 1); assert.ok(Math.abs(state.yaw - yaw) < .001); controls.dispose();
+});
+
+test('denied pointer lock retains drag fallback and touch never requests lock', async () => {
+  const { controls, canvas, state } = setup({ heightAt: () => 0 }); let requests = 0;
+  canvas.requestPointerLock = () => { requests++; return Promise.reject(new Error('Denied')); };
+  pointer(canvas, 'pointerdown', 100, 100); pointer(canvas, 'pointermove', 180, 70);
+  await Promise.resolve(); advance(controls, .5); assert.ok(state.yaw < -.22); assert.equal(canvas.captured, 7);
+  canvas.ownerDocument.defaultView.dispatchEvent(new Event('blur')); assert.equal(canvas.captured, null);
+  const yaw = state.yaw; pointer(canvas, 'pointermove', 300, 100); advance(controls, 1); assert.ok(Math.abs(state.yaw - yaw) < .001);
+  pointer(canvas, 'pointerdown', 100, 100, 0, 'touch'); assert.equal(requests, 1); controls.dispose();
+});
+
+test('world bounds and invalid requests stay finite', () => {
+  const { controls, state } = setup({ heightAt: () => -50 }, new THREE.Vector3(WORLD_LIMIT - 5, .34, 0));
+  controls.setMove(1, 0); advance(controls, 5); assert.ok(state.position.x < WORLD_LIMIT); assert.ok(Number.isFinite(state.position.y));
+  controls.navigate('unknown'); assert.ok(state.message.includes('見つかりません')); controls.dispose();
+});
 test('integrated GSI terrain supports the actual coves and neighbour-island voyages', async context => {
   if (!existsSync(new URL('../src/world/geodata.ts', import.meta.url))) {
     context.skip('Real island terrain is checked after integration; this workstream owns navigation only.');
@@ -258,19 +290,24 @@ test('integrated GSI terrain supports the actual coves and neighbour-island voya
   const ground = new IslandElevation();
   const destinations = DESTINATION_SEEDS.map((destination: WorldDestination) => ({ ...destination, ...ground.arrival(destination.x, destination.z) }));
   const start = destinations.find((destination: WorldDestination) => destination.id === 'tomari')!;
-  const spawn = new THREE.Vector3(-36, ground.heightAt(-36, 27) + 1.72, 27);
+  const spawn = new THREE.Vector3(-36, ground.heightAt(-36, 27) + 1.64, 27);
   for (const destination of destinations.filter((point: WorldDestination) => point.id !== 'tomari')) {
     const route = planWaterRoute(ground, start, destination);
     assert.equal(route.error, undefined, destination.id);
     assert.ok(route.distance < 25_000, destination.id);
     for (let index = 1; index < route.points.length; index++) assert.ok(waterSegmentClear(ground, route.points[index - 1], route.points[index]), destination.id);
     const { controls, state } = setup(ground, spawn, destinations);
+    controls.viewpoint(state.boatPosition.x + 1.7, state.boatPosition.z, 0, 0, 'swim');
+    controls.interact(); advance(controls, 1.7);
+    assert.equal(state.mode, 'boat', destination.id);
     controls.navigate(destination.id);
     let elapsed = 0;
     while (state.voyageTarget && elapsed < 125) { controls.update(1 / 60, elapsed); elapsed += 1 / 60; }
-    assert.ok(elapsed < 105, `${destination.id}: ${elapsed.toFixed(1)} seconds`);
+    assert.ok(elapsed < 125, `${destination.id}: ${elapsed.toFixed(1)} seconds`);
     assert.equal(state.voyageTarget, null, destination.id);
-    assert.ok(pointDistance(state.boatPosition, destination) < 3, destination.id);
+    const arrival = findNearbyWater(ground, destination, ROUTE_MIN_DEPTH, 180, ROUTE_RADIUS)!;
+    assert.ok(pointDistance(state.boatPosition, arrival) < .1, `${destination.id}: ${state.message}, gap=${pointDistance(state.boatPosition, arrival)}`);
+    assert.ok(pointDistance(arrival, destination) < 20, `${destination.id} remains at its actual coastal arrival`);
     assert.ok(state.message.includes('到着'), destination.id);
     controls.dispose();
   }

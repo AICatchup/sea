@@ -11,6 +11,7 @@ export function worldToGeo(x: number, z: number): { lat: number; lon: number } {
     lon: GEO_ORIGIN.lon + x / (111320 * Math.cos(GEO_ORIGIN.lat * Math.PI / 180)) };
 }
 export interface GroundSampler { heightAt(x: number, z: number): number; }
+export const PLAYER_DIMENSIONS = { height: 1.75, eyeHeight: 1.64, radius: .25 } as const;
 export type TravelMode = 'walk' | 'swim' | 'dive' | 'boat';
 export type PlaceableKind = 'chair' | 'umbrella' | 'buoy' | 'tank' | 'rock' | 'pine';
 export interface WorldDestination {
@@ -40,8 +41,10 @@ export interface AdventureState {
 }
 export interface MapOutline { id: string; label: string; points: [number, number][]; }
 export interface AdventureCallbacks {
-  mode(mode: TravelMode): void;
-  home(): void;
+  /** Optional legacy/developer hooks; the playing interface has no mode or teleport buttons. */
+  mode?(mode: TravelMode): void;
+  home?(): void;
+  interact?(): void;
   navigate(id: string): void;
   place(kind: PlaceableKind): void;
   undo(): void;

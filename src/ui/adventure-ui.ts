@@ -38,7 +38,8 @@ export class AdventureUI {
   private readonly root = document.createElement('section');
   private readonly abort = new AbortController();
   private readonly visibilityObserver: MutationObserver;
-  private readonly modes: HTMLButtonElement[];
+  private readonly interaction: HTMLButtonElement;
+  private readonly staminaMeter: HTMLMeterElement;
   private readonly destinationButtons = new Map<string, HTMLButtonElement>();
   private readonly placePanel: HTMLElement;
   private readonly voyagePanel: HTMLElement;
@@ -88,16 +89,10 @@ export class AdventureUI {
     this.root.innerHTML = `
       <div class="adventure-heading">
         <div class="adventure-location"><span>式根島</span><h1>泊海水浴場</h1></div>
-        <div class="adventure-modes" role="group" aria-label="移動のしかた">
-          <button type="button" data-mode="walk" aria-pressed="false">${icon('walk')}<span>歩く</span></button>
-          <button type="button" data-mode="swim" aria-pressed="false">${icon('swim')}<span>泳ぐ</span></button>
-          <button type="button" data-mode="dive" aria-pressed="false">${icon('dive')}<span>潜る</span></button>
-          <button type="button" data-mode="boat" aria-pressed="false">${icon('boat')}<span>船</span></button>
-        </div>
         <div class="adventure-actions">
           <button type="button" data-action="place" aria-expanded="false" aria-controls="adventure-place-panel">${icon('place')}<span>ものを置く</span></button>
-          <button type="button" data-action="voyage" aria-expanded="false" aria-controls="adventure-voyage-panel">${icon('map')}<span>島めぐり</span></button>
-          <button type="button" data-action="home" class="adventure-home" aria-label="泊海水浴場の浜へ戻る" title="浜へ戻る">${icon('home')}</button>
+          <button type="button" data-action="voyage" aria-expanded="false" aria-controls="adventure-voyage-panel">${icon('map')}<span>地図</span></button>
+
         </div>
       </div>
       <section id="adventure-place-panel" class="adventure-popover adventure-place-panel" role="dialog" aria-labelledby="adventure-place-title" hidden>
@@ -111,10 +106,13 @@ export class AdventureUI {
         <canvas class="adventure-map" role="img" aria-label="島の輪郭、目的地、現在地を示す地図"></canvas>
         <div class="adventure-map-key"><span><i></i>現在地</span><span><i></i>目的地</span></div>
         <div class="adventure-destinations" role="group" aria-label="船の行き先"></div>
-        <p class="adventure-map-note">移動時間を縮めて楽しむ、島の旅。</p>
+        <p class="adventure-map-note">船に乗ったら、行き先を選んで出航。沖の長い航海は約17倍の時間圧縮。</p>
         <a class="adventure-reference" href="https://www.google.com/maps/search/?api=1&query=34.3359808,139.2117451" target="_blank" rel="noopener noreferrer">実際の泊海水浴場を地図で見る <span aria-hidden="true">↗</span></a>
         <a class="adventure-reference" href="https://maps.gsi.go.jp/development/demtile.html" target="_blank" rel="noopener noreferrer">地形：国土地理院の標高タイルを加工して作成</a>
       </section>
+      <div class="adventure-reticle" aria-hidden="true"></div>
+      <button type="button" class="adventure-interaction" hidden><kbd>E</kbd><span></span></button>
+      <div class="adventure-stamina"><span>体力</span><meter data-stamina min="0" max="1" value="1" aria-label="体力"></meter></div>
       <div class="adventure-dive-hud" hidden><div><span>深さ</span><strong data-depth>0.0 m</strong></div><div><span>空気</span><strong data-air>100%</strong><meter min="0" max="100" low="25" high="45" optimum="100" value="100" aria-label="空気の残り"></meter></div></div>
       <div class="adventure-journey" hidden><div><span class="adventure-journey-label">船で移動中</span><span data-percent>0%</span></div><progress max="1" value="0" aria-label="島への移動"></progress></div>
       <div class="adventure-message" role="status" aria-live="polite" hidden></div>
@@ -122,7 +120,9 @@ export class AdventureUI {
       <div class="adventure-touch-vertical" role="group" aria-label="水中で上下へ移動" hidden><button type="button" data-direction="up" aria-label="水面へ上がる">${icon('up')}<span>上へ</span></button><button type="button" data-direction="down" aria-label="深く潜る">${icon('down')}<span>下へ</span></button></div>`;
     const find = <T extends HTMLElement>(selector: string): T => this.root.querySelector<T>(selector)!;
     this.locationName=find('.adventure-location h1');this.locationIsland=find('.adventure-location span');
-    this.modes = Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-mode]'));
+    this.interaction = find('.adventure-interaction');
+    this.staminaMeter = find('[data-stamina]');
+    this.interaction.addEventListener('click', () => this.callbacks.interact?.(), { signal: this.abort.signal });
     this.placePanel = find('#adventure-place-panel');
     this.voyagePanel = find('#adventure-voyage-panel');
     this.placeToggle = find('[data-action="place"]');
@@ -132,7 +132,7 @@ export class AdventureUI {
     this.diveHud = find('.adventure-dive-hud');
     this.depth = find('[data-depth]');
     this.air = find('[data-air]');
-    this.airMeter = find('meter');
+    this.airMeter = find('.adventure-dive-hud meter');
     this.verticalControls = find('.adventure-touch-vertical');
     this.journey = find('.adventure-journey');
     this.journeyLabel = find('.adventure-journey-label');
@@ -141,17 +141,8 @@ export class AdventureUI {
     this.message = find('.adventure-message');
     this.map = find<HTMLCanvasElement>('.adventure-map');
     const events = { signal: this.abort.signal };
-    this.modes.forEach(button => button.addEventListener('click', () => {
-      this.clearHeld();
-      this.callbacks.mode(button.dataset.mode as TravelMode);
-    }, events));
     this.placeToggle.addEventListener('click', () => this.togglePanel('place'), events);
     this.voyageToggle.addEventListener('click', () => this.togglePanel('voyage'), events);
-    find('[data-action="home"]').addEventListener('click', () => {
-      this.closePanels(false);
-      this.clearHeld();
-      this.callbacks.home();
-    }, events);
     this.undo.addEventListener('click', () => this.callbacks.undo(), events);
     this.root.querySelectorAll<HTMLButtonElement>('[data-close]').forEach(button => {
       button.addEventListener('click', () => this.closePanels(true), events);
@@ -273,9 +264,8 @@ export class AdventureUI {
     text(this.locationName,distance<650?nearest?.label??'海の旅':'島のあいだ');
     if (this.mode !== state.mode) {
       this.mode = state.mode;
-      this.modes.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === state.mode)));
       this.root.dataset.mode = state.mode;
-      this.diveHud.hidden = state.mode !== 'dive';
+      this.diveHud.hidden = state.mode !== 'dive' && state.mode !== 'swim';
       this.verticalControls.hidden = state.mode !== 'dive' && state.mode !== 'swim';
     }
     if (this.placedCount !== placedCount) {
@@ -283,7 +273,13 @@ export class AdventureUI {
       text(this.count, `${placedCount} 個`);
       this.undo.disabled = placedCount <= 0;
     }
-    if (state.mode === 'dive') {
+    const label = state.interactionLabel ?? '';
+    this.interaction.hidden = !label;
+    this.interaction.disabled = state.avatarAction === 'climb';
+    text(this.interaction.querySelector('span')!, label);
+    this.staminaMeter.value = state.stamina ?? 1;
+    this.destinationButtons.forEach(button => { button.disabled = state.mode !== 'boat' || state.avatarAction === 'climb'; });
+    if (state.mode === 'dive' || state.mode === 'swim') {
       text(this.depth, `${Math.max(0, state.depth).toFixed(1)} m`);
       const air = Math.round(Math.max(0, Math.min(1, state.oxygen)) * 100);
       text(this.air, `${air}%`);

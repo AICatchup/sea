@@ -10,12 +10,14 @@ export interface WaterRoute {
 
 export const WORLD_LIMIT = 35_000;
 export const BOAT_MIN_DEPTH = 1.1;
-const HULL_RADIUS = 2.1;
+// Conservative 5.6 m motorboat envelope, including its bow and stern.
+export const BOAT_HULL_RADIUS = 2.8;
+const HULL_RADIUS = BOAT_HULL_RADIUS;
 const SEGMENT_STEP = 1.5;
 // A planned corridor is wider/deeper than a moving hull. This prevents different
 // frame sample offsets from finding a tiny shoal between route samples.
-const ROUTE_MIN_DEPTH = BOAT_MIN_DEPTH + 0.4;
-const ROUTE_RADIUS = HULL_RADIUS + 1.2;
+export const ROUTE_MIN_DEPTH = BOAT_MIN_DEPTH + 0.4;
+export const ROUTE_RADIUS = HULL_RADIUS + 1.2;
 
 export function groundHeight(ground: GroundSampler, x: number, z: number): number {
   if (!Number.isFinite(x) || !Number.isFinite(z) || Math.abs(x) > WORLD_LIMIT || Math.abs(z) > WORLD_LIMIT) return Infinity;
@@ -47,15 +49,15 @@ export function waterSegmentClear(ground: GroundSampler, a: NavigationPoint, b: 
   return true;
 }
 
-export function findNearbyWater(ground: GroundSampler, origin: NavigationPoint, minDepth = BOAT_MIN_DEPTH, maxRadius = 360): NavigationPoint | null {
-  if (isNavigableWater(ground, origin, minDepth)) return { ...origin };
+export function findNearbyWater(ground: GroundSampler, origin: NavigationPoint, minDepth = BOAT_MIN_DEPTH, maxRadius = 360, hullRadius = HULL_RADIUS): NavigationPoint | null {
+  if (isNavigableWater(ground, origin, minDepth, hullRadius)) return { ...origin };
   for (let radius = 4; radius <= maxRadius; radius += radius < 48 ? 4 : 12) {
     const samples = Math.min(96, Math.max(24, Math.ceil(radius / 2)));
     for (let index = 0; index < samples; index++) {
       // North is checked first, matching the entrance to Tomari's cove.
       const angle = index / samples * Math.PI * 2;
       const point = { x: origin.x + Math.sin(angle) * radius, z: origin.z - Math.cos(angle) * radius };
-      if (isNavigableWater(ground, point, minDepth)) return point;
+      if (isNavigableWater(ground, point, minDepth, hullRadius)) return point;
     }
   }
   return null;

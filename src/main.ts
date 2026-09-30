@@ -85,8 +85,7 @@ try {
   if(view==='cliff')ocean.adventure.viewpoint(-86,-22,-1.6,.10);
   const focus = () => element('ocean').focus({ preventScroll: true });
   adventureUI = new AdventureUI({
-    mode: mode => { ocean.adventure.setMode(mode); focus(); },
-    home: () => { ocean.resetView(); focus(); },
+    interact: () => { ocean.adventure.interact(); focus(); },
     navigate: id => { ocean.adventure.navigate(id); focus(); },
     place: kind => { ocean.place(kind); focus(); },
     undo: () => { ocean.assets.undoPlacement(); focus(); },
@@ -152,8 +151,8 @@ try {
   element<HTMLSelectElement>('quality').addEventListener('change', event => {
     ocean.setQuality((event.target as HTMLSelectElement).value as Quality);
   }, events);
-  element('reset-view').addEventListener('click', () => { ocean.resetView(); toast('水平線に、戻りました。'); }, events);
-  element('home').addEventListener('click', () => ocean.resetView(), events);
+  element('reset-view').addEventListener('click', () => { ocean.adventure.recenterLook(); focus(); }, events);
+  element('home').addEventListener('click', () => { ocean.adventure.recenterLook(); focus(); }, events);
   element('pause').addEventListener('click', togglePause, events);
   element('immersive').addEventListener('click', toggleImmersive, events);
   element('leave-immersive').addEventListener('click', toggleImmersive, events);
