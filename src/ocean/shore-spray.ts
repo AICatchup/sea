@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
+import { ShoreWhitewater, whitewaterBirthRate, type WhitewaterSample } from './shore-whitewater.ts';
 
 const GRID=24, SPAN=144, INTERVAL=.2, LIMIT=1500;
 type Uniforms=Record<string,THREE.IUniform>;
@@ -80,8 +81,26 @@ export class ShoreSpray {
   private credits=new Float32Array(GRID*GRID);
   private emitted=0;
   private updateMs=0;
-  constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number}){
+  readonly whitewater:ShoreWhitewater|null;
+  private readonly foamCredits=new Float32Array(GRID*GRID);
+  private readonly foamSample:WhitewaterSample={height:0,compression:0,depth:0,shelter:1,ground:0,gradientX:0,gradientZ:0};
+  private foamCacheValid=false;
+  private readonly sampleFoam=(x:number,z:number,out:WhitewaterSample):boolean=>{
+    if(!this.foamCacheValid||!this.pixels)return false;
+    const cx=(x-this.sampleOrigin.x)/6+GRID/2-.5,cz=(z-this.sampleOrigin.y)/6+GRID/2-.5;
+    if(cx<0||cz<0||cx>GRID-1||cz>GRID-1)return false;
+    const ix=Math.floor(cx),iz=Math.floor(cz),fx=cx-ix,fz=cz-iz;
+    const h=(a:number,b:number)=>{const i=(b*GRID+a)*4;return (this.pixels![i]*256+this.pixels![i+1])/65535*16-8;};
+    out.height=THREE.MathUtils.lerp(THREE.MathUtils.lerp(h(ix,iz),h(Math.min(ix+1,GRID-1),iz),fx),THREE.MathUtils.lerp(h(ix,Math.min(iz+1,GRID-1)),h(Math.min(ix+1,GRID-1),Math.min(iz+1,GRID-1)),fx),fz);
+    const i=(Math.round(cz)*GRID+Math.round(cx))*4;
+    out.depth=this.pixels[i+3]/255*8;out.compression=this.pixels[i+2]/255;out.shelter=1;
+    out.ground=this.ground.heightAt(x,z);out.gradientX=this.ground.heightAt(x+2,z)-this.ground.heightAt(x-2,z);out.gradientZ=this.ground.heightAt(x,z+2)-this.ground.heightAt(x,z-2);
+    return true;
+  };
+  constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number},options:{whitewater?:boolean}={}){
     this.renderer=renderer;this.ground=ground;
+    this.whitewater=options.whitewater?new ShoreWhitewater():null;
+    if(this.whitewater)this.group.add(this.whitewater.group);
     this.sampleMaterial=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,
       uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:'void main(){gl_Position=vec4(position.xy,0,1);}',fragmentShader:/* glsl */`
@@ -138,6 +157,8 @@ export class ShoreSpray {
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
     this.pool.advance(dt);
+    this.foamCacheValid=!!this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime;
+    this.whitewater?.update(delta,this.sampleFoam,underwater);
     if(!underwater){
       this.requestSample(time,camera,uniforms);
       const wind=Math.max(0,Math.min(35,Number(uniforms.uWind?.value??0)));
@@ -168,6 +189,20 @@ export class ShoreSpray {
           if(born){births++;this.emitted++;}
         }
       }
+      if(this.whitewater&&this.foamCacheValid){
+        let count=0;
+        for(let cell=0;cell<GRID*GRID&&count<24&&this.whitewater.pool.active<this.whitewater.pool.capacity;cell++){
+          const x=this.sampleOrigin.x+(cell%GRID+.5-GRID/2)*6,z=this.sampleOrigin.y+(Math.floor(cell/GRID)+.5-GRID/2)*6;
+          const s=this.foamSample;if(!this.sampleFoam(x,z,s))continue;
+          const rate=whitewaterBirthRate(s);if(rate<=0){this.foamCredits[cell]=0;continue;}
+          this.foamCredits[cell]=Math.min(1.5,this.foamCredits[cell]+rate*dt);
+          if(this.foamCredits[cell]<1)continue;this.foamCredits[cell]--;
+          const norm=Math.hypot(s.gradientX,s.gradientZ),seed=this.random(),along=(seed-.5)*4;
+          const nx=s.gradientX/norm,nz=s.gradientZ/norm,bx=x-nz*along,bz=z+nx*along;
+          if(!this.sampleFoam(bx,bz,s)||whitewaterBirthRate(s)<=0)continue;
+          if(this.whitewater.pool.emit({x:bx,z:bz,height:s.height,energy:s.compression,nx,nz,seed}))count++;
+        }
+      }
     }
     const size=this.renderer.getDrawingBufferSize(new THREE.Vector2());
     const perspective=camera as THREE.PerspectiveCamera;
@@ -196,13 +231,14 @@ export class ShoreSpray {
       if(!(pixels instanceof Uint8Array)||pixels.length!==GRID*GRID*4)throw new Error('Invalid spray readback');
       // Black framebuffer is not a valid height field (zero height encodes 128,0).
       if(!pixels.some((value,i)=>i%4<2&&value!==0))throw new Error('Uninitialized spray framebuffer');
-      if(!origin.equals(this.sampleOrigin))this.credits.fill(0);
+      if(!origin.equals(this.sampleOrigin)){this.credits.fill(0);this.foamCredits.fill(0);}
       this.pixels=pixels;this.sampleOrigin.copy(origin);this.sampleTime=time;
     }).catch(()=>{if(!this.disposed)this.failed=true;}).finally(()=>{this.pending=false;if(this.disposed)this.target.dispose();});
   }
-  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:1,samples:GRID*GRID,readbackBytes:GRID*GRID*4,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,approximation:'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient'};}
+  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:this.whitewater?2:1,whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater?2048:0,samples:GRID*GRID,readbackBytes:GRID*GRID*4,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,approximation:'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater bilinear cached height, ground-culling, analytic onshore drift'};}
   dispose():void{
     if(this.disposed)return;this.disposed=true;
+    this.whitewater?.dispose();
     this.geometry.dispose();this.material.dispose();this.quadGeometry.dispose();this.sampleMaterial.dispose();
     if(!this.pending)this.target.dispose();this.group.clear();this.scene.clear();this.pixels=null;
   }
