@@ -31,13 +31,15 @@ function distances(mask: Uint8Array, width: number, height: number, dx: number, 
 
 /** GSI land macroshape. Sea distance/profile and all microrelief are explicitly authored. */
 export class NiijimaDEM {
-  readonly raster = raster;
-  readonly dx = (raster.maxX - raster.minX) / (raster.width - 1);
-  readonly dz = (raster.maxZ - raster.minZ) / (raster.height - 1);
+  readonly raster: { readonly width: number; readonly height: number; readonly minX: number; readonly minZ: number; readonly maxX: number; readonly maxZ: number; readonly elevations: string };
+  readonly dx: number;
+  readonly dz: number;
   readonly land: Uint8Array;
   readonly heights: Float32Array;
   readonly shore: Float32Array;
-  constructor() {
+  constructor(source = raster as NiijimaDEM['raster']) {
+    this.raster = source; const raster = source;
+    this.dx = (raster.maxX - raster.minX) / (raster.width - 1); this.dz = (raster.maxZ - raster.minZ) / (raster.height - 1);
     const encoded = atob(raster.elevations), buffer = new ArrayBuffer(encoded.length), bytes = new Uint8Array(buffer);
     for (let i = 0; i < encoded.length; i++) bytes[i] = encoded.charCodeAt(i);
     const view = new DataView(buffer), values = Int16Array.from({ length: encoded.length / 2 }, (_, i) => view.getInt16(i * 2, true));
@@ -52,6 +54,7 @@ export class NiijimaDEM {
     }
   }
   sample(array: Float32Array, x: number, z: number): number {
+    const raster = this.raster;
     const px = clamp((x - raster.minX) / this.dx, 0, raster.width - 1), pz = clamp((z - raster.minZ) / this.dz, 0, raster.height - 1);
     const ix = Math.min(raster.width - 2, Math.floor(px)), iz = Math.min(raster.height - 2, Math.floor(pz)), fx = px - ix, fz = pz - iz, i = iz * raster.width + ix;
     return (array[i] * (1 - fx) + array[i + 1] * fx) * (1 - fz) + (array[i + raster.width] * (1 - fx) + array[i + raster.width + 1] * fx) * fz;

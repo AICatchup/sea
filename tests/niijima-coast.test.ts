@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { NiijimaCoast, NIIJIMA_DETAIL_PROVENANCE } from '../src/world/niijima-coast.ts';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { NiijimaCoast, NIIJIMA_DETAIL_PROVENANCE, NIIJIMA_NORTH_PROVENANCE, NIIJIMA_COAST_BOOKMARKS } from '../src/world/niijima-coast.ts';
 import { IslandElevation } from '../src/world/geodata.ts';
 import { geoToWorld, worldToGeo } from '../src/world/contracts.ts';
 import { DESTINATION_SEEDS } from '../src/world/locations.ts';
@@ -11,7 +13,7 @@ const base = new IslandElevation(), borrowed = new THREE.MeshStandardMaterial(),
 const ground = { heightAt: (x: number, z: number) => coast.contains(x, z) ? coast.heightAt(x, z) : base.heightAt(x, z) };
 
 function gpuHeight(x: number, z: number): number {
-  const map = coast.waterMap(), image = map.texture.image;
+  const map = coast.waterMap(x, z), image = map.texture.image;
   const px = (x - map.origin.x) / map.size.x * image.width - .5, pz = (z - map.origin.y) / map.size.y * image.height - .5;
   const ix = Math.floor(px), iz = Math.floor(pz), fx = px - ix, fz = pz - iz;
   const read = (x: number, z: number) => THREE.DataUtils.fromHalfFloat((image.data as Uint16Array)[(z * image.width + x) * 4]);
@@ -74,7 +76,7 @@ test('cell-centre water UVs match ground nodes and interpolated wet strand stays
 
 test('new east coast arrivals are open water and seamless boat routes preserve existing Maehama destination', () => {
   const start = base.arrival(-64, -70);
-  for (const id of ['horikiri', 'secret', 'niijima']) {
+  for (const id of ['habushi', 'horikiri', 'secret', 'niijima']) {
     const seed = DESTINATION_SEEDS.find(seed => seed.id === id)!;
     const goal = id === 'niijima' ? base.arrival(seed.x, seed.z) : seed;
     assert.ok(isNavigableWater(ground, goal), id);
@@ -89,8 +91,55 @@ test('new east coast arrivals are open water and seamless boat routes preserve e
 
 test('pumice cliffs block walking and detailed coast stays within memory/draw budgets', () => {
   assert.equal(footSegmentClear(ground, { x: 5883, z: -2186 }, { x: 5750, z: -2186 }), false);
-  assert.ok(coast.triangleCount < 2_000_000); assert.equal(coast.group.children.length, 4);
+  assert.ok(coast.triangleCount < 3_000_000); assert.equal(coast.group.children.length, 9);
   const close = coast.surfaces[1]; assert.ok(close.dx < 2 && close.dz < 2); assert.ok(close.bounds.maxX - close.bounds.minX < 500); assert.ok(close.bounds.maxZ - close.bounds.minZ < 2000);
+});
+
+test('full Habushi coverage retains the immutable southern source and verified Main Gate bookmark', () => {
+  const p = NIIJIMA_NORTH_PROVENANCE;
+  const original = readFileSync(new URL('../src/world/niijima-detail.generated.ts', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  assert.equal(createHash('sha256').update(original).digest('hex'), p.originalSecretSnapshot.sha256);
+  assert.equal(p.originalSecretSnapshot.commit, 'ac6ff1ed38e4956544e1d55a4eed14329411ef11');
+  assert.ok(p.tiles.filter(tile => 'sha256' in tile).length >= 20); assert.match(p.measured, /DEM10B fallback/);
+  const bookmark = NIIJIMA_COAST_BOOKMARKS.find(bookmark => bookmark.id === 'habushi')!;
+  assert.deepEqual([bookmark.lat, bookmark.lon], [34.3764393, 139.2755897]);
+  assert.ok(coast.bounds.maxZ - coast.bounds.minZ > 8000);
+  for (const [lat, lon] of [[34.39217298, 139.2794526], [34.3764393, 139.2755897], [34.35561844, 139.2758477], [34.34428046, 139.2757618]]) {
+    const point = geoToWorld(lat, lon); assert.ok(coast.contains(point.x, point.z));
+  }
+  const gate = geoToWorld(bookmark.lat, bookmark.lon);
+  assert.ok(coast.northDem.heightAt(gate.x, gate.z) > 5); assert.ok(coast.heightAt(gate.x, gate.z) > 5);
+});
+
+test('northern dry strand has a continuous walkable 400m segment and matched wet shoreline', () => {
+  assert.ok(ground.heightAt(5900, -4503) > 2 && ground.heightAt(5900, -4100) > 2);
+  assert.ok(footSegmentClear(ground, { x: 5900, z: -4503 }, { x: 5900, z: -4100 }));
+  const dem = coast.northDem; let samples = 0, maximum = 0;
+  for (let z = -6350.19; z < -3360; z += 13.37) {
+    const iz = Math.round((z - dem.raster.minZ) / dem.dz); let last = 0;
+    for (let ix = 0; ix < dem.raster.width; ix++) if (dem.land[iz * dem.raster.width + ix]) last = ix;
+    const shoreX = dem.raster.minX + last * dem.dx;
+    for (let x = shoreX - 16.37; x < shoreX + 18; x += .71) {
+      const y = coast.heightAt(x, z); if (Math.abs(y) > 1.2) continue;
+      maximum = Math.max(maximum, Math.abs(gpuHeight(x, z) - y)); samples++;
+    }
+  }
+  assert.ok(samples > 1500); assert.ok(maximum <= .025, `northern wet-strand bilinear error ${maximum}m`);
+});
+
+test('water tiles stay bounded, match their shared samples and replace owned cached textures', () => {
+  const a = coast.waterMap(5990, -4500), b = coast.waterMap(5990, -3400);
+  assert.equal(a.texture.image.width, 2049); assert.equal(a.texture.image.height, 2049);
+  assert.ok((a.texture.image.data as Uint16Array).byteLength < 34_000_000);
+  const x = 6000, z = -4200;
+  const sample = (map: ReturnType<NiijimaCoast['waterMap']>) => {
+    const image = map.texture.image, ix = Math.round((x - map.origin.x) / map.size.x * image.width - .5), iz = Math.round((z - map.origin.y) / map.size.y * image.height - .5);
+    assert.ok(ix >= 0 && ix < image.width && iz >= 0 && iz < image.height);
+    return (image.data as Uint16Array)[(iz * image.width + ix) * 4];
+  };
+  assert.equal(sample(a), sample(b)); assert.equal(coast.waterMap(5990, -3400), b);
+  let removed = 0; a.texture.addEventListener('dispose', () => removed++);
+  coast.waterMap(7000, -7500); assert.equal(removed, 1);
 });
 
 test('disposing Niijima releases only owned geometry, material and texture', () => {
@@ -100,5 +149,5 @@ test('disposing Niijima releases only owned geometry, material and texture', () 
   (meshes[0].material as THREE.Material).addEventListener('dispose', () => materialDisposals++);
   meshes.forEach(mesh => mesh.geometry.addEventListener('dispose', () => geometryDisposals++));
   coast.waterMap().texture.addEventListener('dispose', () => textureDisposals++);
-  coast.dispose(); assert.equal(borrowedDisposals, 0); assert.equal(materialDisposals, 1); assert.equal(geometryDisposals, 4); assert.equal(textureDisposals, 1);
+  coast.dispose(); assert.equal(borrowedDisposals, 0); assert.equal(materialDisposals, 1); assert.equal(geometryDisposals, 9); assert.equal(textureDisposals, 1);
 });
