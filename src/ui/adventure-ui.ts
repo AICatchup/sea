@@ -113,6 +113,7 @@ export class AdventureUI {
         <div class="adventure-destinations" role="group" aria-label="船の行き先"></div>
         <p class="adventure-map-note">移動時間を縮めて楽しむ、島の旅。</p>
         <a class="adventure-reference" href="https://www.google.com/maps/search/?api=1&query=34.3359808,139.2117451" target="_blank" rel="noopener noreferrer">実際の泊海水浴場を地図で見る <span aria-hidden="true">↗</span></a>
+        <a class="adventure-reference" href="https://maps.gsi.go.jp/development/demtile.html" target="_blank" rel="noopener noreferrer">地形：国土地理院の標高タイルを加工して作成</a>
       </section>
       <div class="adventure-dive-hud" hidden><div><span>深さ</span><strong data-depth>0.0 m</strong></div><div><span>空気</span><strong data-air>100%</strong><meter min="0" max="100" low="25" high="45" optimum="100" value="100" aria-label="空気の残り"></meter></div></div>
       <div class="adventure-journey" hidden><div><span class="adventure-journey-label">船で移動中</span><span data-percent>0%</span></div><progress max="1" value="0" aria-label="島への移動"></progress></div>
