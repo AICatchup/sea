@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { shoreWaveSampling } from './surface-detail.ts';
 
 const LIMIT=1024;
 export interface WhitewaterSample {height:number;compression:number;depth:number;shelter:number;ground:number;gradientX:number;gradientZ:number}
@@ -52,7 +53,9 @@ export class WhitewaterPool {
       this.shape[i*3]=(1.2+b.seed*2.5)*(1+age*.12);
       this.shape[i*3+1]=(.22+b.energy*.6)*(1+age*.32);
       const wet=s.depth<.2?Math.min(1,s.depth/.2):1;
-      this.alpha[i]=(.22+b.energy*.28)*Math.min(1,age/.18)*Math.pow(1-age/life,1.3)*wet;
+      // Dense aerated whitewater scatters strongly at birth; its holes and age
+      // control coverage. A mist-like base opacity erased the surface ribbons.
+      this.alpha[i]=(.72+b.energy*.25)*Math.min(1,age/.18)*Math.pow(1-age/life,.65)*wet;
     }
   }
   dispose():void {if(this.disposed)return;this.disposed=true;this.births.fill(null);this.alpha.fill(0);this.active=0;}
@@ -72,13 +75,22 @@ export class ShoreWhitewater {
     for(const [name,array,size] of [['aCenter',this.pool.positions,3],['aShape',this.pool.shape,3],['aAlpha',this.pool.alpha,1],['aSeed',this.pool.seeds,1]] as const)this.geometry.setAttribute(name,new THREE.InstancedBufferAttribute(array,size).setUsage(THREE.DynamicDrawUsage));
     this.geometry.instanceCount=this.pool.capacity;
     this.material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,side:THREE.FrontSide,
-      uniforms:{uTint:{value:new THREE.Color(.78,.86,.86)}},
+      uniforms:{uTint:{value:new THREE.Color(.78,.86,.86)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},
+        uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`attribute vec3 aCenter,aShape;attribute float aAlpha,aSeed;varying vec2 vUv;varying float vAlpha,vSeed;
-      void main(){vUv=position.xz+.5;vAlpha=aAlpha;vSeed=aSeed;vec2 q=position.xz*aShape.xy;float c=cos(aShape.z),s=sin(aShape.z);vec2 p=vec2(q.x*c-q.y*s,q.x*s+q.y*c);gl_Position=projectionMatrix*modelViewMatrix*vec4(aCenter+vec3(p.x,0,p.y),1);}`,
-      fragmentShader:`uniform vec3 uTint;varying vec2 vUv;varying float vAlpha,vSeed;
+      uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
+      ${shoreWaveSampling}
+      vec2 foamCoast(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return texture2D(uBathymetry,uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution).rg;}
+      vec3 foamDisplacement(vec2 p){return (texture2D(uLongWaves,p/384.0).xyz+texture2D(uShortWaves,p/24.0).xyz)*uSwell*shoreWaveScale(foamCoast(p),uSwell,uWind);}
+      void main(){vUv=position.xz+.5;vAlpha=aAlpha;vSeed=aSeed;if(aAlpha<.001){gl_Position=vec4(2,2,2,1);return;}
+      vec2 q=position.xz*aShape.xy;float c=cos(aShape.z),s=sin(aShape.z);vec2 offset=vec2(q.x*c-q.y*s,q.x*s+q.y*c),world=aCenter.xz+offset,p=world;
+      for(int i=0;i<3;i++)p=world-foamDisplacement(p).xz*uChoppiness;
+      float height=foamDisplacement(p).y+.035;vec2 delta=world-cameraPosition.xz;height-=dot(delta,delta)/(2.0*6371000.0);
+      gl_Position=projectionMatrix*viewMatrix*vec4(world.x,height,world.y,1);}`,
+      fragmentShader:`uniform vec3 uTint;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady;uniform vec2 uViewport;varying vec2 vUv;varying float vAlpha,vSeed;
       float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7))+vSeed*137.)*43758.5453);}
       float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
-      void main(){if(vAlpha<.001)discard;vec2 q=vUv*2.-1.;float edge=1.-smoothstep(.48,1.,length(q*vec2(.82,1.)));float coverageNoise=noise(vUv*vec2(13.,5.));float holes=smoothstep(.22,.62,coverageNoise);float a=vAlpha*edge*holes;if(a<.008)discard;gl_FragColor=vec4(uTint,a);}`});
+      void main(){if(vAlpha<.001)discard;if(uOccludingDepthReady>.5&&texture2D(uOccludingDepth,gl_FragCoord.xy/uViewport).r<gl_FragCoord.z-.0000002)discard;vec2 q=vUv*2.-1.;float edge=1.-smoothstep(.48,1.,length(q*vec2(.82,1.)));float coverageNoise=noise(vUv*vec2(13.,5.));float holes=smoothstep(.22,.62,coverageNoise);float a=vAlpha*edge*holes;if(a<.008)discard;gl_FragColor=vec4(uTint,a);}`});
     const mesh=new THREE.Mesh(this.geometry,this.material);mesh.frustumCulled=false;this.group.add(mesh);
   }
   update(delta:number,sampler:WhitewaterSampler,underwater:boolean):void {

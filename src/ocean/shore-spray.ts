@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { shoreWaveSampling } from './surface-detail.ts';
+import { shoreWaveSampling,shoreBreakerDissipationSampling } from './surface-detail.ts';
 import { ShoreWhitewater, whitewaterBirthRate, type WhitewaterSample } from './shore-whitewater.ts';
 
 const GRID=24, SPAN=144, INTERVAL=.2, LIMIT=1500;
@@ -108,13 +108,14 @@ export class ShoreSpray {
     this.whitewater=options.whitewater?new ShoreWhitewater():null;
     if(this.whitewater)this.group.add(this.whitewater.group);
     this.sampleMaterial=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,
-      uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
+      uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55},uDepthCapLoss:{value:options.whitewater?1:0}},
       vertexShader:'void main(){gl_Position=vec4(position.xy,0,1);}',fragmentShader:/* glsl */`
       precision highp float;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;
       uniform vec4 uBathyBounds;uniform vec2 uBathyResolution,uCenter;
-      uniform float uSwell,uWind,uChoppiness;
+      uniform float uSwell,uWind,uChoppiness,uDepthCapLoss;
       ${shoreWaveSampling}
+      ${shoreBreakerDissipationSampling}
       vec2 coastAt(vec2 p){
         vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
         if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);
@@ -137,6 +138,11 @@ export class ShoreSpray {
         float h=displacement(p).y;
         float energy=(1.0-smoothstep(.05,.46,jac))*smoothstep(.025,.22,h)*clamp(coast.y,0.0,1.0);
         energy*=smoothstep(.2,.6,depth)*(1.0-smoothstep(2.8,4.0,depth))*smoothstep(4.0,12.0,uWind);
+        if(uDepthCapLoss>.5){
+          float rawFftHeight=texture2D(uLongWaves,p/384.0).y+texture2D(uShortWaves,p/24.0).y;
+          float depthLoss=shoreBreakerDissipation(rawFftHeight,coast,uSwell,uWind);
+          energy=max(energy,depthLoss*smoothstep(.2,.6,depth)*(1.0-smoothstep(2.8,4.0,depth)));
+        }
         float code=floor(clamp(h/16.0+.5,0.0,1.0)*65535.0+.5);
         gl_FragColor=vec4(floor(code/256.0),mod(code,256.0),floor(energy*255.0+.5),floor(clamp(depth/8.0,0.0,1.0)*255.0+.5))/255.0;
       }`});
@@ -146,12 +152,12 @@ export class ShoreSpray {
     this.geometry.setAttribute('aAlpha',new THREE.BufferAttribute(this.pool.alpha,1));
     for(const attribute of Object.values(this.geometry.attributes))(attribute as THREE.BufferAttribute).setUsage(THREE.DynamicDrawUsage);
     this.material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,toneMapped:false,
-      uniforms:{uPixelScale:{value:500},uTint:{value:new THREE.Color(.68,.78,.81)}},
+      uniforms:{uPixelScale:{value:500},uTint:{value:new THREE.Color(.68,.78,.81)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)}},
       vertexShader:/* glsl */`attribute float aSize,aAlpha;uniform float uPixelScale;varying float vAlpha;
         void main(){vec4 p=modelViewMatrix*vec4(position,1);vAlpha=aAlpha;
         gl_PointSize=clamp(aSize*uPixelScale/max(.2,-p.z),1.0,9.0);gl_Position=projectionMatrix*p;}`,
-      fragmentShader:/* glsl */`uniform vec3 uTint;varying float vAlpha;
-        void main(){vec2 q=gl_PointCoord*2.0-1.0;float r=dot(q,q);if(r>1.0||vAlpha<.001)discard;
+      fragmentShader:/* glsl */`uniform vec3 uTint;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady;uniform vec2 uViewport;varying float vAlpha;
+        void main(){vec2 q=gl_PointCoord*2.0-1.0;float r=dot(q,q);if(r>1.0||vAlpha<.001)discard;if(uOccludingDepthReady>.5&&texture2D(uOccludingDepth,gl_FragCoord.xy/uViewport).r<gl_FragCoord.z-.0000002)discard;
         gl_FragColor=vec4(uTint,vAlpha*exp(-r*3.5)*(1.0-smoothstep(.55,1.0,r)));}`});
     const points=new THREE.Points(this.geometry,this.material);points.frustumCulled=false;this.group.add(points);
   }
@@ -160,6 +166,14 @@ export class ShoreSpray {
     if(this.disposed)return;
     const underwater=Number(uniforms.uUnderwater?.value??0)>.5;
     this.group.visible=!underwater;
+    const viewport=this.renderer.getDrawingBufferSize(new THREE.Vector2());
+    for(const material of [this.material,this.whitewater?.material])if(material){
+      material.uniforms.uOccludingDepth.value=uniforms.uSceneDepth?.value??null;
+      material.uniforms.uOccludingDepthReady.value=uniforms.uSceneDepth?.value?1:0;
+      material.uniforms.uViewport.value.copy(viewport);
+    }
+    if(this.whitewater)for(const key of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uSwell','uWind','uChoppiness'])
+      if(uniforms[key])this.whitewater.material.uniforms[key]=uniforms[key];
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
     this.pool.advance(dt);

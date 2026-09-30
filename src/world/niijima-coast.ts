@@ -4,6 +4,7 @@ import { NiijimaDEM, NiijimaSurface, NIIJIMA_DETAIL_PROVENANCE, ease, noise, typ
 import { ELEVATION_RASTERS } from './geodata.generated.ts';
 import { NIIJIMA_NORTH_RASTER, NIIJIMA_NORTH_PROVENANCE } from './niijima-north.generated.ts';
 import { NIIJIMA_SOUTH_RASTER, NIIJIMA_SOUTH_PROVENANCE } from './niijima-south.generated.ts';
+import type { SandTextureSet } from './sand-material.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };
 export { NIIJIMA_NORTH_PROVENANCE };
 export { NIIJIMA_SOUTH_PROVENANCE };
@@ -40,16 +41,18 @@ export const NIIJIMA_COAST_BOOKMARKS = [
 ] as const;
 
 /** Niijima's chalk-white pumice and talus, distinct from Tomari's darker jointed rocks. */
-function pumiceMaterial(base: THREE.MeshStandardMaterial): THREE.MeshStandardMaterial {
+function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet): THREE.MeshStandardMaterial {
   const material = base.clone();
   material.name = 'Niijima white layered pumice, pale strand and talus';
   material.vertexColors = true; material.color.set(0xffffff); material.roughness = .96; material.metalness = 0;
   material.map = material.normalMap = material.bumpMap = material.roughnessMap = material.metalnessMap = material.aoMap = null;
   material.onBeforeCompile = shader => {
+    if(sand)Object.assign(shader.uniforms,{uNiiSandAlbedo:{value:sand.albedo},uNiiSandNormal:{value:sand.normalGL},uNiiSandARM:{value:sand.arm}});
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNiijimaPoint;');
     shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvNiijimaPoint = position - vec3(5500.0, 0.0, -2000.0);');
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       varying vec3 vNiijimaPoint;
+      ${sand?'uniform sampler2D uNiiSandAlbedo,uNiiSandNormal,uNiiSandARM;':''}
       float niiHash(vec3 p) { p=fract(p*.1031); p+=dot(p,p.yzx+33.33); return fract((p.x+p.y)*p.z); }
       float niiNoise(vec3 p) {
         vec3 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
@@ -73,6 +76,22 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial): THREE.MeshStandardMat
       float niiDry=smoothstep(-.15,1.1,vNiijimaPoint.y);
       diffuseColor.rgb*=.95+niiFine*.07+niiBand*.022*smoothstep(5.0,20.0,vNiijimaPoint.y);
       diffuseColor.rgb*=mix(.80,1.0,niiDry);
+      ${sand?`
+      vec3 niiGeometricNormal=normalize(cross(dFdx(vNiijimaPoint),dFdy(vNiijimaPoint)));
+      float niiSandMask=(1.0-smoothstep(4.0,8.0,vNiijimaPoint.y))*smoothstep(.6,.92,abs(niiGeometricNormal.y));
+      vec2 niiSandUV=vNiijimaPoint.xz/2.14;
+      vec3 niiSandPhoto=texture2D(uNiiSandAlbedo,niiSandUV).rgb;
+      // Neutralize the generic photograph's brown cast, retaining measured
+      // within-surface variation instead of recolouring the entire cliff.
+      float niiSandGrain=clamp(dot(niiSandPhoto,vec3(.2126,.7152,.0722))/.1011,.60,1.35);
+      float niiWash=pow(abs(sin(vNiijimaPoint.x*2.3+niiNoise(vNiijimaPoint*.09)*1.7)),4.0);
+      float niiWet=1.0-smoothstep(.15,2.1,vNiijimaPoint.y+niiNoise(vNiijimaPoint*.035)*.35);
+      diffuseColor.rgb*=mix(vec3(1),vec3(niiSandGrain*(1.0-.10*niiWash)*mix(1.0,.45,niiWet)),niiSandMask);
+      `:''}
+    `);
+    if(sand)shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
+      float niiSandR=texture2D(uNiiSandARM,niiSandUV).g;
+      roughnessFactor=mix(roughnessFactor,mix(.80+.16*niiSandR,.30+.16*niiSandR,niiWet),niiSandMask);
     `);
     shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
       float niiBump=niiRelief(vNiijimaPoint);
@@ -80,6 +99,14 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial): THREE.MeshStandardMat
       vec3 niiR0=cross(niiQ1,normal), niiR1=cross(normal,niiQ0);
       float niiDet=dot(niiQ0,niiR0);
       normal=normalize(abs(niiDet)*normal-sign(niiDet)*(dFdx(niiBump)*niiR0+dFdy(niiBump)*niiR1));
+      ${sand?`
+      vec3 niiWorldNormal=inverseTransformDirection(normal,viewMatrix);
+      vec3 niiTx=normalize(vec3(1,-niiWorldNormal.x/max(.2,niiWorldNormal.y),0));
+      vec3 niiTz=normalize(cross(niiTx,niiWorldNormal));
+      vec3 niiSampleNormal=texture2D(uNiiSandNormal,niiSandUV).xyz*2.0-1.0;
+      vec3 niiMapped=normalize(niiTx*niiSampleNormal.x*.32+niiTz*niiSampleNormal.y*.32+niiWorldNormal*niiSampleNormal.z);
+      normal=normalize(mix(normal,mat3(viewMatrix)*niiMapped,niiSandMask));
+      `:''}
     `);
   };
   material.customProgramCacheKey = () => 'niijima-pumice-v1';
@@ -100,12 +127,12 @@ export class NiijimaCoast implements GroundSampler {
   private readonly baseGround: GroundSampler;
   private readonly maps = new Map<string, { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 }>();
 
-  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean}={}) {
+  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;sand?:SandTextureSet}={}) {
     this.dem=new NiijimaDEM(undefined,{scarp:options.scarp??false});
     this.baseGround = baseGround;
     this.group.name = 'Niijima Horikiri, Shiromama and actual Secret surf region';
     this.group.userData = { source: NIIJIMA_DETAIL_PROVENANCE, northernSource: NIIJIMA_NORTH_PROVENANCE,southernSource:NIIJIMA_SOUTH_PROVENANCE, measuredMacroshape: 'GSI DEM5A/DEM10B', authoredMicrorelief: true, bathymetry: 'inferred',scarpCandidate:options.scarp??false };
-    this.material = pumiceMaterial(material);
+    this.material = pumiceMaterial(material,options.sand);
     const authored = { heightAt: (x: number, z: number) => {
       if(z>=-300&&z<=-100){const w=ease(-300,-100,z);return this.dem.refinedHeightAt(x,z)*(1-w)+this.southDem.refinedHeightAt(x,z)*w;}
       return this.demAt(z).refinedHeightAt(x, z);

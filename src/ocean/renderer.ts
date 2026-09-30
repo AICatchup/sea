@@ -195,7 +195,10 @@ export class Ocean {
     this.simulation=new OceanSimulation(this.renderer,this.wind);
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld();
-    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:new URLSearchParams(location.search).get('whitewater')==='1'});this.scene.add(this.spray.group);
+    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:new URLSearchParams(location.search).get('whitewater')!=='0'});
+    // Surface spray/foam must blend AFTER the water inside the water target.
+    // Land-target transparency writes no depth, so the later water merge hides it.
+    this.waterScene.add(this.spray.group);
     this.assets=new AssetWorld(this.world);
     this.marine=new MarineLife(this.world);
     const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),

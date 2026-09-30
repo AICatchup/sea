@@ -69,30 +69,37 @@ async function main() {
   const a = pixel(bounds.west, bounds.north), b = pixel(bounds.east, bounds.south);
   const px0 = Math.floor(a.x), py0 = Math.floor(a.y), width = Math.ceil(b.x) - px0 + 1, height = Math.ceil(b.y) - py0 + 1;
   const values = new Int16Array(width * height).fill(-32768), tiles = [];
+  const sourceChoices={dem5a:0,dem5b:0,dem10b:0,missing:0};
   for (let y = Math.floor(py0 / 256); y <= Math.floor((py0 + height - 1) / 256); y++)
     for (let x = Math.floor(px0 / 256); x <= Math.floor((px0 + width - 1) / 256); x++) tiles.push({ x, y });
   for (let start = 0; start < tiles.length; start += 3) {
     const batch = await Promise.all(tiles.slice(start, start + 3).map(async ({ x, y }) => {
-      let data;
+      const data=new Int16Array(65536).fill(-32768),choices=new Uint8Array(65536);
       for (const layer of ['dem5a_png', 'dem5b_png']) {
         const body = await get(`https://cyberjapandata.gsi.go.jp/xyz/${layer}/${zoom}/${x}/${y}.png`, `${layer}/${zoom}/${x}/${y}.png`);
-        if (body) { data = decodeElevationPNG(body); break; }
+        if (body) { const candidate=decodeElevationPNG(body);for(let i=0;i<data.length;i++)if(data[i]===-32768&&candidate[i]!==-32768){data[i]=candidate[i];choices[i]=layer==='dem5a_png'?1:2;} }
+        if(!data.includes(-32768))break;
       }
-      if (!data && (north||south)) {
+      if (data.includes(-32768) && (north||south)) {
         const tx = Math.floor(x / 2), ty = Math.floor(y / 2);
         const body = await get(`https://cyberjapandata.gsi.go.jp/xyz/dem_png/14/${tx}/${ty}.png`, `dem_png/14/${tx}/${ty}.png`);
         if (body) {
           const coarse = decodeElevationPNG(body);
-          data = Int16Array.from({ length: 65536 }, (_, i) => coarse[(Math.floor(i / 256 / 2) + (y % 2) * 128) * 256 + Math.floor(i % 256 / 2) + (x % 2) * 128]);
+          for(let i=0;i<data.length;i++)if(data[i]===-32768){
+            const value=coarse[(Math.floor(i/256/2)+(y%2)*128)*256+Math.floor(i%256/2)+(x%2)*128];
+            if(value!==-32768){data[i]=value;choices[i]=3;}
+          }
         }
       }
-      if (!data && (north||south)) data = new Int16Array(65536).fill(-32768); // Off-island empty tiles remain absent land, never zero-elevation terrain.
-      if (!data) throw new Error(`No GSI land coverage in tile ${x}/${y}; existing source untouched`);
-      return { x, y, data };
+      // NA is missing coverage, never a measured zero or a proof of sea. Retain
+      // remaining holes; downstream bathymetry remains an explicit inference.
+      return { x, y, data,choices };
     }));
-    for (const { x: tx, y: ty, data } of batch) for (let iy = 0; iy < 256; iy++) {
+    for (const { x: tx, y: ty, data,choices } of batch) for (let iy = 0; iy < 256; iy++) {
       const y = ty * 256 + iy - py0; if (y < 0 || y >= height) continue;
-      for (let ix = 0; ix < 256; ix++) { const x = tx * 256 + ix - px0; if (x >= 0 && x < width) values[y * width + x] = data[iy * 256 + ix]; }
+      for (let ix = 0; ix < 256; ix++) { const x = tx * 256 + ix - px0; if (x >= 0 && x < width) {
+        const i=iy*256+ix;values[y*width+x]=data[i];sourceChoices[choices[i]===1?'dem5a':choices[i]===2?'dem5b':choices[i]===3?'dem10b':'missing']++;
+      } }
     }
   }
   const kml = await get(kmlURL, 'municipal-surf-points.kml'); if (!kml) throw new Error('Official municipal map not available');
@@ -106,6 +113,7 @@ async function main() {
   const provenance = { publisher: '国土地理院 / Geospatial Information Authority of Japan', credit: '国土地理院の標高タイルを加工して作成', capturedAt: new Date().toISOString(),
     docs: ['https://maps.gsi.go.jp/development/demtile.html', 'https://maps.gsi.go.jp/development/ichiran.html'], origin, sourceBounds: bounds,
     measured: 'GSI DEM5A/5B land macroshape, with DEM10B fallback where DEM5 coverage is unavailable; PNG display pixels around 4m are not 4m survey accuracy. Fetch date is not survey date.',
+    sourceSelection:'Per-pixel valid DEM5A then DEM5B then DEM10B for extended snapshots; remaining NA means missing, not measured sea. Inferred bathymetry is separate.',sourceChoices,
     authored: 'Sub-DEM erosion, talus and strand microrelief are authored, and all bathymetry is inferred. No current safe coastal footpath or surveyed seabed is asserted.',
     locationSource: sourceURL, locationMap: kmlURL, markers, locationPrecision: 'Official visitor-map markers, not surveyed break or navigation waypoints.',
     visualReferences: ['https://niijima-info.jp/spot/2225/', 'https://niijima-info.jp/column/4724/', 'https://niijima-info.jp/cms24/wp-content/uploads/2026/06/niijimaA3MAP.pdf'],
