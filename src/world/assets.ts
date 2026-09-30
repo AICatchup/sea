@@ -95,7 +95,7 @@ export class AssetWorld {
       const cluster = THREE.MathUtils.clamp(.55 + Math.sin(x * .034 + Math.sin(z * .021) * 1.9) * .27 + Math.cos(z * .039 - x * .012) * .22, 0, 1);
       if (height > 6 && height < 68 && slope < (height > 14 ? 1.65 : 1.12) && isHeadland && random() < (.14 + cluster * .22)) {
         const size = .74 + random() * .38;
-        trees[variant].push(this.transform(x, height - .07, z, size, yaw, 2.08 + random() * .38, .52 + random() * .18, 1.92 + random() * .26)); treeCount++;
+        trees[variant].push(this.transform(x, height - .07, z, size, yaw, 2.08 + random() * .38, .52 + random() * .18, 2.05)); treeCount++;
       }
       if (height > 3.1 && height < 68 && isHeadland && slope < 1.75 && random() < (.67 + cluster * .3)) {
         const low = random() < .43, size = .88 + random() * .46;
