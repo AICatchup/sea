@@ -532,11 +532,21 @@ export class ExplorerControls {
   private moveVertical(delta:number,feetFor:(eye:BodyPoint)=>BodyPoint,pose?:BodyPose):void {
     const p=this.state.position,from=feetFor(p),to={...from,y:from.y+delta};
     const hit=this.ground.sweepBody?.(from,to,PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height,pose);
-    if(hit) {
-      p.y+=hit.position.y-from.y;
-      if(hit.blocked) {this.velocity.y=0;if(delta<0 && hit.normal.y>.64) this.state.grounded=true;}
-    } else if(!this.ground.bodySegmentBlocked?.(from,to,PLAYER_DIMENSIONS.radius,pose ? PLAYER_DIMENSIONS.radius*2 : PLAYER_DIMENSIONS.height)) p.y+=delta;
-    else this.velocity.y=0;
+    let fraction=hit?.fraction ?? 1;
+    const legacyHeight=pose ? PLAYER_DIMENSIONS.radius*2 : PLAYER_DIMENSIONS.height;
+    const candidate={...from,y:from.y+delta*fraction};
+    if(this.ground.bodySegmentBlocked?.(from,candidate,PLAYER_DIMENSIONS.radius,legacyHeight)) {
+      // A legacy non-heightfield terrain hook still participates when a new solid
+      // registry provides sweeps. Find the last clear point instead of tunnelling.
+      let lo=0,hi=fraction;
+      for(let i=0;i<12;i++) {
+        const middle=(lo+hi)*.5,point={...from,y:from.y+delta*middle};
+        if(this.ground.bodySegmentBlocked(from,point,PLAYER_DIMENSIONS.radius,legacyHeight)) hi=middle;else lo=middle;
+      }
+      fraction=lo;
+    }
+    p.y+=delta*fraction;
+    if(fraction<1) {this.velocity.y=0;if(delta<0 && (hit?.normal.y ?? 0)>.64) this.state.grounded=true;}
   }
   dispose(): void {
     if (this.disposed) return;

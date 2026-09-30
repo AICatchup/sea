@@ -116,6 +116,13 @@ test('vertical diving and rising stop against submerged rock faces without chang
   controls.dispose();
 });
 
+test('legacy non-heightfield terrain vertical hooks still stop dives with an empty solid registry',()=>{
+  const legacy:GroundSampler={heightAt:()=>-20,bodySegmentBlocked:(from,to)=>Math.min(from.y,to.y)<=-3};
+  const {controls,state}=setup(withWorldCollision(legacy,new WorldCollision()));
+  controls.viewpoint(0,0,0,0,'dive',1);controls.setVertical(-1);advance(controls,3);
+  assert.ok(state.position.y>=-2.75);assert.ok(state.position.y<-2.7);controls.dispose();
+});
+
 
 test('shore walking accelerates, wades, swims, dives and surfaces without relocation', () => {
   const shore: GroundSampler = { heightAt: (_x, z) => Math.max(-25, Math.min(5, z * .15)) };
