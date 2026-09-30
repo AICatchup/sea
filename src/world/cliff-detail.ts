@@ -116,7 +116,7 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
   geometry.userData={outcropCount:count,rockPieces:pieces,triangleCount:positions.length/9,triangleLimit,familyCounts,regions,
     eligibleSteepFaceSamples:eligible,rejectedStrandPieces:rejectedStrand,sampledCliffAreaM2:sampledCliffArea,authoredFaceAreaM2:authoredFaceArea,
     maxNormalProtrusionM:maxProtrusion,maxFaceWidthM:maxFaceWidth,minExposedVertexHeightM:Number.isFinite(minVisibleY)?minVisibleY:null,
-    collisionProxies:proxies,collision:'Exposed AABB volumes; swept upright-body helper uses foot height in world metres',
+    collisionProxies:proxies,collision:'Complete rock-volume AABBs; swept upright-body helper uses foot height in world metres',
     provenance:'Authored structural scarp panels, open joints and embedded overhangs; not surveyed geometry'};
   return geometry;
 }

@@ -5,6 +5,7 @@ import { geoToWorld, worldToGeo } from '../src/world/contracts.ts';
 import { IslandWorld } from '../src/world/terrain.ts';
 import { GEODATA_PROVENANCE, IslandElevation, shelterAt } from '../src/world/geodata.ts';
 import { cliffBodySegmentBlocked } from '../src/world/cliff-detail.ts';
+import { planWaterRoute, waterSegmentClear } from '../src/world/navigation.ts';
 
 const world = new IslandWorld();
 
@@ -166,4 +167,17 @@ test('non-heightfield cliff volumes have conservative swept-body collision witho
   const thin=[{minX:0,maxX:.08,minY:2,maxY:4,minZ:-1,maxZ:1}];
   assert.equal(cliffBodySegmentBlocked(thin,{x:-5,y:2.2,z:0},{x:5,y:2.2,z:0}),true);
   assert.equal(cliffBodySegmentBlocked(thin,{x:-5,y:-1,z:0},{x:5,y:-1,z:0}),false);
+});
+
+test('actual GSI voyages clear both bathymetry and the new rock volumes', () => {
+  const start=world.destinations.find(point=>point.id==='tomari')!;
+  for(const destination of world.destinations.filter(point=>point.id!=='tomari')){
+    const route=planWaterRoute(world,start,destination);
+    assert.equal(route.error,undefined,destination.id);
+    for(let i=1;i<route.points.length;i++){
+      assert.ok(waterSegmentClear(world,route.points[i-1],route.points[i]),destination.id);
+      assert.equal(world.bodySegmentBlocked({...route.points[i-1],y:-.2},{...route.points[i],y:-.2},1.4,1.7),false,
+        `${destination.id}: a structural rock volume obstructs the planned voyage`);
+    }
+  }
 });
