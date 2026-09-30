@@ -1,0 +1,11 @@
+Rock Face 03
+Photography: Dario Barresi
+Processing: Rico Cilliers
+Source: https://polyhaven.com/a/rock_face_03
+License: CC0-1.0
+License summary: https://creativecommons.org/publicdomain/zero/1.0/
+Legal code: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+Source asset license: https://polyhaven.com/license
+
+The four official photographic PBR image originals in this folder may be used
+and redistributed under CC0-1.0. The manifest records exact downloaded bytes.

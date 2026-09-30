@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "asset": "rock_face_03",
+  "title": "Rock Face 03",
+  "authors": [
+    "Dario Barresi",
+    "Rico Cilliers"
+  ],
+  "source": "Poly Haven",
+  "sourcePage": "https://polyhaven.com/a/rock_face_03",
+  "license": "CC0-1.0",
+  "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "sourceLicenseURL": "https://polyhaven.com/license",
+  "apiDocumentationURL": "https://github.com/Poly-Haven/Public-API/blob/master/swagger.yml",
+  "apiTermsURL": "https://github.com/Poly-Haven/Public-API/blob/master/ToS.md",
+  "endpoints": {
+    "info": "https://api.polyhaven.com/info/rock_face_03",
+    "files": "https://api.polyhaven.com/files/rock_face_03"
+  },
+  "acquiredAt": "2026-09-30T05:09:32.206Z",
+  "apiFilesHash": "d48f9ea2b7ecd038fa76a01c54309b8aa1e80d1e",
+  "dimensionsMillimeters": [
+    2699.9995708465576,
+    2699.9995708465576
+  ],
+  "tileSpanMeters": [
+    2.7,
+    2.7
+  ],
+  "resolution": "4k albedo/normalGL, 1k ARM, 2k height",
+  "materialReference": "Generic weathered rock face, not a Tomari capture or verified rhyolite sample. Display palette is authored separately in the shader.",
+  "channels": {
+    "arm": {
+      "R": "ambient occlusion",
+      "G": "roughness",
+      "B": "metalness"
+    },
+    "normalGL": "OpenGL tangent-space +Y"
+  },
+  "processing": "None. Original official JPG download bytes, no crops, resizes, recoloring or recompression.",
+  "totalTextureBytes": 33194776,
+  "importCapBytes": 35000000,
+  "files": [
+    {
+      "role": "albedo",
+      "name": "rock_face_03_diff_4k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/4k/rock_face_03/rock_face_03_diff_4k.jpg",
+      "bytes": 15319503,
+      "sourceMD5": "50105980b509029b9040f43b1f6ddc71",
+      "sha256": "83148536c125cee3a2e2fc1368c8851ad4c87aef8b8bb35c5129d82d223effb3",
+      "width": 4096,
+      "height": 4096,
+      "colorSpace": "sRGB",
+      "components": 3,
+      "headerHex": "ffd8ffe000104a464946000101000048"
+    },
+    {
+      "role": "normalGL",
+      "name": "rock_face_03_nor_gl_4k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/4k/rock_face_03/rock_face_03_nor_gl_4k.jpg",
+      "bytes": 16283883,
+      "sourceMD5": "2408a373765c41a7a3762933ea67f5b0",
+      "sha256": "b479761c4d48511f3c0bb8a27d948082c6d88ab584e38ff3791ca395d27a16ea",
+      "width": 4096,
+      "height": 4096,
+      "colorSpace": "linear-data",
+      "components": 3,
+      "headerHex": "ffd8ffe000104a464946000101000048"
+    },
+    {
+      "role": "arm",
+      "name": "rock_face_03_arm_1k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rock_face_03/rock_face_03_arm_1k.jpg",
+      "bytes": 793241,
+      "sourceMD5": "351c58daba868568fb5a191194aa5302",
+      "sha256": "a1f8e60eaf4f119071840e36e165d3a9185be62bd3ac7068ab6d886aa639d29f",
+      "width": 1024,
+      "height": 1024,
+      "colorSpace": "linear-data",
+      "components": 3,
+      "headerHex": "ffd8ffe000104a464946000101000048"
+    },
+    {
+      "role": "height",
+      "name": "rock_face_03_disp_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_face_03/rock_face_03_disp_2k.jpg",
+      "bytes": 798149,
+      "sourceMD5": "e7629af66fe9420fe3e73b937f3eba40",
+      "sha256": "5d24ec5a7f4f7333bcf9c158f63d0059d9a3ba234eeff7570a5f6cf2f4522cd5",
+      "width": 2048,
+      "height": 2048,
+      "colorSpace": "linear-data",
+      "components": 1,
+      "headerHex": "ffd8ffe000104a464946000101000048"
+    }
+  ]
+}
