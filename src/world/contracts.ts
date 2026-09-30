@@ -26,6 +26,17 @@ export interface AdventureState {
   boatPosition: THREE.Vector3; boatYaw: number;
   voyageTarget: string | null; voyageRemaining: number;
   message: string;
+  stamina?: number;
+  grounded?: boolean;
+  immersion?: number;
+  gaitPhase?: number;
+  viewOffset?: THREE.Vector3;
+  velocity?: THREE.Vector3;
+  interactionLabel?: string;
+  boardingProgress?: number;
+  avatarAction?: 'idle' | 'walk' | 'run' | 'swim' | 'dive' | 'helm' | 'climb';
+  boatPitch?: number;
+  boatRoll?: number;
 }
 export interface MapOutline { id: string; label: string; points: [number, number][]; }
 export interface AdventureCallbacks {
