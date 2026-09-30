@@ -3,8 +3,10 @@ import type { GroundSampler } from './contracts.ts';
 import { NiijimaDEM, NiijimaSurface, NIIJIMA_DETAIL_PROVENANCE, ease, noise, type SurfaceBounds } from './niijima-detail.ts';
 import { ELEVATION_RASTERS } from './geodata.generated.ts';
 import { NIIJIMA_NORTH_RASTER, NIIJIMA_NORTH_PROVENANCE } from './niijima-north.generated.ts';
+import { NIIJIMA_SOUTH_RASTER, NIIJIMA_SOUTH_PROVENANCE } from './niijima-south.generated.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };
 export { NIIJIMA_NORTH_PROVENANCE };
+export { NIIJIMA_SOUTH_PROVENANCE };
 
 // Edges coincide with complete existing 64m renderer cells. This prevents a crack when
 // IslandWorld omits coarse cells whose centres are in bounds. Internal grids divide those cells.
@@ -13,7 +15,8 @@ const coarseDX = (legacy.maxX - legacy.minX) / (legacy.width - 1) * 2;
 const coarseDZ = (legacy.maxZ - legacy.minZ) / (legacy.height - 1) * 2;
 const SOUTH_BOUNDS = { minX: legacy.minX + coarseDX * 37, maxX: legacy.minX + coarseDX * 72,
   minZ: legacy.minZ + coarseDZ * 132, maxZ: legacy.minZ + coarseDZ * 189 };
-const BASE_BOUNDS = { ...SOUTH_BOUNDS, maxX: legacy.minX + coarseDX * 92, minZ: legacy.minZ + coarseDZ * 61 };
+const BASE_BOUNDS = { ...SOUTH_BOUNDS, maxX: legacy.minX + coarseDX * 92, minZ: legacy.minZ + coarseDZ * 61,
+  maxZ:legacy.minZ+coarseDZ*Math.floor((NIIJIMA_SOUTH_RASTER.maxZ-legacy.minZ)/coarseDZ) };
 const step = { x: coarseDX / 8, z: coarseDZ / 8 };
 const patchBounds = (x: number, z: number, width: number, height: number): SurfaceBounds => ({
   minX: SOUTH_BOUNDS.minX + x * step.x, maxX: SOUTH_BOUNDS.minX + (x + width) * step.x,
@@ -22,7 +25,7 @@ const patchBounds = (x: number, z: number, width: number, height: number): Surfa
 const PATCHES = [
   { bounds: patchBounds(142, 100, 62, 252), spacing: { x: step.x / 4, z: step.z / 4 }, name: 'Secret and Shiromama / 2m authored surface' },
   { bounds: patchBounds(160, 38, 42, 62), spacing: { x: step.x / 4, z: step.z / 4 }, name: 'Horikiri entrance coast / 2m authored surface' },
-  { bounds: patchBounds(112, 352, 92, 90), spacing: { x: step.x / 2, z: step.z / 2 }, name: 'Southern long strand / 4m authored surface' },
+  { bounds: patchBounds(112, 352, 92, 260), spacing: { x: step.x / 2, z: step.z / 2 }, name: 'Southern long strand / 4m authored surface' },
   { bounds: patchBounds(270, -568, 96, 160), spacing: { x: step.x / 2, z: step.z / 2 }, name: 'Northern headlands / 4m authored surface' },
   { bounds: patchBounds(200, -408, 96, 78), spacing: { x: step.x / 4, z: step.z / 4 }, name: 'Habushi northern bend / 2m authored surface' },
   { bounds: patchBounds(180, -330, 54, 126), spacing: { x: step.x / 4, z: step.z / 4 }, name: 'Habushi long northern strand / 2m authored surface' },
@@ -54,9 +57,13 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial): THREE.MeshStandardMat
           mix(mix(niiHash(i+vec3(0,0,1)),niiHash(i+vec3(1,0,1)),f.x),mix(niiHash(i+vec3(0,1,1)),niiHash(i+vec3(1,1,1)),f.x),f.y),f.z);
       }
       float niiRelief(vec3 p) {
-        float grains=niiNoise(p*42.0)*.0014+niiNoise(p*13.0)*.003;
-        float pores=pow(niiNoise(p*5.0),5.0)*.008;
-        float layers=sin(p.y*12.0+niiNoise(p*.12)*3.0)*.006;
+        // Filter procedural relief by its WORLD footprint, so distant steep
+        // faces cannot alias sub-centimetre grains into large checker patterns.
+        float footprint=max(length(dFdx(p)),length(dFdy(p)));
+        float grains=niiNoise(p*42.0)*.0014*(1.0-smoothstep(.35,.8,footprint*42.0))
+          +niiNoise(p*13.0)*.003*(1.0-smoothstep(.35,.8,footprint*13.0));
+        float pores=pow(niiNoise(p*5.0),5.0)*.008*(1.0-smoothstep(.35,.8,footprint*5.0));
+        float layers=sin(p.y*12.0+niiNoise(p*.12)*3.0)*.006*(1.0-smoothstep(.35,.8,footprint*1.91));
         return grains-pores+layers*smoothstep(4.0,12.0,p.y);
       }
     `);
@@ -83,8 +90,9 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial): THREE.MeshStandardMat
 export class NiijimaCoast implements GroundSampler {
   readonly group = new THREE.Group();
   readonly bounds: SurfaceBounds = BASE_BOUNDS;
-  readonly dem = new NiijimaDEM();
+  readonly dem:NiijimaDEM;
   readonly northDem = new NiijimaDEM(NIIJIMA_NORTH_RASTER);
+  readonly southDem = new NiijimaDEM(NIIJIMA_SOUTH_RASTER);
   readonly surfaces: readonly NiijimaSurface[];
   readonly triangleCount: number;
   private readonly geometries: THREE.BufferGeometry[] = [];
@@ -92,17 +100,23 @@ export class NiijimaCoast implements GroundSampler {
   private readonly baseGround: GroundSampler;
   private readonly maps = new Map<string, { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 }>();
 
-  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial) {
+  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean}={}) {
+    this.dem=new NiijimaDEM(undefined,{scarp:options.scarp??false});
     this.baseGround = baseGround;
     this.group.name = 'Niijima Horikiri, Shiromama and actual Secret surf region';
-    this.group.userData = { source: NIIJIMA_DETAIL_PROVENANCE, northernSource: NIIJIMA_NORTH_PROVENANCE, measuredMacroshape: 'GSI DEM5A/DEM10B', authoredMicrorelief: true, bathymetry: 'inferred' };
+    this.group.userData = { source: NIIJIMA_DETAIL_PROVENANCE, northernSource: NIIJIMA_NORTH_PROVENANCE,southernSource:NIIJIMA_SOUTH_PROVENANCE, measuredMacroshape: 'GSI DEM5A/DEM10B', authoredMicrorelief: true, bathymetry: 'inferred',scarpCandidate:options.scarp??false };
     this.material = pumiceMaterial(material);
-    const authored = { heightAt: (x: number, z: number) => this.demAt(z).refinedHeightAt(x, z) };
+    const authored = { heightAt: (x: number, z: number) => {
+      if(z>=-300&&z<=-100){const w=ease(-300,-100,z);return this.dem.refinedHeightAt(x,z)*(1-w)+this.southDem.refinedHeightAt(x,z)*w;}
+      return this.demAt(z).refinedHeightAt(x, z);
+    } };
     const distant = new NiijimaSurface(this.bounds, step, baseGround, authored, 20);
     const fine = PATCHES.map(patch => new NiijimaSurface(patch.bounds, patch.spacing, distant, authored, 16));
+    const hero=options.scarp?[new NiijimaSurface(patchBounds(174,301,8,34),{x:step.x/16,z:step.z/8},fine[0],authored,8)]:[];
+    fine.push(...hero);
     this.surfaces = [distant, ...fine];
     this.buildMesh(distant, fine, 'Niijima measured mountain and distant coast / 8m');
-    fine.forEach((surface, i) => this.buildMesh(surface, [], PATCHES[i].name));
+    fine.forEach((surface, i) => this.buildMesh(surface,hero.includes(surface)?[]:hero.filter(h=>surface.contains(h.bounds.minX,h.bounds.minZ)&&surface.contains(h.bounds.maxX,h.bounds.maxZ)),PATCHES[i]?.name??'Secret connected close scarp / 0.5m x 1m authored surface'));
     this.triangleCount = this.geometries.reduce((count, geometry) => count + geometry.index!.count / 3, 0);
   }
 
@@ -172,7 +186,7 @@ export class NiijimaCoast implements GroundSampler {
 
   dispose(): void { this.geometries.forEach(geometry => geometry.dispose()); this.material.dispose(); this.maps.forEach(map => map.texture.dispose()); this.maps.clear(); this.group.clear(); }
 
-  private demAt(z: number): NiijimaDEM { return z < -3340 ? this.northDem : this.dem; }
+  private demAt(z: number): NiijimaDEM { return z < -3340 ? this.northDem : z>-200?this.southDem:this.dem; }
 
   private buildMesh(surface: NiijimaSurface, holes: readonly NiijimaSurface[], name: string): void {
     const b = surface.bounds, width = surface.width, height = surface.height;

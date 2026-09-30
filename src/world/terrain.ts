@@ -90,7 +90,8 @@ export class IslandWorld {
     const sand=loadSandTextures();this.textures.push(...sand.textures);
     const terrainMaterial = makeTerrainMaterial(grain, atlas, sand); this.materials.push(terrainMaterial);
     this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve()]).then(()=>{});
-    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial);this.group.add(this.niijimaCoast.group);
+    const scarp=typeof location!=='undefined'&&new URLSearchParams(location.search).get('scarp')==='1';
+    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp});this.group.add(this.niijimaCoast.group);
     this.habushiGate=new HabushiMainGate(this.niijimaCoast);
     this.niijimaCoast.applyGrading(this.habushiGate.grading);this.group.add(this.habushiGate.group);
     this.habushiGround=new HabushiGround(this.habushiGate);

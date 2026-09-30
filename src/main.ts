@@ -153,6 +153,17 @@ try {
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
     capturePixels:capturePNG,
     captureNamed:(name:string)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');return captureNamed(captureHost,profile,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
+    async captureLive(name:string,milliseconds=6000){
+      await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');
+      try{
+        captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);captureHost.setPaused(false);
+        await new Promise(resolve=>setTimeout(resolve,Math.max(2000,Math.min(15000,milliseconds))));
+        captureHost.setPaused(true);await captureHost.nextFrame();await captureHost.nextFrame();
+        const state=captureHost.readState(),png=await capturePNG();if(!png)throw new Error('No live capture');
+        return {png,metadata:{...state,name,provenance:profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray}};
+      }finally{captureHost.restoreState(before);}
+    },
     captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),
   }});
   updateRanges();
