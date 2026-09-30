@@ -50,7 +50,7 @@ class LocalWaterHeights {
         for(int i=0;i<3;i++)parameter=world-displacement(parameter).xz*uChoppiness;
         float h=displacement(parameter).y;
         float code=floor(clamp(h/16.0+.5,0.0,1.0)*65535.0+.5);
-        gl_FragColor=vec4(floor(code/256.0),mod(code,256.0),0.0,255.0)/255.0;
+        gl_FragColor=vec4(floor(code/256.0),mod(code,256.0),137.0,255.0)/255.0;
       }`,uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},
         uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
         uPlayer:{value:new THREE.Vector2()},uBoat:{value:new THREE.Vector2()},uSwell:{value:1},uChoppiness:{value:1.55},uWind:{value:8.5}}});
@@ -88,7 +88,10 @@ class LocalWaterHeights {
     this.renderer.setRenderTarget(this.target);this.renderer.render(this.scene,this.camera);this.renderer.setRenderTarget(previous);
     void this.renderer.readRenderTargetPixelsAsync(this.target,0,0,8,16,new Uint8Array(512)).then(pixels=>{
       if(this.disposed)return;
-      this.pixels=pixels as Uint8Array;this.origins[0].copy(origins[0]);this.origins[1].copy(origins[1]);
+      if(!(pixels instanceof Uint8Array)||pixels.length!==512||pixels.some((value,i)=>i%4===2&&value!==137)){
+        throw new Error('Uninitialized FFT height framebuffer');
+      }
+      this.pixels=pixels;this.origins[0].copy(origins[0]);this.origins[1].copy(origins[1]);
     }).catch(error=>{this.failed=true;console.warn('FFT surface-height cache unavailable; mean sea level retained',error);})
       .finally(()=>{this.pending=false;});
   }
@@ -217,7 +220,10 @@ export class Ocean {
     const sky=new THREE.Mesh(skyGeometry,skyMat);sky.frustumCulled=false;sky.renderOrder=-10;
     sky.onBeforeRender=(_renderer,_scene,viewCamera)=>{
       this.uniforms.uCameraWorld.value=viewCamera.matrixWorld;
-      this.uniforms.uInverseProjection.value=viewCamera.projectionMatrixInverse;
+      // Reflector mutates only the clip row and leaves its inverse stale. Sky
+      // directions use the main camera's current intrinsic projection; camera
+      // rotation/position above still come from the reflected camera.
+      this.uniforms.uInverseProjection.value=this.camera.projectionMatrixInverse;
     };
     this.scene.add(sky);
     const seaMat=new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:oceanVertex,fragmentShader:oceanFragment,
