@@ -252,6 +252,18 @@ export const oceanFragment = /* glsl */ `
   }
   ${capillarySampling}
 
+  // Exact unpolarized dielectric interface. Schlick overestimates water's
+  // grazing reflectance and misses the underwater critical-angle transition.
+  float waterFresnel(float cosine,float eta){
+    float c=clamp(cosine,0.0,1.0);
+    float transmittedSin2=eta*eta*(1.0-c*c);
+    if(transmittedSin2>=1.0)return 1.0;
+    float t=sqrt(max(0.0,1.0-transmittedSin2));
+    float rs=(eta*c-t)/max(eta*c+t,.000001);
+    float rp=(c-eta*t)/max(c+eta*t,.000001);
+    return .5*(rs*rs+rp*rp);
+  }
+
   void main() {
     vec2 screenUV=gl_FragCoord.xy/uResolution;
     float opaqueDepth=texture2D(uSceneDepth,screenUV).r;
@@ -277,7 +289,9 @@ export const oceanFragment = /* glsl */ `
     // filtering removes unresolved slopes, while retaining their variance.
     float missingVariance;
     float microScale=.45+uWind*.035;
-    normal.xz-=capillarySurfaceSlopeFiltered(vOcean,uTime,footprint,missingVariance)*microScale;
+    // A height gradient modifies -normal.xz/normal.y, not the unit
+    // normal directly: preserve metric slope on tilted FFT wave faces.
+    normal.xz-=capillarySurfaceSlopeFiltered(vOcean,uTime,footprint,missingVariance)*microScale*normal.y;
     normal=normalize(normal);
     float normalVariation=max(dot(dFdx(normal),dFdx(normal)),dot(dFdy(normal),dFdy(normal)));
     float slopeVariance=.0007+.0012*clamp(uWind/12.0,0.0,1.0)+missingVariance*microScale*microScale;
@@ -289,7 +303,7 @@ export const oceanFragment = /* glsl */ `
       vec3 belowNormal=-normal;
       vec3 through=refract(-view,belowNormal,1.333);
       float incidence=max(dot(belowNormal,view),0.0);
-      float belowFresnel=0.02037+0.97963*pow(1.0-incidence,5.0);
+      float belowFresnel=waterFresnel(incidence,1.333);
       vec3 underwaterColor=vec3(0.006,0.024,0.039);
       if(dot(through,through)>0.001){
         vec3 skylight=skyRadiance(normalize(through),true);
@@ -305,7 +319,7 @@ export const oceanFragment = /* glsl */ `
     vec3 interreflection=vec3(0.008,0.025,0.031)*uWaterTint;
     reflected.y=max(reflected.y,0.012);
     reflected=normalize(reflected);
-    float fresnel=0.02037+0.97963*pow(1.0-nV,5.0);
+    float fresnel=waterFresnel(nV,1.0/1.333);
     vec3 reflection=mix(interreflection,skyRadiance(reflected,false),skyVisibility);
     vec4 reflectedPoint=uReflectionMatrix*vec4(vWorld,1.0);
     vec2 reflectedUV=reflectedPoint.xy/max(reflectedPoint.w,.0001)
@@ -355,7 +369,7 @@ export const oceanFragment = /* glsl */ `
     float distribution=a2/(PI*denominator*denominator+0.0000005);
     float geometryV=2.0*nV/(nV+sqrt(a2+(1.0-a2)*nV*nV));
     float geometryL=2.0*nL/(nL+sqrt(a2+(1.0-a2)*nL*nL));
-    float solarF=0.02037+0.97963*pow(1.0-vH,5.0);
+    float solarF=waterFresnel(vH,1.0/1.333);
     float specular=distribution*geometryV*geometryL*solarF/(4.0*nV);
     float lit=smoothstep(-0.01,0.035,dot(normal,uSunDirection));
     color+=uSunColor*min(specular,5.0)*1.1*lit*sunVisibility*mix(1.0,0.10,uStorm);
