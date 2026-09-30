@@ -103,10 +103,10 @@ export class CoastalFoliage {
               shader.fragmentShader = shader.fragmentShader.replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
               #if NUM_DIR_LIGHTS > 0
                 float leafBacklight = pow(max(0.0, -dot(geometryNormal, directionalLights[0].direction)), 2.0);
-                reflectedLight.directDiffuse += diffuseColor.rgb * directionalLights[0].color * leafBacklight * 0.045 * getShadowMask();
+                reflectedLight.directDiffuse += diffuseColor.rgb * directionalLights[0].color * leafBacklight * 0.10 * getShadowMask();
               #endif`);
             };
-            material.customProgramCacheKey = () => 'coastal-thin-leaves-v1';
+            material.customProgramCacheKey = () => 'coastal-thin-leaves-v2';
           }
           for (const [key, value] of Object.entries(material)) if (value instanceof THREE.Texture) {
             value.colorSpace = key === 'map' ? THREE.SRGBColorSpace : THREE.NoColorSpace;
@@ -125,7 +125,19 @@ export class CoastalFoliage {
         variants[level].push({ parts, triangles: parts.reduce((sum, p) => sum + this.triangles(p.geometry), 0) });
       }
       const levels = source.kind === 'pine' ? this.pineLevels : this.shrubLevels;
-      if (source.kind === 'shrub') variants.far = await Promise.all(variants.mid.map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed)));
+      if (source.kind === 'shrub') {
+        variants.far = await Promise.all(variants.mid.map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed)));
+        // The 96-triangle shrub reduction otherwise drops fine leaf silhouettes on ledges.
+        // Expand each retained disconnected leaf component by at most 8cm, preserving
+        // its original UVs, normals, gaps and all-angle topology. No extra draws/triangles.
+        for (const variant of variants.far) for (const part of variant.parts) {
+          const geometry = part.geometry;
+          const points = new Float32Array(geometry.getAttribute('position').array);
+          geometry.userData.coverage = preserveLeafCoverage(points, new Uint32Array(geometry.index!.array), .08);
+          geometry.setAttribute('position', new THREE.BufferAttribute(points, 3));
+          geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+        }
+      }
       for (const level of ['near', 'mid', 'far'] as const) variants[level].forEach((variant, index) => { levels[level][source.variant + index] = variant; });
       if (this.disposed) return;
     }

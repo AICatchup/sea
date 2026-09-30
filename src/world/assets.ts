@@ -89,15 +89,16 @@ export class AssetWorld {
         this.ground.heightAt(x, z + 1.5) - this.ground.heightAt(x, z - 1.5)) / 3;
       const isHeadland = height > 3 || x < -72 || x > 74 || z > 95;
       // Wind-shaped cover follows crests and soil pockets, leaving lower vertical rock exposed.
-      // Low-frequency cluster density makes overlapping stands rather than isolated equal trees.
+      // Low-frequency clusters overlap low, wide wind-shaped crowns. The native leaf/branch
+      // topology stays unchanged; horizontal spread, rather than extra trunks, closes crest gaps.
       const cluster = THREE.MathUtils.clamp(.55 + Math.sin(x * .034 + Math.sin(z * .021) * 1.9) * .27 + Math.cos(z * .039 - x * .012) * .22, 0, 1);
       if (height > 6 && height < 68 && slope < (height > 14 ? 1.65 : 1.12) && isHeadland && random() < (.14 + cluster * .22)) {
         const size = .74 + random() * .38;
-        trees[variant].push(this.transform(x, height - .07, z, size, yaw, 1.43 + random() * .18, .8 + random() * .2, 1.35)); treeCount++;
+        trees[variant].push(this.transform(x, height - .07, z, size, yaw, 2.08 + random() * .38, .52 + random() * .18, 1.92 + random() * .26)); treeCount++;
       }
       if (height > 3.1 && height < 68 && isHeadland && slope < 1.75 && random() < (.67 + cluster * .3)) {
         const low = random() < .43, size = .88 + random() * .46;
-        shrubs[variant].push(this.transform(x, height - .05, z, size, yaw, low ? 1.95 : 1.54, low ? .31 + random() * .14 : .95 + random() * .5, low ? 1.7 : 1.35));
+        shrubs[variant].push(this.transform(x, height - .015, z, size, yaw, low ? 3.35 : 2.32, low ? .27 + random() * .12 : .69 + random() * .35, low ? 2.85 : 1.98));
         shrubCount++; if (low) groundCoverCount++;
       }
     }
@@ -107,7 +108,8 @@ export class AssetWorld {
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
       { nearDistance: 26, midDistance: 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000 });
     this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount, groundCover: groundCoverCount,
-      strata: 'overlapping coastal evergreen crowns / shrubs / low true-3D leaf cover; lower steep rock faces exposed' };
+      strata: 'low wide nonuniform coastal crowns / overlapping shrubs / low true-3D leaf cover; lower steep rock faces exposed',
+      canopyScale: { horizontal: [2.08, 2.46], vertical: [.52, .70] }, groundCoverScale: { horizontal: [2.85, 3.35], vertical: [.27, .39] } };
   }
 
   /** Small strand debris is clustered and varied, rather than an evenly tiled gravel carpet. */
