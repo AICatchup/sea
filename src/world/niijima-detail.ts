@@ -1,5 +1,6 @@
 import { NIIJIMA_DETAIL_RASTER as raster, NIIJIMA_DETAIL_PROVENANCE } from './niijima-detail.generated.ts';
 import type { GroundSampler } from './contracts.ts';
+import { niijimaScarpHeight } from './niijima-scarp.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };
 
 const NODATA = -32768;
@@ -37,7 +38,9 @@ export class NiijimaDEM {
   readonly land: Uint8Array;
   readonly heights: Float32Array;
   readonly shore: Float32Array;
-  constructor(source = raster as NiijimaDEM['raster']) {
+  readonly scarp: boolean;
+  constructor(source = raster as NiijimaDEM['raster'], options: { scarp?: boolean } = {}) {
+    this.scarp = options.scarp ?? false;
     this.raster = source; const raster = source;
     this.dx = (raster.maxX - raster.minX) / (raster.width - 1); this.dz = (raster.maxZ - raster.minZ) / (raster.height - 1);
     const encoded = atob(raster.elevations), buffer = new ArrayBuffer(encoded.length), bytes = new Uint8Array(buffer);
@@ -74,7 +77,8 @@ export class NiijimaDEM {
     const beach = (1 - ease(3, 7, Math.abs(y))) * (1 - ease(.35, .9, slope)) * (1 - ease(50, 100, Math.abs(d)));
     // Small sand ridges die out at the waterline, keeping the dry/wet transition continuous.
     const sand = Math.sin(z * .8 + noise(x * .021, z * .021) * 9) * .013 + (noise(x * .39, z * .39) - .5) * .027;
-    return y + cliff * (strata + crumbs - gullies) + sand * beach * ease(-.25, .6, y);
+    const legacy = y + cliff * (strata + crumbs - gullies) + sand * beach * ease(-.25, .6, y);
+    return this.scarp ? niijimaScarpHeight(this, x, z, legacy) : legacy;
   }
 }
 
