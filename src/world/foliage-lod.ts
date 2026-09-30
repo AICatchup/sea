@@ -53,7 +53,7 @@ export class FoliageLodField {
   getTrunkProxies(): readonly TrunkProxy[] {
     if (this.trunkProxies) return this.trunkProxies;
     const bases = this.levels.far.map(variant => {
-      const bark = variant.parts.find(part => part.material.name.includes('bark'))?.geometry;
+      const bark = variant.parts.find(part => part.material.userData.foliageRole === 'trunk' || part.material.name.includes('bark'))?.geometry;
       if (!bark) return { center: new THREE.Vector3(), radius: .18, height: 6.3 };
       bark.computeBoundingBox(); const minY = bark.boundingBox!.min.y, points = bark.getAttribute('position');
       const feet: THREE.Vector3[] = [];

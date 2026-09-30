@@ -49,7 +49,7 @@ export class AssetWorld {
     this.populateBeach();
     this.populateStrand();
     this.preparePlacementBatches();
-    this.group.userData.foliage = { status: typeof document === 'undefined' ? 'cpu-proxies' : 'loading', source: 'Poly Haven CC0 pine_sapling_small / shrub_02', photoPass: false };
+    this.group.userData.foliage = { status: typeof document === 'undefined' ? 'cpu-proxies' : 'loading', source: 'Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified', photoPass: false };
     this.ready = this.foliage.loadDetailed().then(() => {
       if (this.disposed || typeof document === 'undefined') return;
       this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels);
@@ -76,7 +76,7 @@ export class AssetWorld {
     const random = randomSeed(0x544f4d41);
     const trees: THREE.Matrix4[][] = [[], [], []];
     const shrubs: THREE.Matrix4[][] = [[], [], []];
-    let treeCount = 0, shrubCount = 0;
+    let treeCount = 0, shrubCount = 0, groundCoverCount = 0;
     // Independent cover strata: a pine never suppresses the shrub layer below it.
     for (let gz = -300; gz < 290; gz += 3.6) for (let gx = -355; gx < 320; gx += 3.6) {
       const x = gx + (random() - .5) * 2.5, z = gz + (random() - .5) * 2.5;
@@ -88,20 +88,26 @@ export class AssetWorld {
       const slope = Math.hypot(this.ground.heightAt(x + 1.5, z) - this.ground.heightAt(x - 1.5, z),
         this.ground.heightAt(x, z + 1.5) - this.ground.heightAt(x, z - 1.5)) / 3;
       const isHeadland = height > 3 || x < -72 || x > 74 || z > 95;
-      if (height > 3 && height < 68 && slope < 1.8 && isHeadland && random() < (height > 12 ? .28 : .15)) {
-        const size = .78 + random() * .69;
-        trees[variant].push(this.transform(x, height - .18, z, size, yaw, 1.05, .78 + random() * .28, 1)); treeCount++;
+      // Wind-shaped cover follows crests and soil pockets, leaving lower vertical rock exposed.
+      // Low-frequency cluster density makes overlapping stands rather than isolated equal trees.
+      const cluster = THREE.MathUtils.clamp(.55 + Math.sin(x * .034 + Math.sin(z * .021) * 1.9) * .27 + Math.cos(z * .039 - x * .012) * .22, 0, 1);
+      if (height > 6 && height < 68 && slope < (height > 14 ? 1.65 : 1.12) && isHeadland && random() < (.14 + cluster * .22)) {
+        const size = .74 + random() * .38;
+        trees[variant].push(this.transform(x, height - .07, z, size, yaw, 1.43 + random() * .18, .8 + random() * .2, 1.35)); treeCount++;
       }
-      if (height > 1.8 && height < 68 && isHeadland && slope < 2.05 && random() < .82) {
-        shrubs[variant].push(this.transform(x, height - .09, z, .8 + random() * .49, yaw, 1.24, .82, 1.12)); shrubCount++;
+      if (height > 3.1 && height < 68 && isHeadland && slope < 1.75 && random() < (.67 + cluster * .3)) {
+        const low = random() < .43, size = .88 + random() * .46;
+        shrubs[variant].push(this.transform(x, height - .05, z, size, yaw, low ? 1.95 : 1.54, low ? .31 + random() * .14 : .95 + random() * .5, low ? 1.7 : 1.35));
+        shrubCount++; if (low) groundCoverCount++;
       }
     }
     // Same deterministic transforms, now partitioned into mutually exclusive distance bands.
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, trees,
-      { nearDistance: 30, midDistance: 190, nearCapacity: 24, midCapacity: 180, triangleBudget: 1_410_000 });
+      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000 });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
-      { nearDistance: 21, midDistance: 75, nearCapacity: 36, midCapacity: 120, triangleBudget: 380_000 });
-    this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount };
+      { nearDistance: 26, midDistance: 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000 });
+    this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount, groundCover: groundCoverCount,
+      strata: 'overlapping coastal evergreen crowns / shrubs / low true-3D leaf cover; lower steep rock faces exposed' };
   }
 
   /** Small strand debris is clustered and varied, rather than an evenly tiled gravel carpet. */

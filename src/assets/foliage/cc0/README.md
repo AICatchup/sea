@@ -1,3 +1,5 @@
+Active replacement: see canopy/README.md for the current island_tree_01/02/03 canopy sources, native alpha, 5M triangle budget and measured coverage. The record below describes the superseded pine-sapling candidate.
+
 # CC0 coastal foliage LOD candidate
 
 Official Poly Haven assets: [Pine Sapling Small](https://polyhaven.com/a/pine_sapling_small) and [Shrub 02](https://polyhaven.com/a/shrub_02), CC0 1.0. `provenance.json` binds original URLs, original API MD5, byte lengths, SHA256, physical bounds, derived bounds, reduction errors, and bundled GLB hashes. Runtime loads bundled files only. No Google photo pixels are included.
@@ -13,3 +15,4 @@ CPU measured triangle costs on the pre-integration ground: shore 1,375,269 (609,
 `pnpm test`: 29/29 passed. `pnpm build`: type check, production build, standalone HTML passed. CPU validation checked all GLB positions/UVs/normals for finiteness, unit normals, zero degenerate triangles, mutually exclusive LOD totals, 96 placement capacity, one-step undo, vessel transform preservation, single disposal of owned resources, and source-scan ownership during rock placement hydration. CPU checks do not load image pixels or compile shaders; GPU, multiview appearance, exact transitions, photography match and human acceptance remain unverified.
 
 Wait for `assets.ready` or `assets.group.userData.foliage.status === 'ready'` before screenshot review. The existing renderer readiness promise does not include foliage readiness automatically. The camera-facing field metrics are `assets.group.userData.coastalPineLod` and `coastalShrubLod`. The authoring atlas at `../tomari-black-pine-v1.png` is retained as an unused historical asset.
+

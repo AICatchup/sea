@@ -1,0 +1,7 @@
+Poly Haven island_tree_01 / island_tree_02 / island_tree_03: CC0 1.0 Universal
+https://polyhaven.com/a/island_tree_01
+https://polyhaven.com/a/island_tree_02
+https://polyhaven.com/a/island_tree_03
+https://polyhaven.com/license
+Powered by Poly Haven: https://polyhaven.com
+Original maps, alpha and texture transforms preserved. Native wind-shaped crowns normalized into metres. Botanical species unverified; no Google reference pixels included.

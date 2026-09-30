@@ -2,12 +2,19 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { cylinderBetween, ModelResources, randomSeed, surfaceTexture } from './models/procedural.ts';
-import { coarseFoliage } from './foliage-coarse.ts';
+import { coarseFoliage, preserveLeafCoverage } from './foliage-coarse.ts';
 
 const sourceAssets = [
-  { kind: 'pine', url: new URL('../assets/foliage/cc0/pine-lod-1k.glb', import.meta.url).href },
-  { kind: 'shrub', url: new URL('../assets/foliage/cc0/shrub-lod-1k.glb', import.meta.url).href },
+  { kind: 'pine', id: 'island_tree_01', prefix: 'canopy0', variant: 0, count: 1, url: new URL('../assets/foliage/cc0/canopy/canopy0-lod-1k.glb', import.meta.url).href },
+  { kind: 'pine', id: 'island_tree_02', prefix: 'canopy1', variant: 1, count: 1, url: new URL('../assets/foliage/cc0/canopy/canopy1-lod-1k.glb', import.meta.url).href },
+  { kind: 'pine', id: 'island_tree_03', prefix: 'canopy2', variant: 2, count: 1, url: new URL('../assets/foliage/cc0/canopy/canopy2-lod-1k.glb', import.meta.url).href },
+  { kind: 'shrub', id: 'shrub_02', prefix: 'shrub', variant: 0, count: 3, url: new URL('../assets/foliage/cc0/shrub-lod-1k.glb', import.meta.url).href },
 ] as const;
+const canopyAlpha = [
+  new URL('../assets/foliage/cc0/canopy/canopy0-leaf-alpha-1k.png', import.meta.url).href,
+  new URL('../assets/foliage/cc0/canopy/canopy1-leaf-alpha-1k.png', import.meta.url).href,
+  new URL('../assets/foliage/cc0/canopy/canopy2-leaf-alpha-1k.png', import.meta.url).href,
+];
 export interface FoliageGeometry { bark: THREE.BufferGeometry; needles: THREE.BufferGeometry; }
 export interface FoliagePart { geometry: THREE.BufferGeometry; material: THREE.MeshStandardMaterial; }
 export interface FoliageVariant { parts: readonly FoliagePart[]; triangles: number; }
@@ -56,23 +63,39 @@ export class CoastalFoliage {
           }
         } }); abandoned.dispose(); return;
       }
+      const nativeAlpha = source.kind === 'pine' ? await new THREE.TextureLoader().loadAsync(canopyAlpha[source.variant]) : null;
+      if (this.disposed) {
+        nativeAlpha?.dispose(); const abandoned = new ModelResources();
+        gltf.scene.traverse(child => { if (child instanceof THREE.Mesh) {
+          abandoned.geometry(child.geometry);
+          for (const material of Array.isArray(child.material) ? child.material : [child.material]) {
+            abandoned.material(material); for (const value of Object.values(material)) if (value instanceof THREE.Texture) abandoned.texture(value);
+          }
+        } }); abandoned.dispose(); return;
+      }
+      if (nativeAlpha) { nativeAlpha.colorSpace = THREE.NoColorSpace; nativeAlpha.flipY = false; nativeAlpha.anisotropy = 8; this.resources.texture(nativeAlpha); }
       // One parse creates all LODs; each shared map and material is registered once.
-      const variants: Record<'near' | 'mid', FoliageVariant[]> = { near: [], mid: [] };
-      for (const level of ['near', 'mid'] as const) for (let variant = 0; variant < 3; variant++) {
-        const object = gltf.scene.getObjectByName(`${source.kind}_${level}_${variant}`);
+      const variants: Record<'near' | 'mid' | 'far', FoliageVariant[]> = { near: [], mid: [], far: [] };
+      const loadLevels: ('near' | 'mid' | 'far')[] = source.kind === 'pine' ? ['near', 'mid', 'far'] : ['near', 'mid'];
+      for (const level of loadLevels) for (let variant = 0; variant < source.count; variant++) {
+        const object = gltf.scene.getObjectByName(`${source.prefix}_${level}_${variant}`);
         if (!object) throw new Error(`Missing ${source.kind} ${level} ${variant}`);
         const parts: FoliagePart[] = [];
         object.traverse(child => {
           if (!(child instanceof THREE.Mesh)) return;
           const material = (Array.isArray(child.material) ? child.material[0] : child.material) as THREE.MeshStandardMaterial;
           material.color.set('#ffffff'); material.roughness = .92; material.metalness = 0;
-          material.alphaTest = 0; // Individual modeled needles/leaves; no rectangular alpha sheets.
+          const leafy = source.kind === 'shrub' || material.name.includes('leaves');
+          if (leafy && nativeAlpha) material.alphaMap = nativeAlpha;
+          material.alphaTest = leafy ? .38 : 0; // Individual curved leaf geometry retains native photo alpha.
+          material.alphaToCoverage = leafy;
           material.transparent = false; material.depthWrite = true; material.dithering = true;
           material.shadowSide = THREE.DoubleSide; material.side = THREE.DoubleSide;
-          material.normalScale.set(.55, .55); material.aoMapIntensity = .65;
-          material.userData.source = `https://polyhaven.com/a/${source.kind === 'pine' ? 'pine_sapling_small' : 'shrub_02'}`;
-          material.userData.license = 'CC0-1.0'; material.userData.geometry = 'Individual modeled needles / leaves; no tree billboards';
-          if (source.kind === 'shrub' || material.name.includes('twig')) {
+          material.normalScale.set(.55, .55); material.aoMapIntensity = .42;
+          material.userData.source = `https://polyhaven.com/a/${source.id}`;
+          material.userData.foliageRole = leafy ? 'leaves' : material.name.includes('branches') ? 'branches' : 'trunk';
+          material.userData.license = 'CC0-1.0'; material.userData.geometry = 'Actual windswept coastal canopy / individually modeled small leaves; no tree billboards';
+          if (leafy) {
             // Thin leaves scatter a small amount of sunlight from behind. Keep rough diffuse
             // response and shadow attenuation; no emissive/baked-light foliage or refraction pass.
             material.onBeforeCompile = shader => {
@@ -90,14 +113,20 @@ export class CoastalFoliage {
             value.anisotropy = 8; this.resources.texture(value);
           }
           this.resources.material(material);
-          const geometry = this.resources.geometry(child.geometry); geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+          const geometry = this.resources.geometry(child.geometry);
+          if (source.kind === 'pine' && level !== 'near' && leafy) {
+            const points = new Float32Array(geometry.getAttribute('position').array);
+            geometry.userData.coverage = preserveLeafCoverage(points, new Uint32Array(geometry.index!.array), level === 'far' ? .18 : .025);
+            geometry.setAttribute('position', new THREE.BufferAttribute(points, 3));
+          }
+          geometry.computeBoundingBox(); geometry.computeBoundingSphere();
           parts.push({ geometry, material });
         });
         variants[level].push({ parts, triangles: parts.reduce((sum, p) => sum + this.triangles(p.geometry), 0) });
       }
       const levels = source.kind === 'pine' ? this.pineLevels : this.shrubLevels;
-      levels.near = variants.near; levels.mid = variants.mid;
-      levels.far = await Promise.all(variants.mid.map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed)));
+      if (source.kind === 'shrub') variants.far = await Promise.all(variants.mid.map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed)));
+      for (const level of ['near', 'mid', 'far'] as const) variants[level].forEach((variant, index) => { levels[level][source.variant + index] = variant; });
       if (this.disposed) return;
     }
   }
