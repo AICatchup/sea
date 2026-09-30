@@ -225,6 +225,17 @@ function board(controls: ExplorerControls): void {
   assert.equal(controls.state.mode, 'boat');
 }
 
+test('seated camera uses the same yaw-pitch-roll frame as the drawn vessel and helm body',()=>{
+  const {controls,state}=setup({heightAt:()=>-12});board(controls);
+  for(const [yaw,pitch,roll] of [[1.57,.12,.08],[-.9,-.2,.13],[.5,0,0]]){
+    state.boatYaw=yaw;state.boatPitch=pitch;state.boatRoll=roll;
+    controls.update(1/60,1);
+    const expected=new THREE.Vector3(.48,1.45,.76).applyEuler(new THREE.Euler(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ')).add(state.boatPosition);
+    assert.ok(state.position.distanceTo(expected)<1e-8);
+  }
+  controls.dispose();
+});
+
 test('the placed hull blocks swimming through the vessel while its ladder remains reachable', () => {
   const { controls, state } = setup({ heightAt: () => -20 });
   const boat = state.boatPosition.clone(); controls.viewpoint(boat.x + 4, boat.z, 0, 0, 'swim');

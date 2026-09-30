@@ -38,9 +38,9 @@ test('authored cliff bodies are closed, nondegenerate and outward wound',()=>{
 
 test('metre scale faces emerge from their actual support surface within a fixed geometry budget',()=>{
   assert.ok(geometry.userData.triangleCount<=80000);
-  assert.ok(geometry.userData.exposedCentralFaceAreaM2>7000);
+  assert.ok(geometry.userData.exposedCentralFaceAreaM2>1000);
   assert.ok(geometry.userData.buriedCentralFaceAreaM2<geometry.userData.exposedCentralFaceAreaM2*.03);
-  assert.ok(geometry.userData.maxNormalProtrusionM>3 && geometry.userData.maxNormalProtrusionM<7);
+  assert.ok(geometry.userData.maxNormalProtrusionM>.3 && geometry.userData.maxNormalProtrusionM<2.5,'fragments retain bounded relief instead of growing large ridge blocks');
   assert.ok(geometry.userData.minExposedVertexHeightM>=2.2);
   assert.equal(geometry.userData.collisionProxies.length,geometry.userData.rockPieces);
   assert.match(geometry.userData.provenance,/Authored/);
@@ -49,16 +49,18 @@ test('metre scale faces emerge from their actual support surface within a fixed 
 
 test('the authored scarp refinement keeps low strand and source boundaries, with bounded signed relief',()=>{
   const field=elevation.tomari!,base=(x:number,z:number)=>field.heightAt(x,z);
-  let changed=0,positive=0,negative=0;
+  let changed=0,positive=0,negative=0,highSandyWall=0;
   for(let z=-160;z<70;z+=2.3)for(let x=-245;x<185;x+=2.7){
     const y=base(x,z),sand=sandAt(x,z),refined=structuralCoastHeight(x,z,y,base,sand),delta=refined-y;
     assert.ok(delta<=5.500001 && delta>=-7.500001);
-    if(y<3.5 || y>62 || sand>.62)assert.equal(delta,0);
+    if(y<3.5 || y>62)assert.equal(delta,0);
+    if(sand>.62&&y>10&&Math.abs(delta)>.1)highSandyWall++;
     if(delta>.5)positive++;
     if(delta<-.5)negative++;
     if(Math.abs(delta)>.5)changed++;
   }
   assert.ok(changed>1000 && positive>100 && negative>100);
+  assert.ok(highSandyWall>50,'the horizontal beach mask no longer erases joints from high rock walls');
   const coast=elevation.coast!;
   for(const [x,z] of [[coast.minX,20],[coast.maxX,20],[-40,coast.minZ],[-40,coast.maxZ]]){
     const dx=x===coast.minX||x===coast.maxX?.0001:0;

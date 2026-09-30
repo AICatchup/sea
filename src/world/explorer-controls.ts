@@ -197,7 +197,7 @@ export class ExplorerControls {
   }
   private boatEye(): THREE.Vector3 {
     return new THREE.Vector3(.48, 1.45, .76)
-      .applyEuler(new THREE.Euler(this.state.boatPitch ?? 0, -this.state.boatYaw, this.state.boatRoll ?? 0))
+      .applyEuler(new THREE.Euler(this.state.boatPitch ?? 0, -this.state.boatYaw, this.state.boatRoll ?? 0,'YXZ'))
       .add(this.state.boatPosition);
   }
   private canBoard(): boolean {

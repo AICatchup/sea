@@ -113,6 +113,16 @@ try {
     },
     interact:()=>ocean.adventure.interact(),navigate:(id:string)=>ocean.adventure.navigate(id),
     ground:(x:number,z:number)=>ocean.world.heightAt(x,z),
+    foliageAt:(x:number,y:number)=>ocean.probeFoliage(x,y),
+    objectAt:(x:number,y:number)=>ocean.probeFoliage(x,y,false),
+    bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
+    visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
+    async capturePixels(){
+      const blob=await ocean.capture();if(!blob)return null;
+      return await new Promise<string>((resolve,reject)=>{
+        const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);
+      });
+    },
   }});
   updateRanges();
   void ocean.ready.then(() => {

@@ -124,6 +124,8 @@ function makeOceanGrid(): THREE.BufferGeometry {
 }
 
 export class Ocean {
+  /** Development capture lock only; normal movement never enables it. */
+  visualCaptureLocked=false;
   readonly collision=new WorldCollision();
   private readonly solidBinding=new WorldSolidBinding(this.collision);
   private solidContactReady=false;
@@ -377,7 +379,7 @@ export class Ocean {
       this.simulation.advance(this.time,delta,this.swell,this.uniforms.uChoppiness.value);
     }
     // Reduced ambient motion never prevents intentional walking or looking.
-    this.adventure.update(delta,this.time,this.paused);
+    if(!this.visualCaptureLocked)this.adventure.update(delta,this.time,this.paused);
     const state=this.adventure.state;
     this.camera.position.copy(state.position);
     if(state.viewOffset)this.camera.position.add(state.viewOffset);
@@ -477,9 +479,34 @@ export class Ocean {
     this.captureNextFrame?.(null);return new Promise(resolve=>{this.captureNextFrame=resolve;});
   }
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
+  /** Developer picking of foliage only; tight per-instance bounds avoid testing
+   * the full island terrain or an entire dense instance field. */
+  probeFoliage(x:number,y:number,foliageOnly=true){
+    const ray=new THREE.Raycaster();ray.setFromCamera(new THREE.Vector2(x,y),this.camera);
+    const box=new THREE.Box3(),local=new THREE.Matrix4(),matrix=new THREE.Matrix4();
+    const hits:{name:string;instance:number;material:string[];distance:number;point:number[]}[]=[];
+    this.scene.updateMatrixWorld(true);
+    this.scene.traverse(object=>{
+      if(!(object instanceof THREE.Mesh)||!object.visible)return;
+      if(foliageOnly&&!object.userData.foliageLod)return;
+      if(!foliageOnly&&(object.userData.surface||/DEM/.test(object.name)||object instanceof THREE.SkinnedMesh||
+        (Array.isArray(object.material)?object.material:[object.material]).some(m=>m instanceof THREE.ShaderMaterial)))return;
+      if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();
+      for(let i=0;i<(object instanceof THREE.InstancedMesh?object.count:1);i++){
+        if(object instanceof THREE.InstancedMesh){object.getMatrixAt(i,local);matrix.multiplyMatrices(object.matrixWorld,local);}
+        else matrix.copy(object.matrixWorld);
+        box.copy(object.geometry.boundingBox!).applyMatrix4(matrix);if(!ray.ray.intersectsBox(box))continue;
+        const proxy=new THREE.Mesh(object.geometry,object.material);proxy.matrixWorld.copy(matrix);
+        const intersections:THREE.Intersection[]=[];proxy.raycast(ray,intersections);
+        for(const hit of intersections)hits.push({name:object.name,instance:i,material:(Array.isArray(object.material)?object.material:[object.material]).map(m=>m.name),distance:hit.distance,point:hit.point.toArray()});
+      }
+    });
+    return hits.sort((a,b)=>a.distance-b.distance).slice(0,8);
+  }
   get diagnostics(){
     const state=this.adventure.state;
     return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,
+      visualCaptureLocked:this.visualCaptureLocked,
       resolution:[this.canvas.width,this.canvas.height],camera:{yaw:state.yaw,pitch:state.pitch,height:state.position.y,x:state.position.x,z:state.position.z},
       adventure:{mode:state.mode,depth:state.depth,oxygen:state.oxygen,speed:state.speed,placed:this.assets.placedCount,
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
