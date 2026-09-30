@@ -32,6 +32,9 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
   const stride=4.7,triangleLimit=80000;
   let eligible=0,count=0,pieces=0,rejectedStrand=0,maxProtrusion=0,maxFaceWidth=0,minVisibleY=Infinity;
   let sampledCliffArea=0,authoredFaceArea=0,exposedFaceArea=0,buriedFaceArea=0;
+  const normalUpBins={vertical:0,sloping:0,upward:0};let rejectedCrown=0;
+  const patchNormalUpBins={west:{vertical:0,sloping:0,upward:0},centre:{vertical:0,sloping:0,upward:0},east:{vertical:0,sloping:0,upward:0}};
+  const exposedFaceUpBins={vertical:0,sloping:0,upward:0};
   const triangle=(a:THREE.Vector3,b:THREE.Vector3,c:THREE.Vector3,shade:number)=>{
     for(const p of[a,b,c]){positions.push(p.x,p.y,p.z);colors.push(shade,shade*.995,shade*1.018);uvs.push(p.x*.2,p.y*.2);}
   };
@@ -45,9 +48,18 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
     if(positions.length/9+120>triangleLimit)break;
     const random=(seed:number)=>jointRandom(ix,iz,seed);
     const px=x+(random(13)-.5)*3.2,pz=z+(random(17)-.5)*3.2,y=ground.heightAt(px,pz);
-    if(y<5 || y>56 || sandAt(px,pz)>.48)continue;
-    const gradient=slopeAt(px,pz);
-    if(gradient.magnitude<.78)continue;
+    // sandAt describes the horizontal cove, including the tall west wall.
+    // Apply it only at foot elevations, never to the entire vertical column.
+    if(y<5 || y>56 || (y<9 && sandAt(px,pz)>.48))continue;
+    const gradient=slopeAt(px,pz,2);
+    const up=1/Math.hypot(1,gradient.magnitude);
+    normalUpBins[up<.58?'vertical':up<.8?'sloping':'upward']++;
+    patchNormalUpBins[px<-90?'west':px>90?'east':'centre'][up<.58?'vertical':up<.8?'sloping':'upward']++;
+    if(up>.58 || slopeAt(px,pz,6).magnitude<.85)continue;
+    const uphillX=gradient.gx/gradient.magnitude,uphillZ=gradient.gz/gradient.magnitude;
+    // A real scarp rises behind its face. Ridge crowns and vegetation-facing
+    // upper slopes must not acquire disconnected skyline blocks.
+    if(ground.heightAt(px+uphillX*7,pz+uphillZ*7)<y+3){rejectedCrown++;continue;}
     eligible++;sampledCliffArea+=stride*stride*Math.hypot(1,gradient.magnitude);
     // Select only coast-facing scarps, leaving most of the larger coherent field visible.
     if(random(31)<.12)continue;
@@ -61,9 +73,9 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
     const familyName=family<.44?'plates':family<.72?'columns':'buttresses';
     // Unequal metre-scale fracture groups affect form at beach-view distances.
     const width=familyName==='plates'?2.6+random(41)*1.9:familyName==='columns'?1.4+random(41)*1.3:2.8+random(41)*1.8;
-    const height=familyName==='plates'?1.1+random(43)*1.1:familyName==='columns'?3+random(43)*2.3:2.1+random(43)*2;
-    const depth=1.6+random(47)*1.8;
-    const split=familyName==='plates'?2+(random(51)>.7?1:0):random(51)>.61?2:1;
+    const height=familyName==='plates'?.8+random(43)*.9:familyName==='columns'?1.6+random(43)*1.5:1.3+random(43)*1.5;
+    const depth=.5+random(47)*.75;
+    const split=familyName==='plates'?3+(random(51)>.7?1:0):random(51)>.4?2:1;
     const gap=.22+random(53)*.38,shade=.58+random(81)*.16;
     const centre=new THREE.Vector3(px,y,pz);
     let emitted=0;
@@ -99,9 +111,12 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
       }
       // Avoid unsupported fragments crossing a crest, rather than stretching a
       // giant artificial slab across a valley. Broad source shape stays intact.
-      if(support>2.5 || embed>=14)continue;
-      for(const [uu,vv] of outline){
-        const u=uu*halfWidth,v=vv*height,planeDepth=depth*(1+uu*tiltU+vv*tiltV);
+      if(support>.5 || embed>=14)continue;
+      for(let corner=0;corner<outline.length;corner++){
+        const [uu,vv]=outline[corner];
+        const u=uu*halfWidth,v=vv*height;
+        // Unequal broken face angles, rather than one identical flat prism face.
+        const planeDepth=depth*(1+uu*tiltU+vv*tiltV)+(random(131+corner+part*8)-.5)*.26;
         back.push(at(u,v,-embed));
         front.push(at(u*.94,v*.96,support+planeDepth*.68));
         bevel.push(at(u*.81,v*.87,support+planeDepth));
@@ -133,7 +148,9 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
       authoredFaceArea+=halfWidth*height*4*.82;
       for(let i=1;i+1<bevel.length;i++){
         const a=bevel[0],b=bevel[i],c=bevel[i+1];
-        const area=b.clone().sub(a).cross(c.clone().sub(a)).length()*.5;
+        const faceNormal=b.clone().sub(a).cross(c.clone().sub(a));
+        const area=faceNormal.length()*.5,faceUp=Math.abs(faceNormal.normalize().y);
+        exposedFaceUpBins[faceUp<.58?'vertical':faceUp<.8?'sloping':'upward']++;
         const mid=a.clone().add(b).add(c).multiplyScalar(1/3);
         if(mid.y>ground.heightAt(mid.x,mid.z)+.05)exposedFaceArea+=area;else buriedFaceArea+=area;
       }
@@ -147,7 +164,7 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
   geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
   geometry.computeVertexNormals();geometry.computeBoundingSphere();
   geometry.userData={outcropCount:count,rockPieces:pieces,triangleCount:positions.length/9,triangleLimit,familyCounts,regions,
-    eligibleSteepFaceSamples:eligible,rejectedStrandPieces:rejectedStrand,sampledCliffAreaM2:sampledCliffArea,authoredFaceAreaM2:authoredFaceArea,
+    normalUpBins,patchNormalUpBins,exposedFaceUpBins,rejectedCrown,eligibleSteepFaceSamples:eligible,rejectedStrandPieces:rejectedStrand,sampledCliffAreaM2:sampledCliffArea,authoredFaceAreaM2:authoredFaceArea,
     exposedCentralFaceAreaM2:exposedFaceArea,buriedCentralFaceAreaM2:buriedFaceArea,closedVolumes:true,maxNormalProtrusionM:maxProtrusion,maxFaceWidthM:maxFaceWidth,minExposedVertexHeightM:Number.isFinite(minVisibleY)?minVisibleY:null,
     collisionProxies:proxies,collision:'Complete rock-volume AABBs; swept upright-body helper uses foot height in world metres',
     provenance:'Authored metre-scale fracture shelves, closed overhang volumes and embedded backs; source DEM unchanged, not surveyed rhyolite geometry'};

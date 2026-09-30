@@ -32,11 +32,12 @@ function panelRelief(u: number, v: number): number {
 export function structuralCoastHeight(
   x: number, z: number, y: number, baseHeightAt: (x:number,z:number)=>number, sand: number,
 ): number {
-  if(y<3.5 || y>62 || sand>.62)return y;
+  const strand=sand*(1-ease(5,10,y));
+  if(y<3.5 || y>62 || strand>.62)return y;
   const gx=(baseHeightAt(x+5,z)-baseHeightAt(x-5,z))/10;
   const gz=(baseHeightAt(x,z+5)-baseHeightAt(x,z-5))/10;
   const gradient=Math.hypot(gx,gz);
-  const strength=ease(.52,1.08,gradient)*ease(3.5,7,y)*(1-ease(.3,.62,sand));
+  const strength=ease(.52,1.08,gradient)*ease(3.5,7,y)*(1-ease(.3,.62,strand));
   if(strength===0)return y;
   const nx=gx/gradient,nz=gz/gradient;
   const top=baseHeightAt(x+nx*11,z+nz*11),foot=baseHeightAt(x-nx*11,z-nz*11);
