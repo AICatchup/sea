@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { geoToWorld, worldToGeo } from '../src/world/contracts.ts';
+import { PLAYER_DIMENSIONS, geoToWorld, worldToGeo } from '../src/world/contracts.ts';
 import { IslandWorld } from '../src/world/terrain.ts';
 import { GEODATA_PROVENANCE, IslandElevation, shelterAt } from '../src/world/geodata.ts';
 import { cliffBodySegmentBlocked } from '../src/world/cliff-detail.ts';
@@ -37,7 +37,7 @@ test('GSI land snapshot contains all three real islands and a high-resolution To
 test('the sandy Tomari spawn has camera height and a continuous walk into shallow water', () => {
   const { x, y, z } = world.spawnPoint;
   assert.ok(world.heightAt(x, z) > 0.8);
-  assert.ok(Math.abs(y - world.heightAt(x, z) - 1.72) < 1e-8);
+  assert.ok(Math.abs(y - world.heightAt(x, z) - PLAYER_DIMENSIONS.eyeHeight) < 1e-8);
   assert.ok(world.heightAt(x, -18) < -0.7);
   for (let step = 0; step < 60; step++) {
     const a = world.heightAt(x, z - step), b = world.heightAt(x, z - step - 1);
@@ -48,7 +48,7 @@ test('the sandy Tomari spawn has camera height and a continuous walk into shallo
 });
 
 test('arrival points are water and every island has a dry coastal landing', () => {
-  assert.deepEqual(world.destinations.map(destination => destination.id), ['tomari', 'nakanoura', 'niijima', 'kozushima']);
+  assert.deepEqual(world.destinations.map(destination => destination.id), ['tomari', 'nakanoura', 'niijima','habushi','horikiri','secret','kozushima']);
   for (const destination of world.destinations) {
     assert.ok(world.heightAt(destination.x, destination.z) < -2.3, destination.label);
     assert.ok(world.heightAt(destination.landingX!, destination.landingZ!) > 0.55, destination.label);

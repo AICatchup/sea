@@ -10,7 +10,10 @@ export function worldToGeo(x: number, z: number): { lat: number; lon: number } {
   return { lat: GEO_ORIGIN.lat - z / 111320,
     lon: GEO_ORIGIN.lon + x / (111320 * Math.cos(GEO_ORIGIN.lat * Math.PI / 180)) };
 }
-export interface GroundSampler { heightAt(x: number, z: number): number; }
+export interface GroundSampler {
+  heightAt(x: number, z: number): number;
+  bodySegmentBlocked?(from:{x:number;y:number;z:number},to:{x:number;y:number;z:number},radius?:number,bodyHeight?:number):boolean;
+}
 export const PLAYER_DIMENSIONS = { height: 1.75, eyeHeight: 1.64, radius: .25 } as const;
 export type TravelMode = 'walk' | 'swim' | 'dive' | 'boat';
 export type PlaceableKind = 'chair' | 'umbrella' | 'buoy' | 'tank' | 'rock' | 'pine';

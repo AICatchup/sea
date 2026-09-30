@@ -409,6 +409,8 @@ export class ExplorerControls {
     const next = clampWorld({ x: p.x + this.velocity.x * dt, z: p.z + this.velocity.z * dt });
     const canMove = (point: NavigationPoint): boolean => {
       if (!this.clearsBoat(point)) return false;
+      const footY=p.y-EYE_HEIGHT;
+      if(this.ground.bodySegmentBlocked?.({x:p.x,y:footY,z:p.z},{x:point.x,y:footY,z:point.z},PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height))return false;
       const floor = groundHeight(this.ground, point.x, point.z);
       if (swimming) return Number.isFinite(floor) && floor + .55 < p.y;
       return [[0, 0], [PLAYER_DIMENSIONS.radius, 0], [-PLAYER_DIMENSIONS.radius, 0], [0, PLAYER_DIMENSIONS.radius], [0, -PLAYER_DIMENSIONS.radius]]

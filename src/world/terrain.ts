@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { type MapOutline, type WorldDestination } from './contracts.ts';
+import { PLAYER_DIMENSIONS, type MapOutline, type WorldDestination } from './contracts.ts';
 import { ElevationField, IslandElevation, sandAt, shelterAt, smoothstep } from './geodata.ts';
 import { DESTINATION_SEEDS } from './locations.ts';
 import { cliffOutcrops, cliffBodySegmentBlocked, type CliffCollisionProxy, type BodyPoint } from './cliff-detail.ts';
@@ -7,6 +7,7 @@ import { CoastalFoliage } from './foliage.ts';
 import { ModelResources } from './models/procedural.ts';
 import { loadSandTextures } from './sand-material.ts';
 import { makeTerrainMaterial } from './coast-material.ts';
+import { NiijimaCoast } from './niijima-coast.ts';
 const atlasURL=new URL('../assets/tomari-atlas-v1.png',import.meta.url).href;
 
 interface WaterMap { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2; }
@@ -67,7 +68,9 @@ export class IslandWorld {
   readonly ready:Promise<void>;
   readonly elevation = new IslandElevation();
   readonly cliffCollisionProxies: CliffCollisionProxy[] = [];
+  readonly niijimaCoast:NiijimaCoast;
   private readonly maps = new Map<string, WaterMap>();
+  private readonly niijimaShaderMaps = new WeakMap<THREE.Texture, WaterMap>();
   private readonly textures: THREE.Texture[] = [];
   private readonly materials: THREE.Material[] = [];
   private readonly geometries: THREE.BufferGeometry[] = [];
@@ -81,8 +84,9 @@ export class IslandWorld {
     atlas.anisotropy=8;atlas.minFilter=THREE.LinearMipmapLinearFilter;atlas.magFilter=THREE.LinearFilter;
     this.textures.push(atlas);
     const sand=loadSandTextures();this.textures.push(...sand.textures);
-    this.ready=Promise.allSettled([atlasReady,sand.ready]).then(()=>{});
     const terrainMaterial = makeTerrainMaterial(grain, atlas, sand); this.materials.push(terrainMaterial);
+    this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve()]).then(()=>{});
+    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial);this.group.add(this.niijimaCoast.group);
     for (const field of this.elevation.fields) this.buildTerrain(field, terrainMaterial);
     if (this.elevation.tomari && this.elevation.coast) {
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true);
@@ -94,15 +98,23 @@ export class IslandWorld {
       this.geometries.push(geometry); this.group.add(outcrops);
     }
     this.buildForest();
-    this.spawnPoint = new THREE.Vector3(-36, this.heightAt(-36, 27) + 1.72, 27);
+    this.spawnPoint = new THREE.Vector3(-36, this.heightAt(-36, 27) + PLAYER_DIMENSIONS.eyeHeight, 27);
     this.destinations = DESTINATION_SEEDS.map(seed => {
-      const arrival = this.elevation.arrival(seed.x, seed.z);
+      let arrival = this.elevation.arrival(seed.x, seed.z);
+      if(this.niijimaCoast.contains(seed.x,seed.z)){
+        let waterScore=Infinity,landScore=Infinity;
+        for(let dz=-200;dz<=200;dz+=4)for(let dx=-200;dx<=200;dx+=4){
+          const x=seed.x+dx,z=seed.z+dz,h=this.heightAt(x,z),distance=Math.hypot(dx,dz);
+          if(h< -2.4&&h> -18){const score=distance+Math.abs(h+5)*4;if(score<waterScore){waterScore=score;arrival={...arrival,x,z};}}
+          if(h>.55&&h<8){const score=distance+h*2;if(score<landScore){landScore=score;arrival={...arrival,landingX:x,landingZ:z};}}
+        }
+      }
       return { ...seed, ...arrival, ...(seed.id === 'tomari' ? { landingX: -36, landingZ: 27 } : {}) };
     });
     this.mapOutlines = this.elevation.fields.filter(field => field.raster.id !== 'tomari').map(field => ({ id: field.raster.id, label: field.raster.name, points: traceOutline(field) }));
   }
 
-  heightAt(x: number, z: number): number { return this.elevation.heightAt(x, z); }
+  heightAt(x: number, z: number): number { return this.niijimaCoast?.contains(x,z)?this.niijimaCoast.heightAt(x,z):this.elevation.heightAt(x, z); }
   /** Inputs are the feet position, not the camera position. Conservative collision for non-heightfield ledges. */
   bodySegmentBlocked(from: BodyPoint, to: BodyPoint, radius = .38, bodyHeight = 1.72): boolean {
     return cliffBodySegmentBlocked(this.cliffCollisionProxies, from, to, radius, bodyHeight);
@@ -110,6 +122,16 @@ export class IslandWorld {
   update(_time: number): void { /* Terrain is static; wave shelter and water depth are sampled by the ocean. */ }
 
   waterMapFor(x: number, z: number): WaterMap {
+    if(this.niijimaCoast.contains(x,z)){
+      const raw=this.niijimaCoast.waterMap(x,z),cached=this.niijimaShaderMaps.get(raw.texture);
+      if(cached)return cached;
+      const image=raw.texture.image as {width:number;height:number};
+      const dx=raw.size.x/image.width,dz=raw.size.y/image.height;
+      // Niijima supplies padded texel-centre bounds; all ocean shaders add the
+      // half-texel transform themselves, so expose the first/last sample bounds.
+      const map={texture:raw.texture,origin:raw.origin.clone().add(new THREE.Vector2(dx*.5,dz*.5)),size:new THREE.Vector2(raw.size.x-dx,raw.size.y-dz)};
+      this.niijimaShaderMaps.set(raw.texture,map);return map;
+    }
     const field = this.elevation.fieldAt(x, z);
     const id = field?.raster.id ?? 'open-sea';
     const cached = this.maps.get(id); if (cached) return cached;
@@ -137,6 +159,7 @@ export class IslandWorld {
   }
 
   dispose(): void {
+    this.niijimaCoast.dispose();
     this.group.traverse(object => { if (object instanceof THREE.InstancedMesh) object.dispose(); });
     for (const geometry of this.geometries) geometry.dispose();
     for (const material of this.materials) material.dispose();
@@ -178,6 +201,7 @@ export class IslandWorld {
       const a = iz * nx + ix, b = a + 1, c = a + nx, d = c + 1;
       const mx = (positions[a * 3] + positions[d * 3]) * 0.5, mz = (positions[a * 3 + 2] + positions[d * 3 + 2]) * 0.5;
       if (r.id === 'shikine' && this.elevation.tomari?.contains(mx, mz)) continue;
+      if (r.id === 'niijima' && this.niijimaCoast.contains(mx,mz)) continue;
       if (detail && !fine && this.elevation.coast?.contains(mx, mz)) continue;
       if (fine && !strand && this.elevation.beach?.contains(mx, mz)) continue;
       if (!detail && field.shoreAt(mx, mz) < -200) continue;
