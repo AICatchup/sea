@@ -5,6 +5,51 @@ import * as THREE from 'three';
 import { WorldCollision, withWorldCollision } from '../src/world/world-collision.ts';
 
 const box=(min:number[],max:number[])=>new THREE.Box3(new THREE.Vector3(...min),new THREE.Vector3(...max));
+test('glancing body sweep never returns an unverified endpoint after conservative iterations exhaust',()=>{
+  const solids=new WorldCollision();solids.addBox(box([0,-1,-10],[.1,4,10]));
+  const hit=solids.sweepBody({x:-.3,y:0,z:0},{x:-.22,y:0,z:.3},.28,1.7);
+  assert.equal(hit.blocked,true,'reviewer reproduction must stop before the wall');
+  assert.ok(hit.fraction<.251);assert.ok(hit.position.x<=-.28,'body may not overlap the wall by 6cm');
+  assert.ok(hit.normal.x<-.99);
+  console.log(JSON.stringify({glancingRegression:{blocked:hit.blocked,fraction:hit.fraction,position:hit.position,normal:hit.normal,iterations:solids.stats.lastIterations}}));
+});
+test('different closing/tangent ratios cannot turn thin wall penetration into a clear sweep',()=>{
+  const solids=new WorldCollision();solids.addBox(box([0,-1,-100],[.002,4,100]));
+  for(const gap of [.0001,.002,.02,.1])for(const intrusion of [.003,.02,.06])for(const tangent of [.001,.3,3,20]) {
+    const hit=solids.sweepBody({x:-.28-gap,y:0,z:0},{x:-.28+intrusion,y:0,z:tangent},.28,1.7);
+    assert.equal(hit.blocked,true,`gap=${gap},intrusion=${intrusion},tangent=${tangent}`);
+    assert.ok(hit.position.x<=-.28+1e-7,'every returned body stays outside the wall');
+  }
+});
+test('near parallel slides and moving away stay clear while glancing toward thin transformed walls blocks',()=>{
+  const solids=new WorldCollision();solids.addBox(box([0,-1,-10],[.1,4,10]));
+  for(const x of [-.3,-.281,-.28]) {
+    const slide=solids.sweepBody({x,y:0,z:0},{x,y:0,z:.3},.28,1.7);
+    assert.equal(slide.blocked,false,`parallel slide at ${x}`);assert.equal(slide.fraction,1);
+    assert.equal(solids.sweepBody({x,y:0,z:0},{x:x-.08,y:0,z:.3},.28,1.7).blocked,false,`away at ${x}`);
+  }
+  const geometry=new THREE.BoxGeometry(.002,5,20);geometry.translate(.001,1.5,0);const mesh=new THREE.Mesh(geometry);
+  for(const scale of [new THREE.Vector3(1,1,1),new THREE.Vector3(2,.8,.5),new THREE.Vector3(-2,.8,.5)]) {
+    const transformed=new WorldCollision(),rotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),.7),centre=new THREE.Vector3(10,0,-2);
+    transformed.addMesh(mesh,new THREE.Matrix4().compose(centre,rotation,scale));
+    const side=scale.x<0 ? 1 : -1;
+    const from=new THREE.Vector3(side*.3,0,0).applyQuaternion(rotation).add(centre),to=new THREE.Vector3(side*.22,0,.3).applyQuaternion(rotation).add(centre);
+    const hit=transformed.sweepBody(from,to,.28,1.7);assert.equal(hit.blocked,true);
+    const normal=new THREE.Vector3(side,0,0).applyQuaternion(rotation);
+    assert.ok(new THREE.Vector3(hit.position.x,hit.position.y,hit.position.z).sub(centre).dot(normal)>=.28,'world radius stays outside transformed wall');
+    const slide=from.clone().add(new THREE.Vector3(0,0,.3).applyQuaternion(rotation));
+    assert.equal(transformed.sweepBody(from,slide,.28,1.7).blocked,false,'parallel transformed wall remains clear');
+    transformed.dispose();
+  }
+  geometry.dispose();
+});
+test('standing capsule feet touching a large floor can walk freely without a conservative false block',()=>{
+  const solids=new WorldCollision();solids.addBox(box([-100,-1,-100],[100,0,100]));
+  for(const [x,z] of [[.08,.3],[2,0],[20,15]]) {
+    const hit=solids.sweepBody({x:0,y:0,z:0},{x,y:0,z},.28,1.7);
+    assert.equal(hit.blocked,false);assert.equal(hit.fraction,1);assert.equal(hit.position.y,0);
+  }
+});
 test('body sweeps stop horizontal, falling and ascending motion at actual solid faces',()=>{
   const solids=new WorldCollision();solids.addBox(box([1,0,-1],[2,.7,1]));
   assert.equal(solids.sweepBody({x:0,y:0,z:0},{x:3,y:0,z:0}).blocked,true);

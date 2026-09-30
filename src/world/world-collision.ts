@@ -254,12 +254,14 @@ export class WorldCollision {
     for(const entry of this.candidates(bounds)) {
       const triangles=this.worldTriangles(entry,bounds);
       for(const triangle of triangles) {
-        let t = 0;
+        let t = 0,lastVerifiedT=0,settled=false;
+        const verifiedNormal=new THREE.Vector3();
         for(let iteration=0;iteration<32 && t<=fraction;iteration++) {
           this.lastIterations++; this.lastTriangleTests++;
           const moved: Capsule = {start:body.start.clone().addScaledVector(delta,t),end:body.end.clone().addScaledVector(delta,t),radius};
           const contact = triangleDistance(moved,triangle), gap = contact.distance-radius;
-          if(gap<=SKIN) {
+          if(gap<=SKIN+1e-7) {
+            settled=true;
             // Supporting/tangent contacts allow motion away or along the face.
             if(delta.dot(contact.normal)>=-1e-9) break;
             if(gap>=-1e-7 && Math.abs(delta.dot(contact.normal))<length*.15) {
@@ -279,9 +281,20 @@ export class WorldCollision {
             }
             fraction = Math.max(0,t-SKIN/Math.max(length,SKIN)); normal=contact.normal; colliderId=entry.id; break;
           }
-          if(length<1e-10) break;
-          // Distance is 1-Lipschitz under translation: this cannot skip thin solids.
-          t += Math.max(1e-6,(gap-SKIN)*.95/length);
+          if(length<1e-10) {settled=true;break;}
+          lastVerifiedT=t;verifiedNormal.copy(contact.normal);
+          const closingSpeed=-delta.dot(contact.normal);
+          // Distance between a translated capsule axis and a triangle is convex.
+          // Its current closest-point normal gives a supporting lower bound:
+          // d(t+s) >= d(t) - closingSpeed*s. Tangential speed must not dilute
+          // progress toward a wall, and a non-closing bound proves the rest clear.
+          if(closingSpeed<=1e-10) {settled=true;break;}
+          t += (gap-SKIN)*.95/closingSpeed;
+        }
+        if(!settled && t<=fraction) {
+          // Iteration exhaustion is not evidence that the endpoint is clear.
+          // Preserve the last checked safe point even for degenerate slow contact.
+          fraction=lastVerifiedT;normal.copy(verifiedNormal);colliderId=entry.id;
         }
       }
     }
