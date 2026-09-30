@@ -5,12 +5,27 @@ const SKIN = .001;
 const CELL_SIZE = 12;
 const MAX_HASH_CELLS = 256;
 interface Node { box: THREE.Box3; triangles?: THREE.Triangle[]; left?: Node; right?: Node; }
-interface Entry { id: number; box: THREE.Box3; node: Node; cells: string[]; }
+interface SharedBVH { node: Node; triangles: number; references: number; }
+interface Entry { id: number; box: THREE.Box3; node: Node; cells: string[];
+  matrix: THREE.Matrix4; inverse: THREE.Matrix4; reflected: boolean; cacheKey: string; triangles: number; }
 interface Distance { distance: number; normal: THREE.Vector3; point: THREE.Vector3; }
 interface Capsule { start: THREE.Vector3; end: THREE.Vector3; radius: number; }
 export interface CollisionStats {
   colliders: number; triangles: number; hashCells: number; largeColliders: number;
   lastCandidates: number; lastTriangleTests: number; lastIterations: number;
+  /** Actual stored local triangles, versus logical triangles occupied by all instances. */
+  uniqueBVHs: number; storedTriangles: number; lastTransformedTriangles: number;
+}
+const attributeIds = new WeakMap<object,number>();
+let nextAttributeId=1;
+function attributeKey(attribute:THREE.BufferAttribute|THREE.InterleavedBufferAttribute|null|undefined):string {
+  if(!attribute) return 'none';
+  if(!attributeIds.has(attribute)) attributeIds.set(attribute,nextAttributeId++);
+  const version='version' in attribute ? attribute.version : attribute.data.version;
+  return `${attributeIds.get(attribute)}:${attribute.count}:${version}`;
+}
+function geometryKey(geometry:THREE.BufferGeometry):string {
+  return `mesh:${geometry.uuid}:${attributeKey(geometry.getAttribute('position'))}:${attributeKey(geometry.index)}:${geometry.drawRange.start}:${geometry.drawRange.count}`;
 }
 const point = (p: BodyPoint): THREE.Vector3 => new THREE.Vector3(p.x, p.y, p.z);
 const plain = (p: THREE.Vector3): BodyPoint => ({ x: p.x, y: p.y, z: p.z });
@@ -45,11 +60,13 @@ function rayTriangles(node:Node,ray:THREE.Ray,result:THREE.Triangle[]):void {
 }
 function enclosed(entry:Entry,p:THREE.Vector3):boolean {
   if(!entry.box.containsPoint(p)) return false;
-  const ray=new THREE.Ray(p,new THREE.Vector3(1,.173,.319).normalize()),triangles:THREE.Triangle[]=[],distances:number[]=[];
+  // Containment is affine-invariant; ray parity can use the shared local BVH.
+  const local=p.clone().applyMatrix4(entry.inverse);
+  const ray=new THREE.Ray(local,new THREE.Vector3(1,.173,.319).normalize()),triangles:THREE.Triangle[]=[],distances:number[]=[];
   rayTriangles(entry.node,ray,triangles);
   for(const t of triangles) {
     const hit=ray.intersectTriangle(t.a,t.b,t.c,false,new THREE.Vector3());
-    if(hit) {const d=hit.distanceTo(p);if(d>1e-7 && !distances.some(other=>Math.abs(other-d)<1e-6)) distances.push(d);}
+    if(hit) {const d=hit.distanceTo(local);if(d>1e-7 && !distances.some(other=>Math.abs(other-d)<1e-6)) distances.push(d);}
   }
   return distances.length%2===1;
 }
@@ -94,71 +111,100 @@ function triangleDistance(body: Capsule, triangle: THREE.Triangle): Distance {
 }
 
 /**
- * Static solid registry. Mesh vertices are copied in world space into a BVH; source
- * geometry/material are borrowed and never mutated/disposed. Register solid rocks,
+ * Static solid registry. One local-space BVH is shared per geometry revision;
+ * entries retain transforms and a world broadphase. Only nearby triangles are
+ * transformed for exact world-space body distances (including nonuniform scale).
+ * Source geometry/material are borrowed and never mutated/disposed. Register rocks,
  * trunks and furniture explicitly; leaves, grass, water and the boat stay out.
  */
 export class WorldCollision {
   private readonly entries = new Map<number, Entry>();
   private readonly cells = new Map<string, Set<number>>();
   private readonly large = new Set<number>();
+  private readonly bvhs = new Map<string,SharedBVH>();
   private nextId = 1;
   private triangleCount = 0;
   private lastCandidates = 0;
   private lastTriangleTests = 0;
   private lastIterations = 0;
+  private storedTriangleCount = 0;
+  private lastTransformedTriangles = 0;
 
   get stats(): CollisionStats {
     return { colliders: this.entries.size, triangles: this.triangleCount, hashCells: this.cells.size,
       largeColliders: this.large.size, lastCandidates: this.lastCandidates,
-      lastTriangleTests: this.lastTriangleTests, lastIterations: this.lastIterations };
+      lastTriangleTests: this.lastTriangleTests, lastIterations: this.lastIterations,
+      uniqueBVHs:this.bvhs.size,storedTriangles:this.storedTriangleCount,lastTransformedTriangles:this.lastTransformedTriangles };
   }
   addMesh(mesh: THREE.Mesh, transform?: THREE.Matrix4): number {
     if (!transform) mesh.updateWorldMatrix(true, false);
     const matrix = transform ?? mesh.matrixWorld, geometry = mesh.geometry, position = geometry.getAttribute('position');
     if (!position) throw new Error('Collision mesh has no positions');
+    const key=geometryKey(geometry);
+    return this.addShared(key,matrix,()=> {
     const index = geometry.index, count = index?.count ?? position.count;
     const start = Math.max(0, geometry.drawRange.start), end = Math.min(count, start + geometry.drawRange.count);
     const triangles: THREE.Triangle[] = [];
     for (let i = start; i + 2 < end; i += 3) {
-      const vertex = (j: number): THREE.Vector3 => new THREE.Vector3().fromBufferAttribute(position, index ? index.getX(j) : j).applyMatrix4(matrix);
+      const vertex = (j: number): THREE.Vector3 => new THREE.Vector3().fromBufferAttribute(position, index ? index.getX(j) : j);
       const triangle = new THREE.Triangle(vertex(i), vertex(i + 1), vertex(i + 2));
       if (triangle.getArea() > 1e-10) triangles.push(triangle);
     }
-    return this.addTriangles(triangles);
+    return triangles;
+    });
   }
   /** Bounds may be local with a matrix, or world-axis aligned without one. */
   addBox(bounds: THREE.Box3, transform?: THREE.Matrix4): number {
-    const { min: a, max: b } = bounds;
-    const vertices = [new THREE.Vector3(a.x,a.y,a.z),new THREE.Vector3(b.x,a.y,a.z),new THREE.Vector3(b.x,b.y,a.z),new THREE.Vector3(a.x,b.y,a.z),
-      new THREE.Vector3(a.x,a.y,b.z),new THREE.Vector3(b.x,a.y,b.z),new THREE.Vector3(b.x,b.y,b.z),new THREE.Vector3(a.x,b.y,b.z)];
-    if (transform) vertices.forEach(v => v.applyMatrix4(transform));
-    const faces = [[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[3,7,6],[3,6,2],[0,4,7],[0,7,3],[1,2,6],[1,6,5]];
-    return this.addTriangles(faces.map(([i,j,k]) => new THREE.Triangle(vertices[i].clone(),vertices[j].clone(),vertices[k].clone())));
+    const size=bounds.getSize(new THREE.Vector3());
+    if(bounds.isEmpty() || Math.min(size.x,size.y,size.z)<=0) throw new Error('Invalid collision box');
+    const matrix=new THREE.Matrix4().makeTranslation(bounds.min.x,bounds.min.y,bounds.min.z).scale(size);
+    if(transform) matrix.premultiply(transform);
+    return this.addShared('primitive:box',matrix,()=> {
+      const vertices = [new THREE.Vector3(0,0,0),new THREE.Vector3(1,0,0),new THREE.Vector3(1,1,0),new THREE.Vector3(0,1,0),
+        new THREE.Vector3(0,0,1),new THREE.Vector3(1,0,1),new THREE.Vector3(1,1,1),new THREE.Vector3(0,1,1)];
+      const faces = [[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[3,7,6],[3,6,2],[0,4,7],[0,7,3],[1,2,6],[1,6,5]];
+      return faces.map(([i,j,k]) => new THREE.Triangle(vertices[i].clone(),vertices[j].clone(),vertices[k].clone()));
+    });
   }
   /** Centre is the cylinder's bottom centre, for trunk and pole proxies. */
   addCylinder(centre: BodyPoint, radius: number, height: number): number {
     if (!valid(centre) || !(radius > 0 && height > 0)) throw new Error('Invalid collision cylinder');
-    const triangles: THREE.Triangle[] = [], bottom = point(centre), top = bottom.clone().add(new THREE.Vector3(0, height, 0));
+    const matrix=new THREE.Matrix4().makeTranslation(centre.x,centre.y,centre.z).scale(new THREE.Vector3(radius,height,radius));
+    return this.addShared('primitive:cylinder20',matrix,()=> {
+    const triangles: THREE.Triangle[] = [], bottom = new THREE.Vector3(), top = new THREE.Vector3(0,1,0);
     for (let i = 0; i < 20; i++) {
       const a = i / 20 * Math.PI * 2, b = (i + 1) / 20 * Math.PI * 2;
-      const p = bottom.clone().add(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
-      const q = bottom.clone().add(new THREE.Vector3(Math.cos(b) * radius, 0, Math.sin(b) * radius));
-      const pt = p.clone().add(new THREE.Vector3(0,height,0)), qt = q.clone().add(new THREE.Vector3(0,height,0));
+      const p = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
+      const q = new THREE.Vector3(Math.cos(b), 0, Math.sin(b));
+      const pt = p.clone().add(new THREE.Vector3(0,1,0)), qt = q.clone().add(new THREE.Vector3(0,1,0));
       triangles.push(new THREE.Triangle(p,pt,q), new THREE.Triangle(q,pt,qt), new THREE.Triangle(bottom.clone(),p.clone(),q.clone()), new THREE.Triangle(top.clone(),qt.clone(),pt.clone()));
     }
-    return this.addTriangles(triangles);
+    return triangles;
+    });
   }
   updateMesh(id: number, mesh: THREE.Mesh, transform?: THREE.Matrix4): number {
-    this.remove(id);
-    return this.addMesh(mesh, transform);
+    const replacement=this.addMesh(mesh,transform);
+    this.remove(id);return replacement;
   }
-  private addTriangles(triangles: THREE.Triangle[]): number {
-    if (!triangles.length) throw new Error('Collision mesh has no nondegenerate triangles');
-    const node = build(triangles), id = this.nextId++, entry: Entry = { id, box: node.box, node, cells: [] };
-    if (![...node.box.min.toArray(), ...node.box.max.toArray()].every(Number.isFinite)) throw new Error('Invalid collision bounds');
-    this.entries.set(id, entry); this.triangleCount += triangles.length;
-    const { min, max } = node.box, x0 = Math.floor(min.x / CELL_SIZE), x1 = Math.floor(max.x / CELL_SIZE), z0 = Math.floor(min.z / CELL_SIZE), z1 = Math.floor(max.z / CELL_SIZE);
+  private addShared(key:string,sourceMatrix:THREE.Matrix4,create:()=>THREE.Triangle[]):number {
+    const matrix=sourceMatrix.clone(),determinant=matrix.determinant();
+    if(!matrix.elements.every(Number.isFinite) || !Number.isFinite(determinant) || Math.abs(determinant)<1e-15) throw new Error('Invalid collision transform');
+    let shared=this.bvhs.get(key);
+    if(!shared) {
+      const triangles=create();
+      if(!triangles.length) throw new Error('Collision mesh has no nondegenerate triangles');
+      const node=build(triangles);
+      if(![...node.box.min.toArray(),...node.box.max.toArray()].every(Number.isFinite)) throw new Error('Invalid collision bounds');
+      shared={node,triangles:triangles.length,references:0};this.bvhs.set(key,shared);this.storedTriangleCount+=triangles.length;
+    }
+    const id=this.nextId++,box=shared.node.box.clone().applyMatrix4(matrix);
+    if(![...box.min.toArray(),...box.max.toArray()].every(Number.isFinite)) {
+      if(!shared.references) {this.bvhs.delete(key);this.storedTriangleCount-=shared.triangles;}
+      throw new Error('Invalid collision world bounds');
+    }
+    const entry:Entry={id,box,node:shared.node,cells:[],matrix,inverse:matrix.clone().invert(),reflected:determinant<0,cacheKey:key,triangles:shared.triangles};
+    shared.references++;this.entries.set(id, entry);this.triangleCount+=shared.triangles;
+    const { min, max } = box, x0 = Math.floor(min.x / CELL_SIZE), x1 = Math.floor(max.x / CELL_SIZE), z0 = Math.floor(min.z / CELL_SIZE), z1 = Math.floor(max.z / CELL_SIZE);
     if ((x1-x0+1)*(z1-z0+1) > MAX_HASH_CELLS) this.large.add(id);
     else for (let x=x0;x<=x1;x++) for(let z=z0;z<=z1;z++) {
       const key = `${x},${z}`; entry.cells.push(key);
@@ -169,16 +215,28 @@ export class WorldCollision {
   }
   remove(id: number): boolean {
     const entry = this.entries.get(id); if (!entry) return false;
-    const count = (node: Node): number => node.triangles?.length ?? count(node.left!) + count(node.right!);
-    this.triangleCount -= count(entry.node);
+    this.triangleCount -= entry.triangles;
+    const shared=this.bvhs.get(entry.cacheKey)!;
+    if(--shared.references===0) {this.bvhs.delete(entry.cacheKey);this.storedTriangleCount-=shared.triangles;}
     for (const key of entry.cells) { const ids = this.cells.get(key)!; ids.delete(id); if (!ids.size) this.cells.delete(key); }
     this.large.delete(id); this.entries.delete(id); return true;
   }
   clear(): void {
-    this.entries.clear(); this.cells.clear(); this.large.clear(); this.triangleCount = 0;
-    this.lastCandidates=0;this.lastTriangleTests=0;this.lastIterations=0;
+    this.entries.clear(); this.cells.clear(); this.large.clear(); this.bvhs.clear();this.triangleCount = 0;this.storedTriangleCount=0;
+    this.lastCandidates=0;this.lastTriangleTests=0;this.lastIterations=0;this.lastTransformedTriangles=0;
   }
   dispose(): void { this.clear(); }
+  private worldTriangles(entry:Entry,bounds?:THREE.Box3):THREE.Triangle[] {
+    const local:THREE.Triangle[]=[];
+    // Box3.applyMatrix4 transforms all 8 corners, so this is conservative even
+    // for nonuniform scale, rotated instances and reflected coordinate frames.
+    query(entry.node,bounds ? bounds.clone().applyMatrix4(entry.inverse) : entry.node.box,local);
+    this.lastTransformedTriangles+=local.length;
+    return local.map(t=> {
+      const a=t.a.clone().applyMatrix4(entry.matrix),b=t.b.clone().applyMatrix4(entry.matrix),c=t.c.clone().applyMatrix4(entry.matrix);
+      return entry.reflected ? new THREE.Triangle(a,c,b) : new THREE.Triangle(a,b,c);
+    });
+  }
   private candidates(bounds: THREE.Box3): Entry[] {
     const ids = new Set(this.large), x0 = Math.floor(bounds.min.x/CELL_SIZE), x1 = Math.floor(bounds.max.x/CELL_SIZE), z0 = Math.floor(bounds.min.z/CELL_SIZE), z1 = Math.floor(bounds.max.z/CELL_SIZE);
     // Huge diagnostic sweeps use the bounded collider list rather than millions of cells.
@@ -189,12 +247,12 @@ export class WorldCollision {
   }
   sweepBody(from: BodyPoint, to: BodyPoint, radius: number = PLAYER_DIMENSIONS.radius, height: number = PLAYER_DIMENSIONS.height, pose?: BodyPose): BodySweep {
     if (!valid(from) || !valid(to) || !(radius > 0 && height >= radius * 2)) return { position: { ...from }, fraction: 0, blocked: true, normal: { x:0,y:0,z:0 } };
-    this.lastTriangleTests = 0; this.lastIterations = 0;
+    this.lastTriangleTests = 0; this.lastIterations = 0;this.lastTransformedTriangles=0;
     const body = capsule(from,radius,height,pose), end = capsule(to,radius,height,pose), delta = point(to).sub(point(from)), length = delta.length();
     const bounds = capsuleBounds(body).union(capsuleBounds(end));
     let fraction = 1, normal = new THREE.Vector3(), colliderId: number | undefined;
     for(const entry of this.candidates(bounds)) {
-      const triangles: THREE.Triangle[] = []; query(entry.node,bounds,triangles);
+      const triangles=this.worldTriangles(entry,bounds);
       for(const triangle of triangles) {
         let t = 0;
         for(let iteration=0;iteration<32 && t<=fraction;iteration++) {
@@ -234,13 +292,14 @@ export class WorldCollision {
   }
   supportHeightAt(x:number,z:number,feetY:number,maxRise=.32,radius: number = PLAYER_DIMENSIONS.radius): number | null {
     if(![x,z,feetY,maxRise,radius].every(Number.isFinite)) return null;
+    this.lastTransformedTriangles=0;
     const top=feetY+maxRise+SKIN, bottom=feetY-2.5;
     const bounds=new THREE.Box3(new THREE.Vector3(x-radius,bottom,z-radius),new THREE.Vector3(x+radius,top,z+radius));
     let support:number|null=null;
     // Centre plus a small foot disk gives contact on a rock edge without its inflated AABB.
     const offsets=[[0,0],[radius,0],[-radius,0],[0,radius],[0,-radius]];
     for(const entry of this.candidates(bounds)) {
-      const triangles:THREE.Triangle[]=[]; query(entry.node,bounds,triangles);
+      const triangles=this.worldTriangles(entry,bounds);
       for(const triangle of triangles) {
         if(triangle.getNormal(new THREE.Vector3()).y<.64) continue;
         for(const [dx,dz] of offsets) {
@@ -253,6 +312,7 @@ export class WorldCollision {
   }
   resolveBody(feet:BodyPoint,radius: number = PLAYER_DIMENSIONS.radius,height: number = PLAYER_DIMENSIONS.height,maxPush=.32,pose?:BodyPose): BodyPoint {
     if(!valid(feet)) return {...feet};
+    this.lastTransformedTriangles=0;
     const result=point(feet), origin=result.clone();
     for(let pass=0;pass<4;pass++) {
       const body=capsule(plain(result),radius,height,pose), bounds=capsuleBounds(body);
@@ -260,7 +320,7 @@ export class WorldCollision {
       for(const entry of this.candidates(bounds)) {
         const inside=[body.start,body.start.clone().add(body.end).multiplyScalar(.5),body.end].find(p=>enclosed(entry,p));
         if(inside) {
-          const all:THREE.Triangle[]=[];query(entry.node,entry.box,all);
+          const all=this.worldTriangles(entry);
           let closest=Infinity,direction=new THREE.Vector3();
           for(const triangle of all) {
             const surface=triangle.closestPointToPoint(inside,new THREE.Vector3()),out=surface.sub(inside),distance=out.length();
@@ -270,7 +330,7 @@ export class WorldCollision {
           if(closest<Infinity && closest+radius>depth) {depth=closest+radius;push=direction;}
           continue;
         }
-        const triangles:THREE.Triangle[]=[]; query(entry.node,bounds,triangles);
+        const triangles=this.worldTriangles(entry,bounds);
         for(const triangle of triangles) {
           const contact=triangleDistance(body,triangle), overlap=radius-contact.distance;
           if(overlap>depth+SKIN) {depth=overlap;push=contact.normal;}
