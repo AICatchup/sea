@@ -13,7 +13,7 @@ test('photo-informed roadfront stays bounded, finite, owns resources and leaves 
   assert.ok(Math.abs(ground.grading.center.x - (gate.grading.center.x - 22)) < 1e-8);
   assert.equal(ground.grading.level, gate.grading.level);
   assert.equal(ground.diagnostics.drawCalls, 6);
-  assert.ok(ground.diagnostics.triangles < 20000);
+  assert.ok(ground.diagnostics.triangles < 5000);
   assert.equal(ground.diagnostics.borrowedResources, 0);
   ground.group.traverse(o => { if (o instanceof THREE.Mesh) {
     assert.ok(Array.from(o.geometry.attributes.position.array).every(Number.isFinite));
@@ -38,4 +38,17 @@ test('photo-informed roadfront stays bounded, finite, owns resources and leaves 
   assert.equal(ground.solidsGroup.children.length, 0);
   assert.equal(gate.diagnostics.disposed, false);
   collision.dispose(); gate.dispose();
+});
+
+
+test('asphalt wear is bounded and metre-scaled while markings remain separate', () => {
+  const gate = new HabushiMainGate({ heightAt: () => 8 }), ground = new HabushiGround(gate);
+  const road = ground.solidsGroup.children.find(o => o instanceof THREE.Mesh && o.name.includes('road foundation')) as THREE.Mesh;
+  const color = road.geometry.attributes.color;
+  assert.ok(color && color.count === road.geometry.attributes.position.count);
+  const values = Array.from(color.array);
+  assert.ok(Math.max(...values) - Math.min(...values) > .1);
+  assert.ok(values.every(v => Number.isFinite(v) && v >= .7 && v <= 1.15));
+  assert.equal((road.material as THREE.MeshStandardMaterial).vertexColors, true);
+  ground.dispose(); gate.dispose();
 });

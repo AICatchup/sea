@@ -32,16 +32,36 @@ export class HabushiGround {
       data.set([v, v, v, 255], i * 4);
     }
     const grain = new THREE.DataTexture(data, n, n); grain.wrapS = grain.wrapT = THREE.RepeatWrapping;
-    grain.repeat.set(18, 8); grain.needsUpdate = true; this.textures.add(grain);
+    grain.repeat.set(1, 1); grain.needsUpdate = true; this.textures.add(grain);
     const material = (color: number, bump = 0) => {
       const m = new THREE.MeshStandardMaterial({ color, roughness: .96, bumpMap: bump ? grain : null, bumpScale: bump });
       this.materials.add(m); return m;
     };
-    const asphalt = material(0x74766f, .006), paving = material(0xb1b1a0, .008), curb = material(0xc0bfab, .006);
+    const asphalt = material(0x626661, .004), paving = material(0xb1b1a0, .008), curb = material(0xc0bfab, .006);
     const groove = material(0x555b53), joint = material(0x858779), paint = material(0xe4e4d5, .002);
+    asphalt.vertexColors = true;
     const parts = new Map<THREE.Material, { geometry: THREE.BufferGeometry; solid: boolean; names: string[] }[]>();
     const box = (w: number, h: number, d: number, x: number, top: number, z: number, m: THREE.Material, name: string, solid = true) => {
-      const geometry = new THREE.BoxGeometry(w, h, d); geometry.translate(x, top - h / 2, z);
+      const road = m === asphalt;
+      const geometry = new THREE.BoxGeometry(w, h, d, road ? 30 : 1, 1, road ? 12 : 1);
+      geometry.translate(x, top - h / 2, z);
+      const position = geometry.attributes.position, normal = geometry.attributes.normal, uv = geometry.attributes.uv;
+      const colors: number[] = [];
+      for (let i = 0; i < position.count; i++) {
+        const px = position.getX(i), pz = position.getZ(i), py = position.getY(i);
+        uv.setXY(i, (Math.abs(normal.getX(i)) > .5 ? pz : px) / .6,
+          (Math.abs(normal.getY(i)) > .5 ? pz : py) / .6);
+        if (road) {
+          // Bounded metre-scale wear, strongest toward the exposed parking apron.
+          // Smooth patches are vertex colour; fine aggregate stays in the existing bump only.
+          const weather = .06 * Math.sin(px * .23 + pz * .31) + .035 * Math.cos(px * .61 - pz * .43);
+          const apron = .11 * Math.max(0, Math.min(1, (pz - 20) / 10));
+          const edge = -.08 * Math.exp(-Math.pow((pz - 12.2) / .8, 2));
+          const value = .91 + weather + apron + edge;
+          colors.push(value, value, value * .985);
+        }
+      }
+      if (road) geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
       if (!parts.has(m)) parts.set(m, []); parts.get(m)!.push({ geometry, solid, names: [name] });
     };
     // A thin opaque foundation supports the road; no tall wall/volume conceals ungraded DEM.

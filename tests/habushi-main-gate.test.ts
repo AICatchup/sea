@@ -9,7 +9,7 @@ test('gate has an official-linked anchor, four physical apertures, finite stair 
   const gate = new HabushiMainGate({ heightAt: () => 8 });
   const p = geoToWorld(HABUSHI_GATE_SPEC.lat, HABUSHI_GATE_SPEC.lon);
   assert.equal(gate.group.position.x, p.x); assert.equal(gate.group.position.z, p.z);
-  assert.equal(gate.diagnostics.windowCount, 4); assert.ok(gate.diagnostics.maxStep <= .32);
+  assert.equal(gate.diagnostics.windowCount, 4); assert.ok(gate.diagnostics.maxStep <= .2440001);
   assert.ok(gate.diagnostics.drawCalls <= 10); assert.ok(gate.diagnostics.triangles < 20000);
   assert.equal(gate.diagnostics.borrowedResources, 0);
   // At each hole centre, a front-to-back ray must traverse the entire tower.
