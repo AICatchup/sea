@@ -209,9 +209,14 @@ export class AssetWorld {
   place(kind: PlaceableKind, x: number, z: number, yaw: number): void {
     if (this.disposed || this.placements.length >= AssetWorld.capacity || !this.placementBatches.has(kind)
       || ![x, z, yaw].every(Number.isFinite)) return;
-    const height = this.ground.heightAt(x, z);
-    if (!Number.isFinite(height) || (kind === 'buoy' && height >= -0.25) || (kind === 'pine' && height < 0)) return;
-    this.placements.push({ kind, x, z, y: kind === 'buoy' ? 0.06 : height, yaw }); this.rebuildPlacements(0);
+    const radii:Record<PlaceableKind,number>={chair:.8,umbrella:1.55,buoy:.55,tank:.35,rock:1,pine:2.2};
+    for(let attempt=0;attempt<48;attempt++){
+      const angle=attempt*2.399963+yaw,radius=attempt===0?0:Math.sqrt(attempt)*.95;
+      const px=x+Math.sin(angle)*radius,pz=z+Math.cos(angle)*radius,height=this.ground.heightAt(px,pz);
+      if(!Number.isFinite(height)||(kind==='buoy'&&height>=-.25)||(kind==='pine'&&height<0))continue;
+      if(this.placements.some(placement=>Math.hypot(placement.x-px,placement.z-pz)<radii[kind]+radii[placement.kind]+.15))continue;
+      this.placements.push({kind,x:px,z:pz,y:kind==='buoy'?.06:height,yaw});this.rebuildPlacements(0);return;
+    }
   }
 
   undoPlacement(): void {
