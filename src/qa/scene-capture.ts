@@ -26,7 +26,7 @@ export const CAPTURE_PROFILES: readonly CaptureProfile[] = [
   { name: 'lookout', pose: { x: -25, z: 36, yaw: -.52, pitch: -.25, mode: 'walk' }, provenance: 'QA bookmark' },
   { name: 'reef', pose: { x: -145, z: -113, yaw: -.5, pitch: -.42, mode: 'dive', depth: 5 }, provenance: 'QA bookmark' },
   { name: 'habushi-front', pose: { x: 5837, z: -4503.84, yaw: Math.PI / 2, pitch: -.04, mode: 'walk' }, provenance: 'QA bookmark' },
-  { name: 'secret', pose: { x: 5898, z: -923.918, yaw: Math.PI / 2, pitch: -.04, mode: 'walk' }, provenance: 'QA bookmark near the Niijima municipal Secret surf marker; beach offset authored from the current DEM sampler' },
+  { name: 'secret', pose: { x: 5898, z: -923.918, yaw: Math.PI, pitch: -.04, mode: 'walk' }, provenance: 'South-facing QA bookmark near the Niijima municipal Secret surf marker; beach offset authored from the current DEM sampler' },
 ];
 export type CaptureOptions = { quality: string; preset: string; width: number; height: number; timeoutMs?: number; maxFrames?: number; warmupFrames?: number };
 export type CaptureResult = { png: string; metadata: { name: string; provenance: string; evidence: 'visual-only'; movementVerified: false; humanAccepted: false; width: number; height: number; camera: number[]; pose: CapturePose; quality: string; preset: string; paused: boolean; locked: boolean } };

@@ -23,3 +23,9 @@ Validation commands use absolute Node runtime:
 ```
 
 The initial 14-case run completed in35.1s with8PASS/6FAIL. Added independent central-sidewalk portal tests and extended road endpoints were checked with `--test-name-pattern='road end|portal from sidewalk'`:4PASS/2FAIL. TypeScript source check passed. Runtime/GPU/photo acceptance remains outside this CPU evidence.
+
+## Root repair, 2026-10-01
+
+The previously committed failing traces remain the baseline. The root collision repair adds the closest point of each actual upward triangle projected inside the foot disk, so diagonal narrow curbs cannot fall between the five support rays. It also replaces deduplicated unoriented ray parity with oriented shell crossings checked in two directions. Coincident entry/exit faces of merged closed stair volumes must cancel; the old parity could treat empty portal space as interior.
+
+The actual DEM/controller matrix now passes all 16 cases at 30/60 fps, including every tread, upper landing, return, curb, portal and road endpoints. Combined with the existing solid registry suite, 32/32 focused cases passed. This is CPU controller replay evidence. Native human keyboard traversal, browser appearance and surveyed dimensions are separate and remain unproven.

@@ -62,13 +62,21 @@ function enclosed(entry:Entry,p:THREE.Vector3):boolean {
   if(!entry.box.containsPoint(p)) return false;
   // Containment is affine-invariant; ray parity can use the shared local BVH.
   const local=p.clone().applyMatrix4(entry.inverse);
-  const ray=new THREE.Ray(local,new THREE.Vector3(1,.173,.319).normalize()),triangles:THREE.Triangle[]=[],distances:number[]=[];
-  rayTriangles(entry.node,ray,triangles);
-  for(const t of triangles) {
-    const hit=ray.intersectTriangle(t.a,t.b,t.c,false,new THREE.Vector3());
-    if(hit) {const d=hit.distanceTo(local);if(d>1e-7 && !distances.some(other=>Math.abs(other-d)<1e-6)) distances.push(d);}
+  // A finish batch can contain overlapping closed stair/rail volumes. Deduplicated
+  // unoriented parity loses coincident entry/exit faces and invents an interior in
+  // the open portal. Oriented crossings retain cancellation between those shells.
+  // Require agreement from a second direction before applying an interior push.
+  const normal=new THREE.Vector3(),hit=new THREE.Vector3();
+  for(const direction of [new THREE.Vector3(1,.173,.319),new THREE.Vector3(.137,1,.271)]) {
+    direction.normalize();const ray=new THREE.Ray(local,direction),triangles:THREE.Triangle[]=[];
+    rayTriangles(entry.node,ray,triangles);let winding=0;
+    for(const t of triangles) {
+      if(ray.intersectTriangle(t.a,t.b,t.c,false,hit) && hit.distanceToSquared(local)>1e-14)
+        winding+=Math.sign(t.getNormal(normal).dot(direction));
+    }
+    if(winding===0) return false;
   }
-  return distances.length%2===1;
+  return true;
 }
 /** Closest points of two finite line segments, including degenerate segments. */
 function segmentDistance(a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, d: THREE.Vector3): [THREE.Vector3, THREE.Vector3] {
@@ -309,12 +317,22 @@ export class WorldCollision {
     const top=feetY+maxRise+SKIN, bottom=feetY-2.5;
     const bounds=new THREE.Box3(new THREE.Vector3(x-radius,bottom,z-radius),new THREE.Vector3(x+radius,top,z+radius));
     let support:number|null=null;
+    const projected=new THREE.Triangle(),centre=new THREE.Vector3(x,0,z),nearest=new THREE.Vector3(),barycentric=new THREE.Vector3();
     // Centre plus a small foot disk gives contact on a rock edge without its inflated AABB.
     const offsets=[[0,0],[radius,0],[-radius,0],[0,radius],[0,-radius]];
     for(const entry of this.candidates(bounds)) {
       const triangles=this.worldTriangles(entry,bounds);
       for(const triangle of triangles) {
         if(triangle.getNormal(new THREE.Vector3()).y<.64) continue;
+        // Cardinal samples miss a narrow diagonal curb even while the capsule
+        // touches it. Include the closest point of the actual projected triangle
+        // inside the foot disk; this adds no inflated AABB or fabricated surface.
+        projected.a.set(triangle.a.x,0,triangle.a.z);projected.b.set(triangle.b.x,0,triangle.b.z);projected.c.set(triangle.c.x,0,triangle.c.z);
+        projected.closestPointToPoint(centre,nearest);
+        if(nearest.distanceToSquared(centre)<=radius*radius+1e-10 && projected.getBarycoord(nearest,barycentric)) {
+          const y=triangle.a.y*barycentric.x+triangle.b.y*barycentric.y+triangle.c.y*barycentric.z;
+          if(y<=top && y>=bottom && (support===null || y>support)) support=y;
+        }
         for(const [dx,dz] of offsets) {
           const hit=new THREE.Ray(new THREE.Vector3(x+dx,top,z+dz),new THREE.Vector3(0,-1,0)).intersectTriangle(triangle.a,triangle.b,triangle.c,false,new THREE.Vector3());
           if(hit && hit.y>=bottom && (support===null || hit.y>support)) support=hit.y;
