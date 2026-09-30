@@ -80,6 +80,12 @@ export class ShoreSpray {
   private randomState=0x137a942;
   private credits=new Float32Array(GRID*GRID);
   private emitted=0;
+  private whitewaterEmitted=0;
+  private maxSampleEnergy=0;
+  private maxSampleCrest=0;
+  private maxEstimatedHeightDepthRatio=0;
+  private sampleEnergyPositiveCount=0;
+  private sampleWetEligibleCount=0;
   private updateMs=0;
   readonly whitewater:ShoreWhitewater|null;
   private readonly foamCredits=new Float32Array(GRID*GRID);
@@ -200,7 +206,7 @@ export class ShoreSpray {
           const norm=Math.hypot(s.gradientX,s.gradientZ),seed=this.random(),along=(seed-.5)*4;
           const nx=s.gradientX/norm,nz=s.gradientZ/norm,bx=x-nz*along,bz=z+nx*along;
           if(!this.sampleFoam(bx,bz,s)||whitewaterBirthRate(s)<=0)continue;
-          if(this.whitewater.pool.emit({x:bx,z:bz,height:s.height,energy:s.compression,nx,nz,seed}))count++;
+          if(this.whitewater.pool.emit({x:bx,z:bz,height:s.height,energy:s.compression,nx,nz,seed})){count++;this.whitewaterEmitted++;}
         }
       }
     }
@@ -231,11 +237,18 @@ export class ShoreSpray {
       if(!(pixels instanceof Uint8Array)||pixels.length!==GRID*GRID*4)throw new Error('Invalid spray readback');
       // Black framebuffer is not a valid height field (zero height encodes 128,0).
       if(!pixels.some((value,i)=>i%4<2&&value!==0))throw new Error('Uninitialized spray framebuffer');
+      this.maxSampleEnergy=0;this.maxSampleCrest=0;this.maxEstimatedHeightDepthRatio=0;this.sampleEnergyPositiveCount=0;this.sampleWetEligibleCount=0;
+      for(let i=0;i<pixels.length;i+=4){
+        const height=(pixels[i]*256+pixels[i+1])/65535*16-8,depth=pixels[i+3]/255*8,energy=pixels[i+2]/255;
+        this.maxSampleEnergy=Math.max(this.maxSampleEnergy,energy);this.maxSampleCrest=Math.max(this.maxSampleCrest,height);
+        if(energy>0)this.sampleEnergyPositiveCount++;
+        if(depth>=.2&&depth<=3.8){this.sampleWetEligibleCount++;this.maxEstimatedHeightDepthRatio=Math.max(this.maxEstimatedHeightDepthRatio,Math.max(0,height)/depth);}
+      }
       if(!origin.equals(this.sampleOrigin)){this.credits.fill(0);this.foamCredits.fill(0);}
       this.pixels=pixels;this.sampleOrigin.copy(origin);this.sampleTime=time;
     }).catch(()=>{if(!this.disposed)this.failed=true;}).finally(()=>{this.pending=false;if(this.disposed)this.target.dispose();});
   }
-  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:this.whitewater?2:1,whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater?2048:0,samples:GRID*GRID,readbackBytes:GRID*GRID*4,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,approximation:'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater bilinear cached height, ground-culling, analytic onshore drift'};}
+  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:this.whitewater?2:1,whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater?2048:0,whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,approximation:'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater bilinear cached height, ground-culling, analytic onshore drift'};}
   dispose():void{
     if(this.disposed)return;this.disposed=true;
     this.whitewater?.dispose();

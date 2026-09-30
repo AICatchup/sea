@@ -48,5 +48,10 @@ test('optional integration shares one FFT sample request and produces persistent
   const u={uLongWaves:{value:new THREE.Texture()},uShortWaves:{value:new THREE.Texture()},uBathymetry:{value:new THREE.Texture()}};
   for(let i=0;i<30;i++){spray.update(1+i*.05,.05,camera,u);await new Promise(r=>setImmediate(r));}
   assert.ok(reads>0&&reads<12);assert.equal(spray.diagnostics.readbackBytes,2304);assert.equal(spray.diagnostics.drawCalls,2);assert.ok(spray.diagnostics.whitewaterActive>0);
+  assert.ok(spray.diagnostics.whitewaterEmitted>=spray.diagnostics.whitewaterActive);
+  assert.equal(spray.diagnostics.maxSampleEnergy,220/255);
+  assert.equal(spray.diagnostics.maxSampleCrest,(132*256+204)/65535*16-8);
+  assert.equal(spray.diagnostics.sampleEnergyPositiveCount,576);assert.equal(spray.diagnostics.sampleWetEligibleCount,576);
+  assert.equal(spray.diagnostics.maxEstimatedHeightDepthRatio,spray.diagnostics.maxSampleCrest/(32/255*8));
   spray.dispose();assert.equal(spray.whitewater!.pool.active,0);
 });

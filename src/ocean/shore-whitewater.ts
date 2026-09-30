@@ -78,7 +78,7 @@ export class ShoreWhitewater {
       fragmentShader:`uniform vec3 uTint;varying vec2 vUv;varying float vAlpha,vSeed;
       float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7))+vSeed*137.)*43758.5453);}
       float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
-      void main(){if(vAlpha<.001)discard;vec2 q=vUv*2.-1.;float edge=1.-smoothstep(.48,1.,length(q*vec2(.82,1.)));float patch=noise(vUv*vec2(13.,5.));float holes=smoothstep(.22,.62,patch);float a=vAlpha*edge*holes;if(a<.008)discard;gl_FragColor=vec4(uTint,a);}`});
+      void main(){if(vAlpha<.001)discard;vec2 q=vUv*2.-1.;float edge=1.-smoothstep(.48,1.,length(q*vec2(.82,1.)));float coverageNoise=noise(vUv*vec2(13.,5.));float holes=smoothstep(.22,.62,coverageNoise);float a=vAlpha*edge*holes;if(a<.008)discard;gl_FragColor=vec4(uTint,a);}`});
     const mesh=new THREE.Mesh(this.geometry,this.material);mesh.frustumCulled=false;this.group.add(mesh);
   }
   update(delta:number,sampler:WhitewaterSampler,underwater:boolean):void {
@@ -87,3 +87,4 @@ export class ShoreWhitewater {
   }
   dispose():void {if(this.disposed)return;this.disposed=true;this.pool.dispose();this.geometry.dispose();this.material.dispose();this.group.clear();}
 }
+
