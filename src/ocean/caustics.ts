@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { capillarySampling, shoreWaveSampling } from './surface-detail';
+import { capillarySampling, shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 
 export interface CausticBathymetry {
@@ -10,10 +10,12 @@ export interface CausticBathymetry {
   size: THREE.Vector2;
 }
 
+export type CausticPhotonResolution = 128 | 256 | 512;
+
 export interface WaveCausticsOptions {
   span?: number;
   resolution?: 256 | 512;
-  photonResolution?: 128 | 256;
+  photonResolution?: CausticPhotonResolution;
 }
 
 const photonVertex = /* glsl */ `
@@ -22,7 +24,7 @@ const photonVertex = /* glsl */ `
   uniform vec4 uBounds, uBathyBounds;
   uniform vec2 uBathyResolution;
   uniform vec3 uSunDirection;
-  uniform float uSwell, uChoppiness, uWind, uResolution, uPhotonResolution, uTime;
+  uniform float uSwell, uChoppiness, uWind, uResolution, uPhotonResolution, uNormalStep, uTime;
   varying float vEnergy;
   const float PI = 3.14159265359;
   ${capillarySampling}
@@ -58,7 +60,7 @@ const photonVertex = /* glsl */ `
     }
     vec3 surface=surfaceAt(parameter);
     // Resolve the shortest FFT cascade in metres, not a screen-space normal.
-    const float stepLength=.1875;
+    float stepLength=uNormalStep;
     vec3 dx=surfaceAt(parameter+vec2(stepLength,0.0))-surfaceAt(parameter-vec2(stepLength,0.0));
     vec3 dz=surfaceAt(parameter+vec2(0.0,stepLength))-surfaceAt(parameter-vec2(0.0,stepLength));
     vec3 normal=normalize(cross(dz,dx));
@@ -155,6 +157,9 @@ export class WaveCaustics {
   private readonly previousBounds = new THREE.Vector4();
   private readonly previousSun = new THREE.Vector3();
   private readonly clearColor = new THREE.Color();
+  private readonly geometries = new Map<CausticPhotonResolution, THREE.BufferGeometry>();
+  private readonly renderer: THREE.WebGLRenderer;
+  private disposed = false;
   private historyIndex = 0;
   private initialized = false;
   private previousTime = NaN;
@@ -162,22 +167,16 @@ export class WaveCaustics {
   private previousWind = NaN;
   private previousChoppiness = NaN;
 
-  constructor(private readonly renderer: THREE.WebGLRenderer, options: WaveCausticsOptions = {}) {
+  constructor(renderer: THREE.WebGLRenderer, options: WaveCausticsOptions = {}) {
+    this.renderer = renderer;
     this.span = options.span ?? 64;
     this.resolution = options.resolution ?? 512;
     const count = options.photonResolution ?? 256;
     if (!Number.isFinite(this.span) || this.span < 32 || this.span > 96) throw new Error('Caustic span must be 32–96 metres.');
-    if (![256, 512].includes(this.resolution) || ![128, 256].includes(count)) throw new Error('Unsupported caustic budget.');
+    if (![256, 512].includes(this.resolution) || ![128, 256, 512].includes(count)) throw new Error('Unsupported caustic budget.');
     this.bounds.set(-this.span / 2, -this.span / 2, this.span, this.span);
     this.previousBounds.copy(this.bounds);
-    const coordinates = new Float32Array(count * count * 3);
-    for (let z = 0; z < count; z++) for (let x = 0; x < count; x++) {
-      const offset = (z * count + x) * 3;
-      coordinates[offset] = (x + .5) / count - .5;
-      coordinates[offset + 1] = (z + .5) / count - .5;
-    }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(coordinates, 3));
+    const geometry = this.geometryFor(count);
     const photonMaterial = new THREE.ShaderMaterial({
       vertexShader: photonVertex, fragmentShader: photonFragment, depthTest: false, depthWrite: false,
       transparent: true, blending: THREE.AdditiveBlending, toneMapped: false,
@@ -189,7 +188,7 @@ export class WaveCaustics {
         uBounds: { value: this.bounds }, uBathyBounds: { value: new THREE.Vector4() },
         uBathyResolution: { value: new THREE.Vector2() }, uSunDirection: { value: new THREE.Vector3(0, 1, 0) },
         uSwell: { value: 1 }, uChoppiness: { value: 1.55 }, uWind: { value: 8 }, uTime:{value:0},
-        uResolution: { value: this.resolution }, uPhotonResolution: { value: count },
+        uResolution: { value: this.resolution }, uPhotonResolution: { value: count }, uNormalStep: { value: count === 512 ? 24 / 256 : .1875 },
       },
     });
     this.photons = new THREE.Points(geometry, photonMaterial);
@@ -210,6 +209,41 @@ export class WaveCaustics {
     this.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), integrationMaterial);
     this.quad.frustumCulled = false;
     this.integrationScene.add(this.quad);
+  }
+
+  private geometryFor(count: CausticPhotonResolution): THREE.BufferGeometry {
+    const existing = this.geometries.get(count);
+    if (existing) return existing;
+    const coordinates = new Float32Array(count * count * 3);
+    for (let z = 0; z < count; z++) for (let x = 0; x < count; x++) {
+      const offset = (z * count + x) * 3;
+      coordinates[offset] = (x + .5) / count - .5;
+      coordinates[offset + 1] = (z + .5) / count - .5;
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(coordinates, 3));
+    this.geometries.set(count, geometry);
+    return geometry;
+  }
+
+  get photonResolution(): CausticPhotonResolution {
+    return this.photons.material.uniforms.uPhotonResolution.value;
+  }
+
+  /** Switch a frozen scene/time probe without touching FFT, shore solver or time.
+   * Geometry variants are lazy and cached (at most three); unchanged calls do nothing.
+   * Fine normals use the shortest 24m / 256 FFT texel spacing. Legacy stays .1875m.
+   */
+  setPhotonResolution(count: CausticPhotonResolution): void {
+    if (this.disposed) throw new Error('Caustics have been disposed.');
+    if (![128, 256, 512].includes(count)) throw new Error('Unsupported caustic budget.');
+    if (count === this.photonResolution) return;
+    this.photons.geometry = this.geometryFor(count);
+    const uniforms = this.photons.material.uniforms;
+    uniforms.uPhotonResolution.value = count;
+    uniforms.uNormalStep.value = count === 512 ? 24 / 256 : .1875;
+    this.initialized = false;
+    this.quad.material.uniforms.uHistoryWeight.value = 0;
   }
 
   get texture(): THREE.Texture { return this.history[this.historyIndex].texture; }
@@ -279,7 +313,11 @@ export class WaveCaustics {
   }
 
   dispose(): void {
-    this.photons.geometry.dispose(); this.photons.material.dispose();
+    if (this.disposed) return;
+    this.disposed = true;
+    for (const geometry of this.geometries.values()) geometry.dispose();
+    this.geometries.clear();
+    this.photons.material.dispose();
     this.quad.geometry.dispose(); this.quad.material.dispose();
     this.photonTarget.dispose(); this.history.forEach(target => target.dispose());
   }
