@@ -290,6 +290,9 @@ export const oceanFragment = /* glsl */ `
     // A height gradient modifies -normal.xz/normal.y, not the unit
     // normal directly: preserve metric slope on tilted FFT wave faces.
     normal.xz-=capillarySurfaceSlopeFiltered(vOcean,uTime,footprint,missingVariance)*microScale*normal.y;
+    // The vertex surface includes Earth curvature. Its analytic slope must
+    // also participate in the optical normal, in the same camera-relative XZ.
+    normal.xz+=(vWorld.xz-cameraPosition.xz)/6371000.0*normal.y;
     normal=normalize(normal);
     float normalVariation=max(dot(dFdx(normal),dFdx(normal)),dot(dFdy(normal),dFdy(normal)));
     float slopeVariance=.0007+.0012*clamp(uWind/12.0,0.0,1.0)+missingVariance*microScale*microScale;

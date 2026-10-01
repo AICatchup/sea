@@ -1,6 +1,16 @@
 import * as THREE from 'three';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
+/** Metres along a normalized view ray; depth is camera-axis distance. */
+export function underwaterRayDistance(axisDistance: number, forwardCosine: number): number {
+  return Math.max(0, axisDistance) / Math.max(1e-6, Math.abs(forwardCosine));
+}
+
+/** Beer-Lambert transmission is never clipped to an artistic visibility radius. */
+export function underwaterTransmission(path: number, extinction: number): number {
+  return Math.exp(-Math.max(0, extinction) * Math.max(0, path));
+}
+
 const vertex = `varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}`;
 const occlusionFragment = /* glsl */ `
  precision highp float;
@@ -85,24 +95,31 @@ const mergeFragment = `
      vec4 viewPoint=uInverseProjection*vec4(vUv*2.0-1.0,1.0,1.0);
      vec3 viewRay=normalize(viewPoint.xyz/viewPoint.w);
      vec3 ray=normalize(mat3(uCameraWorld)*viewRay);
-     float path=min(viewDistance(depth)/max(.2,-viewRay.z),85.0);
-     if(ray.y>.001)path=min(path,max(.1,-uCameraPosition.y/ray.y));
+     // The selected depth is the actual waved/curved interface or opaque hit.
+     // A y=0 plane is NOT that interface: capping there leaks the un-refracted
+     // background through gaps beyond the finite ocean mesh near the horizon.
+     float path=max(0.0,viewDistance(depth)/max(.000001,-viewRay.z));
      // Metres and linear radiance. Clear coastal water preserves close reds
      // and contrast; long water paths progressively remove warm wavelengths.
      vec3 extinction=vec3(.105,.021,.012);
      vec3 transmission=exp(-extinction*path);
      vec3 refractedSun=-refract(-uSunDirection,vec3(0,1,0),.75019);
      float phase=(1.0-.76*.76)/pow(max(.035,1.0+.76*.76-2.0*.76*dot(ray,refractedSun)),1.5);
-     vec3 volume=vec3(0.0);float stepLength=path/8.0;
+     // Sample the illuminated near volume while retaining the full extinction
+     // distance. Beyond 500m even the least absorbing channel is negligible.
+     vec3 volume=vec3(0.0);float stepLength=min(path,500.0)/8.0;
      float jitter=fract(sin(dot(gl_FragCoord.xy,vec2(73.156,52.235)))*43758.5453);
      for(int i=0;i<8;i++){
        float distance=(float(i)+.25+jitter*.5)*stepLength;
        vec3 point=uCameraPosition+ray*distance;
        float waterDepth=max(0.0,-point.y);
        vec3 lightTrans=exp(-extinction*waterDepth/max(.35,refractedSun.y));
-       vec3 cameraTrans=exp(-extinction*distance);
+       // Integrate camera transmittance over each cell analytically. A midpoint
+       // times width would miss the near volume on long rays and darken it.
+       vec3 cameraIntegral=(exp(-extinction*float(i)*stepLength)
+         -exp(-extinction*float(i+1)*stepLength))/extinction;
        float visibility=solarVisibility(point);
-       volume+=cameraTrans*lightTrans*vec3(.0008,.0028,.0041)*uSunColor*(.12+phase*.12)*visibility*stepLength;
+       volume+=cameraIntegral*lightTrans*vec3(.0008,.0028,.0041)*uSunColor*(.12+phase*.12)*visibility;
      }
      vec3 scatter=vec3(.003,.026,.041);
      vec3 underwater=color*transmission+scatter*(1.0-transmission)+volume;
@@ -145,7 +162,10 @@ export class SceneCompositor {
   private readonly quad: THREE.Mesh;
   private sunlight:THREE.DirectionalLight|null=null;
 
-  constructor(private readonly renderer: THREE.WebGLRenderer, exposure: THREE.IUniform, underwater: THREE.IUniform, time: THREE.IUniform) {
+  private readonly renderer: THREE.WebGLRenderer;
+
+  constructor(renderer: THREE.WebGLRenderer, exposure: THREE.IUniform, underwater: THREE.IUniform, time: THREE.IUniform) {
+    this.renderer = renderer;
     const target = () => {
       const value = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType,
         minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: true });
