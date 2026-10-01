@@ -61,6 +61,7 @@ export class ElevationField {
   readonly land: Uint8Array;
   readonly signedShore: Float32Array;
   readonly ground: Float32Array;
+  private readonly referenceGround?:Float32Array;
   readonly dx: number;
   readonly dz: number;
 
@@ -161,7 +162,7 @@ export class TomariCoastSurface {
   readonly ground: Float32Array;
 
   constructor(field: ElevationField, baseHeightAt: (x: number, z: number) => number,
-    options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean;dryToe?:boolean} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
+    options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean;dryToe?:boolean;referenceBase?:(x:number,z:number)=>number} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
     this.subdivision = options.subdivision;
     this.sourceMinX = options.minX; this.sourceMaxX = options.maxX;
     this.sourceMinZ = options.minZ; this.sourceMaxZ = options.maxZ;
@@ -174,31 +175,43 @@ export class TomariCoastSurface {
     this.height = (this.sourceMaxZ - this.sourceMinZ) * this.subdivision + 1;
     this.ground = new Float32Array(this.width * this.height);
     const legacyToe=options.dryToe?new Float32Array(this.ground.length):undefined;
+    this.referenceGround=legacyToe;
     for (let iz = 0; iz < this.height; iz++) for (let ix = 0; ix < this.width; ix++) {
       const x = this.minX + ix * this.dx, z = this.minZ + iz * this.dz, y = baseHeightAt(x, z);
       const edge = Math.min(x - this.minX, this.maxX - x, z - this.minZ, this.maxZ - z);
       const join = smoothstep(0, 16, edge);
-      const beach = sandAt(x, z) * (1 - smoothstep(3, 7, Math.abs(y))) * join;
+      const referenceY=options.referenceBase?.(x,z)??y;
+      const originalBeach=sandAt(x,z)*(1-smoothstep(3,7,Math.abs(referenceY)))*join;
+      const sourceSlope=options.dryToe?Math.hypot((baseHeightAt(x+2,z)-baseHeightAt(x-2,z))/4,(baseHeightAt(x,z+2)-baseHeightAt(x,z-2))/4):0;
+      // The broad sand footprint also covers the visible rock foot. Classify
+      // only dry steep source faces consistently with the rock material.
+      const rockFoot=options.dryToe?smoothstep(.65,1.15,sourceSlope)*smoothstep(1.1,2.8,y)*(1-smoothstep(7,10,y)):0;
+      const beach=sandAt(x,z)*(1-smoothstep(3,7,Math.abs(y)))*join*(1-rockFoot);
       // The nested 0.5m strand interpolates this surface, rather than applying the scarp twice.
-      const rock = options.subdivision <= 4 ? structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z),options.coherentRock??false,options.dryToe??false) : y;
+      const rock = options.subdivision <= 4 ? structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z)*(1-rockFoot),options.coherentRock??false,options.dryToe??false) : y;
       this.ground[iz * this.width + ix] = y + (field.smoothHeightAt(x, z) - y) * beach + (rock-y)*(1-beach)*join;
-      if(legacyToe){const oldRock=structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z),options.coherentRock??false,false);legacyToe[iz*this.width+ix]=y+(field.smoothHeightAt(x,z)-y)*beach+(oldRock-y)*(1-beach)*join;}
+      if(legacyToe){const oldRock=options.subdivision<=4?structuralCoastHeight(x,z,referenceY,baseHeightAt,sandAt(x,z),options.coherentRock??false,false):referenceY;legacyToe[iz*this.width+ix]=referenceY+(field.smoothHeightAt(x,z)-referenceY)*originalBeach+(oldRock-referenceY)*(1-originalBeach)*join;}
     }
     if(legacyToe)for(let iz=0;iz<this.height;iz++)for(let ix=0;ix<this.width;ix++){
       let lowest=Infinity;
       // Every triangle sharing this vertex must be wholly dry. Protecting only
       // the vertex height allowed interpolation to move wet/low neighbouring points.
       for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){const x=ix+dx,z=iz+dz;if(x>=0&&x<this.width&&z>=0&&z<this.height)lowest=Math.min(lowest,legacyToe[z*this.width+x]);}
-      const i=iz*this.width+ix;this.ground[i]=legacyToe[i]+(this.ground[i]-legacyToe[i])*smoothstep(1.1,2.8,lowest);
+      const i=iz*this.width+ix,old=legacyToe[i],delta=Math.max(-1.1,Math.min(1.1,this.ground[i]-old))*smoothstep(1.1,1.3,lowest);
+      this.ground[i]=old<=1.1?old:Math.max(1.1,old+delta);
     }
   }
 
   contains(x: number, z: number): boolean { return x >= this.minX && x <= this.maxX && z >= this.minZ && z <= this.maxZ; }
   heightAt(x: number, z: number): number {
+    return this.sampleHeight(x,z,this.ground);
+  }
+  referenceHeightAt(x:number,z:number):number{return this.sampleHeight(x,z,this.referenceGround??this.ground);}
+  private sampleHeight(x:number,z:number,ground:Float32Array):number{
     const px = clamp((x - this.minX) / this.dx, 0, this.width - 1), pz = clamp((z - this.minZ) / this.dz, 0, this.height - 1);
     const ix = Math.min(this.width - 2, Math.floor(px)), iz = Math.min(this.height - 2, Math.floor(pz));
     const fx = px - ix, fz = pz - iz, i = iz * this.width + ix;
-    const a = this.ground[i], b = this.ground[i + 1], c = this.ground[i + this.width], d = this.ground[i + this.width + 1];
+    const a = ground[i], b = ground[i + 1], c = ground[i + this.width], d = ground[i + this.width + 1];
     return fx + fz <= 1 ? a + (b - a) * fx + (c - a) * fz : d + (c - d) * (1 - fx) + (b - d) * (1 - fz);
   }
 }
@@ -215,9 +228,9 @@ export class IslandElevation {
     this.coherentRock=coherentRock;
     this.dryToe=coherentRock&&dryToe;
     this.coast=this.tomari?new TomariCoastSurface(this.tomari,(x,z)=>this.baseHeightAt(x,z),
-      {subdivision:4,minX:40,maxX:190,minZ:50,maxZ:168,coherentRock,dryToe}):undefined;
+      {subdivision:4,minX:40,maxX:190,minZ:50,maxZ:168,coherentRock,dryToe:this.dryToe}):undefined;
     this.beach=this.tomari&&this.coast?new TomariCoastSurface(this.tomari,(x,z)=>this.coast!.heightAt(x,z),
-      {subdivision:8,minX:80,maxX:139,minZ:95,maxZ:143}):undefined;
+      {subdivision:8,minX:80,maxX:139,minZ:95,maxZ:143,dryToe:this.dryToe,referenceBase:this.dryToe?(x,z)=>this.coast!.referenceHeightAt(x,z):undefined}):undefined;
   }
 
   fieldAt(x: number, z: number): ElevationField | undefined {

@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { structuralCoastHeight } from '../src/world/coast-structure.ts';
 import { IslandElevation } from '../src/world/geodata.ts';
+import { IslandWorld } from '../src/world/terrain.ts';
+import { planWaterRoute,waterSegmentClear } from '../src/world/navigation.ts';
 const slope=(x:number,_z:number)=>5+x*1.5;
 const sample=(x:number,z:number,y:number,sand=0,toe=true)=>structuralCoastHeight(x,z,y,slope,sand,true,toe);
 test('dry toe preserves low, sandy, crown and gentle source anchors',()=>{
@@ -38,5 +40,24 @@ test('actual triangle interpolation retains every sampled wet and low coastal po
  const old=new IslandElevation(true),toe=new IslandElevation(true,true),c=old.coast!;let checked=0;
  for(let z=c.minZ;z<c.maxZ;z+=.75)for(let x=c.minX;x<c.maxX;x+=.75){const height=old.heightAt(x,z);if(height>1.1)continue;assert.equal(toe.heightAt(x,z),height);checked++;}
  assert.ok(checked>10000);
+});
+test('steep photographic rock foot is not flattened as sand, while legacy rock disables the whole candidate',()=>{
+ const old=new IslandElevation(true),toe=new IslandElevation(true,true);
+ assert.ok(Math.abs(toe.heightAt(-92.829,-26.415)-old.heightAt(-92.829,-26.415))>.1);
+ const legacy=new IslandElevation(false),disabled=new IslandElevation(false,true);
+ assert.equal(disabled.dryToe,false);assert.deepEqual(disabled.coast!.ground,legacy.coast!.ground);assert.deepEqual(disabled.beach!.ground,legacy.beach!.ground);
+});
+test('candidate ground and generated rock volumes keep the strand and island voyage corridors open',()=>{
+ const world=new IslandWorld(true,true);
+ try{
+  for(let z=27;z>-32;z-=2)assert.equal(world.bodySegmentBlocked({x:-36,y:1,z},{x:-36,y:1,z:z-2}),false);
+  for(const destination of world.destinations){
+   const route=planWaterRoute(world,{x:-142,z:-97},destination);assert.equal(route.error,undefined,destination.id);
+   for(let i=1;i<route.points.length;i++){
+    assert.ok(waterSegmentClear(world,route.points[i-1],route.points[i]),destination.id);
+    assert.equal(world.bodySegmentBlocked({...route.points[i-1],y:-.2},{...route.points[i],y:-.2},1.4,1.7),false,destination.id);
+   }
+  }
+ }finally{world.dispose();}
 });
 
