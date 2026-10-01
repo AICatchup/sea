@@ -25,6 +25,14 @@ test('two frames precede capture; metadata contains actual dimensions and origin
   assert.equal(result.metadata.width, 1280); assert.equal(result.metadata.movementVerified, false);
   assert.deepEqual(f.host.readState(), f.original);
 });
+
+test('reference eye height reaches the host while exact previous capture state restores',async()=>{
+  const f=fake();let received:number|undefined;
+  const original=f.host.viewpoint;
+  f.host.viewpoint=(x,z,yaw,pitch,mode,depth,eyeY)=>{received=eyeY;original(x,z,yaw,pitch,mode,depth);};
+  await captureNamed(f.host,{...CAPTURE_PROFILES[0],pose:{...CAPTURE_PROFILES[0].pose,eyeY:3.12}},options);
+  assert.equal(received,3.12);assert.deepEqual(f.host.readState(),f.original);
+});
 for (const failure of ['null', 'error', 'hidden', 'dispose', 'resize', 'timeout']) test(`restores after ${failure}`, async () => {
   const f = fake();
   if (failure === 'null') f.host.capturePixels = async () => null;

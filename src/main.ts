@@ -132,8 +132,13 @@ try {
     },
     setQuality:q=>ocean.setQuality(q as Quality),setPreset:p=>{if(!(p in presets))throw new Error('Unknown capture preset');ocean.setPreset(p as PresetName);},
     setPaused:p=>{ocean.paused=p;},visualLock:p=>{ocean.visualCaptureLocked=p;},
-    viewpoint(x,z,yaw,pitch,mode,depth){
+    viewpoint(x,z,yaw,pitch,mode,depth,eyeY){
       ocean.adventure.viewpoint(x,z,yaw,pitch,mode,depth);ocean.adventure.state.viewOffset?.set(0,0,0);
+      if(eyeY!==undefined){
+        if(!Number.isFinite(eyeY)||eyeY<=ocean.world.heightAt(x,z)+.08||eyeY>200)throw new Error('Aligned camera must be finite and above the actual terrain');
+        const state=ocean.adventure.state,surface=state.position.y+state.depth;
+        state.position.y=eyeY;if(mode!=='walk')state.depth=Math.max(0,surface-eyeY);
+      }
       ocean.adventure.state.avatarAction=mode==='dive'?'dive':mode==='swim'?'swim':'idle';
       ocean.adventure.state.immersion=mode==='walk'?Math.max(0,Math.min(1,(1.64-ocean.adventure.state.position.y)/1.64)):1;
     },
@@ -168,6 +173,7 @@ try {
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
     capturePixels:capturePNG,
     captureNamed:(name:string)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');return captureNamed(captureHost,profile,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
+    captureAligned:(name:string,eyeY:number)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile||!Number.isFinite(eyeY))throw new Error('Known view and finite reference eye height required');return captureNamed(captureHost,{...profile,pose:{...profile.pose,eyeY},provenance:'QA bookmark with absolute eye height pinned to an earlier actual capture; no surveyed pose or travel proof'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
     captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>{
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
       return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});

@@ -1,5 +1,5 @@
 /** A visual-only capture seam: locked bookmarks do not prove travel or Human acceptance. */
-export type CapturePose = { x: number; z: number; yaw: number; pitch: number; mode: 'walk' | 'swim' | 'dive'; depth?: number };
+export type CapturePose = { x: number; z: number; yaw: number; pitch: number; mode: 'walk' | 'swim' | 'dive'; depth?: number; eyeY?:number };
 export type CaptureState = {
   pose: CapturePose; camera: readonly number[]; width: number; height: number;
   quality: string; preset: string; paused: boolean; locked: boolean;
@@ -14,7 +14,7 @@ export interface SceneCaptureHost {
   setPreset(preset: string): void;
   setPaused(paused: boolean): void;
   visualLock(locked: boolean): void;
-  viewpoint(x: number, z: number, yaw: number, pitch: number, mode: CapturePose['mode'], depth?: number): void;
+  viewpoint(x: number, z: number, yaw: number, pitch: number, mode: CapturePose['mode'], depth?: number, eyeY?:number): void;
   capturePixels(): Promise<string | null>;
   nextFrame(): Promise<void>;
 }
@@ -59,7 +59,7 @@ async function execute(host: SceneCaptureHost, profiles: readonly CaptureProfile
     const results: CaptureResult[] = [];
     for (const profile of profiles) {
       const p = profile.pose;
-      host.viewpoint(p.x, p.z, p.yaw, p.pitch, p.mode, p.depth);
+      host.viewpoint(p.x, p.z, p.yaw, p.pitch, p.mode, p.depth,p.eyeY);
       for(let i=0;i<Math.min(60,Math.max(0,options.warmupFrames??0));i++)await bounded(host.nextFrame());
       let last = clone(host.readState()), stable = 0;
       for (let frame = 0; stable < 2; frame++) {
