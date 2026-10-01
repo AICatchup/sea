@@ -126,7 +126,7 @@ export class Ocean {
     const experience=experienceOptions(location.search);
     this.shoreSolver=experience.surf?new ShoreSolver(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
-    this.world=new IslandWorld();
+    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')==='coherent');
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
@@ -161,7 +161,7 @@ export class Ocean {
       uCaustics:{value:null},uCausticBounds:{value:new THREE.Vector4()},
       uSkyTexture:{value:null},uSkyRotation:{value:0},uSkyExposure:{value:1},uUseSky:{value:0},
     };
-    this.caustics=new WaveCaustics(this.renderer,{span:32});
+    this.caustics=new WaveCaustics(this.renderer,{span:32,photonResolution:new URLSearchParams(location.search).get('light')==='fine'?512:256});
     if(this.shoreSolver){this.shoreSolver.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.shoreSolver.uniforms);}
     this.waterHeights.bindShore(this.uniforms);this.caustics.bindShore(this.uniforms);
     this.world.niijimaCoast.bindWaterSurface(this.uniforms);
@@ -461,6 +461,8 @@ export class Ocean {
     this.captureNextFrame?.(null);return new Promise(resolve=>{this.captureNextFrame=resolve;});
   }
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
+  setCausticResolution(count:128|256|512):128|256|512{const previous=this.caustics.photonResolution;this.caustics.setPhotonResolution(count);return previous;}
+  getCausticResolution(){return this.caustics.photonResolution;}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}

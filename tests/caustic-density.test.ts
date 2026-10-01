@@ -59,6 +59,15 @@ test('budgets reject unbounded parameters before allocating resources',()=>{
   assert.equal(f.photons.geometry,geometry);f.caustics.dispose();
 });
 
+test('fine derivative spacing follows the actual FFT image width without adding frequencies',()=>{
+  const f=fixture(512);
+  try{
+    f.texture.image={width:128,height:128};f.update();assert.equal(f.photons.material.uniforms.uNormalStep.value,.09375);
+    f.texture.image={width:256,height:256};f.update();assert.equal(f.photons.material.uniforms.uNormalStep.value,.046875);
+    f.caustics.setPhotonResolution(256);f.update();assert.equal(f.photons.material.uniforms.uNormalStep.value,.1875,'legacy retains exact spacing');
+  }finally{f.caustics.dispose();}
+});
+
 // Independent numerical disk integration and translated infinite-lattice reconstruction.
 // These validate the continuous physical model, not WebGL rasterization or photographs.
 test('every density conserves integrated photon flux and flat water has no strong lattice grid',()=>{

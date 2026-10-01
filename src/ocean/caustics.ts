@@ -232,7 +232,8 @@ export class WaveCaustics {
 
   /** Switch a frozen scene/time probe without touching FFT, shore solver or time.
    * Geometry variants are lazy and cached (at most three); unchanged calls do nothing.
-   * Fine normals use the shortest 24m / 256 FFT texel spacing. Legacy stays .1875m.
+   * Fine normals use half a texel of the supplied 24m FFT's bilinear surface.
+   * This improves derivative sampling; it adds no new FFT frequencies.
    */
   setPhotonResolution(count: CausticPhotonResolution): void {
     if (this.disposed) throw new Error('Caustics have been disposed.');
@@ -280,6 +281,10 @@ export class WaveCaustics {
     u.uBathyResolution.value.set(image.width, image.height);u.uBathyTriangulated.value=bathymetry.triangulated?1:0;
     u.uSunDirection.value.copy(sunDirection).normalize();
     u.uSwell.value = swell; u.uWind.value = wind; u.uChoppiness.value = choppiness;
+    if(this.photonResolution===512){
+      const width=Number((shortWaves.image as {width?:number}|undefined)?.width);
+      u.uNormalStep.value=Number.isFinite(width)&&width>0?12/width:.09375;
+    }
     u.uTime.value=time;
     const continuous = this.initialized && delta > 0 && time >= this.previousTime && time - this.previousTime < .12
       && this.previousSun.dot(u.uSunDirection.value) > .9999 && Math.abs(this.previousSwell - swell) < .02

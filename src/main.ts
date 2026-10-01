@@ -1,5 +1,6 @@
 import './style.css';
 import { inspectBodyHands } from './qa/body-inspection';
+import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
 import { Ocean, type Quality } from './ocean/renderer';
 import { presets, type PresetName } from './ocean/presets';
 import { SurfAudio } from './audio';
@@ -157,6 +158,7 @@ try {
     terrainAt:(x:number,y:number)=>ocean.probeFoliage(x/window.innerWidth*2-1,1-y/window.innerHeight*2,false,true),
     depthSamples:(points:readonly{x:number;y:number}[])=>ocean.probeDepthSamples(points),
     inspectBodyHands:()=>inspectBodyHands(ocean),
+    inspectFlatCaustics:()=>inspectFlatCaustics(ocean.renderer),
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
     breakerEnabled:(enabled:boolean)=>ocean.setBreakerCandidateEnabled(enabled),
     shoreEnabled:(enabled:boolean)=>ocean.setShoreCandidateEnabled(enabled),
@@ -170,8 +172,9 @@ try {
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
       return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
     },
-    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false,compareContact=false){
+    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false,compareContact=false,compareLight=false){
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');
+      const previousLight=ocean.getCausticResolution();
       try{
         captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');
         ocean.setWind(Math.max(0,Math.min(18,wind)));ocean.setSwell(Math.max(.5,Math.min(1.5,swell)));
@@ -208,8 +211,17 @@ try {
           try{ocean.uniforms.uPointwiseContact.value=0;await captureHost.nextFrame();await captureHost.nextFrame();pngWithoutContact=await capturePNG();}
           finally{ocean.uniforms.uPointwiseContact.value=enabled;}
         }
-        return {png,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null}};
-      }finally{captureHost.restoreState(before);}
+        const lightComparison=[];
+        if(compareLight)for(const density of [256,512,256] as const){
+          ocean.setCausticResolution(density);
+          for(let i=0;i<8;i++)await captureHost.nextFrame();
+          const intervals:number[]=[];let last=await new Promise<number>(resolve=>requestAnimationFrame(resolve));
+          for(let i=0;i<32;i++){const now=await new Promise<number>(resolve=>requestAnimationFrame(resolve));intervals.push(now-last);last=now;}
+          const image=await capturePNG();if(!image)throw new Error('No frozen light capture');
+          lightComparison.push({png:image,metadata:{density,photons:density*density,time:ocean.diagnostics.time,state:captureHost.readState(),optics:ocean.probeOptics(),frameIntervalsMs:intervals,timingScope:'Actual browser RAF wall intervals for whole scene, not isolated GPU timer-query time'}});
+        }
+        return {png,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,lightComparison,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null,lightComparison:compareLight?'One frozen camera/FFT/solver/time/environment; legacy256->fine512->legacy256, caustic history reset only':null}};
+      }finally{try{ocean.setCausticResolution(previousLight);}finally{captureHost.restoreState(before);}}
     },
     async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number}){
       if(stops.length<1||stops.length>6||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
