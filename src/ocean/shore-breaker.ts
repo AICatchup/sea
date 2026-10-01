@@ -165,7 +165,7 @@ export class ShoreBreaker {
     const compression=whitewaterFlowSampling.slice(whitewaterFlowSampling.indexOf('float compression='),whitewaterFlowSampling.indexOf('float born='));
     const surface=shoreSolverSampling.slice(shoreSolverSampling.indexOf('vec2 shoreSolvedSurface(')).replace('shoreSolvedSurface(', 'diagnosticSurface(').replace('return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);','diagnosticSurfaceHeight=surface.x;diagnosticConfidence=weighted.z;diagnosticBlend=blend;return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);');
     const profileFragment=expanded?prefix+`\nfloat diagnosticSurfaceHeight,diagnosticConfidence,diagnosticBlend;${surface}
-    void main(){float rowZ=(gl_FragCoord.y-1.5)*8.;${driver}
+    void main(){float rowZ=(gl_FragCoord.y-1.5)*8.;${driver}{
       float lane=floor(gl_FragCoord.x/65.),index=mod(floor(gl_FragCoord.x),65.),crossOffset=(index-32.)*1.5;
       vec2 p=source-n*crossOffset+along*rowZ;
       vec2 uv=(p-uShoreBounds.xy)/uShoreBounds.zw,buv=(p-uBathyBounds.xy)/uBathyBounds.zw,e=vec2(1./uShoreResolution,0);
@@ -192,7 +192,7 @@ export class ShoreBreaker {
       else if(lane<5.5)gl_FragColor=vec4(diagnosticConfidence,diagnosticBlend,coast.r,coast.g);
       else if(lane<6.5)gl_FragColor=vec4(clamp(compression*.7,0.,1.),1.-smoothstep(3.,7.,c.r),smoothstep(.05,.3,c.r),smoothstep(.55,.9,ratio));
       else gl_FragColor=vec4(previous,next,incident>=previous&&incident>=next?1.:0.,abs(offset)>=12.?1.:0.);
-    }`:'';
+    }}`:'';
     const profileTarget=expanded?new THREE.WebGLRenderTarget(65*8,3,{type:THREE.FloatType,depthBuffer:false}):null;
     if(profileTarget)profileTarget.texture.colorSpace=THREE.LinearSRGBColorSpace;
     const profileMaterial=expanded?new THREE.ShaderMaterial({uniforms:this.material.uniforms,depthTest:false,depthWrite:false,toneMapped:false,vertexShader:material.vertexShader,fragmentShader:profileFragment}):null;
@@ -205,6 +205,12 @@ export class ShoreBreaker {
         (scene.children[0] as THREE.Mesh).material=profileMaterial;
         renderer.setRenderTarget(profileTarget);renderer.setViewport(0,0,65*8,3);
         renderer.render(scene,new THREE.Camera());renderer.readRenderTargetPixels(profileTarget,0,0,65*8,3,profilePixels);
+        // These metric coordinates are independent of water state. A failed
+        // program can otherwise silently return zeros and look like calm water.
+        for(let row=0;row<3;row++)for(let index=0;index<65;index++){
+          const start=(row*65*8+index)*4;
+          if(profilePixels[start+2]!==((index-32)*1.5)||profilePixels[start+3]!==((row-1)*8))throw new Error('Expanded crest probe returned invalid coordinate channels; check GPU compilation/readback');
+        }
         profile={schemaVersion:1,coordinate:'worldXZ = depthCrossingSource - uphillNormal * crossOffsetM + alongshoreTangent * rowOffsetM; independent parallel rows, no crest shear',cellSpacingM:1.5,
           channels:['worldX_M','worldZ_M','crossOffsetM','rowOffsetM','bathyValid','solverDomainValid','solverStencilValid','flowBirthValid','nearestDepthM','nearestQx_M2PerS','nearestQz_M2PerS','nearestElevationM','rawCompressionPerS','birthHeightDepthRatio','bornProxy','flowBlend','renderedSurfaceHeightM','incidentHeightM','bilinearWetSurfaceHeightM','fftHeightM','bilinearWetConfidence','surfaceBlend','groundHeightM','shelter','compressionOnsetGate','deepBirthGate','wetBirthGate','ratioBirthGate','previousIncidentHeightM','nextIncidentHeightM','profileLocalMaximum','driverEndpointRejected'],
           rows:[-8,0,8].map((rowOffsetM,rowIndex)=>({rowOffsetM,samples:Array.from({length:65},(_,index)=>Array.from({length:8},(_,lane)=>Array.from(profilePixels.slice(((rowIndex*65*8)+lane*65+index)*4,((rowIndex*65*8)+lane*65+index+1)*4))).flat())}))};
