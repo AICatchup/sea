@@ -50,3 +50,30 @@ preserved with the release. Existing continuous-voyage history does not prove
 new native controls, every route, physical mobile or Human quality. Toe smoothing,
 repeated ledges, sparse canopy, grey sea, static clouds, biology and full coast
 shape still retain visible CG cues; tests and these images cannot complete goal.
+
+## Retained results
+
+Immutable `cd49cd6e6d9d63ba3d48f18922aaaf1b41de86dc` passed all240 tests,
+TypeScript/Vite/embedded build and normal seven visual QA views. Four terrain
+pairs use the same actual camera and FFTclock34; derived vegetation/rock support
+changes are part of the world rebuild. Candidate coast changes3,395 vertices
+by>.05m and remains capped1.1m. Root verified the steep picked coordinate
+(-92.829,-26.415) changes by about.133m, with low interpolated points unchanged.
+
+Actual same-controller QA input replay recorded116 observations from one initial
+bookmark: walk→wade→swim→shallow dive, then walk again on a shoal. Maximum recorded
+depth0.872744m; this is not deep-scuba, native keyboard/pointer or allroute proof.
+The initial25-second attempt reached wading only and was not accepted as three
+phases by itself. No intermediate teleport or mode-selection UI was used.
+
+Optical prototype0/on/0 pairs returned original pixels exactly. Twenty-one actual
+float GPU probes supported Snell direction with residual below about3.1e-6m;
+that verifies the ray direction, not an accurate geometric receiver. Whole-scene
+RAF medians around18ms are device-specific. R134 inspected actual images and
+explicitly supported withholding normal ray adoption because of stretched rock/
+buoy silhouettes. It supported modest dry-foot improvement and found no supported
+new normal P1/P2 regression, while retaining full photograph-quality FAIL.
+
+R133/R134 completed GPT-6.1 Sol low turns and exact parent edges were verified
+with effective writable danger-full-access, separate from the requested ownership
+restrictions. Final documentation-only changes do not alter the reviewed rendering.
