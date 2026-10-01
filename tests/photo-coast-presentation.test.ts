@@ -25,6 +25,7 @@ function scan(file:string,kind:'shelf'|'boulder'):ScannedRockVariant {
   geometry.setAttribute('position',new THREE.BufferAttribute(read(primitive.attributes.POSITION,3),3));
   geometry.setIndex(new THREE.BufferAttribute(read(primitive.indices,1),1));
   if(primitive.attributes.TEXCOORD_0!==undefined)geometry.setAttribute('uv',new THREE.BufferAttribute(read(primitive.attributes.TEXCOORD_0,2),2));
+  if(primitive.attributes.NORMAL!==undefined)geometry.setAttribute('normal',new THREE.BufferAttribute(read(primitive.attributes.NORMAL,3),3));
   geometry.computeBoundingBox();const box=geometry.boundingBox!,dimensions=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
   const footprint=kind==='shelf'?8:2,unit=footprint/Math.max(dimensions.x,dimensions.z);
   geometry.applyMatrix4(new THREE.Matrix4().makeScale(unit,unit,unit).multiply(new THREE.Matrix4().makeTranslation(-center.x,-box.min.y,-center.z)));
@@ -35,7 +36,7 @@ const variants=[scan('coast-rocks-01-2k.glb','shelf'),scan('coast-rocks-03-2k.gl
 
 test('actual bundled scans form bounded terrain-fixed patches without mutating borrowed resources',()=>{
   const ground=new IslandElevation();
-  const originals=variants.map(v=>({p:v.geometry.getAttribute('position').array.slice(),uv:v.geometry.getAttribute('uv')?.array.slice(),box:v.geometry.boundingBox!.clone()}));
+  const originals=variants.map(v=>({p:v.geometry.getAttribute('position').array.slice(),uv:v.geometry.getAttribute('uv')?.array.slice(),normal:v.geometry.getAttribute('normal')?.array.slice(),box:v.geometry.boundingBox!.clone()}));
   let sourceDisposals=0;variants.forEach(v=>{v.geometry.addEventListener('dispose',()=>sourceDisposals++);v.material.addEventListener('dispose',()=>sourceDisposals++);});
   const result=buildPhotoCoastPresentation(ground,variants);
   const d=result.diagnostics;
@@ -43,14 +44,18 @@ test('actual bundled scans form bounded terrain-fixed patches without mutating b
     priorityInstances:d.priorityInstances,families:d.families,facingSupportArea:d.priorityFacingSupportArea,facingPatchArea:d.priorityFacingPatchArea,facingCoverageEstimate:d.priorityFacingCoverageEstimate,sourceSpans:d.sourceBounds.map(s=>({id:s.id,size:s.normalizedMetres})),prioritySpanRange:d.patches.filter(p=>p.priority).map(p=>p.physicalSpan).sort((a,b)=>a-b).filter((_,i,a)=>i===0||i===a.length-1)}));
   assert.ok(d.instances>20);assert.ok(d.triangles<=1_500_000);assert.ok(d.draws<=10);assert.equal(d.textureAdditions,0);
   assert.match(d.provenance,/not measured Tomari/);
-  assert.ok(d.priorityInstances>=40);assert.ok(d.priorityFacingPatchArea>300);assert.ok(d.priorityFacingCoverageEstimate>.45);
+  assert.ok(d.priorityInstances>=40);assert.ok(d.instances<=d.instanceBudget);
+  // Broad-footprint rectangles undercount thick joint faces. Verify actual
+  // exposed triangle areas from three fixed views; these still omit occlusion.
+  console.log('three-view exposed scan surface estimates',d.priorityProjectedSurfaceAreas);
+  assert.ok(d.priorityProjectedSurfaceAreas.every(area=>Number.isFinite(area)&&area>100));
   assert.ok(Object.values(d.families).every(count=>count>0));
-  for(const p of d.patches){assert.ok(p.exposedFraction>=.38);assert.ok(p.embeddedFraction>=.12);assert.ok(p.bounds.min.y>=2);assert.ok(p.physicalSpan<=10);
+  for(const p of d.patches){assert.ok(p.exposedFraction>=.38);assert.ok(p.embeddedFraction>=.12);assert.ok(p.supportDepth>=.25);assert.ok(p.exposedRelief>=.15);assert.ok(p.bounds.min.y>=2);assert.ok(p.physicalSpan<=10);
     for(const x of [p.bounds.min.x,p.bounds.max.x])for(const z of [p.bounds.min.z,p.bounds.max.z])assert.ok(p.bounds.min.y>=9||sandAt(x,z)<=.48);
   }
   for(const child of result.group.children){assert.ok(child instanceof THREE.InstancedMesh);assert.ok(variants.some(v=>v.geometry===child.geometry&&v.material===child.material));assert.ok(child.boundingBox&&!child.boundingBox.isEmpty());}
   result.dispose();result.dispose();assert.equal(sourceDisposals,0);assert.equal(result.group.children.length,0);
-  variants.forEach((v,i)=>{assert.deepEqual(v.geometry.getAttribute('position').array,originals[i].p);assert.deepEqual(v.geometry.getAttribute('uv')?.array,originals[i].uv);assert.ok(v.geometry.boundingBox!.equals(originals[i].box));});
+  variants.forEach((v,i)=>{assert.deepEqual(v.geometry.getAttribute('position').array,originals[i].p);assert.deepEqual(v.geometry.getAttribute('uv')?.array,originals[i].uv);assert.deepEqual(v.geometry.getAttribute('normal')?.array,originals[i].normal);assert.ok(v.geometry.boundingBox!.equals(originals[i].box));});
 });
 
 test('empty, flat, nonfinite, malformed and zero-budget cases remain empty',()=>{
@@ -64,4 +69,33 @@ test('empty, flat, nonfinite, malformed and zero-budget cases remain empty',()=>
     {bounds:{minX:10,maxX:0,minZ:0,maxZ:10}}]){
     const result=buildPhotoCoastPresentation(new IslandElevation(),variants,options);assert.equal(result.diagnostics.instances,0);result.dispose();
   }
+});
+
+test('rigid all-angle instances have independently read-back support and clear strand',()=>{
+  const ground=new IslandElevation(),result=buildPhotoCoastPresentation(ground,variants);
+  const matrix=new THREE.Matrix4(),vertex=new THREE.Vector3();
+  for(const child of result.group.children){
+    assert.ok(child instanceof THREE.InstancedMesh);
+    const positions=child.geometry.getAttribute('position');
+    for(let instance=0;instance<child.count;instance++){
+      child.getMatrixAt(instance,matrix);
+      const x=new THREE.Vector3().setFromMatrixColumn(matrix,0),y=new THREE.Vector3().setFromMatrixColumn(matrix,1),z=new THREE.Vector3().setFromMatrixColumn(matrix,2);
+      assert.ok(Math.abs(x.length()-y.length())<1e-5&&Math.abs(y.length()-z.length())<1e-5);
+      assert.ok(Math.abs(x.dot(y))<1e-5&&Math.abs(x.dot(z))<1e-5&&Math.abs(y.dot(z))<1e-5);
+      assert.ok(matrix.determinant()>0);
+      let depth=0,relief=0,embedded=0;
+      for(let i=0;i<positions.count;i++){
+        vertex.fromBufferAttribute(positions,i).applyMatrix4(matrix);
+        const residual=vertex.y-ground.heightAt(vertex.x,vertex.z);
+        assert.ok(Number.isFinite(residual));depth=Math.max(depth,-residual);relief=Math.max(relief,residual);
+        if(residual<=.06)embedded++;
+        assert.ok(vertex.y>=2);assert.ok(vertex.y>=9||sandAt(vertex.x,vertex.z)<=.48);
+      }
+      assert.ok(depth>=.249&&relief>=.149&&embedded>0);
+    }
+  }
+  const repeat=buildPhotoCoastPresentation(ground,variants);
+  assert.deepEqual(repeat.diagnostics.patches,result.diagnostics.patches);
+  assert.equal(repeat.diagnostics.triangles,result.diagnostics.triangles);
+  result.dispose();repeat.dispose();
 });
