@@ -26,7 +26,7 @@ export function cliffBodySegmentBlocked(
 }
 
 /** Structural joint groups replace the dense decorative all-over rock scatter. */
-export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number}):THREE.BufferGeometry {
+export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number},candidate=false):THREE.BufferGeometry {
   const positions:number[]=[],colors:number[]=[],uvs:number[]=[],proxies:CliffCollisionProxy[]=[];
   const familyCounts={plates:0,columns:0,buttresses:0},regions={west:0,centre:0,east:0};
   const stride=4.7,triangleLimit=80000;
@@ -70,16 +70,18 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
     const dip=(jointRandom(Math.floor(px/28),Math.floor(pz/22),11)-.5)*.24;
     tangent.applyAxisAngle(normal,dip);vertical.applyAxisAngle(normal,dip);
     const family=jointRandom(Math.floor(px/19),Math.floor(pz/23),37);
-    const familyName=family<.44?'plates':family<.72?'columns':'buttresses';
+    const familyName=family<(candidate?.72:.44)?'plates':family<(candidate?.9:.72)?'columns':'buttresses';
     // Unequal metre-scale fracture groups affect form at beach-view distances.
-    const width=familyName==='plates'?2.6+random(41)*1.9:familyName==='columns'?1.4+random(41)*1.3:2.8+random(41)*1.8;
-    const height=familyName==='plates'?.8+random(43)*.9:familyName==='columns'?1.6+random(43)*1.5:1.3+random(43)*1.5;
-    const depth=.5+random(47)*.75;
+    const width=candidate?(familyName==='plates'?1.6+random(41)*1.4:familyName==='columns'?.65+random(41)*.6:1.4+random(41)*1.0)
+      :familyName==='plates'?2.6+random(41)*1.9:familyName==='columns'?1.4+random(41)*1.3:2.8+random(41)*1.8;
+    const height=candidate?(familyName==='plates'?.35+random(43)*.35:familyName==='columns'?.75+random(43)*.65:.6+random(43)*.55)
+      :familyName==='plates'?.8+random(43)*.9:familyName==='columns'?1.6+random(43)*1.5:1.3+random(43)*1.5;
+    const depth=candidate?.18+random(47)*.25:.5+random(47)*.75;
     const split=familyName==='plates'?3+(random(51)>.7?1:0):random(51)>.4?2:1;
     // Shared rock albedo already carries natural dark mineral/fissure detail.
     // Let geometric sunlight and occlusion shade ledges instead of multiplying
     // every separate rock piece by an additional near-black authored tint.
-    const gap=.22+random(53)*.38,shade=.89+random(81)*.10;
+    const gap=candidate?.035+random(53)*.075:.22+random(53)*.38,shade=.89+random(81)*.10;
     const centre=new THREE.Vector3(px,y,pz);
     let emitted=0;
     const weights=Array.from({length:split},(_,part)=>.55+random(101+part)*.9);
@@ -102,24 +104,29 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
         .addScaledVector(vertical,v).addScaledVector(normal,d);
       // Find a single support plane outside the irregular underlying scarp.
       // The face stays planar, but is guaranteed to stand out at every corner.
-      let support=0,embed=4;
-      for(const [uu,vv] of outline){
+      let support=0,embed=candidate?.45:4;
+      // Short ledges must also be supported through their middle, rather than
+      // bridging a cleft with a thin plate whose corners alone happen to touch.
+      const supportSamples=candidate?[...outline,[0,0],...outline.map(([u,v],i)=>{
+        const next=outline[(i+1)%outline.length];return [(u+next[0])*.5,(v+next[1])*.5];
+      })]:outline;
+      for(const [uu,vv] of supportSamples){
         const u=uu*halfWidth,v=vv*height;
         let d=0,p=at(u*.94,v*.96,d);
-        while(p.y<ground.heightAt(p.x,p.z)+.28 && d<5){d+=.25;p=at(u*.94,v*.96,d);}
+        while(p.y<ground.heightAt(p.x,p.z)+(candidate?.06:.28) && d<5){d+=candidate?.08:.25;p=at(u*.94,v*.96,d);}
         support=Math.max(support,d);
-        d=4;p=at(u,v,-d);
-        while(p.y>ground.heightAt(p.x,p.z)-.5 && d<14){d+=.5;p=at(u,v,-d);}
+        d=candidate?.45:4;p=at(u,v,-d);
+        while(p.y>ground.heightAt(p.x,p.z)-(candidate?.12:.5) && d<(candidate?3:14)){d+=candidate?.15:.5;p=at(u,v,-d);}
         embed=Math.max(embed,d);
       }
       // Avoid unsupported fragments crossing a crest, rather than stretching a
       // giant artificial slab across a valley. Broad source shape stays intact.
-      if(support>.5 || embed>=14)continue;
+      if(support>(candidate?.24:.5) || embed>=(candidate?3:14))continue;
       for(let corner=0;corner<outline.length;corner++){
         const [uu,vv]=outline[corner];
         const u=uu*halfWidth,v=vv*height;
         // Unequal broken face angles, rather than one identical flat prism face.
-        const planeDepth=depth*(1+uu*tiltU+vv*tiltV)+(random(131+corner+part*8)-.5)*.26;
+        const planeDepth=depth*(1+uu*tiltU+vv*tiltV)+(random(131+corner+part*8)-.5)*(candidate?.04:.26);
         back.push(at(u,v,-embed));
         front.push(at(u*.94,v*.96,support+planeDepth*.68));
         bevel.push(at(u*.81,v*.87,support+planeDepth));
@@ -170,7 +177,9 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
     normalUpBins,patchNormalUpBins,exposedFaceUpBins,rejectedCrown,eligibleSteepFaceSamples:eligible,rejectedStrandPieces:rejectedStrand,sampledCliffAreaM2:sampledCliffArea,authoredFaceAreaM2:authoredFaceArea,
     exposedCentralFaceAreaM2:exposedFaceArea,buriedCentralFaceAreaM2:buriedFaceArea,closedVolumes:true,maxNormalProtrusionM:maxProtrusion,maxFaceWidthM:maxFaceWidth,minExposedVertexHeightM:Number.isFinite(minVisibleY)?minVisibleY:null,
     collisionProxies:proxies,collision:'Complete rock-volume AABBs; swept upright-body helper uses foot height in world metres',
-    provenance:'Authored metre-scale fracture shelves, closed overhang volumes and embedded backs; source DEM unchanged, not surveyed rhyolite geometry'};
+    ...(candidate?{coherentCandidate:true}:{}),
+    provenance:candidate?'Authored qualitative thin erosion ledges with local embedded support; not surveyed rhyolite geometry'
+      :'Authored metre-scale fracture shelves, closed overhang volumes and embedded backs; source DEM unchanged, not surveyed rhyolite geometry'};
   return geometry;
 }
 

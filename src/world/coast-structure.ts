@@ -31,7 +31,9 @@ function panelRelief(u: number, v: number): number {
 /** Sharpen only an already steep source face; crown, sandy ground and seabed stay tied to the source. */
 export function structuralCoastHeight(
   x: number, z: number, y: number, baseHeightAt: (x:number,z:number)=>number, sand: number,
+  candidate = false,
 ): number {
+  if(candidate)return coherentCoastHeight(x,z,y,baseHeightAt,sand);
   const strand=sand*(1-ease(5,10,y));
   if(y<3.5 || y>62 || strand>.62)return y;
   const gx=(baseHeightAt(x+5,z)-baseHeightAt(x-5,z))/10;
@@ -64,4 +66,26 @@ export function structuralCoastHeight(
   const shelves=panelRelief(shelfU*.46,shelfV*.62)*.72;
   const delta=clamp((sharp-y)*.74+relief+shelves-clefts,-7.5,5.5);
   return y+delta*strength;
+}
+
+/** Opt-in authored erosion. Dry, already steep source rock only; no inferred survey detail. */
+function coherentCoastHeight(x:number,z:number,y:number,base:(x:number,z:number)=>number,sand:number):number {
+  // The shoreline, sea floor and high crown remain exact anchors. A separate
+  // caller-owned raster join must still fade this delta at the source boundary.
+  if(y<=1.1 || y>=62 || !Number.isFinite(y))return y;
+  const strand=sand*(1-ease(5,10,y));
+  if(strand>=.3)return y;
+  const gx=(base(x+5,z)-base(x-5,z))/10,gz=(base(x,z+5)-base(x,z-5))/10;
+  const gradient=Math.hypot(gx,gz);
+  const local=Math.hypot((base(x+2,z)-base(x-2,z))/4,(base(x,z+2)-base(x,z-2))/4);
+  const strength=ease(.85,1.35,gradient)*ease(.65,1.15,local)*ease(1.1,3.2,y)
+    *(1-ease(56,62,y))*(1-ease(.12,.3,strand));
+  if(!Number.isFinite(strength) || strength===0)return y;
+  // Shared joint directions continue down the face. The low toe receives
+  // shallow signed fractures, never the legacy profile's broad lowered ramp.
+  const u=z*.96+x*.28,v=y*.92+x*.075-z*.045;
+  const shelves=panelRelief((z*.86+x*.51)*.46,(y*.7-x*.035)*.62)*.45;
+  const relief=panelRelief(u,v)*.58+shelves;
+  const toeLimit=.55+ease(2,7,y)*1.35;
+  return y+clamp(relief,-toeLimit,toeLimit)*strength;
 }
