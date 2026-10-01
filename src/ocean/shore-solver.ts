@@ -115,7 +115,9 @@ export class ShoreSolver {
   private ready=false;
   private disposed=false;
   private readonly maxSubsteps:number;
-  constructor(private readonly renderer:THREE.WebGLRenderer,options:ShoreSolverOptions={}){
+  private readonly renderer:THREE.WebGLRenderer;
+  constructor(renderer:THREE.WebGLRenderer,options:ShoreSolverOptions={}){
+    this.renderer=renderer;
     this.resolution=Math.round(finiteOption(options.resolution,128,16,256));
     this.uniforms.uShoreResolution={value:this.resolution};
     this.span=finiteOption(options.span,192,24,768);this.maxSubsteps=Math.round(finiteOption(options.maxSubsteps,8,1,16));
@@ -127,6 +129,18 @@ export class ShoreSolver {
   }
   get diagnostics():{substeps:number;simulationElapsed:number;droppedSeconds:number;stableDelta:number;bounds:THREE.Vector4} {
     return {substeps:this.substeps,simulationElapsed:this.simulationElapsed,droppedSeconds:this.droppedSeconds,stableDelta:this.stableDelta,bounds:(this.uniforms.uShoreBounds.value as THREE.Vector4).clone()};
+  }
+  /** Explicit developer readback only; never part of normal frame updates. */
+  probeState(){
+    const pixels=new Uint16Array(this.resolution*this.resolution*4);
+    this.renderer.readRenderTargetPixels(this.targets[this.index],0,0,this.resolution,this.resolution,pixels);
+    let minDepth=Infinity,maxDepth=0,maxSpeed=0,maxFoam=0,nonfinite=0;
+    for(let i=0;i<pixels.length;i+=4){
+      const h=THREE.DataUtils.fromHalfFloat(pixels[i]),qx=THREE.DataUtils.fromHalfFloat(pixels[i+1]),qz=THREE.DataUtils.fromHalfFloat(pixels[i+2]),foam=THREE.DataUtils.fromHalfFloat(pixels[i+3]);
+      if(![h,qx,qz,foam].every(Number.isFinite)){nonfinite++;continue;}
+      minDepth=Math.min(minDepth,h);maxDepth=Math.max(maxDepth,h);maxSpeed=Math.max(maxSpeed,Math.hypot(qx,qz)/Math.max(.01,h));maxFoam=Math.max(maxFoam,foam);
+    }
+    return {minDepth,maxDepth,maxSpeed,maxFoam,nonfinite,cells:pixels.length/4,readbackBytes:pixels.byteLength,...this.diagnostics};
   }
   bindUniforms(shared:Record<string,THREE.IUniform>):void {for(const name of ['uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uLongWaves','uShortWaves','uSwell','uChoppiness'])if(shared[name])this.material.uniforms[name]=shared[name];}
   private pass(mode:number,dt:number):void {const u=this.material.uniforms;u.uInput.value=this.targets[this.index].texture;u.uMode.value=mode;u.uDt.value=dt;this.index=1-this.index;this.renderer.setRenderTarget(this.targets[this.index]);this.renderer.render(this.scene,this.camera);this.uniforms.uShoreState.value=this.targets[this.index].texture;}

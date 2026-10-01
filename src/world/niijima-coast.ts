@@ -38,7 +38,7 @@ const PATCHES = [
 
 export const NIIJIMA_COAST_BOOKMARKS = [
   { id: 'habushi', label: '羽伏浦メインゲート前の浜', lat: 34.3764393, lon: 139.2755897, source: 'https://niijima-info.jp/course/2499/', precision: 'Official-linked Google place marker; camera and approach are authored.' },
-  { id: 'horikiri', label: '堀切・白ママ', lat: 34.35561844, lon: 139.2758477, source: NIIJIMA_DETAIL_PROVENANCE.locationSource, precision: 'Official municipal visitor-map marker.' },
+  { id: 'horikiri', label: '堀切入口', lat: 34.35561844, lon: 139.2758477, source: NIIJIMA_DETAIL_PROVENANCE.locationSource, precision: 'Official municipal visitor-map marker; separate from White Mama and the Secret surf point.' },
   { id: 'secret', label: 'シークレット', lat: 34.34428046, lon: 139.2757618, source: NIIJIMA_DETAIL_PROVENANCE.locationSource, precision: 'Official municipal visitor-map marker; distinct from entrance.' },
 ] as const;
 

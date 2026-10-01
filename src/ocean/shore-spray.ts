@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { shoreWaveSampling,shoreBreakerDissipationSampling } from './surface-detail.ts';
+import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { ShoreWhitewater, whitewaterBirthRate, type WhitewaterSample } from './shore-whitewater.ts';
 
 const GRID=24, SPAN=144, INTERVAL=.2, LIMIT=1500;
@@ -108,13 +109,14 @@ export class ShoreSpray {
     this.whitewater=options.whitewater?new ShoreWhitewater():null;
     if(this.whitewater)this.group.add(this.whitewater.group);
     this.sampleMaterial=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,
-      uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55},uDepthCapLoss:{value:options.whitewater?1:0}},
+      uniforms:{...createShoreSolverUniforms(),uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55},uDepthCapLoss:{value:options.whitewater?1:0}},
       vertexShader:'void main(){gl_Position=vec4(position.xy,0,1);}',fragmentShader:/* glsl */`
       precision highp float;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;
       uniform vec4 uBathyBounds;uniform vec2 uBathyResolution,uCenter;
       uniform float uSwell,uWind,uChoppiness,uDepthCapLoss;
       ${shoreWaveSampling}
+      ${shoreSolverSampling}
       ${shoreBreakerDissipationSampling}
       vec2 coastAt(vec2 p){
         vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
@@ -143,6 +145,7 @@ export class ShoreSpray {
           float depthLoss=shoreBreakerDissipation(rawFftHeight,coast,uSwell,uWind);
           energy=max(energy,depthLoss*smoothstep(.2,.6,depth)*(1.0-smoothstep(2.8,4.0,depth)));
         }
+        vec2 solved=shoreSolvedSurface(world,h,energy);h=solved.x;energy=max(energy,solved.y);
         float code=floor(clamp(h/16.0+.5,0.0,1.0)*65535.0+.5);
         gl_FragColor=vec4(floor(code/256.0),mod(code,256.0),floor(energy*255.0+.5),floor(clamp(depth/8.0,0.0,1.0)*255.0+.5))/255.0;
       }`});
@@ -172,7 +175,7 @@ export class ShoreSpray {
       material.uniforms.uOccludingDepthReady.value=uniforms.uSceneDepth?.value?1:0;
       material.uniforms.uViewport.value.copy(viewport);
     }
-    if(this.whitewater)for(const key of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness'])
+    if(this.whitewater)for(const key of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness','uShoreState','uShoreBounds','uShoreReady','uShoreResolution'])
       if(uniforms[key])this.whitewater.material.uniforms[key]=uniforms[key];
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
@@ -235,7 +238,7 @@ export class ShoreSpray {
     if(this.pending||this.failed||time-this.lastRequest<INTERVAL||!uniforms.uLongWaves?.value||!uniforms.uShortWaves?.value||!uniforms.uBathymetry?.value)return;
     this.lastRequest=time;this.pending=true;
     const origin=new THREE.Vector2(Math.round(camera.position.x/6)*6,Math.round(camera.position.z/6)*6);
-    for(const name of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness']){
+    for(const name of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness','uShoreState','uShoreBounds','uShoreReady','uShoreResolution']){
       if(uniforms[name])this.sampleMaterial.uniforms[name].value=uniforms[name].value;
     }
     this.sampleMaterial.uniforms.uCenter.value.copy(origin);

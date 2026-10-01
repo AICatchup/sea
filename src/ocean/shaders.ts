@@ -1,5 +1,6 @@
 import { photographicSkySampling } from './photographic-sky';
 import { capillarySampling, shoreWaveSampling } from './surface-detail';
+import { shoreSolverSampling } from './shore-solver.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -184,6 +185,7 @@ export const oceanVertex = /* glsl */ `
   varying vec2 vOcean;
   varying float vDistance;
   ${shoreWaveSampling}
+  ${shoreSolverSampling}
   vec3 vertexCoast(vec2 p){
     vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
     if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return vec3(-110.0,1.0,0.0);
@@ -201,6 +203,7 @@ export const oceanVertex = /* glsl */ `
     vec3 world=vec3(origin.x,0.0,origin.y);
     world.xz += displacement.xz*uChoppiness*uSwell;
     world.y = displacement.y*uSwell;
+    world.y = shoreSolvedSurface(world.xz,world.y,0.).x;
     // Earth's curvature keeps the far mesh below a true, softly hazed horizon.
     world.y -= distanceToEye*distanceToEye/(2.0*6371000.0);
     vWorld=world;
@@ -232,6 +235,7 @@ export const oceanFragment = /* glsl */ `
   varying float vDistance;
   ${atmosphere}
   ${shoreWaveSampling}
+  ${shoreSolverSampling}
 
   vec3 coastAt(vec2 p){
     vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
@@ -241,6 +245,10 @@ export const oceanFragment = /* glsl */ `
   float shoalAt(vec2 p){return shoreWaveScale(coastAt(p).rg,uSwell,uWind);}
   vec3 longDisplacement(vec2 p) { return texture2D(uLongWaves,p/384.0).xyz*shoalAt(p); }
   vec3 shortDisplacement(vec2 p) { return texture2D(uShortWaves,p/24.0).xyz*shoalAt(p); }
+  float renderedSurface(vec2 world){
+    vec2 p=world;for(int i=0;i<3;i++)p=world-(longDisplacement(p)+shortDisplacement(p)).xz*uSwell*uChoppiness;
+    return shoreSolvedSurface(world,(longDisplacement(p).y+shortDisplacement(p).y)*uSwell,0.).x;
+  }
   float linearDepth(float d){float n=uNearFar.x,f=uNearFar.y;return 2.0*n*f/(f+n-(d*2.0-1.0)*(f-n));}
   float surfaceSunVisibility(vec3 p){
     if(uShadowReady<.5)return 1.0;
@@ -284,6 +292,13 @@ export const oceanFragment = /* glsl */ `
     vec3 tangentX=vec3(1.0+dx.x*chop,dx.y*uSwell,dx.z*chop);
     vec3 tangentZ=vec3(dz.x*chop,dz.y*uSwell,1.0+dz.z*chop);
     vec3 normal=normalize(cross(tangentZ,tangentX));
+    vec2 shoreUV=(vWorld.xz-uShoreBounds.xy)/uShoreBounds.zw;
+    if(uShoreReady>.5&&coast.x> -11.&&coast.x<2.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))){
+      float step=max(1.5,footprint*.65);
+      float sx=(renderedSurface(vWorld.xz+vec2(step,0))-renderedSurface(vWorld.xz-vec2(step,0)))/(2.*step);
+      float sz=(renderedSurface(vWorld.xz+vec2(0,step))-renderedSurface(vWorld.xz-vec2(0,step)))/(2.*step);
+      normal=normalize(vec3(-sx,1.,-sz));
+    }
     normal.y=max(abs(normal.y),0.14);
     // Metric stochastic detail is shared with the photon caustics. Pixel
     // filtering removes unresolved slopes, while retaining their variance.
@@ -416,6 +431,7 @@ export const oceanFragment = /* glsl */ `
     float foam=max(breaking*0.90,memory*0.32);
     foam*=mix(0.22,1.0,pores)*smoothstep(4.0,12.0,uWind);
     foam*=1.0-smoothstep(0.35,3.2,footprint);
+    foam=max(foam,shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y*(.35+.65*pores));
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
     color=mix(color,foamColor,clamp(foam,0.0,0.85));
     float shoreDepth=max(0.0,-coast.x);

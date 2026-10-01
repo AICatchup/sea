@@ -6,7 +6,7 @@ export const DESTINATION_SEEDS: readonly WorldDestination[] = [
   { id: 'nakanoura', label: '中の浦海水浴場', island: '式根島', ...geoToWorld(34.32809021013709, 139.20552297599966), heading: 1.15 },
   { id: 'niijima', label: '新島・前浜', island: '新島', ...geoToWorld(34.3658, 139.2450), heading: 1.57 },
   { id: 'habushi', label: '新島・羽伏浦メインゲート', island: '新島', ...geoToWorld(34.3764393, 139.2755897 + .0011), heading: -1.57 },
-  { id: 'horikiri', label: '新島・堀切と白ママ', island: '新島', ...geoToWorld(34.35561844, 139.2758477 + .0011), heading: -1.57 },
+  { id: 'horikiri', label: '新島・堀切入口', island: '新島', ...geoToWorld(34.35561844, 139.2758477 + .0011), heading: -1.57 },
   { id: 'secret', label: '新島・シークレット', island: '新島', ...geoToWorld(34.34428046, 139.2757618 + .0011), heading: -1.57 },
   { id: 'kozushima', label: '神津島・前浜', island: '神津島', ...geoToWorld(34.2050, 139.1325), heading: 1.57 },
 ];

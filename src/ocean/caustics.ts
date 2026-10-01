@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { capillarySampling, shoreWaveSampling } from './surface-detail';
+import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 
 export interface CausticBathymetry {
   /** R: seabed height in metres, G: local wave shelter, as in oceanVertex. */
@@ -26,6 +27,7 @@ const photonVertex = /* glsl */ `
   const float PI = 3.14159265359;
   ${capillarySampling}
   ${shoreWaveSampling}
+  ${shoreSolverSampling}
   vec2 bathyUv(vec2 p) {
     return (p-uBathyBounds.xy)/uBathyBounds.zw;
   }
@@ -38,7 +40,8 @@ const photonVertex = /* glsl */ `
     vec2 coast=coastAt(p);
     float shoal=shoreWaveScale(coast,uSwell,uWind);
     vec3 d=(texture2D(uLongWaves,p/384.0).xyz+texture2D(uShortWaves,p/24.0).xyz)*shoal*uSwell;
-    return vec3(p.x+d.x*uChoppiness,d.y,p.y+d.z*uChoppiness);
+    vec2 world=p+d.xz*uChoppiness;
+    return vec3(world.x,shoreSolvedSurface(world,d.y,0.).x,world.y);
   }
   void main() {
     // Emit at regularly spaced crossings of the mean water plane. Invert the
@@ -181,6 +184,7 @@ export class WaveCaustics {
       // AdditiveBlending's default SRC_ALPHA factor would zero these photons.
       premultipliedAlpha: true,
       uniforms: {
+        ...createShoreSolverUniforms(),
         uLongWaves: { value: null }, uShortWaves: { value: null }, uBathymetry: { value: null },uBathyTriangulated:{value:0},
         uBounds: { value: this.bounds }, uBathyBounds: { value: new THREE.Vector4() },
         uBathyResolution: { value: new THREE.Vector2() }, uSunDirection: { value: new THREE.Vector3(0, 1, 0) },
@@ -209,6 +213,7 @@ export class WaveCaustics {
   }
 
   get texture(): THREE.Texture { return this.history[this.historyIndex].texture; }
+  bindShore(uniforms:Record<string,THREE.IUniform>):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution'])if(uniforms[key])this.photons.material.uniforms[key]=uniforms[key];}
 
   /** Explicit developer probe; never called in the frame loop. */
   readEnergy():{min:number;max:number;mean:number;rms:number;center:number}{

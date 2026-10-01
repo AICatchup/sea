@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
+import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 
 const LIMIT=1024;
 export interface WhitewaterSample {height:number;compression:number;depth:number;shelter:number;ground:number;gradientX:number;gradientZ:number}
@@ -75,17 +76,18 @@ export class ShoreWhitewater {
     for(const [name,array,size] of [['aCenter',this.pool.positions,3],['aShape',this.pool.shape,3],['aAlpha',this.pool.alpha,1],['aSeed',this.pool.seeds,1]] as const)this.geometry.setAttribute(name,new THREE.InstancedBufferAttribute(array,size).setUsage(THREE.DynamicDrawUsage));
     this.geometry.instanceCount=this.pool.capacity;
     this.material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,side:THREE.FrontSide,
-      uniforms:{uTint:{value:new THREE.Color(.78,.86,.86)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},
+      uniforms:{...createShoreSolverUniforms(),uTint:{value:new THREE.Color(.78,.86,.86)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},
         uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`attribute vec3 aCenter,aShape;attribute float aAlpha,aSeed;varying vec2 vUv;varying float vAlpha,vSeed;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
       ${shoreWaveSampling}
+      ${shoreSolverSampling}
       vec2 foamCoast(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;}
       vec3 foamDisplacement(vec2 p){return (texture2D(uLongWaves,p/384.0).xyz+texture2D(uShortWaves,p/24.0).xyz)*uSwell*shoreWaveScale(foamCoast(p),uSwell,uWind);}
       void main(){vUv=position.xz+.5;vAlpha=aAlpha;vSeed=aSeed;if(aAlpha<.001){gl_Position=vec4(2,2,2,1);return;}
       vec2 q=position.xz*aShape.xy;float c=cos(aShape.z),s=sin(aShape.z);vec2 offset=vec2(q.x*c-q.y*s,q.x*s+q.y*c),world=aCenter.xz+offset,p=world;
       for(int i=0;i<3;i++)p=world-foamDisplacement(p).xz*uChoppiness;
-      float height=foamDisplacement(p).y+.035;vec2 delta=world-cameraPosition.xz;height-=dot(delta,delta)/(2.0*6371000.0);
+      float height=shoreSolvedSurface(world,foamDisplacement(p).y,0.).x+.035;vec2 delta=world-cameraPosition.xz;height-=dot(delta,delta)/(2.0*6371000.0);
       gl_Position=projectionMatrix*viewMatrix*vec4(world.x,height,world.y,1);}`,
       fragmentShader:`uniform vec3 uTint;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady;uniform vec2 uViewport;varying vec2 vUv;varying float vAlpha,vSeed;
       float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7))+vSeed*137.)*43758.5453);}

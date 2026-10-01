@@ -153,6 +153,8 @@ try {
     depthSamples:(points:readonly{x:number;y:number}[])=>ocean.probeDepthSamples(points),
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
     breakerEnabled:(enabled:boolean)=>ocean.setBreakerCandidateEnabled(enabled),
+    shoreEnabled:(enabled:boolean)=>ocean.setShoreCandidateEnabled(enabled),
+    shoreState:()=>ocean.probeShoreState(),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
     capturePixels:capturePNG,
     captureNamed:(name:string)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');return captureNamed(captureHost,profile,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
@@ -160,23 +162,33 @@ try {
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
       return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
     },
-    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number},compareBreaker=false){
+    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false){
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');
       try{
         captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');
         ocean.setWind(Math.max(0,Math.min(18,wind)));ocean.setSwell(Math.max(.5,Math.min(1.5,swell)));
         const p=profile.pose,yaw=look&&Number.isFinite(look.yaw)?look.yaw:p.yaw,pitch=look&&Number.isFinite(look.pitch)?Math.max(-1.35,Math.min(1.35,look.pitch)):p.pitch;
-        captureHost.viewpoint(p.x,p.z,yaw,pitch,p.mode,p.depth);captureHost.setPaused(false);
+        const x=Number.isFinite(look?.x)?look!.x!:p.x,z=Number.isFinite(look?.z)?look!.z!:p.z;
+        const mode=look?.mode&&['walk','swim','dive'].includes(look.mode)?look.mode:p.mode;
+        const depth=Number.isFinite(look?.depth)?Math.max(0,Math.min(100,look!.depth!)):p.depth;
+        captureHost.viewpoint(x,z,yaw,pitch,mode,depth);captureHost.setPaused(false);
         await new Promise(resolve=>setTimeout(resolve,Math.max(2000,Math.min(15000,milliseconds))));
         captureHost.setPaused(true);await captureHost.nextFrame();await captureHost.nextFrame();
         const state=captureHost.readState(),png=await capturePNG();if(!png)throw new Error('No live capture');
+        const shoreSolver=ocean.diagnostics.shoreSolver;
+        const shoreState=compareShore?ocean.probeShoreState():null;
+        let pngWithoutShore:string|null=null;
+        if(compareShore){
+          try{ocean.setShoreCandidateEnabled(false);await captureHost.nextFrame();await captureHost.nextFrame();pngWithoutShore=await capturePNG();}
+          finally{ocean.setShoreCandidateEnabled(true);}
+        }
         let pngWithoutBreaker:string|null=null;
         if(compareBreaker){
           const enabled=ocean.getBreakerCandidateEnabled();
           try{ocean.setBreakerCandidateEnabled(false);await captureHost.nextFrame();await captureHost.nextFrame();pngWithoutBreaker=await capturePNG();}
           finally{ocean.setBreakerCandidateEnabled(enabled);}
         }
-        return {png,pngWithoutBreaker,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null}};
+        return {png,pngWithoutBreaker,pngWithoutShore,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null}};
       }finally{captureHost.restoreState(before);}
     },
     captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),

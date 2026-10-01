@@ -19,6 +19,7 @@ import { WorldCollision, withWorldCollision } from '../world/world-collision';
 import { WorldSolidBinding } from '../world/world-solid-binding';
 import { ShoreSpray } from './shore-spray';
 import { ShoreBreaker } from './shore-breaker';
+import { ShoreSolver, shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { buildPhotoCoastPresentation } from '../world/photo-coast-presentation';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
@@ -40,6 +41,7 @@ class LocalWaterHeights {
       uniform vec4 uBathyBounds;uniform vec2 uBathyResolution,uPlayer,uBoat;
       uniform float uSwell,uChoppiness,uWind;
       ${shoreWaveSampling}
+      ${shoreSolverSampling}
       vec3 displacement(vec2 p){
         vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;vec2 coast=vec2(-110,1);
         if(all(greaterThanEqual(uv,vec2(0)))&&all(lessThanEqual(uv,vec2(1)))){
@@ -53,10 +55,10 @@ class LocalWaterHeights {
         vec2 world=center+(vec2(gl_FragCoord.x,mod(gl_FragCoord.y,8.0))-.5-3.5)*2.0;
         vec2 parameter=world;
         for(int i=0;i<3;i++)parameter=world-displacement(parameter).xz*uChoppiness;
-        float h=displacement(parameter).y;
+        float h=shoreSolvedSurface(world,displacement(parameter).y,0.).x;
         float code=floor(clamp(h/16.0+.5,0.0,1.0)*65535.0+.5);
         gl_FragColor=vec4(floor(code/256.0),mod(code,256.0),137.0,255.0)/255.0;
-      }`,uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},
+      }`,uniforms:{...createShoreSolverUniforms(),uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},
         uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
         uPlayer:{value:new THREE.Vector2()},uBoat:{value:new THREE.Vector2()},uSwell:{value:1},uChoppiness:{value:1.55},uWind:{value:8.5}}});
   private pixels:Uint8Array|null=null;
@@ -101,6 +103,7 @@ class LocalWaterHeights {
       .finally(()=>{this.pending=false;});
   }
   get diagnostics(){return {ready:!!this.pixels,failed:this.failed,samples:128,interval:.2,readbackBytes:512};}
+  bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
   dispose():void{this.disposed=true;this.target.dispose();this.geometry.dispose();this.material.dispose();this.scene.clear();}
 }
 
@@ -134,6 +137,8 @@ export class Ocean {
   private solidContactReady=false;
   private readonly spray:ShoreSpray;
   private readonly breaker:ShoreBreaker|null;
+  private readonly shoreSolver:ShoreSolver|null;
+  private shoreCandidateEnabled=true;
   private breakerCandidateEnabled=true;
   readonly renderer:THREE.WebGLRenderer;
   readonly camera=new THREE.PerspectiveCamera(62,1,.12,35000);
@@ -196,6 +201,7 @@ export class Ocean {
     this.renderer.shadowMap.autoUpdate=false;
     this.renderer.info.autoReset=false;
     this.simulation=new OceanSimulation(this.renderer,this.wind);
+    this.shoreSolver=new URLSearchParams(location.search).get('surf')==='1'?new ShoreSolver(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld();
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:new URLSearchParams(location.search).get('whitewater')!=='0'});
@@ -214,6 +220,7 @@ export class Ocean {
       .setWaterHeightSampler?.(this.waterHeights.sample);
     const p=presets.day;
     this.uniforms={
+      ...createShoreSolverUniforms(),
       uTime:{value:this.time},uSunDirection:{value:new THREE.Vector3(...p.sun).normalize()},
       uSunColor:{value:new THREE.Vector3(...p.sunColor)},uZenith:{value:new THREE.Vector3(...p.zenith)},
       uHorizon:{value:new THREE.Vector3(...p.horizon)},uCloudColor:{value:new THREE.Vector3(...p.cloud)},
@@ -231,6 +238,8 @@ export class Ocean {
       uSkyTexture:{value:null},uSkyRotation:{value:0},uSkyExposure:{value:1},uUseSky:{value:0},
     };
     this.caustics=new WaveCaustics(this.renderer,{span:32});
+    if(this.shoreSolver){this.shoreSolver.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.shoreSolver.uniforms);}
+    this.waterHeights.bindShore(this.uniforms);this.caustics.bindShore(this.uniforms);
     this.uniforms.uCaustics.value=this.caustics.texture;this.uniforms.uCausticBounds.value=this.caustics.bounds;
     this.compositor=new SceneCompositor(this.renderer,this.uniforms.uExposure,this.uniforms.uUnderwater,this.uniforms.uTime);
     this.compositor.setWaterOptics(this.camera,this.sun,this.uniforms.uSunDirection,this.uniforms.uSunColor);
@@ -420,6 +429,13 @@ export class Ocean {
     const image=waterMap.texture.image as {width:number;height:number};
     this.uniforms.uBathyResolution.value.set(image.width,image.height);this.uniforms.uBathyTriangulated.value=waterMap.triangulated?1:0;
     const textures=this.simulation.textures;this.uniforms.uLongWaves.value=textures[0];this.uniforms.uShortWaves.value=textures[1];
+    this.uniforms.uSwell.value=this.swell;this.uniforms.uWind.value=this.wind;
+    if(this.shoreSolver){
+      if(waterMap.triangulated){
+        if(this.shoreCandidateEnabled)this.shoreSolver.update(this.paused?0:delta,this.camera.position.x,this.camera.position.z);
+        else this.uniforms.uShoreReady.value=0;
+      }else this.shoreSolver.reset();
+    }
     this.waterHeights.update(stamp*.001,textures,waterMap,state.position,state.boatPosition,this.swell,this.uniforms.uChoppiness.value,this.wind);
     this.caustics.update(this.time,this.paused?0:delta,textures[0],textures[1],waterMap,this.camera.position,this.uniforms.uSunDirection.value,this.swell,this.wind,1.55);
     this.uniforms.uCaustics.value=this.caustics.texture;
@@ -518,6 +534,8 @@ export class Ocean {
   }
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
+  setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
+  probeShoreState(){return this.shoreSolver?.probeState()??null;}
   getBreakerCandidateEnabled():boolean{return this.breakerCandidateEnabled;}
   probeDepthSamples(points:readonly{x:number;y:number}[]){return this.compositor.probeDepthSamples(points);}
   /** Developer picking of foliage only; tight per-instance bounds avoid testing
@@ -556,6 +574,7 @@ export class Ocean {
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
       spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,habushiGround:this.world.habushiGround.diagnostics,
+      shoreSolver:this.shoreSolver?{...this.shoreSolver.diagnostics,ready:this.uniforms.uShoreReady.value}:null,
       photoCoast:this.photoCoast?{instances:this.photoCoast.diagnostics.instances,triangles:this.photoCoast.diagnostics.triangles,draws:this.photoCoast.diagnostics.draws,roles:this.photoCoast.diagnostics.roles}:null,
       scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),
       ground:this.world.heightAt(state.position.x,state.position.z),programs:this.renderer.info.programs?.length,
@@ -567,6 +586,7 @@ export class Ocean {
     this.photoCoast?.dispose();this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();
+    this.shoreSolver?.dispose();
     this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
     this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();
