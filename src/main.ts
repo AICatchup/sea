@@ -141,6 +141,7 @@ try {
   };
   // Development-only observation/replay seam. It uses the same controller input
   // as the touch controls; bookmarks are QA starts, never normal travel actions.
+  let crestSeriesBusy=false;
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
     viewpoint:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>ocean.adventure.viewpoint(x,z,yaw,pitch,mode,depth),
     async moveFor(x:number,forward:number,vertical:number,milliseconds:number){
@@ -226,6 +227,33 @@ try {
         try{await captureHost.nextFrame();await captureHost.nextFrame();const pngWithoutWhitewater=await capturePNG();return {frames,pngWithoutWhitewater,whitewaterComparison:'Frozen same solver, particles, camera and light; volume/legacy material visible vs hidden only'};}
         finally{ocean.setWhitewaterVisible(visible);}
       }finally{captureHost.restoreState(before);}
+    },
+    async captureCrestSeries(name:string,seconds=12,interval=.2,wind=14,swell=1.3,look?:{x:number;z:number;yaw:number;pitch:number;mode?:'walk'|'swim'|'dive';depth?:number}){
+      if(crestSeriesBusy)throw new Error('Crest series already in flight');
+      if(!Number.isFinite(seconds)||seconds<=0||seconds>12||!Number.isFinite(interval)||interval<.2||interval>2||Math.ceil(seconds/interval)+1>64)throw new Error('Bounded crest series: 0..12 seconds, interval .2..2 seconds, at most64 samples');
+      if(!Number.isFinite(wind)||!Number.isFinite(swell)||wind<0||wind>18||swell<.5||swell>1.5)throw new Error('Finite bounded wind/swell required');
+      if(look&&(![look.x,look.z,look.yaw,look.pitch,look.depth??0].every(Number.isFinite)||Math.abs(look.pitch)>1.35||(look.depth??0)<0||(look.depth??0)>100||!['walk','swim','dive'].includes(look.mode??'walk')))throw new Error('Finite bounded capture pose required');
+      await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown crest series view');
+      const before=captureHost.readState(),samples=[];
+      let initialPNG:string|null=null,finalPNG:string|null=null;
+      crestSeriesBusy=true;
+      try{
+        captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');ocean.setWind(wind);ocean.setSwell(swell);
+        const p=look??profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode??'walk',p.depth);captureHost.setPaused(false);
+        // One initialization and warmup; never reset solver or particle history between samples.
+        await new Promise(resolve=>setTimeout(resolve,3000));
+        const started=performance.now(),count=Math.ceil(seconds/interval)+1;
+        for(let i=0;i<count;i++){
+          const requestedSeconds=Math.min(seconds,i*interval);
+          await new Promise(resolve=>setTimeout(resolve,Math.max(0,started+requestedSeconds*1000-performance.now())));
+          captureHost.setPaused(true);await captureHost.nextFrame();
+          const probe=ocean.probeCrestDriver(true);if(!probe?.available)throw new Error('Expanded crest probe requires the opt-in breaker and float render-target support');
+          samples.push({requestedSeconds,wallSeconds:(performance.now()-started)/1000,time:ocean.diagnostics.time,state:captureHost.readState(),probe});
+          if(i===0)initialPNG=await capturePNG();if(i===count-1)finalPNG=await capturePNG();
+          captureHost.setPaused(false);
+        }
+        return {samples,initialPNG,finalPNG,provenance:'One QA pose/preset/spectrum initialization; continuous solved history, paused only for observations; actual simulation/wall timestamps recorded. No travel, surveyed conditions or Human proof.',compressionEvidence:'Named GPU channels; interpret only valid domain/stencil samples. Invalid samples are not physical zeros.'};
+      }finally{try{captureHost.restoreState(before);}finally{crestSeriesBusy=false;}}
     },
     captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),
   }});
