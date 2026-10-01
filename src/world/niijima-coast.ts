@@ -73,15 +73,16 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
         float grains=niiNoise(p*42.0)*.0014*(1.0-smoothstep(.35,.8,footprint*42.0))
           +niiNoise(p*13.0)*.003*(1.0-smoothstep(.35,.8,footprint*13.0));
         float pores=pow(niiNoise(p*5.0),5.0)*.008*(1.0-smoothstep(.35,.8,footprint*5.0));
-        float layers=sin(p.y*12.0+niiNoise(p*.12)*3.0)*.006*(1.0-smoothstep(.35,.8,footprint*1.91));
+        float layers=(niiNoise(vec3(p.x*.045,p.y*2.8,p.z*.045))-.5)*.016*(1.0-smoothstep(.35,.8,footprint*2.8));
         return grains-pores+layers*smoothstep(4.0,12.0,p.y);
       }
     `);
     shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
-      float niiBand=sin(vNiijimaPoint.y*.77+niiNoise(vNiijimaPoint*.025)*3.0);
+      float niiBand=niiNoise(vec3(vNiijimaPoint.x*.012,vNiijimaPoint.y*.36+niiNoise(vNiijimaPoint*.017)*.65,vNiijimaPoint.z*.014))-.5;
+      float niiMacro=niiNoise(vNiijimaPoint*vec3(.046,.072,.046))-.5;
       float niiFine=niiNoise(vNiijimaPoint*3.4);
       float niiDry=smoothstep(-.15,1.1,vNiijimaPoint.y);
-      diffuseColor.rgb*=.95+niiFine*.07+niiBand*.022*smoothstep(5.0,20.0,vNiijimaPoint.y);
+      diffuseColor.rgb*=.94+niiFine*.075+(niiBand*.16+niiMacro*.17)*smoothstep(5.0,20.0,vNiijimaPoint.y);
       diffuseColor.rgb*=mix(.80,1.0,niiDry);
       vec3 niiFaceAxis=abs(normalize(cross(dFdx(vNiijimaPoint),dFdy(vNiijimaPoint))));
       vec3 niiWeights=pow(niiFaceAxis,vec3(5));niiWeights/=max(.0001,dot(niiWeights,vec3(1)));
@@ -137,7 +138,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       `:''}
     `);
   };
-  material.customProgramCacheKey = () => 'niijima-pumice-wave-film-v2';
+  material.customProgramCacheKey = () => 'niijima-pumice-irregular-beds-v13';
   return material;
 }
 

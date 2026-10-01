@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { GroundSampler } from './contracts.ts';
 import { NiijimaDEM, noise, ease } from './niijima-detail.ts';
+import { niijimaGeologicalSurface } from './niijima-geological-surface.ts';
 import { NIIJIMA_VOLUME_FRONTAGE } from './niijima-scarp.ts';
 
 export interface ScarpVolumeSource { heightAt(x:number,z:number):number; shoreAt(x:number,z:number):number; }
@@ -65,7 +66,9 @@ export class NiijimaScarpVolume {
         const t=j/faceSteps, h=toeY+(top-toeY)*t;
         // Angular talus and near-vertical wall. Long, asymmetric fissures
         // share a world-space path through height, with staggered birth/termination.
-        const talus=14*Math.min(1,t/.18);
+        const apronWidth=10+noise(z*.012,41)*13;
+        const apronHeight=.09+noise(z*.018,37)*.15;
+        const talus=apronWidth*Math.min(1,t/apronHeight);
         const slope=7*t;
         let incision=0;
         for(let g=0;g<67;g++) {
@@ -77,25 +80,19 @@ export class NiijimaScarpVolume {
           incision+=Math.max(0,1-q)*(2+noise(g,7)*5.2)*active;
         }
         const broad=(noise(z*.025,3)-.5)*3;
-        // Piecewise angular bedding: thin broken lips, never rounded sine shelves.
-        let strata=0;
-        // Sparse uneven hard beds terminate across frontage. Fissures dominate.
-        for(let layer=0;layer<15;layer++){
-          const level=9+noise(layer*17.31,81)*112;
-          const drift=(noise(z*.009,layer*3.7)-.5)*2.8;
-          const width=.22+noise(layer*3.3,18)*.45;
-          const lip=Math.max(0,1-Math.abs(h-level-drift)/width);
-          const exposed=Math.max(0,noise(z*.04,layer*4.3)-.32);
-          strata-=lip*exposed*.85;
-        }
+        // Broad shelves and recessed weak beds are physical geometry, not
+        // drawn stripes. Lower horizontal/wavy bedding has no blanket 35deg tilt.
+        const geology=niijimaGeologicalSurface(z,h);
+        const strata=geology.retreat*ease(apronHeight,apronHeight+.05,t);
         const fine=(noise(z*.42,h*.38)-.5)*.65;
-        const rawD=talus+slope+(broad+incision+fine+strata)*fade*ease(.12,.24,t);
+        const rawD=talus+slope+(broad+incision+fine+strata)*fade*ease(apronHeight*.7,apronHeight+.04,t);
         const d=t>.8?Math.max(previousD+.025,rawD):rawD;previousD=d;
         const p=point(d);
         // Ends sink into the existing slope, hiding finite-volume caps.
         const buried=source.heightAt(p.x,p.z)-3;
         const y=buried+(h-buried)*fade;
-        put(p.x,y,p.z,.83+noise(z*.19,h*.23)*.13-incision*.006);
+        const talusTone=.87+(noise(z*.24,h*.31)-.5)*.12;
+        put(p.x,y,p.z,t<apronHeight?talusTone:geology.tone-incision*.008);
       }
       // Roof starts at the exact final face vertex; no mismatched bridge triangles.
       const front={x:positions[positions.length-3],z:positions[positions.length-1]};
