@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {shoreSurfaceBlend,shoreContactDepth} from '../src/ocean/shore-surface-transition.ts';
+import {shoreSurfaceBlend,shoreContactDepth,shoreWetSurfaceSlope} from '../src/ocean/shore-surface-transition.ts';
 import {readFileSync} from 'node:fs';
 import {referenceWetSurface} from '../src/ocean/shore-solver-reference.ts';
 
@@ -57,4 +57,27 @@ test('pointwise contact preserves a shallow positive bore and respects mesh dept
   assert.match(shader,/coastAt\(uPointwiseContact>\.5\?vWorld\.xz:vOcean\)/);
   assert.match(shader,/contactHeight=renderedSurface\(vWorld\.xz\)/);
   assert.match(shader,/shoreContactDepth\(vWorld\.y,contactHeight,coast\.x\)/);
+});
+
+test('an emergent wet film does not differentiate through dry mean-sea-level fallback',()=>{
+  const center=1.03,step=1.5;
+  const wetSide=1.00,wetBed=.98,dryFallback=0,dryBed=1.10;
+  const oldSlope=(dryFallback-wetSide)/(2*step);
+  const slope=shoreWetSurfaceSlope(center,wetSide,wetBed,dryFallback,dryBed,step);
+  assert.ok(oldSlope<-.3,'old centered stencil creates a fictitious steep inward face');
+  assert.ok(Math.abs(slope-.02)<1e-12,'wet-side derivative retains the film slope');
+  assert.ok(Math.abs(shoreWetSurfaceSlope(center,dryFallback,dryBed,wetSide,wetBed,step)+.02)<1e-12);
+  // A constant runup plateau beside dry sand remains level, at positive eta.
+  assert.equal(shoreWetSurfaceSlope(center,center,1,dryFallback,dryBed,step),0);
+  assert.equal(shoreWetSurfaceSlope(center,dryFallback,dryBed,dryFallback,dryBed,step),0);
+});
+
+test('wet-domain stencil preserves steep valid bores and ocean waves',()=>{
+  assert.equal(shoreWetSurfaceSlope(2,0,-1,4,3,1),2);
+  assert.equal(shoreWetSurfaceSlope(0,-2,-3,2,-3,1),2);
+  assert.equal(shoreWetSurfaceSlope(2,0,-1,0,3,1),2,'one-sided steep wet bore remains steep');
+  // There is no minimum depth cutoff: a positive millimetre film is wet.
+  assert.ok(Math.abs(shoreWetSurfaceSlope(1.001,.901,.900,1.101,1.100,1)-.1)<1e-12);
+  const shader=readFileSync(new URL('../src/ocean/shaders.ts',import.meta.url),'utf8');
+  assert.match(shader,/shoreWetSurfaceSlope\(contactHeight,renderedSurface\(nx\),coastAt\(nx\)\.x,renderedSurface\(px\),coastAt\(px\)\.x,step\)/);
 });

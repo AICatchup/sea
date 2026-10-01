@@ -308,8 +308,13 @@ export const oceanFragment = /* glsl */ `
     vec2 shoreUV=(vWorld.xz-uShoreBounds.xy)/uShoreBounds.zw;
     if(uShoreReady>.5&&coast.x> -11.&&coast.x<2.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))){
       float step=max(1.5,footprint*.65);
-      float sx=(renderedSurface(vWorld.xz+vec2(step,0))-renderedSurface(vWorld.xz-vec2(step,0)))/(2.*step);
-      float sz=(renderedSurface(vWorld.xz+vec2(0,step))-renderedSurface(vWorld.xz-vec2(0,step)))/(2.*step);
+      vec2 nx=vWorld.xz-vec2(step,0),px=vWorld.xz+vec2(step,0);
+      vec2 nz=vWorld.xz-vec2(0,step),pz=vWorld.xz+vec2(0,step);
+      // Dry neighbours return the FFT fallback, often mean sea level below
+      // emergent sand. Differentiating across that gap creates a fictitious
+      // inward face on a valid thin film and near-total dark reflection.
+      float sx=shoreWetSurfaceSlope(contactHeight,renderedSurface(nx),coastAt(nx).x,renderedSurface(px),coastAt(px).x,step);
+      float sz=shoreWetSurfaceSlope(contactHeight,renderedSurface(nz),coastAt(nz).x,renderedSurface(pz),coastAt(pz).x,step);
       normal=normalize(vec3(-sx,1.,-sz));
     }
     normal.y=max(abs(normal.y),0.14);

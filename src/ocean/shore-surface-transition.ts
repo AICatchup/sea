@@ -13,7 +13,23 @@ const gl=(value:number)=>Number.isInteger(value)?value.toFixed(1):String(value);
 export function shoreContactDepth(meshHeight:number,pointHeight:number,worldBed:number):number{
   return Math.min(meshHeight,pointHeight)-worldBed;
 }
+/** Differentiate the wet surface, not its dry FFT fallback. At a wet/dry
+ * boundary use the available wet side; retain central slopes for wet waves. */
+export function shoreWetSurfaceSlope(center:number,negative:number,negativeBed:number,positive:number,positiveBed:number,step:number):number{
+  const wetNegative=negative>negativeBed,wetPositive=positive>positiveBed;
+  if(wetNegative&&wetPositive)return (positive-negative)/(2*step);
+  if(wetPositive)return (positive-center)/step;
+  if(wetNegative)return (center-negative)/step;
+  return 0;
+}
 export const shoreSurfaceTransitionGLSL=`
+float shoreWetSurfaceSlope(float center,float negative,float negativeBed,float positive,float positiveBed,float stepSize){
+  bool wetNegative=negative>negativeBed,wetPositive=positive>positiveBed;
+  if(wetNegative&&wetPositive)return (positive-negative)/(2.*stepSize);
+  if(wetPositive)return (positive-center)/stepSize;
+  if(wetNegative)return (center-negative)/stepSize;
+  return 0.;
+}
 float shoreContactDepth(float meshHeight,float pointHeight,float worldBed){
   return min(meshHeight,pointHeight)-worldBed;
 }
