@@ -1,11 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { ShoreSpray, sprayBirthRate } from '../src/ocean/shore-spray.ts';
+import { ShoreSpray, sprayBirthRate, sprayEmissionCount } from '../src/ocean/shore-spray.ts';
 import { whitewaterBirthRate, type WhitewaterSample } from '../src/ocean/shore-whitewater.ts';
 import { whitewaterAerationStrength } from '../src/ocean/whitewater-flow.ts';
 
 const wet:WhitewaterSample={height:.4,compression:10/255,depth:1.4,shelter:1,ground:-1,gradientX:.01,gradientZ:0};
+test('36 spray events per second retain that expectation at 20 and 60 fps',()=>{
+  for(const fps of [20,60]){
+    let births=0;const seconds=100;
+    for(let i=0;i<fps*seconds;i++)births+=sprayEmissionCount(36,1/fps,((i%100)+.5)/100);
+    assert.equal(births/seconds,36);
+  }
+  assert.equal(sprayEmissionCount(0,.05,.1),0);
+  assert.equal(sprayEmissionCount(NaN,.05,.1),0);
+  assert.equal(sprayEmissionCount(36,0,.1),0);
+});
 test('observed .0392 instantaneous source survives rate integration without residual foam',()=>{
   assert.ok(whitewaterBirthRate(wet)>.3);
   assert.ok(whitewaterAerationStrength(wet.compression)>.25);

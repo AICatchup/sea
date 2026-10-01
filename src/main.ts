@@ -184,6 +184,7 @@ try {
         const state=captureHost.readState(),png=await capturePNG();if(!png)throw new Error('No live capture');
         const shoreSolver=ocean.diagnostics.shoreSolver;
         const shoreState=compareShore?ocean.probeShoreState():null;
+        const crestProbe=compareBreaker?ocean.probeCrestDriver():null;
         let pngWithoutShore:string|null=null;
         if(compareShore){
           try{ocean.setShoreCandidateEnabled(false);await captureHost.nextFrame();await captureHost.nextFrame();pngWithoutShore=await capturePNG();}
@@ -206,7 +207,7 @@ try {
           try{ocean.uniforms.uPointwiseContact.value=0;await captureHost.nextFrame();await captureHost.nextFrame();pngWithoutContact=await capturePNG();}
           finally{ocean.uniforms.uPointwiseContact.value=enabled;}
         }
-        return {png,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null}};
+        return {png,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null}};
       }finally{captureHost.restoreState(before);}
     },
     async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number}){

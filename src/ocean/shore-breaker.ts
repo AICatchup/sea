@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { shoreWaveSampling, shoreBreakerDissipationSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { oceanFragment } from './shaders.ts';
+import {whitewaterFlowSampling} from './whitewater-flow.ts';
 
 const SEGMENTS=96, SPAN=32;
 const smooth=(a:number,b:number,x:number)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
@@ -63,13 +64,14 @@ export class ShoreBreaker {
       ${shoreWaveSampling}
       ${shoreBreakerDissipationSampling}
       ${shoreSolverSampling}
+      ${whitewaterFlowSampling}
       vec2 coast(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;}
       vec3 raw(vec2 p){return texture2D(uLongWaves,p/384.).xyz+texture2D(uShortWaves,p/24.).xyz;}
       vec3 displacement(vec2 p){return raw(p)*uSwell*shoreWaveScale(coast(p),uSwell,uWind);}
       vec2 inverseChop(vec2 world){vec2 p=world;for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;return p;}
       float fftHeight(vec2 world){return displacement(inverseChop(world)).y;}
-      float incidentHeight(vec2 world){return texture2D(uLongWaves,inverseChop(world)/384.).y*uSwell;}
       float baseHeight(vec2 world){return shoreSolvedSurface(world,fftHeight(world),0.).x;}
+      float incidentHeight(vec2 world){return uShoreReady>.5?baseHeight(world):texture2D(uLongWaves,inverseChop(world)/384.).y*uSwell;}
       void main(){
         // Every profile column in a row shares one crest anchor. Independent
         // searches at every grid point made adjacent vertices choose different
@@ -83,7 +85,7 @@ export class ShoreBreaker {
         // A local, current FFT maximum anchors each descending shoulder. A
         // parabola refines the 0.5m search so the crest follows FFT phase.
         float best=-100000.,offset=0.;
-        for(int i=0;i<9;i++){float t=float(i)*.5;float h=incidentHeight(source-n*t);if(h>best){best=h;offset=t;}}
+        for(int i=0;i<25;i++){float t=float(i)-12.;vec2 candidate=source-n*t;float candidateDepth=-coast(candidate).x,h=incidentHeight(candidate);if(candidateDepth>.2&&candidateDepth<3.8&&h>best){best=h;offset=t;}}
         vec2 peak=source-n*offset;
         float h=incidentHeight(peak),behind=incidentHeight(peak-n*.5),ahead=incidentHeight(peak+n*.5);
         float curvature=(ahead+behind-2.*h)/.25;
@@ -98,12 +100,12 @@ export class ShoreBreaker {
         h=incidentHeight(peak);behind=incidentHeight(peak-n*.5);ahead=incidentHeight(peak+n*.5);curvature=(ahead+behind-2.*h)/.25;
         vec2 c=coast(peak);float d=-c.x;
         float slope=(h-incidentHeight(peak+n*.75))/.75;
-        float energy=shoreBreakerDissipation(h/max(.3,uSwell),c,uSwell,uWind);
+        float energy=uShoreReady>.5?max(whitewaterSolvedFlow(peak).z,whitewaterSolvedFlow(peak+n*.75).z):shoreBreakerDissipation(h/max(.3,uSwell),c,uSwell,uWind);
         // Depth-cap loss is the breaking criterion. Slope and curvature only
         // establish a descending convex front: demanding a steep slope at the
         // maximum itself suppressed broad breaking crests by construction.
         float gate=smoothstep(.2,.6,d)*(1.-smoothstep(2.8,3.8,d))*smoothstep(.02,.25,energy)*smoothstep(.02,.2,h)*smoothstep(.0001,.003,slope)*smoothstep(.00002,.001,-curvature)*clamp(c.y,0.,1.)*smoothstep(.0001,.01,terrainGradient);
-        if(!(d>.2&&d<3.8&&c.y>=.18)||offset>=4.)gate=0.;
+        if(!(d>.2&&d<3.8&&c.y>=.18)||abs(offset)>=12.)gate=0.;
         // Radius is local-depth AND actual-crest bounded. No global added wave.
         float radius=min(1.25,min(d*.36,max(0.,h)*.9))*gate;
         float angle=3.665191429;
@@ -136,6 +138,30 @@ export class ShoreBreaker {
     if(this.disposed)return;
     this.group.visible=Number.isFinite(x)&&Number.isFinite(z);
     if(this.group.visible)(this.material.uniforms.uOrigin.value as THREE.Vector2).set(x,z);
+  }
+  /** On-demand float probe reuses the exact current vertex driver text. */
+  probeDriver(renderer:THREE.WebGLRenderer){
+    if(!renderer.extensions.has('EXT_color_buffer_float'))return {available:false};
+    const code=this.material.vertexShader,start=code.indexOf('void main(){'),end=code.indexOf('float angle=',start);
+    const prefix=code.slice(0,start).replace(/attribute[^;]+;/g,'').replace(/varying[^;]+;/g,'');
+    const driver=code.slice(start+'void main(){'.length,end).replaceAll('position.z','rowZ');
+    const fragment=prefix+`\nvoid main(){float rowZ=(gl_FragCoord.y-1.5)*8.;${driver}
+      float column=floor(gl_FragCoord.x),base=baseHeight(peak),bed=coast(peak).x;
+      float envelope=gate*step(bed+.01,base)*(1.-smoothstep(13.,16.,abs(rowZ)));
+      if(column<.5)gl_FragColor=vec4(terrainGradient,depthOffset,foundDepth?1.:0.,offset);
+      else if(column<25.5)gl_FragColor=vec4(incidentHeight(source-n*(column-13.)),baseHeight(source-n*(column-13.)),coast(source-n*(column-13.)).x,1);
+      else if(column<26.5)gl_FragColor=vec4(refine,mixed,shear,curvature);
+      else if(column<27.5)gl_FragColor=vec4(d,h,slope,energy);
+      else if(column<28.5)gl_FragColor=vec4(envelope,radius,base,bed);
+      else gl_FragColor=vec4(peak,n);
+    }`;
+    const target=new THREE.WebGLRenderTarget(30,3,{type:THREE.FloatType,depthBuffer:false});target.texture.colorSpace=THREE.LinearSRGBColorSpace;
+    const material=new THREE.ShaderMaterial({uniforms:this.material.uniforms,depthTest:false,depthWrite:false,toneMapped:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:fragment});
+    const geometry=new THREE.PlaneGeometry(2,2),scene=new THREE.Scene();scene.add(new THREE.Mesh(geometry,material));
+    const saved={target:renderer.getRenderTarget(),viewport:renderer.getViewport(new THREE.Vector4()),scissor:renderer.getScissor(new THREE.Vector4()),scissorTest:renderer.getScissorTest(),auto:renderer.autoClear,clear:renderer.getClearColor(new THREE.Color()),alpha:renderer.getClearAlpha()};
+    const pixels=new Float32Array(30*3*4);
+    try{renderer.setRenderTarget(target);renderer.setScissorTest(false);renderer.setViewport(0,0,30,3);renderer.autoClear=true;renderer.setClearColor(0,0);renderer.render(scene,new THREE.Camera());renderer.readRenderTargetPixels(target,0,0,30,3,pixels);return {available:true,origin:(this.material.uniforms.uOrigin.value as THREE.Vector2).toArray(),rows:[-8,0,8].map((z,i)=>({z,values:Array.from({length:30},(_,j)=>Array.from(pixels.slice((i*30+j)*4,(i*30+j+1)*4)))}))};}
+    finally{renderer.setRenderTarget(saved.target);renderer.setViewport(saved.viewport);renderer.setScissor(saved.scissor);renderer.setScissorTest(saved.scissorTest);renderer.autoClear=saved.auto;renderer.setClearColor(saved.clear,saved.alpha);target.dispose();material.dispose();geometry.dispose();}
   }
   dispose():void {if(this.disposed)return;this.disposed=true;this.geometry.dispose();this.material.dispose();this.group.clear();}
 }

@@ -1,0 +1,17 @@
+# V13 continuation — correctness progress, photoreal acceptance still unmet
+
+The full project goal remains ACTIVE. This checkpoint does not redefine success around test results or a single picture.
+
+Whitewater now integrates the instantaneous breaking source without discarding weak short pulses. The residual solver foam is not reused as a birth source. Bounded pools, wet/dry checks, signed solved-flow transport and expiration remain. Overlapping flocs share metric world pore channels so another floc does not fill every existing hole; seed-specific geometry remains varied. Diffuse direct illumination now uses Lambert sun/π and cavity/bubble variation. The shared Eulerian pore field is authored and is not a material tracer.
+
+An independent code review found the spray Bernoulli sampler saturated at one event per frame. At36events/s,20fps could produce only20events/s. Integer births plus a fractional Bernoulli now preserve the expected36events/s at both20fps and60fps, while retaining the existing100-birth/update and1500-particle caps. Regression checks include zero/invalid source and short pulses followed by calm.
+
+Niijima's finite optional solid has unequal resistant beds, soft-layer retreat, interrupted ledges and variable talus. Source DEM and shoreline bytes are unchanged. Actual forward/reverse/front views still show an overly regular grey wall and smooth broad deposits compared with the reference; photoreal and all-coast geometry are not achieved. The finite solid and other photo candidates remain opt-in.
+
+The new optional crest reuses the ocean optical pipeline and actual geometric normals. Actual GPU compilation, contradictory spike/arch images, a zero-effect frame, and float driver reads changed the implementation and the next action. [The crest audit](./shore-breaker-v13.md) records these failures and limits. Ordinary ocean behavior uses the define-free branch. The crest is not accepted for default promotion.
+
+Operator captures initialize the camera/preset once for temporal sampling and preserve solver/particle history across snapshots. Isolating whitewater on the same frame proved foreground soft spots were shallow-water light, not foam; actual flocs were about60m behind or67m ahead of the initial camera. A close swim comparison at `(5910,-984)` then exposed overlap-filled, nearly uniform white wake. Later metric pore/lighting captures are saved separately. These are authored QA camera starts, not native-key travel or Human acceptance.
+
+The independent review of b59746d was collected while later root shader changes were in flight. Its quantitative revision acceptance is therefore excluded; its directly inspected image criticism and identified spray-rate counterexample are retained and independently checked by root. A fresh immutable-source review is required before publication of the final checkpoint.
+
+Native control, physical mobile, all-island routes, full-world photo matching and Human acceptance remain unverified. The previously recorded continuous beach/dive/boat/Niijima/landing replay is preserved, and its controller code has not changed in this checkpoint. Public main was927cf14 at the start; an eventual exact source push/readback proves source publication only.

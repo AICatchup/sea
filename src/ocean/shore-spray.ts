@@ -1,4 +1,11 @@
 import * as THREE from 'three';
+/** Integer births plus a fractional Bernoulli retain the expected rate even
+ * when a frame contains more than one event. The caller keeps its pool cap. */
+export function sprayEmissionCount(rate:number,dt:number,random:number):number{
+  if(![rate,dt,random].every(Number.isFinite)||rate<=0||dt<=0)return 0;
+  const expected=Math.min(100,rate*dt),whole=Math.floor(expected);
+  return whole+(random<expected-whole?1:0);
+}
 import { shoreWaveSampling,shoreBreakerDissipationSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { ShoreWhitewaterVolume } from './shore-whitewater-volume.ts';
@@ -232,7 +239,8 @@ export class ShoreSpray {
           // A short crest event must have a chance to emit immediately. Requiring
           // a whole credit before a source switches off erased weak pulses.
           // Bernoulli sampling preserves expected rate and decorrelates cells.
-          if(this.random()>=Math.min(1,rate*dt))continue;
+          const cellBirths=sprayEmissionCount(rate,dt,this.random());
+          for(let event=0;event<cellBirths&&births<100&&this.pool.active<this.pool.capacity;event++){
           // Local bathymetric uphill points onshore. Light droplets drag offshore.
           const gx=this.ground.heightAt(x+2,z)-this.ground.heightAt(x-2,z);
           const gz=this.ground.heightAt(x,z+2)-this.ground.heightAt(x,z-2);
@@ -249,6 +257,7 @@ export class ShoreSpray {
             windX:-nx*wind*.12,windZ:-nz*wind*.12,drag:mist?2.4:.6,life:mist?.35+this.random()*.45:.2+this.random()*.35,
             size:mist?.10+this.random()*.18:.012+this.random()*.028,opacity:mist?.12:.24});
           if(born){births++;this.emitted++;}
+          }
         }
       }
       if(this.whitewater&&this.foamCacheValid){
