@@ -223,6 +223,7 @@ export class Ocean {
       uCameraWorld:{value:this.camera.matrixWorld},uInverseProjection:{value:this.camera.projectionMatrixInverse},
       uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
       uSceneColor:{value:null},uSceneDepth:{value:null},uSceneOcclusion:{value:null},uResolution:{value:new THREE.Vector2()},
+      uReflectionDepth:{value:null},uReflectionInverseProjection:{value:new THREE.Matrix4()},uReflectionCameraWorld:{value:new THREE.Matrix4()},
       uNearFar:{value:new THREE.Vector2(this.camera.near,this.camera.far)},uUnderwater:{value:0},
       uReflection:{value:this.reflection.getRenderTarget().texture},uReflectionMatrix:{value:this.reflectionMatrix},uHasReflection:{value:0},
       uReflectionResolution:{value:new THREE.Vector2(512,320)},
@@ -266,6 +267,8 @@ export class Ocean {
     this.scene.fog=new THREE.FogExp2(new THREE.Color().setRGB(...p.horizon),.000028);
     this.pmrem=new THREE.PMREMGenerator(this.renderer);
     const reflectionTexture=this.reflection.getRenderTarget().texture;
+    this.reflection.getRenderTarget().depthTexture=new THREE.DepthTexture(512,320,THREE.UnsignedIntType);
+    this.uniforms.uReflectionDepth.value=this.reflection.getRenderTarget().depthTexture;
     reflectionTexture.generateMipmaps=true;reflectionTexture.minFilter=THREE.LinearMipmapLinearFilter;
     this.reflection.rotation.x=-Math.PI/2;this.reflection.updateMatrixWorld(true);
     this.listen();this.resize();this.refreshEnvironment('day');
@@ -439,10 +442,16 @@ export class Ocean {
     this.fill.intensity=.17+.20*this.uniforms.uStorm.value;
     if(this.frames%4===0)this.renderer.shadowMap.needsUpdate=true;
     this.renderer.info.reset();
-    if(underwater<.5&&this.frames%3===0){
+    if(this.frames%3===0){
+      // Both sides of the interface need the scene on their own side: below
+      // water, total internal reflection sees the real seabed and organisms.
+      this.reflection.rotation.x=underwater>.5?Math.PI/2:-Math.PI/2;this.reflection.updateMatrixWorld(true);
       this.renderer.setClearColor(0,1);
       this.reflection.onBeforeRender(this.renderer,this.scene,this.camera,this.reflection.geometry,this.reflection.material as THREE.Material,this.reflectionContext);
       const reflectedCamera=this.reflection.getReflectionCamera(this.camera);
+      reflectedCamera.projectionMatrixInverse.copy(reflectedCamera.projectionMatrix).invert();
+      this.uniforms.uReflectionInverseProjection.value.copy(reflectedCamera.projectionMatrixInverse);
+      this.uniforms.uReflectionCameraWorld.value.copy(reflectedCamera.matrixWorld);
       this.reflectionMatrix.copy(this.reflectionBias).multiply(reflectedCamera.projectionMatrix).multiply(reflectedCamera.matrixWorldInverse);
       this.uniforms.uHasReflection.value=1;
     }
@@ -510,9 +519,10 @@ export class Ocean {
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
   getBreakerCandidateEnabled():boolean{return this.breakerCandidateEnabled;}
+  probeDepthSamples(points:readonly{x:number;y:number}[]){return this.compositor.probeDepthSamples(points);}
   /** Developer picking of foliage only; tight per-instance bounds avoid testing
    * the full island terrain or an entire dense instance field. */
-  probeFoliage(x:number,y:number,foliageOnly=true){
+  probeFoliage(x:number,y:number,foliageOnly=true,includeTerrain=false){
     const ray=new THREE.Raycaster();ray.setFromCamera(new THREE.Vector2(x,y),this.camera);
     const box=new THREE.Box3(),local=new THREE.Matrix4(),matrix=new THREE.Matrix4();
     const hits:{name:string;instance:number;material:string[];distance:number;point:number[]}[]=[];
@@ -520,7 +530,7 @@ export class Ocean {
     this.scene.traverse(object=>{
       if(!(object instanceof THREE.Mesh)||!object.visible)return;
       if(foliageOnly&&!object.userData.foliageLod)return;
-      if(!foliageOnly&&(object.userData.surface||/DEM/.test(object.name)||object instanceof THREE.SkinnedMesh||
+      if(!foliageOnly&&((!includeTerrain&&(object.userData.surface||/DEM/.test(object.name)))||object instanceof THREE.SkinnedMesh||
         (Array.isArray(object.material)?object.material:[object.material]).some(m=>m instanceof THREE.ShaderMaterial)))return;
       if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();
       for(let i=0;i<(object instanceof THREE.InstancedMesh?object.count:1);i++){

@@ -9,6 +9,7 @@ import { niijimaScarpApronHeight } from './niijima-scarp.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };
 export { NIIJIMA_NORTH_PROVENANCE };
 export { NIIJIMA_SOUTH_PROVENANCE };
+const pumiceURL=new URL('../assets/niijima/pumice-albedo-generated-v9.png',import.meta.url).href;
 
 // Edges coincide with complete existing 64m renderer cells. This prevents a crack when
 // IslandWorld omits coarse cells whose centres are in bounds. Internal grids divide those cells.
@@ -42,17 +43,19 @@ export const NIIJIMA_COAST_BOOKMARKS = [
 ] as const;
 
 /** Niijima's chalk-white pumice and talus, distinct from Tomari's darker jointed rocks. */
-function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet): THREE.MeshStandardMaterial {
+function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pumice?:THREE.Texture,ready?:THREE.IUniform): THREE.MeshStandardMaterial {
   const material = base.clone();
   material.name = 'Niijima white layered pumice, pale strand and talus';
   material.vertexColors = true; material.color.set(0xffffff); material.roughness = .96; material.metalness = 0;
   material.map = material.normalMap = material.bumpMap = material.roughnessMap = material.metalnessMap = material.aoMap = null;
   material.onBeforeCompile = shader => {
+    Object.assign(shader.uniforms,{uPumicePhoto:{value:pumice},uPumiceReady:ready??{value:0}});
     if(sand)Object.assign(shader.uniforms,{uNiiSandAlbedo:{value:sand.albedo},uNiiSandNormal:{value:sand.normalGL},uNiiSandARM:{value:sand.arm}});
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNiijimaPoint;');
     shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvNiijimaPoint = position - vec3(5500.0, 0.0, -2000.0);');
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       varying vec3 vNiijimaPoint;
+      uniform sampler2D uPumicePhoto;uniform float uPumiceReady;
       ${sand?'uniform sampler2D uNiiSandAlbedo,uNiiSandNormal,uNiiSandARM;':''}
       float niiHash(vec3 p) { p=fract(p*.1031); p+=dot(p,p.yzx+33.33); return fract((p.x+p.y)*p.z); }
       float niiNoise(vec3 p) {
@@ -77,6 +80,19 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet): 
       float niiDry=smoothstep(-.15,1.1,vNiijimaPoint.y);
       diffuseColor.rgb*=.95+niiFine*.07+niiBand*.022*smoothstep(5.0,20.0,vNiijimaPoint.y);
       diffuseColor.rgb*=mix(.80,1.0,niiDry);
+      vec3 niiFaceAxis=abs(normalize(cross(dFdx(vNiijimaPoint),dFdy(vNiijimaPoint))));
+      vec3 niiWeights=pow(niiFaceAxis,vec3(5));niiWeights/=max(.0001,dot(niiWeights,vec3(1)));
+      vec2 niiUVX=vNiijimaPoint.zy/2.0,niiUVY=vNiijimaPoint.xz/2.0,niiUVZ=vNiijimaPoint.xy/2.0;
+      vec2 niiDXx=dFdx(niiUVX),niiDYx=dFdy(niiUVX),niiDXy=dFdx(niiUVY),niiDYy=dFdy(niiUVY),niiDXz=dFdx(niiUVZ),niiDYz=dFdy(niiUVZ);
+      float niiRockPhotoMask=smoothstep(3.0,9.0,vNiijimaPoint.y)*(1.0-smoothstep(.66,.92,niiFaceAxis.y));
+      if(uPumiceReady>.5&&niiRockPhotoMask>.001){
+        // Generated intrinsic surface variation, registered in world metres.
+        // Explicit gradients retain mip filtering at the branch boundary.
+        vec3 niiPhoto=textureGrad(uPumicePhoto,niiUVX,niiDXx,niiDYx).rgb*niiWeights.x
+          +textureGrad(uPumicePhoto,niiUVY,niiDXy,niiDYy).rgb*niiWeights.y
+          +textureGrad(uPumicePhoto,niiUVZ,niiDXz,niiDYz).rgb*niiWeights.z;
+        diffuseColor.rgb*=mix(vec3(1),clamp(niiPhoto/.69,vec3(.45),vec3(1.18)),niiRockPhotoMask*.85);
+      }
       ${sand?`
       vec3 niiGeometricNormal=normalize(cross(dFdx(vNiijimaPoint),dFdy(vNiijimaPoint)));
       float niiSandMask=(1.0-smoothstep(4.0,8.0,vNiijimaPoint.y))*smoothstep(.6,.92,abs(niiGeometricNormal.y));
@@ -130,6 +146,8 @@ export class NiijimaCoast implements GroundSampler {
   readonly southDem = new NiijimaDEM(NIIJIMA_SOUTH_RASTER);
   readonly surfaces: readonly NiijimaSurface[];
   readonly triangleCount: number;
+  readonly ready:Promise<void>;
+  private readonly pumiceTexture:THREE.Texture;
   private readonly geometries: THREE.BufferGeometry[] = [];
   private readonly material: THREE.MeshStandardMaterial;
   private readonly baseGround: GroundSampler;
@@ -140,7 +158,14 @@ export class NiijimaCoast implements GroundSampler {
     this.baseGround = baseGround;
     this.group.name = 'Niijima Horikiri, Shiromama and actual Secret surf region';
     this.group.userData = { source: NIIJIMA_DETAIL_PROVENANCE, northernSource: NIIJIMA_NORTH_PROVENANCE,southernSource:NIIJIMA_SOUTH_PROVENANCE, measuredMacroshape: 'GSI DEM5A/DEM10B', authoredMicrorelief: true, bathymetry: 'inferred',scarpCandidate:options.scarp??false };
-    this.material = pumiceMaterial(material,options.sand);
+    const pumiceReady={value:0};
+    let resolvePumice:()=>void=()=>{};
+    this.ready=new Promise<void>(resolve=>{resolvePumice=resolve;});
+    this.pumiceTexture=typeof document!=='undefined'?new THREE.TextureLoader().load(pumiceURL,()=>{pumiceReady.value=1;resolvePumice();},undefined,()=>resolvePumice()):new THREE.Texture();
+    if(typeof document==='undefined')resolvePumice();
+    this.pumiceTexture.colorSpace=THREE.SRGBColorSpace;this.pumiceTexture.wrapS=this.pumiceTexture.wrapT=THREE.RepeatWrapping;
+    this.pumiceTexture.anisotropy=8;this.pumiceTexture.minFilter=THREE.LinearMipmapLinearFilter;
+    this.material = pumiceMaterial(material,options.sand,this.pumiceTexture,pumiceReady);
     const authored = { heightAt: (x: number, z: number) => {
       if(z>=-300&&z<=-100){const w=ease(-300,-100,z);return this.dem.refinedHeightAt(x,z)*(1-w)+this.southDem.refinedHeightAt(x,z)*w;}
       const y=this.demAt(z).refinedHeightAt(x,z);
@@ -220,7 +245,7 @@ export class NiijimaCoast implements GroundSampler {
     return map;
   }
 
-  dispose(): void { this.geometries.forEach(geometry => geometry.dispose()); this.material.dispose(); this.maps.forEach(map => map.texture.dispose()); this.maps.clear(); this.group.clear(); }
+  dispose(): void { this.geometries.forEach(geometry => geometry.dispose()); this.material.dispose();this.pumiceTexture.dispose(); this.maps.forEach(map => map.texture.dispose()); this.maps.clear(); this.group.clear(); }
 
   private demAt(z: number): NiijimaDEM { return z < -3340 ? this.northDem : z>-200?this.southDem:this.dem; }
 

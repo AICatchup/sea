@@ -91,10 +91,10 @@ export class IslandWorld {
     this.textures.push(atlas);
     const sand=loadSandTextures();this.textures.push(...sand.textures);
     const terrainMaterial = makeTerrainMaterial(grain, atlas, sand); this.materials.push(terrainMaterial);
-    this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve()]).then(()=>{});
     const scarp=typeof location!=='undefined'&&new URLSearchParams(location.search).get('scarp')==='1';
     const volume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('volume')==='1';
     this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume});this.group.add(this.niijimaCoast.group);
+    this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve(),this.niijimaCoast.ready]).then(()=>{});
     const cliffMaterial=(this.niijimaCoast.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
     this.scarpVolume=volume?new NiijimaScarpVolume(this.niijimaCoast,this.niijimaCoast.dem,cliffMaterial):null;
     if(this.scarpVolume)this.group.add(this.scarpVolume.group);

@@ -219,6 +219,8 @@ export const oceanFragment = /* glsl */ `
   uniform vec2 uSunShadowTexel, uReflectionResolution;
   uniform float uShadowReady;
   uniform mat4 uReflectionMatrix;
+  uniform sampler2D uReflectionDepth;
+  uniform mat4 uReflectionInverseProjection,uReflectionCameraWorld;
   uniform float uHasReflection;
   uniform vec4 uBathyBounds;
   uniform vec2 uBathyResolution, uResolution, uNearFar;
@@ -305,7 +307,35 @@ export const oceanFragment = /* glsl */ `
       vec3 through=refract(-view,belowNormal,1.333);
       float incidence=max(dot(belowNormal,view),0.0);
       float belowFresnel=waterFresnel(incidence,1.333);
-      vec3 underwaterColor=vec3(0.006,0.024,0.039);
+      // TIR reflects the underwater scene, rather than substituting a dark
+      // constant that creates a visible ceiling/fog discontinuity.
+      vec4 belowPoint=uReflectionMatrix*vec4(vWorld,1.0);
+      vec2 belowUV=belowPoint.xy/max(.0001,belowPoint.w)+normal.xz*.012;
+      bool belowValid=belowPoint.w>0.0&&all(greaterThan(belowUV,vec2(.002)))&&all(lessThan(belowUV,vec2(.998)))&&uHasReflection>.5;
+      float reflectedPath=10000.0;
+      vec3 reflectedRadiance=vec3(0);
+      if(belowValid){
+        float reflectedDepth=texture2D(uReflectionDepth,belowUV).r;
+        vec4 reflectedView=uReflectionInverseProjection*vec4(belowUV*2.0-1.0,reflectedDepth*2.0-1.0,1.0);
+        vec3 reflectedWorld=(uReflectionCameraWorld*vec4(reflectedView.xyz/reflectedView.w,1.0)).xyz;
+        reflectedPath=reflectedDepth<.999999?length(reflectedWorld-vWorld):10000.0;
+        reflectedRadiance=texture2D(uReflection,belowUV).rgb;
+      }
+      vec3 sigma=vec3(.105,.021,.012),reflectedTrans=exp(-sigma*reflectedPath);
+      vec3 reflectedDirection=normalize(reflect(-view,belowNormal));
+      vec3 waterSun=-refract(-uSunDirection,vec3(0,1,0),.75019);
+      float reflectedPhase=(1.0-.76*.76)/pow(max(.035,1.0+.76*.76-2.0*.76*dot(reflectedDirection,waterSun)),1.5);
+      vec3 reflectedVolume=vec3(0);float reflectedStep=min(reflectedPath,500.0)/8.0;
+      for(int i=0;i<8;i++){
+        float a=float(i)*reflectedStep,b=float(i+1)*reflectedStep;
+        vec3 point=vWorld+reflectedDirection*(a+b)*.5;
+        vec3 lightTrans=exp(-sigma*max(0.0,-point.y)/max(.35,waterSun.y));
+        vec3 cameraIntegral=(exp(-sigma*a)-exp(-sigma*b))/sigma;
+        reflectedVolume+=cameraIntegral*lightTrans*vec3(.0008,.0028,.0041)*uSunColor*(.12+reflectedPhase*.12)*surfaceSunVisibility(point);
+      }
+      // Both camera-to-interface and interface-to-reflected-hit legs scatter
+      // light. Omitting the second leg darkens the entire TIR ceiling.
+      vec3 underwaterColor=reflectedRadiance*reflectedTrans+vec3(.003,.026,.041)*(1.0-reflectedTrans)+reflectedVolume;
       if(dot(through,through)>0.001){
         vec3 skylight=skyRadiance(normalize(through),true);
         underwaterColor=mix(skylight,underwaterColor,belowFresnel);

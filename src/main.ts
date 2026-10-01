@@ -149,14 +149,16 @@ try {
     ground:(x:number,z:number)=>ocean.world.heightAt(x,z),
     foliageAt:(x:number,y:number)=>ocean.probeFoliage(x,y),
     objectAt:(x:number,y:number)=>ocean.probeFoliage(x,y,false),
+    terrainAt:(x:number,y:number)=>ocean.probeFoliage(x/window.innerWidth*2-1,1-y/window.innerHeight*2,false,true),
+    depthSamples:(points:readonly{x:number;y:number}[])=>ocean.probeDepthSamples(points),
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
     breakerEnabled:(enabled:boolean)=>ocean.setBreakerCandidateEnabled(enabled),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
     capturePixels:capturePNG,
     captureNamed:(name:string)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');return captureNamed(captureHost,profile,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
-    captureAt:(x:number,z:number,yaw:number,pitch:number)=>{
-      if(![x,z,yaw,pitch].every(Number.isFinite))throw new Error('Finite capture pose required');
-      return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode:'walk'},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
+    captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>{
+      if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
+      return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
     },
     async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number},compareBreaker=false){
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');

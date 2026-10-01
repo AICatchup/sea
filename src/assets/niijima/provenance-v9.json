@@ -1,0 +1,22 @@
+{
+  "asset": "pumice-albedo-generated-v9.png",
+  "generator": "builtin image_gen",
+  "model": "not reported by tool",
+  "sourceKind": "generated synthetic material, not a Niijima field photograph or measurement",
+  "promptConcept": "flat diffuse orthographic pale porous volcanic pumice/tuff, 2m nominal tile, irregular pores and small grains; no landscape or source-photo pixels",
+  "pixelSize": [
+    1254,
+    1254
+  ],
+  "linearMeanRGB": [
+    0.5845073783514118,
+    0.5394482970714958,
+    0.49247200737893615
+  ],
+  "sha256": "8e51ca2f71411648aea362845c51228f0e948381e453bb0f6dc4c25a480ec991",
+  "notes": [
+    "nominal metre span is an authored material parameter",
+    "colour image does not establish measured PBR roughness or height",
+    "micro cavity lighting may be baked; independent 3D visual review required"
+  ]
+}
