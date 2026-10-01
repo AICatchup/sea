@@ -3,7 +3,7 @@ import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 
 const LIMIT=1024;
-export interface WhitewaterSample {height:number;compression:number;depth:number;shelter:number;ground:number;gradientX:number;gradientZ:number}
+export interface WhitewaterSample {height:number;compression:number;depth:number;shelter:number;ground:number;gradientX:number;gradientZ:number;waveGradientX?:number;waveGradientZ?:number}
 export type WhitewaterSampler=(x:number,z:number,out:WhitewaterSample)=>boolean;
 export interface WhitewaterBirth {x:number;z:number;height:number;energy:number;nx:number;nz:number;seed:number}
 /** Compression is current breaker energy, never FFT's accumulated foam alpha. */
