@@ -11,3 +11,18 @@ The new delta shares upper-face oblique joint coordinate u, adds narrow cosine g
 The existing raster-boundary join and beach blending remain; this changes the ground array consumed by both rendered triangles and height collision. No independent geometry, crown/shoreline/seabed or DEM changes. Analytic new delta is continuous; pre-existing upper panel relief is unchanged.
 
 CPU: dedicated dry-toe + terrain checks 14/14 pass; TypeScript noEmit pass. Actual coast raster: 2,823 vertices differ by >0.05 m, maximum additional difference 1.1000003814697266 m (Float32 rounding). Checks cover low/sand/crown/gentle anchors, bounded finite continuous low-face samples, actual raster impact and joins. These measures establish a meaningful local change, not image quality or runtime acceptance. No server, browser, GPU, installation or publication performed. npx wrapper was unavailable in bundled runtime; direct `node node_modules/typescript/bin/tsc --noEmit` succeeded.
+
+Root integration supersedes the initial candidate: modifying dry vertices alone
+changed 1,853 interpolated low points by up to 0.4811m. Every triangle sharing a
+changed vertex is now protected when its original neighbour is <=1.1m, with a
+1.1..1.3m transition. New dry vertices cannot fall below1.1m. The visible steep
+rock foot also lay inside the broad sand footprint and nested0.5m beach smoothing
+undoing relief. Dry steep source slopes .65..1.15 now reduce that smoothing only
+at1.1..10m. The nested patch uses original parent reference heights for protection
+and does not apply joints twice. Total per-patch difference is capped1.1m. Initial
+2,823-vertex results do not establish the integrated variant; latest coast count
+is3,395 vertices >.05m. Legacy/coherent=false disables the whole candidate. Normal
+renderer adopts the integrated field; `toe=legacy` compares the prior coherent
+field. Library defaults remain false. Root four aligned actual-camera/clock views,
+low-point regression and candidate strand/boat corridor checks are separate from
+the original producer's CPU result. Native/Human/photographic acceptance is unmet.
