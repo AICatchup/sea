@@ -8,7 +8,15 @@ export function shoreSurfaceBlend(edge:number,bed:number,wetWeight:number):numbe
   return smooth(transition.edgeStart,transition.edgeEnd,edge)*(1-smooth(transition.deepStart,transition.deepEnd,-bed))*smooth(transition.wetStart,transition.wetEnd,wetWeight);
 }
 const gl=(value:number)=>Number.isInteger(value)?value.toFixed(1):String(value);
+/** A raster triangle can bridge a dry cell between wet vertices. Contact must
+ * satisfy both its actual geometry and the pointwise Eulerian surface. */
+export function shoreContactDepth(meshHeight:number,pointHeight:number,worldBed:number):number{
+  return Math.min(meshHeight,pointHeight)-worldBed;
+}
 export const shoreSurfaceTransitionGLSL=`
+float shoreContactDepth(float meshHeight,float pointHeight,float worldBed){
+  return min(meshHeight,pointHeight)-worldBed;
+}
 float shoreSurfaceBlend(float edge,float bed,float wetWeight){
   return smoothstep(${gl(transition.edgeStart)},${gl(transition.edgeEnd)},edge)
     *(1.-smoothstep(${gl(transition.deepStart)},${gl(transition.deepEnd)},-bed))

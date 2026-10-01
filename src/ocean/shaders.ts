@@ -278,8 +278,17 @@ export const oceanFragment = /* glsl */ `
     vec2 screenUV=gl_FragCoord.xy/uResolution;
     float opaqueDepth=texture2D(uSceneDepth,screenUV).r;
     if(gl_FragCoord.z>opaqueDepth+0.0000001)discard;
-    vec3 coast=coastAt(vOcean);
-    if(coast.x>vWorld.y+0.03)discard;
+    // The SWE surface is Eulerian: vertices sample it after FFT horizontal
+    // displacement. Clip at that same world location, not the FFT origin.
+    vec3 coast=coastAt(vWorld.xz);
+    float contactHeight=vWorld.y;
+    if(uShoreReady>.5&&coast.x> -11.&&coast.y>=.18){
+      // Barycentric vertex height alone can bridge locally dry cells and
+      // paint a sharp polygon above sand. Recheck the pointwise surface,
+      // retaining positive runup whenever it actually clears the local bed.
+      contactHeight=renderedSurface(vWorld.xz);
+    }
+    if(shoreContactDepth(vWorld.y,contactHeight,coast.x)<-.03)discard;
     float footprint = max(length(dFdx(vOcean)),length(dFdy(vOcean)));
     // Widen the slope stencil with the pixel footprint: distant waves retain
     // their swell while unresolved capillary and whitecap detail falls away.

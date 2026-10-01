@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {shoreSurfaceBlend} from '../src/ocean/shore-surface-transition.ts';
+import {shoreSurfaceBlend,shoreContactDepth} from '../src/ocean/shore-surface-transition.ts';
+import {readFileSync} from 'node:fs';
 import {referenceWetSurface} from '../src/ocean/shore-solver-reference.ts';
 
 test('a shallow advancing bore keeps its elevation until the actual sand contact',()=>{
@@ -28,4 +29,32 @@ test('missing wet support, solver edges and deep-water handoff stay bounded and 
     assert.ok(blend>=previous&&blend<=1);assert.ok(blend-previous<.002);previous=blend;
   }
   assert.equal(previous,1);assert.equal(shoreSurfaceBlend(NaN,0,1),0);
+});
+
+test('coarse wet vertices cannot paint a locally dry displaced sand contact',()=>{
+  // Three wet mesh vertices at eta=.6 span a dry solver cell with bed=.4.
+  // The old test (bed at FFT origin=.1 vs raster height=.6) accepts it.
+  const meshHeight=.6,originBed=.1,worldBed=.4;
+  assert.ok(originBed<meshHeight);
+  const dry=referenceWetSurface([{bed:worldBed,h:0,foam:0}],[1],worldBed);
+  assert.equal(dry,null);
+  // Dry support falls back to the local FFT surface (mean sea level here).
+  assert.ok(shoreContactDepth(meshHeight,0,worldBed)<-.03);
+  // Wet-only interpolation can extend a wet neighbour's eta across a bank;
+  // the local bed must still reject that point even with wet support.
+  const bank=referenceWetSurface([{bed:-.1,h:.4,foam:.5},{bed:.4,h:0,foam:0}],[.6,.4],worldBed)!;
+  assert.ok(shoreContactDepth(meshHeight,bank.eta,worldBed)<-.03);
+});
+
+test('pointwise contact preserves a shallow positive bore and respects mesh depth',()=>{
+  const eta=.4;
+  for(const bed of [.05,.2,.35]){
+    const wet=referenceWetSurface([{bed,h:eta-bed,foam:.6}],[1],bed)!;
+    assert.ok(shoreContactDepth(eta,wet.eta,bed)>0);
+  }
+  assert.ok(shoreContactDepth(.1,.4,.2)<0,'pointwise height must not lift submerged geometry');
+  const shader=readFileSync(new URL('../src/ocean/shaders.ts',import.meta.url),'utf8');
+  assert.match(shader,/vec3 coast=coastAt\(vWorld\.xz\)/);
+  assert.match(shader,/contactHeight=renderedSurface\(vWorld\.xz\)/);
+  assert.match(shader,/shoreContactDepth\(vWorld\.y,contactHeight,coast\.x\)/);
 });
