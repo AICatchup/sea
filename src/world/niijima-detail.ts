@@ -30,6 +30,25 @@ function distances(mask: Uint8Array, width: number, height: number, dx: number, 
   return out;
 }
 
+/** Procedural sediment on the already inferred east-coast seabed only.
+ * These shallow bars/channels are NOT a survey or a dated shoreline model.
+ * Longshore envelopes break up the old identical distance-only cross section;
+ * all measured land, the shoreline contact and deep water stay anchored. */
+export const NIIJIMA_SEDIMENT_PROVENANCE={kind:'procedural inferred seabed',measured:false,shorelineEdited:false,
+  envelopeWorldMetres:{minX:5600,minZ:-6500,maxZ:-700},maxRiseMetres:.65,maxTroughMetres:.22,
+  note:'Bounded visual sediment variation on existing inferred shallow water; not surveyed bars, reefs, depths or current safe navigation.'} as const;
+export function inferredSedimentHeight(x:number,z:number,y:number,shoreDistance:number):number{
+  if(y>=-.35||y<=-10||shoreDistance>=-6||shoreDistance<=-145||x<=5600||z<=-6500||z>=-700)return y;
+  const offshore=-shoreDistance,depth=-y;
+  const domain=ease(5600,5750,x)*ease(-6500,-6200,z)*(1-ease(-1000,-700,z));
+  const wet=ease(.35,.9,depth)*(1-ease(6,10,depth))*ease(6,16,offshore)*(1-ease(100,145,offshore));
+  const presence=ease(.28,.64,noise(z*.004,2.9));
+  const bar=32+28*(noise(z*.006,8.1)-.5),width=10+8*noise(z*.009,5.3);
+  const ridge=(.3+.35*noise(z*.007,1.7))*Math.exp(-(((offshore-bar)/width)**2));
+  const trough=.22*Math.exp(-(((offshore-(bar-15))/9)**2));
+  return Math.min(-.15,y+domain*wet*presence*(ridge-trough));
+}
+
 /** GSI land macroshape. Sea distance/profile and all microrelief are explicitly authored. */
 export class NiijimaDEM {
   readonly raster: { readonly width: number; readonly height: number; readonly minX: number; readonly minZ: number; readonly maxX: number; readonly maxZ: number; readonly elevations: string };
@@ -77,7 +96,7 @@ export class NiijimaDEM {
     const beach = (1 - ease(3, 7, Math.abs(y))) * (1 - ease(.35, .9, slope)) * (1 - ease(50, 100, Math.abs(d)));
     // Small sand ridges die out at the waterline, keeping the dry/wet transition continuous.
     const sand = Math.sin(z * .8 + noise(x * .021, z * .021) * 9) * .013 + (noise(x * .39, z * .39) - .5) * .027;
-    const legacy = y + cliff * (strata + crumbs - gullies) + sand * beach * ease(-.25, .6, y);
+    const legacy = inferredSedimentHeight(x,z,y,d) + cliff * (strata + crumbs - gullies) + sand * beach * ease(-.25, .6, y);
     return this.scarp ? niijimaScarpHeight(this, x, z, legacy) : legacy;
   }
 }

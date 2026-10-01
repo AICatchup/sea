@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import type { GroundSampler } from './contracts.ts';
-import { NiijimaDEM, NiijimaSurface, NIIJIMA_DETAIL_PROVENANCE, ease, noise, type SurfaceBounds } from './niijima-detail.ts';
+import { NiijimaDEM, NiijimaSurface, NIIJIMA_DETAIL_PROVENANCE, NIIJIMA_SEDIMENT_PROVENANCE, ease, noise, type SurfaceBounds } from './niijima-detail.ts';
 import { ELEVATION_RASTERS } from './geodata.generated.ts';
 import { NIIJIMA_NORTH_RASTER, NIIJIMA_NORTH_PROVENANCE } from './niijima-north.generated.ts';
 import { NIIJIMA_SOUTH_RASTER, NIIJIMA_SOUTH_PROVENANCE } from './niijima-south.generated.ts';
 import type { SandTextureSet } from './sand-material.ts';
 import { niijimaScarpApronHeight } from './niijima-scarp.ts';
+import {wetSandUniforms,wetSandSampling} from './coastal-wet-sand.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };
 export { NIIJIMA_NORTH_PROVENANCE };
 export { NIIJIMA_SOUTH_PROVENANCE };
@@ -43,13 +44,14 @@ export const NIIJIMA_COAST_BOOKMARKS = [
 ] as const;
 
 /** Niijima's chalk-white pumice and talus, distinct from Tomari's darker jointed rocks. */
-function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pumice?:THREE.Texture,ready?:THREE.IUniform): THREE.MeshStandardMaterial {
+function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pumice?:THREE.Texture,ready?:THREE.IUniform,water?:Record<string,THREE.IUniform>): THREE.MeshStandardMaterial {
   const material = base.clone();
   material.name = 'Niijima white layered pumice, pale strand and talus';
   material.vertexColors = true; material.color.set(0xffffff); material.roughness = .96; material.metalness = 0;
   material.map = material.normalMap = material.bumpMap = material.roughnessMap = material.metalnessMap = material.aoMap = null;
   material.onBeforeCompile = shader => {
     Object.assign(shader.uniforms,{uPumicePhoto:{value:pumice},uPumiceReady:ready??{value:0}});
+    if(sand&&water)Object.assign(shader.uniforms,water);
     if(sand)Object.assign(shader.uniforms,{uNiiSandAlbedo:{value:sand.albedo},uNiiSandNormal:{value:sand.normalGL},uNiiSandARM:{value:sand.arm}});
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNiijimaPoint;');
     shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvNiijimaPoint = position - vec3(5500.0, 0.0, -2000.0);');
@@ -57,6 +59,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       varying vec3 vNiijimaPoint;
       uniform sampler2D uPumicePhoto;uniform float uPumiceReady;
       ${sand?'uniform sampler2D uNiiSandAlbedo,uNiiSandNormal,uNiiSandARM;':''}
+      ${sand?wetSandSampling:''}
       float niiHash(vec3 p) { p=fract(p*.1031); p+=dot(p,p.yzx+33.33); return fract((p.x+p.y)*p.z); }
       float niiNoise(vec3 p) {
         vec3 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
@@ -103,6 +106,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       float niiSandGrain=clamp(dot(niiSandPhoto,vec3(.2126,.7152,.0722))/.1011,.60,1.35);
       float niiWash=pow(abs(sin(vNiijimaPoint.x*2.3+niiNoise(vNiijimaPoint*.09)*1.7)),4.0);
       float niiWet=1.0-smoothstep(.15,2.1,vNiijimaPoint.y+niiNoise(vNiijimaPoint*.035)*.35);
+      if(niiSandMask>.001&&vNiijimaPoint.y<4.)niiWet=max(niiWet*.78,sandWaterFilm(vNiijimaPoint+vec3(5500,0,-2000)));
       diffuseColor.rgb*=mix(vec3(1),vec3(niiSandGrain*(1.0-.10*niiWash)*mix(1.0,.45,niiWet)),niiSandMask);
       // The observed White Mama strand has dark, fine deposits and long
       // meandering wash lines. This bounded distribution is authored; the
@@ -133,7 +137,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       `:''}
     `);
   };
-  material.customProgramCacheKey = () => 'niijima-pumice-v1';
+  material.customProgramCacheKey = () => 'niijima-pumice-wave-film-v2';
   return material;
 }
 
@@ -151,6 +155,7 @@ export class NiijimaCoast implements GroundSampler {
   private readonly pumiceTexture:THREE.Texture;
   private readonly geometries: THREE.BufferGeometry[] = [];
   private readonly material: THREE.MeshStandardMaterial;
+  private readonly waterUniforms=wetSandUniforms();
   private readonly baseGround: GroundSampler;
   private readonly maps = new Map<string, { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 }>();
 
@@ -159,6 +164,8 @@ export class NiijimaCoast implements GroundSampler {
     this.baseGround = baseGround;
     this.group.name = 'Niijima Horikiri, Shiromama and actual Secret surf region';
     this.group.userData = { source: NIIJIMA_DETAIL_PROVENANCE, northernSource: NIIJIMA_NORTH_PROVENANCE,southernSource:NIIJIMA_SOUTH_PROVENANCE, measuredMacroshape: 'GSI DEM5A/DEM10B', authoredMicrorelief: true, bathymetry: 'inferred',scarpCandidate:options.scarp??false };
+    this.group.userData.sediment=NIIJIMA_SEDIMENT_PROVENANCE;
+    this.group.userData.wetSand='Live shared wave contact over an authored damp band; no measured moisture or drying history';
     const pumiceReady={value:0};
     let resolvePumice:()=>void=()=>{};
     this.ready=new Promise<void>(resolve=>{resolvePumice=resolve;});
@@ -166,7 +173,7 @@ export class NiijimaCoast implements GroundSampler {
     if(typeof document==='undefined'){this.materialDiagnostics.pumice='not-loaded';resolvePumice();}
     this.pumiceTexture.colorSpace=THREE.SRGBColorSpace;this.pumiceTexture.wrapS=this.pumiceTexture.wrapT=THREE.RepeatWrapping;
     this.pumiceTexture.anisotropy=8;this.pumiceTexture.minFilter=THREE.LinearMipmapLinearFilter;
-    this.material = pumiceMaterial(material,options.sand,this.pumiceTexture,pumiceReady);
+    this.material = pumiceMaterial(material,options.sand,this.pumiceTexture,pumiceReady,this.waterUniforms);
     const authored = { heightAt: (x: number, z: number) => {
       if(z>=-300&&z<=-100){const w=ease(-300,-100,z);return this.dem.refinedHeightAt(x,z)*(1-w)+this.southDem.refinedHeightAt(x,z)*w;}
       const y=this.demAt(z).refinedHeightAt(x,z);
@@ -183,6 +190,10 @@ export class NiijimaCoast implements GroundSampler {
   }
 
   contains(x: number, z: number): boolean { const b = this.bounds; return x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ; }
+  /** Bind once before material compilation; values then track ocean updates. */
+  bindWaterSurface(uniforms:Record<string,THREE.IUniform>):void{
+    for(const key of Object.keys(this.waterUniforms))if(uniforms[key])this.waterUniforms[key]=uniforms[key];
+  }
   heightAt(x: number, z: number): number {
     if (!this.contains(x, z)) return this.baseGround.heightAt(x, z);
     for (let i = this.surfaces.length - 1; i > 0; i--) if (this.surfaces[i].contains(x, z)) return this.surfaces[i].heightAt(x, z);

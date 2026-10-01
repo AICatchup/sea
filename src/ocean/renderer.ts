@@ -14,98 +14,18 @@ import { WaveCaustics } from './caustics';
 import { loadPhotographicSky } from './photographic-sky';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { FirstPersonBody } from '../world/player-body';
-import { shoreWaveSampling } from './surface-detail';
+import { LocalWaterHeights, cameraSubmersion } from './local-water-heights.ts';
 import { WorldCollision, withWorldCollision } from '../world/world-collision';
 import { WorldSolidBinding } from '../world/world-solid-binding';
 import { ShoreSpray } from './shore-spray';
 import { ShoreBreaker } from './shore-breaker';
-import { ShoreSolver, shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
+import { ShoreSolver, createShoreSolverUniforms } from './shore-solver.ts';
 import { buildPhotoCoastPresentation } from '../world/photo-coast-presentation';
+import { experienceOptions } from '../qa/experience-options';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
 
-/** Two 14m local patches, 128 GPU samples / 512 bytes, asynchronously at 5Hz.
- * This is the actual FFT height with choppy XZ inversion and coastal shelter.
- * It does not read either full simulation texture or stall every frame.
- */
-class LocalWaterHeights {
-  private readonly scene=new THREE.Scene();
-  private readonly camera=new THREE.Camera();
-  private readonly target=new THREE.WebGLRenderTarget(8,16,{depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
-  private readonly geometry=new THREE.PlaneGeometry(2,2);
-  private readonly material=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,
-    vertexShader:'void main(){gl_Position=vec4(position.xy,0,1);}',fragmentShader:/* glsl */`
-      precision highp float;
-      uniform sampler2D uLongWaves,uShortWaves,uBathymetry;
-      uniform vec4 uBathyBounds;uniform vec2 uBathyResolution,uPlayer,uBoat;
-      uniform float uSwell,uChoppiness,uWind;
-      ${shoreWaveSampling}
-      ${shoreSolverSampling}
-      vec3 displacement(vec2 p){
-        vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;vec2 coast=vec2(-110,1);
-        if(all(greaterThanEqual(uv,vec2(0)))&&all(lessThanEqual(uv,vec2(1)))){
-          coast=sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;
-        }
-        float shelter=shoreWaveScale(coast,uSwell,uWind);
-        return (texture2D(uLongWaves,p/384.0).xyz+texture2D(uShortWaves,p/24.0).xyz)*shelter*uSwell;
-      }
-      void main(){
-        vec2 center=gl_FragCoord.y<8.0?uPlayer:uBoat;
-        vec2 world=center+(vec2(gl_FragCoord.x,mod(gl_FragCoord.y,8.0))-.5-3.5)*2.0;
-        vec2 parameter=world;
-        for(int i=0;i<3;i++)parameter=world-displacement(parameter).xz*uChoppiness;
-        float h=shoreSolvedSurface(world,displacement(parameter).y,0.).x;
-        float code=floor(clamp(h/16.0+.5,0.0,1.0)*65535.0+.5);
-        gl_FragColor=vec4(floor(code/256.0),mod(code,256.0),137.0,255.0)/255.0;
-      }`,uniforms:{...createShoreSolverUniforms(),uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},
-        uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
-        uPlayer:{value:new THREE.Vector2()},uBoat:{value:new THREE.Vector2()},uSwell:{value:1},uChoppiness:{value:1.55},uWind:{value:8.5}}});
-  private pixels:Uint8Array|null=null;
-  private readonly origins=[new THREE.Vector2(),new THREE.Vector2()];
-  private pending=false;
-  private lastUpdate=-Infinity;
-  private disposed=false;
-  failed=false;
-  constructor(private readonly renderer:THREE.WebGLRenderer){
-    const quad=new THREE.Mesh(this.geometry,this.material);quad.frustumCulled=false;this.scene.add(quad);
-  }
-  sample=(x:number,z:number):number=>{
-    if(!this.pixels)return 0;
-    for(let patch=0;patch<2;patch++){
-      const px=(x-this.origins[patch].x)/2+3.5,pz=(z-this.origins[patch].y)/2+3.5;
-      if(px<0||px>7||pz<0||pz>7)continue;
-      const x0=Math.min(6,Math.floor(px)),z0=Math.min(6,Math.floor(pz)),fx=px-x0,fz=pz-z0;
-      const at=(xx:number,zz:number)=>{const i=((zz+patch*8)*8+xx)*4;return (this.pixels![i]*256+this.pixels![i+1])/65535*16-8;};
-      return THREE.MathUtils.lerp(THREE.MathUtils.lerp(at(x0,z0),at(x0+1,z0),fx),
-        THREE.MathUtils.lerp(at(x0,z0+1),at(x0+1,z0+1),fx),fz);
-    }
-    return 0;
-  };
-  update(clock:number,textures:THREE.Texture[],bathymetry:{texture:THREE.Texture;origin:THREE.Vector2;size:THREE.Vector2;triangulated?:boolean},
-    player:THREE.Vector3,boat:THREE.Vector3,swell:number,choppiness:number,wind:number):void{
-    if(this.pending||this.failed||this.disposed||clock-this.lastUpdate<.2)return;
-    this.lastUpdate=clock;this.pending=true;
-    const u=this.material.uniforms,origins=[new THREE.Vector2(player.x,player.z),new THREE.Vector2(boat.x,boat.z)];
-    u.uPlayer.value.copy(origins[0]);u.uBoat.value.copy(origins[1]);u.uLongWaves.value=textures[0];u.uShortWaves.value=textures[1];
-    u.uBathymetry.value=bathymetry.texture;u.uBathyBounds.value.set(bathymetry.origin.x,bathymetry.origin.y,bathymetry.size.x,bathymetry.size.y);
-    const image=bathymetry.texture.image as {width:number;height:number};u.uBathyResolution.value.set(image.width,image.height);
-    u.uBathyTriangulated.value=bathymetry.triangulated?1:0;u.uSwell.value=swell;u.uChoppiness.value=choppiness;u.uWind.value=wind;
-    const previous=this.renderer.getRenderTarget();
-    this.renderer.setRenderTarget(this.target);this.renderer.render(this.scene,this.camera);this.renderer.setRenderTarget(previous);
-    void this.renderer.readRenderTargetPixelsAsync(this.target,0,0,8,16,new Uint8Array(512)).then(pixels=>{
-      if(this.disposed)return;
-      if(!(pixels instanceof Uint8Array)||pixels.length!==512||pixels.some((value,i)=>i%4===2&&value!==137)){
-        throw new Error('Uninitialized FFT height framebuffer');
-      }
-      this.pixels=pixels;this.origins[0].copy(origins[0]);this.origins[1].copy(origins[1]);
-    }).catch(error=>{this.failed=true;console.warn('FFT surface-height cache unavailable; mean sea level retained',error);})
-      .finally(()=>{this.pending=false;});
-  }
-  get diagnostics(){return {ready:!!this.pixels,failed:this.failed,samples:128,interval:.2,readbackBytes:512};}
-  bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
-  dispose():void{this.disposed=true;this.target.dispose();this.geometry.dispose();this.material.dispose();this.scene.clear();}
-}
 
 function makeOceanGrid(): THREE.BufferGeometry {
   const rings=230,sectors=384;
@@ -203,10 +123,11 @@ export class Ocean {
     this.renderer.shadowMap.autoUpdate=false;
     this.renderer.info.autoReset=false;
     this.simulation=new OceanSimulation(this.renderer,this.wind);
-    this.shoreSolver=new URLSearchParams(location.search).get('surf')==='1'?new ShoreSolver(this.renderer):null;
+    const experience=experienceOptions(location.search);
+    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld();
-    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:new URLSearchParams(location.search).get('whitewater')!=='0',volume:new URLSearchParams(location.search).get('whitewater')==='volume'});
+    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);
@@ -242,6 +163,7 @@ export class Ocean {
     this.caustics=new WaveCaustics(this.renderer,{span:32});
     if(this.shoreSolver){this.shoreSolver.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.shoreSolver.uniforms);}
     this.waterHeights.bindShore(this.uniforms);this.caustics.bindShore(this.uniforms);
+    this.world.niijimaCoast.bindWaterSurface(this.uniforms);
     this.uniforms.uCaustics.value=this.caustics.texture;this.uniforms.uCausticBounds.value=this.caustics.bounds;
     this.compositor=new SceneCompositor(this.renderer,this.uniforms.uExposure,this.uniforms.uUnderwater,this.uniforms.uTime);
     this.compositor.setWaterOptics(this.camera,this.sun,this.uniforms.uSunDirection,this.uniforms.uSunColor);
@@ -293,7 +215,7 @@ export class Ocean {
       if(this.disposed)return;
       this.assets.hydrateRockPlacements(variants);
       prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
-      if(new URLSearchParams(location.search).get('coast')==='photo'){
+      if(experience.photoCoast){
         this.photoCoast=buildPhotoCoastPresentation(this.world,variants);
         this.photoCoast.group.traverse(object=>{if(object instanceof THREE.Mesh)object.castShadow=true;});
         this.scannedCoast.add(this.photoCoast.group);
@@ -421,7 +343,7 @@ export class Ocean {
     this.assets.boat.position.copy(state.boatPosition);
     this.assets.boat.rotation.set(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ');
     this.body.update(state,this.camera,delta,this.time);
-    const underwater=THREE.MathUtils.clamp(-this.camera.position.y/.18,0,1);
+    const underwater=cameraSubmersion(this.camera.position.y,this.waterHeights.sample(this.camera.position.x,this.camera.position.z));
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5);
     this.marine.update(this.time,this.camera.position,underwater>.5);

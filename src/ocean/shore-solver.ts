@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
+import { shoreSurfaceTransitionGLSL } from './shore-surface-transition.ts';
+import {shoreBoreGLSL} from './shore-bore.ts';
 
 /** Include after shoreWaveSampling, so terrain interpolation agrees with geometry. */
 export const shoreSolverSampling = /* glsl */`
 uniform sampler2D uShoreState;
 uniform vec4 uShoreBounds;
 uniform float uShoreReady,uShoreResolution;
+${shoreSurfaceTransitionGLSL}
 vec3 shoreNode(vec2 uv){
   vec2 p=uShoreBounds.xy+uv*uShoreBounds.zw;
   vec2 buv=clamp((p-uBathyBounds.xy)/uBathyBounds.zw,vec2(0),vec2(1));
@@ -27,7 +30,9 @@ vec2 shoreSolvedSurface(vec2 world,float fallbackHeight,float fallbackFoam){
   if(weighted.z<.00001)return vec2(fallbackHeight,fallbackFoam);
   vec2 surface=weighted.xy/weighted.z;
   float edge=min(min(uv.x,uv.y),min(1.-uv.x,1.-uv.y));
-  float blend=smoothstep(.025,.10,edge)*(1.-smoothstep(8.,11.,-bed))*smoothstep(.015,.12,max(0.,surface.x-bed));
+  // Keep a valid bore elevation through the wet contact. Using local depth
+  // here previously pulled the advancing crest into the sand before contact.
+  float blend=shoreSurfaceBlend(edge,bed,weighted.z);
   return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);
 }
 `;
@@ -39,6 +44,7 @@ uniform vec4 uBathyBounds,uBounds,uOldBounds;
 uniform vec2 uBathyResolution;
 uniform float uSize,uDx,uDt,uMode,uSwell,uChoppiness,uMaxDepth,uMaxSpeed,uMaxHeight;
 ${shoreWaveSampling}
+${shoreBoreGLSL}
 vec2 world(vec2 uv){return uBounds.xy+uv*uBounds.zw;}
 float bed(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
   if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return -uMaxDepth;
@@ -53,7 +59,7 @@ vec4 incident(vec2 p){float b=bed(p),h=max(0.,fft(p)-b);
   // FFT does not provide incident propagation direction here.
   vec2 grad=vec2(bed(p+vec2(uDx,0))-bed(p-vec2(uDx,0)),bed(p+vec2(0,uDx))-bed(p-vec2(0,uDx)));
   vec2 n=grad/max(length(grad),.00001);
-  float velocity=clamp(fft(p)*sqrt(9.81/max(.2,-b)),-uMaxSpeed,uMaxSpeed);
+  float velocity=incidentBoreVelocity(h,max(0.,-b),uMaxSpeed);
   return vec4(h,h*n*velocity,0.);
 }
 vec4 state(vec2 uv){if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return incident(world(uv));return texture2D(uInput,uv);}
@@ -81,7 +87,7 @@ void main(){vec2 uv=gl_FragCoord.xy/uSize,p=world(uv);
   // Advected concentration with dissipative birth at compressive shallow bores.
   vec2 v=next.yz/max(next.x,.01);float foam=texture2D(uInput,clamp(uv-v*uDt/uBounds.zw,vec2(.5/uSize),vec2(1.-.5/uSize))).a;
   float compression=max(0.,-((r.y/max(r.x,.01)-l.y/max(l.x,.01))+(t.z/max(t.x,.01)-b.z/max(b.x,.01)))/(2.*uDx));
-  float born=clamp(compression*.7,0.,1.)*(1.-smoothstep(3.,7.,next.x))*smoothstep(.05,.3,next.x);
+  float born=boreFoamBirth(next.x,compression,next.x+z,max(0.,-z));
   // Exact reaction dF/dt=4*born*(1-F)-.35*F. A per-step maximum capped
   // persistent breaking at ~.03 coverage and changed with the CFL timestep.
   float reaction=.35+4.*born,equilibrium=4.*born/reaction;

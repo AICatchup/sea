@@ -1,6 +1,7 @@
 import { photographicSkySampling } from './photographic-sky';
 import { capillarySampling, shoreWaveSampling } from './surface-detail';
 import { shoreSolverSampling } from './shore-solver.ts';
+import {surfaceFoamGLSL} from './surface-foam.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -259,6 +260,7 @@ export const oceanFragment = /* glsl */ `
       +texture(uSunShadow,vec3(q.xy+vec2(s.x,-s.y),depth))+texture(uSunShadow,vec3(q.xy+vec2(-s.x,s.y),depth)));
   }
   ${capillarySampling}
+  ${surfaceFoamGLSL}
 
   // Exact unpolarized dielectric interface. Schlick overestimates water's
   // grazing reflectance and misses the underwater critical-angle transition.
@@ -425,21 +427,24 @@ export const oceanFragment = /* glsl */ `
     float jacobian=(1.0+dx.x*chop)*(1.0+dz.z*chop)-dx.z*dz.x*chop*chop;
     float breaking=1.0-smoothstep(0.05,0.46,jacobian);
     float memory=smoothstep(0.38,0.95,max(foam0,foam1*0.85));
-    float foamScale=max(0.6,footprint*1.1);
-    float foamDetail=noise(vOcean*1.7/foamScale+vec2(uTime*0.035,-uTime*0.026));
+    vec2 foamDrift=vec2(uTime*0.035,-uTime*0.026);
+    float fineResolved=exp(-pow(footprint*1.7*1.55,2.));
+    float foamDetail=mix(.5,noise(vOcean*1.7+foamDrift),fineResolved);
     float pores=smoothstep(0.28,0.73,foamDetail);
     float foam=max(breaking*0.90,memory*0.32);
     foam*=mix(0.22,1.0,pores)*smoothstep(4.0,12.0,uWind);
     foam*=1.0-smoothstep(0.35,3.2,footprint);
-    foam=max(foam,shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y*(.35+.65*pores));
+    float foamPattern=.7*noise(vOcean*.23+foamDrift*.1)+.3*foamDetail;
+    float solvedFoam=shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y;
+    foam=max(foam,surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern)));
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
     color=mix(color,foamColor,clamp(foam,0.0,0.85));
     float shoreDepth=max(0.0,-coast.x);
     float shallowBreaking=(1.0-smoothstep(.6,3.8,shoreDepth))*smoothstep(.10,.38,shoreDepth);
     float crestArrival=smoothstep(.06,.18+shoreDepth*.10,vWorld.y);
-    float shoreFoam=shallowBreaking*crestArrival*coast.y*pores*.48;
-    shoreFoam+=(1.0-smoothstep(.025,.28,shoreDepth))*smoothstep(.0,.04,shoreDepth)
-      *(.08+.07*noise(vOcean*.55+vec2(uTime*.11,-uTime*.08)));
+    // A shallow positive crest alone is not evidence of breaking. The solved
+    // residual foam is already represented above; calm contact has no white rail.
+    float shoreFoam=shallowBreaking*crestArrival*coast.y*pores*.48*breaking;
     color=mix(color,uCloudColor*.55,shoreFoam);
 
     // Air scattering uses the same atmosphere as the visible sky.

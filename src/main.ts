@@ -1,9 +1,11 @@
 import './style.css';
+import { inspectBodyHands } from './qa/body-inspection';
 import { Ocean, type Quality } from './ocean/renderer';
 import { presets, type PresetName } from './ocean/presets';
 import { SurfAudio } from './audio';
 import { AdventureUI } from './ui/adventure-ui';
 import { captureNamed, captureMatrix, CAPTURE_PROFILES, type CaptureState, type SceneCaptureHost } from './qa/scene-capture';
+import { experienceOptions } from './qa/experience-options';
 
 function element<T extends HTMLElement>(id: string): T {
   const result = document.getElementById(id);
@@ -78,12 +80,14 @@ function toggleImmersive(): void {
 
 try {
   ocean = new Ocean(element<HTMLCanvasElement>('ocean'));
-  const view=new URLSearchParams(location.search).get('view');
+  const view=experienceOptions(location.search).view;
   if(view==='dive')ocean.adventure.viewpoint(-145,-113,-.45,-.28,'dive',4.5);
   if(view==='reef')ocean.adventure.viewpoint(-140,-110,-.5,-.42,'dive',5);
   if(view==='lookout')ocean.adventure.viewpoint(-25,36,-.52,-.25);
   if(view==='shore')ocean.adventure.viewpoint(-42,9,-.56,-.24);
   if(view==='cliff')ocean.adventure.viewpoint(-86,-22,-1.6,.10);
+  const coastalView=CAPTURE_PROFILES.find(profile=>profile.name===view&&(view==='habushi-front'||view==='secret'));
+  if(coastalView){const p=coastalView.pose;ocean.adventure.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);}
   const focus = () => element('ocean').focus({ preventScroll: true });
   adventureUI = new AdventureUI({
     interact: () => { ocean.adventure.interact(); focus(); },
@@ -151,6 +155,7 @@ try {
     objectAt:(x:number,y:number)=>ocean.probeFoliage(x,y,false),
     terrainAt:(x:number,y:number)=>ocean.probeFoliage(x/window.innerWidth*2-1,1-y/window.innerHeight*2,false,true),
     depthSamples:(points:readonly{x:number;y:number}[])=>ocean.probeDepthSamples(points),
+    inspectBodyHands:()=>inspectBodyHands(ocean),
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
     breakerEnabled:(enabled:boolean)=>ocean.setBreakerCandidateEnabled(enabled),
     shoreEnabled:(enabled:boolean)=>ocean.setShoreCandidateEnabled(enabled),

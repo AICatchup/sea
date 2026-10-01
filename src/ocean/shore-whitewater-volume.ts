@@ -2,11 +2,12 @@ import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { type WhitewaterBirth, type WhitewaterSample, type WhitewaterSampler } from './shore-whitewater.ts';
+import { relaxWhitewaterVelocity } from './whitewater-flow.ts';
 
 export const VOLUME_CAPACITY=384;
 const finite=(s:WhitewaterSample)=>Object.values(s).every(Number.isFinite);
-/** A bounded aerated floc approximation. Energy determines collapse height;
- * cached surface slope supplies flow, rather than a free-running animation. */
+/** Bounded aerated flocs: collapse into spreading remnants and advect with
+ * cached SWE flow. FFT-only fallback is a labelled slope/drift approximation. */
 export class WhitewaterVolumePool {
   readonly capacity:number;
   readonly positions:Float32Array;
@@ -17,18 +18,20 @@ export class WhitewaterVolumePool {
   active=0;
   private births:(WhitewaterBirth|null)[];
   private ages:Float64Array;
+  private velocity:Float64Array;
   private cursor=0;
   private disposed=false;
   private sample:WhitewaterSample={height:0,compression:0,depth:0,shelter:0,ground:0,gradientX:0,gradientZ:0};
   constructor(capacity=VOLUME_CAPACITY){
     if(!Number.isInteger(capacity)||capacity<1||capacity>VOLUME_CAPACITY)throw new Error('Invalid volume capacity');
-    this.capacity=capacity;this.positions=new Float32Array(capacity*3);this.shape=new Float32Array(capacity*4);this.motion=new Float32Array(capacity*2);this.alpha=new Float32Array(capacity);this.seeds=new Float32Array(capacity);this.births=Array(capacity).fill(null);this.ages=new Float64Array(capacity);
+    this.capacity=capacity;this.positions=new Float32Array(capacity*3);this.shape=new Float32Array(capacity*4);this.motion=new Float32Array(capacity*2);this.alpha=new Float32Array(capacity);this.seeds=new Float32Array(capacity);this.births=Array(capacity).fill(null);this.ages=new Float64Array(capacity);this.velocity=new Float64Array(capacity*2);
   }
   emit(b:WhitewaterBirth):boolean{
     if(this.disposed||!Object.values(b).every(Number.isFinite)||Math.abs(b.x)>1e6||Math.abs(b.z)>1e6||Math.abs(b.height)>1e4||b.energy<=.12||b.energy>1||Math.abs(Math.hypot(b.nx,b.nz)-1)>.1||b.seed<0||b.seed>1)return false;
     for(let n=0;n<this.capacity;n++){
       const i=(this.cursor+n)%this.capacity;if(this.births[i])continue;
       this.births[i]={...b};this.ages[i]=0;this.seeds[i]=b.seed;
+      this.velocity[i*2]=0;this.velocity[i*2+1]=0;
       this.positions[i*3]=b.x;this.positions[i*3+1]=b.height;this.positions[i*3+2]=b.z;
       this.shape[i*4]=2+2.6*b.seed;this.shape[i*4+1]=.12+.75*b.energy;this.shape[i*4+2]=.5+.9*b.energy;this.shape[i*4+3]=Math.atan2(b.nz,b.nx);
       this.alpha[i]=0;this.active++;this.cursor=(i+1)%this.capacity;return true;
@@ -38,20 +41,30 @@ export class WhitewaterVolumePool {
     if(this.disposed||!Number.isFinite(delta)||delta<=0)return;
     for(let i=0;i<this.capacity;i++){
       const b=this.births[i];if(!b)continue;
-      const age=this.ages[i]+=delta,life=2.4+b.energy*2.1+b.seed;
+      const previousAge=this.ages[i],age=this.ages[i]+=delta,life=6+b.energy*4+b.seed*2;
       const s=this.sample,x=this.positions[i*3],z=this.positions[i*3+2];
       if(age>=life||!sampler(x,z,s)||!finite(s)||Math.abs(s.height)>1e4||s.depth<=0||s.depth>4.6||s.shelter<.18||s.ground>=s.height-.015){this.births[i]=null;this.alpha[i]=0;this.active--;continue;}
-      // Finite-difference wave slope perturbs downhill rush. Birth direction
-      // remains onshore; the 5 Hz cache cannot estimate a resolved velocity.
+      // Use the solved flow when available: a retreating swash carries the
+      // existing foam seaward instead of spawning another stationary white row.
       const gx=s.waveGradientX??0,gz=s.waveGradientZ??0;
-      const speed=(.55+b.energy*1.3)*Math.exp(-age*.4),dt=Math.min(delta,.1);
-      this.positions[i*3]+=dt*(b.nx*speed-THREE.MathUtils.clamp(gx,-.5,.5)*.7);
-      this.positions[i*3+2]+=dt*(b.nz*speed-THREE.MathUtils.clamp(gz,-.5,.5)*.7);
+      if(s.flowX!==undefined&&s.flowZ!==undefined){
+        const flowX=relaxWhitewaterVelocity(this.velocity[i*2],THREE.MathUtils.clamp(s.flowX,-12,12),delta);
+        const flowZ=relaxWhitewaterVelocity(this.velocity[i*2+1],THREE.MathUtils.clamp(s.flowZ,-12,12),delta);
+        this.positions[i*3]+=flowX.distance;this.positions[i*3+2]+=flowZ.distance;
+        this.velocity[i*2]=flowX.velocity;this.velocity[i*2+1]=flowZ.velocity;
+      }else{
+        // FFT-only fallback remains explicitly heuristic; integrate its decay
+        // exactly so frame partitioning does not change the onshore distance.
+        const travel=(.55+b.energy*1.3)*(Math.exp(-previousAge*.4)-Math.exp(-age*.4))/.4;
+        this.positions[i*3]+=b.nx*travel-THREE.MathUtils.clamp(gx,-.5,.5)*.7*delta;
+        this.positions[i*3+2]+=b.nz*travel-THREE.MathUtils.clamp(gz,-.5,.5)*.7*delta;
+      }
+      if(!sampler(this.positions[i*3],this.positions[i*3+2],s)||!finite(s)||s.depth<=0||s.ground>=s.height-.015){this.births[i]=null;this.alpha[i]=0;this.active--;continue;}
       this.positions[i*3+1]=s.height;
       const collapse=Math.exp(-age*1.05),remaining=1-age/life;
-      this.shape[i*4]=(2+2.6*b.seed)*(1+age*.17);
+      this.shape[i*4]=(2+2.6*b.seed)*(1+age*.12);
       this.shape[i*4+1]=(.12+.75*b.energy)*collapse+.055*remaining;
-      this.shape[i*4+2]=(.5+.9*b.energy)*(1+age*.42);
+      this.shape[i*4+2]=(.5+.9*b.energy)*(1+age*.5);
       this.motion[i*2]=(1-collapse)*2.3;this.motion[i*2+1]=age/life;
       this.alpha[i]=Math.min(1,age/.12)*Math.pow(remaining,.7)*Math.min(1,s.depth/.2)*(.78+.2*b.energy);
     }
@@ -114,14 +127,20 @@ export class ShoreWhitewaterVolume {
       float hash(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7))+vSeed*137.)*43758.5453);}
       float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
       void main(){if(vAlpha<.001||vWet<.02)discard;if(uOccludingDepthReady>.5&&texture2D(uOccludingDepth,gl_FragCoord.xy/uViewport).r<gl_FragCoord.z-.0000002)discard;
-      float coarse=noise(vLocal*4.3);float fine=noise(vLocal*23.);float coverage=vAlpha*smoothstep(.18+vAge*.32,.65,coarse)*mix(.65,1.,fine);
-      // Object-space binary coverage writes real depth: breakup reveals water
-      // through holes and avoids a translucent fog shell as flocs age.
-      // Coherent cavities replace unfiltered centimetre-sized binary grains.
-      // This remains opaque coverage; it does not claim subpixel integration.
-      if(noise(vLocal*11.7)>coverage)discard;
+      float coarse=noise(vLocal*vec3(2.7,1.8,4.1));
+      float channels=noise(vLocal*vec3(3.,2.,10.));
+      float erosion=smoothstep(.12,.85,vAge);
+      float coverage=clamp(vAlpha*(1.25-.2*erosion),0.,1.);
+      // Young collapse is a connected dense body, then a perforated sheet,
+      // then elongated remnants. No centimetre hash enters binary coverage.
+      float pores=mix(coarse,channels,erosion);
+      if(pores<mix(.08,.75,1.-coverage))discard;
+      // Fine bubbles affect only low-contrast shading when resolved on screen;
+      // they cannot turn the foam silhouette into distant white sparkles.
+      float resolved=1.-smoothstep(.015,.07,length(fwidth(vLocal)));
+      float fine=mix(.5,noise(vLocal*23.),resolved);
       vec3 n=normalize(vNormal);float sun=max(0.,dot(n,normalize(uSunDirection)));float cavity=.72+.28*coarse;
-      vec3 color=uTint*(uHorizon*.36+uSunColor*(.22+.65*sun))*cavity;
+      vec3 color=uTint*(uHorizon*.36+uSunColor*(.22+.65*sun))*cavity*(.97+.06*fine);
       gl_FragColor=vec4(color,1.);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
