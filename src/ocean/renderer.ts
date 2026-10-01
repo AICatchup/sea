@@ -509,6 +509,7 @@ export class Ocean {
   }
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
+  getBreakerCandidateEnabled():boolean{return this.breakerCandidateEnabled;}
   /** Developer picking of foliage only; tight per-instance bounds avoid testing
    * the full island terrain or an entire dense instance field. */
   probeFoliage(x:number,y:number,foliageOnly=true){
