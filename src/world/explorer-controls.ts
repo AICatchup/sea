@@ -394,7 +394,7 @@ export class ExplorerControls {
     }
     this.velocity.copy(this.state.position).sub(before).divideScalar(dt);
     this.state.boardingProgress = progress; this.state.seatingBlend=motion.via?blend:undefined;
-    const walking=!!motion.via&&progress>.2501&&progress<.75;
+    const walking=!!motion.via&&progress>.2501&&progress<.67;
     this.state.avatarAction=blend>.5?'helm':walking?'walk':'climb'; this.state.grounded = false;
     if(walking)this.state.gaitPhase=(this.state.gaitPhase??0)+dt*Math.min(3,this.velocity.length())*2.2;
     this.state.speed = this.velocity.length();
