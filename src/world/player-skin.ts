@@ -3,7 +3,7 @@ import * as THREE from 'three';
 /** Procedural skin at metre scale. Maps tile every 111 mm on the body's existing UVs.
  * Pores are 0.25–0.65 mm, crossed furrows 1–3 mm. No photographic skin or likeness. */
 export function createPlayerSkin() {
-  const size = 258, normal = new Uint8Array(size * size * 4), rough = new Uint8Array(size * size * 4);
+  const size = 258, normal = new Uint8Array(size * size * 4), rough = new Uint8Array(size * size * 4), colour = new Uint8Array(size * size * 4);
   const hash = (x: number, y: number) => {
     const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return n - Math.floor(n);
   };
@@ -27,6 +27,10 @@ export function createPlayerSkin() {
     const dy = (field(x, y + .5) - field(x, y - .5)) * .16;
     const n = new THREE.Vector3(-dx, -dy, 1).normalize();
     normal.set([Math.round((n.x * .5 + .5) * 255), Math.round((n.y * .5 + .5) * 255), Math.round((n.z * .5 + .5) * 255), 255], i);
+    // Low-contrast periodic mottling: a colour response, not raised freckles.
+    const mottling = Math.sin((x * 3 + y * 2) * Math.PI * 2 / size) * .5
+      + Math.sin((x * 7 - y * 5) * Math.PI * 2 / size) * .25;
+    colour.set([Math.round(246 + mottling * 5), Math.round(242 + mottling * 7), Math.round(239 + mottling * 8), 255], i);
     const r = Math.round(224 + field(x, y) * 24); rough.set([r, r, r, 255], i);
   }
   const map = (data: Uint8Array, name: string) => {
@@ -35,16 +39,18 @@ export function createPlayerSkin() {
     texture.magFilter = THREE.LinearFilter; texture.minFilter = THREE.LinearMipmapLinearFilter;
     texture.generateMipmaps = true; texture.needsUpdate = true; return texture;
   };
+  const colourMap = map(colour, 'original skin subtle chromatic mottling');
+  colourMap.colorSpace = THREE.SRGBColorSpace;
   const normalMap = map(normal, 'skin pores and crossed furrows 111mm tile');
   const roughnessMap = map(rough, 'skin pore roughness');
   const material = new THREE.MeshPhysicalMaterial({ color: 0xb48870, roughness: .78,
-    normalMap, roughnessMap, normalScale: new THREE.Vector2(.38, .38),
+    map: colourMap, normalMap, roughnessMap, normalScale: new THREE.Vector2(.38, .38),
     metalness: 0, sheen: .08, sheenColor: new THREE.Color(0xb86e50), sheenRoughness: .85,
     clearcoat: 0, clearcoatRoughness: .24, side: THREE.FrontSide });
   material.userData.microdetail = { tileMetres: 1 / 9, poreDiameterMetres: [.00025, .00065], photographic: false };
-  return { material, textures: [normalMap, roughnessMap], setWetness(value: number) {
+  return { material, textures: [normalMap, roughnessMap, colourMap], setWetness(value: number) {
     const wet = THREE.MathUtils.clamp(Number.isFinite(value) ? value : 0, 0, 1);
-    material.roughness = .78 - wet * .22; material.clearcoat = wet * .32;
+    material.roughness = .78 - wet * .22; material.clearcoat = wet * .18;
     material.sheen = .08 * (1 - wet); material.normalScale.setScalar(.38 - wet * .08);
   } };
 }

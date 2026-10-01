@@ -407,8 +407,8 @@ export class FirstPersonBody {
       const thenar = Math.exp(-(((x + .023) / .023) ** 2 + ((y + .043) / .026) ** 2));
       const hypothenar = Math.exp(-(((x - .026) / .018) ** 2 + ((y + .066) / .030) ** 2));
       point.z -= palmar * palmar * (.012 * thenar + .004 * hypothenar);
-      if (dorsal > .35 && y < -.032) {
-        for (const x of [-.030, -.009, .014, .034]) point.z += .0012 * Math.exp(-(((point.x - origin.x - side * x) / .004) ** 2));
+      if (y < -.032) {
+        for (const x of [-.030, -.009, .014, .034]) point.z += dorsal ** 3 * .0011 * Math.exp(-(((point.x - origin.x - side * x) / .004) ** 2));
       }
       // Actual concave folds: inward displacement towards the palm interior.
       const transverse = Math.exp(-(((y + .073 + x * .10) / .0016) ** 2));
@@ -433,33 +433,57 @@ export class FirstPersonBody {
       const middle = this.bone(`${spec.name} middle`, joint1, base), tip = this.bone(`${spec.name} distal`, joint2, middle);
       const a = this.index(base), b = this.index(middle), c = this.index(tip);
       const fingerRing = (point: THREE.Vector3, radius: number, weights: SkinWeight) => ({ p: point, a: radius, b: radius * .85, weights });
-      s.loft([
+      const fingerSections = [
         fingerRing(basePoint.clone().add(v(0, .009, 0)), spec.radius * .93, mix(h, a, .35)),
         fingerRing(basePoint.clone().add(v(0, .001, 0)), spec.radius, mix(h, a, .9)),
         fingerRing(basePoint.clone().lerp(joint1, .45), spec.radius * .88, rigid(a)),
-        fingerRing(joint1.clone().add(v(0, .006, 0)), spec.radius * 1.04, mix(a, b, .2)),
-        fingerRing(joint1.clone().add(v(0, .0018, 0)), spec.radius * 1.03, mix(a, b, .43)),
+        fingerRing(joint1.clone().add(v(0, .006, 0)), spec.radius * .97, mix(a, b, .2)),
+        fingerRing(joint1.clone().add(v(0, .0018, 0)), spec.radius * .98, mix(a, b, .43)),
         fingerRing(joint1, spec.radius * .96, mix(a, b, .5)),
-        fingerRing(joint1.clone().add(v(0, -.0018, 0)), spec.radius * 1.00, mix(a, b, .57)),
+        fingerRing(joint1.clone().add(v(0, -.0018, 0)), spec.radius * .96, mix(a, b, .57)),
         fingerRing(joint1.clone().lerp(joint2, .45), spec.radius * .78, rigid(b)),
-        fingerRing(joint2.clone().add(v(0, .0015, 0)), spec.radius * .86, mix(b, c, .42)),
+        fingerRing(joint2.clone().add(v(0, .0015, 0)), spec.radius * .83, mix(b, c, .42)),
         fingerRing(joint2, spec.radius * .80, mix(b, c, .5)),
-        fingerRing(joint2.clone().add(v(0, -.0015, 0)), spec.radius * .85, mix(b, c, .58)),
+        fingerRing(joint2.clone().add(v(0, -.0015, 0)), spec.radius * .82, mix(b, c, .58)),
         fingerRing(joint2.clone().lerp(tipPoint, .5), spec.radius * .78, rigid(c)),
         fingerRing(tipPoint.clone().add(v(0, .003, 0)), spec.radius * .61, rigid(c)),
         fingerRing(tipPoint, spec.radius * .23, rigid(c)),
-      ], SKIN, 20, v(1, 0, 0), v(0, 0, 1), (point, r, theta) => {
+      ];
+      // Sample a continuous profile rather than exposing sparse phalange rings.
+      // Each interval retains its original bone blend and longitudinal silhouette.
+      const fingerRings: Ring[] = [];
+      for (let j = 0; j < fingerSections.length - 1; j++) {
+        const from = fingerSections[j], to = fingerSections[j + 1];
+        for (let k = 0; k < 3; k++) {
+          const t = k / 3, eased = t * t * (3 - 2 * t);
+          const contributions = new Map<number, number>();
+          for (const [ring, factor] of [[from, 1 - t], [to, t]] as const) {
+            contributions.set(ring.weights[0], (contributions.get(ring.weights[0]) ?? 0) + ring.weights[2] * factor);
+            contributions.set(ring.weights[1], (contributions.get(ring.weights[1]) ?? 0) + ring.weights[3] * factor);
+          }
+          const sorted = [...contributions].sort((a, b) => b[1] - a[1]);
+          const first = sorted[0], second = sorted[1] ?? [first[0], 0], total = first[1] + second[1];
+          fingerRings.push({ p: from.p.clone().lerp(to.p, t),
+            a: THREE.MathUtils.lerp(from.a, to.a, eased), b: THREE.MathUtils.lerp(from.b, to.b, eased),
+            weights: [first[0], second[0], first[1] / total, second[1] / total] });
+        }
+      }
+      fingerRings.push(fingerSections[fingerSections.length - 1]);
+      s.loft(fingerRings, SKIN, 24, v(1, 0, 0), v(0, 0, 1), (point, _r, theta) => {
         // Broad volar pulp and flatter dorsal phalanges, with a tapered pad below
         // the nail free edge. This breaks the cylindrical sausage silhouette.
         const dorsal = Math.max(0, Math.sin(theta)), palmar = Math.max(0, -Math.sin(theta));
-        if (r > 1) point.z -= dorsal * dorsal * .0011;
-        // Knuckles broaden dorsally; crease-ring depressions are localized to
-        // dorsal and volar surfaces, preserving the sidewall's fleshy thickness.
-        if (r === 4 || r === 8) point.z += dorsal * dorsal * .00065;
-        if (r === 5 || r === 9) point.z -= dorsal * dorsal * .00065 - palmar * palmar * .00055;
-        if (r >= 10) point.z -= palmar * palmar * .0022;
-        // Wider, flatter distal pulp below a narrow dorsal nail bed.
-        if (r === 11 || r === 12) point.x += Math.cos(theta) * spec.radius * .07 * palmar;
+        const y = point.y;
+        const jointField = (joint: THREE.Vector3, width: number) => Math.exp(-(((y - joint.y) / width) ** 2));
+        const distal = clamp((joint2.y - y) / (joint2.y - tipPoint.y), 0, 1);
+        // Broad pads merge gradually into the phalanx, with narrow flexion folds
+        // confined to the volar surface instead of a circumferential bead.
+        point.z -= dorsal * dorsal * .0011;
+        point.z += dorsal * dorsal * (.0008 * jointField(joint1, .0045) + .0006 * jointField(joint2, .003));
+        point.z += palmar ** 4 * (.00055 * jointField(joint1, .0009) + .0004 * jointField(joint2, .0008));
+        const pulp = Math.sin(Math.PI * distal * .88) ** 2;
+        point.z -= palmar * palmar * .0022 * pulp;
+        point.x += Math.cos(theta) * spec.radius * .07 * palmar * pulp;
       });
       this.sculptNail(s, joint2, tipPoint, spec.radius, rigid(c));
       fingers.push({ base, middle, tip, thumb: false });
@@ -708,3 +732,4 @@ export class FirstPersonBody {
     this.group.clear();
   }
 }
+
