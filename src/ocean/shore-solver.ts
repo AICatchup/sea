@@ -6,11 +6,11 @@ export const shoreSolverSampling = /* glsl */`
 uniform sampler2D uShoreState;
 uniform vec4 uShoreBounds;
 uniform float uShoreReady,uShoreResolution;
-vec2 shoreNode(vec2 uv){
+vec3 shoreNode(vec2 uv){
   vec2 p=uShoreBounds.xy+uv*uShoreBounds.zw;
   vec2 buv=clamp((p-uBathyBounds.xy)/uBathyBounds.zw,vec2(0),vec2(1));
   float bed=sampleCoastalGround(uBathymetry,buv,uBathyResolution).r;
-  vec4 s=texture2D(uShoreState,uv);return vec2(bed+s.r,s.a);
+  vec4 s=texture2D(uShoreState,uv);float wet=step(.01,s.r);return vec3((bed+s.r)*wet,s.a*wet,wet);
 }
 vec2 shoreSolvedSurface(vec2 world,float fallbackHeight,float fallbackFoam){
   if(uShoreReady<.5)return vec2(fallbackHeight,fallbackFoam);
@@ -20,13 +20,14 @@ vec2 shoreSolvedSurface(vec2 world,float fallbackHeight,float fallbackFoam){
   if(any(lessThan(buv,vec2(0)))||any(greaterThan(buv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);
   vec2 coast=sampleCoastalGround(uBathymetry,buv,uBathyResolution).rg;float bed=coast.r;
   if(coast.g<.18)return vec2(fallbackHeight,fallbackFoam);
-  vec4 s=texture2D(uShoreState,uv);
   vec2 node=clamp(uv*uShoreResolution-.5,vec2(0),vec2(uShoreResolution-1.));
   vec2 base=min(floor(node),vec2(uShoreResolution-2.)),f=node-base;
   vec2 a=(base+.5)/uShoreResolution,e=vec2(1./uShoreResolution,0);
-  vec2 surface=mix(mix(shoreNode(a),shoreNode(a+e),f.x),mix(shoreNode(a+e.yx),shoreNode(a+e+e.yx),f.x),f.y);
+  vec3 weighted=mix(mix(shoreNode(a),shoreNode(a+e),f.x),mix(shoreNode(a+e.yx),shoreNode(a+e+e.yx),f.x),f.y);
+  if(weighted.z<.00001)return vec2(fallbackHeight,fallbackFoam);
+  vec2 surface=weighted.xy/weighted.z;
   float edge=min(min(uv.x,uv.y),min(1.-uv.x,1.-uv.y));
-  float blend=smoothstep(.025,.10,edge)*(1.-smoothstep(8.,11.,-bed))*smoothstep(.015,.12,s.r);
+  float blend=smoothstep(.025,.10,edge)*(1.-smoothstep(8.,11.,-bed))*smoothstep(.015,.12,max(0.,surface.x-bed));
   return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);
 }
 `;
@@ -48,7 +49,8 @@ float fft(vec2 p){vec2 q=p;for(int i=0;i<3;i++){
   q=p-d.xz*uChoppiness;
 }return clamp((texture2D(uLongWaves,q/384.).y+texture2D(uShortWaves,q/24.).y)*uSwell,-uMaxHeight,uMaxHeight);}
 vec4 incident(vec2 p){float b=bed(p),h=max(0.,fft(p)-b);
-  // Linear characteristic velocity from the actual incoming FFT slope and local uphill direction.
+  // Authored shoreward characteristic proxy: actual FFT height, bathymetry uphill direction.
+  // FFT does not provide incident propagation direction here.
   vec2 grad=vec2(bed(p+vec2(uDx,0))-bed(p-vec2(uDx,0)),bed(p+vec2(0,uDx))-bed(p-vec2(0,uDx)));
   vec2 n=grad/max(length(grad),.00001);
   float velocity=clamp(fft(p)*sqrt(9.81/max(.2,-b)),-uMaxSpeed,uMaxSpeed);
@@ -92,6 +94,8 @@ export function createShoreSolverUniforms():Record<string,THREE.IUniform> {
   return {uShoreState:{value:null},uShoreBounds:{value:new THREE.Vector4()},uShoreReady:{value:0},uShoreResolution:{value:128}};
 }
 
+const finiteOption=(value:number|undefined,fallback:number,min:number,max:number):number=>Number.isFinite(value)?Math.max(min,Math.min(max,value!)):fallback;
+
 export interface ShoreSolverOptions { resolution?: number; span?: number; maxDepth?: number; maxSpeed?: number; maxHeight?: number; maxSubsteps?: number }
 /** First-order depth-integrated SWE candidate. Opt-in; WebGL2 RGBA16F required. */
 export class ShoreSolver {
@@ -112,14 +116,17 @@ export class ShoreSolver {
   private disposed=false;
   private readonly maxSubsteps:number;
   constructor(private readonly renderer:THREE.WebGLRenderer,options:ShoreSolverOptions={}){
-    this.resolution=Math.max(16,Math.min(256,Math.round(options.resolution??128)));
+    this.resolution=Math.round(finiteOption(options.resolution,128,16,256));
     this.uniforms.uShoreResolution={value:this.resolution};
-    this.span=Math.max(24,options.span??192);this.maxSubsteps=Math.max(1,Math.min(16,options.maxSubsteps??8));
-    const maxDepth=Math.max(1,options.maxDepth??12),maxSpeed=Math.max(1,options.maxSpeed??12),maxHeight=Math.max(.1,options.maxHeight??4);
+    this.span=finiteOption(options.span,192,24,768);this.maxSubsteps=Math.round(finiteOption(options.maxSubsteps,8,1,16));
+    const maxDepth=finiteOption(options.maxDepth,12,11,24),maxSpeed=finiteOption(options.maxSpeed,12,1,30),maxHeight=finiteOption(options.maxHeight,4,.1,8);
     this.stableDelta=.20*(this.span/this.resolution)/(maxSpeed+Math.sqrt(9.81*(maxDepth+maxHeight)));
     this.targets=[0,1].map(()=>new THREE.WebGLRenderTarget(this.resolution,this.resolution,{type:THREE.HalfFloatType,format:THREE.RGBAFormat,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter,depthBuffer:false,stencilBuffer:false}));
     this.material=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:fragment,uniforms:{uInput:{value:null},uBathymetry:{value:null},uLongWaves:{value:null},uShortWaves:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uBathyTriangulated:{value:0},uBounds:this.uniforms.uShoreBounds,uOldBounds:{value:new THREE.Vector4()},uSize:{value:this.resolution},uDx:{value:this.span/this.resolution},uDt:{value:0},uMode:{value:2},uSwell:{value:1},uChoppiness:{value:1},uMaxDepth:{value:maxDepth},uMaxSpeed:{value:maxSpeed},uMaxHeight:{value:maxHeight}}});
     this.quad.material=this.material;this.quad.frustumCulled=false;this.scene.add(this.quad);
+  }
+  get diagnostics():{substeps:number;simulationElapsed:number;droppedSeconds:number;stableDelta:number;bounds:THREE.Vector4} {
+    return {substeps:this.substeps,simulationElapsed:this.simulationElapsed,droppedSeconds:this.droppedSeconds,stableDelta:this.stableDelta,bounds:(this.uniforms.uShoreBounds.value as THREE.Vector4).clone()};
   }
   bindUniforms(shared:Record<string,THREE.IUniform>):void {for(const name of ['uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uLongWaves','uShortWaves','uSwell','uChoppiness'])if(shared[name])this.material.uniforms[name]=shared[name];}
   private pass(mode:number,dt:number):void {const u=this.material.uniforms;u.uInput.value=this.targets[this.index].texture;u.uMode.value=mode;u.uDt.value=dt;this.index=1-this.index;this.renderer.setRenderTarget(this.targets[this.index]);this.renderer.render(this.scene,this.camera);this.uniforms.uShoreState.value=this.targets[this.index].texture;}

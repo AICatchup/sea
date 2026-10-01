@@ -11,3 +11,11 @@ export function referenceStep(h:number[],q:number[],bed:number[],dt:number,dx:nu
  for(let i=0;i<n;i++){const r=flux(i,(i+1)%n,1),l=flux(i,(i+n-1)%n,-1);hn.push(h[i]-dt/dx*(r[0]+l[0]));qn.push(q[i]-dt/dx*(r[1]+l[1]));}
  return {h:hn,q:qn};
 }
+
+/** Mirror of rendering interpolation; dry bed elevations carry zero wet weight. */
+export function referenceWetSurface(nodes:{bed:number;h:number;foam:number}[],weights:number[],queryBed:number):{eta:number;foam:number;depth:number}|null {
+ let eta=0,foam=0,total=0;
+ nodes.forEach((n,i)=>{if(n.h>=.01){eta+=(n.bed+n.h)*weights[i];foam+=n.foam*weights[i];total+=weights[i];}});
+ if(total<.00001)return null;
+ eta/=total;return {eta,foam:foam/total,depth:Math.max(0,eta-queryBed)};
+}
