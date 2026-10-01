@@ -8,6 +8,7 @@
 - Allen Moriの羽伏浦サーフ映像を0:20から0:28まで再生し、曲がった長い波頭、局所的な崩れ、白水の横方向への連続、風で流れる飛沫を観察。説明はMarch 27th 2022。編集・再生速度と現場条件が不明で、波高・周期を計測したとはしない。[動画](https://www.youtube.com/watch?v=RKgTU7eZyWw)
 - 別のAllen Mori台風うねり映像は0:09・0:47を実観察済み。通常日の代表として混ぜない。[動画](https://www.youtube.com/watch?v=3AOhw0RciPQ)
 
-海岸長の概数は[東京観光公式の約6.5km](https://www.gotokyo.org/jp/spot/244/index.html)と村資料の約7kmを区別する。実装の約8.08kmは地形範囲の南北幅で、汀線の実測長ではない。GSIの2018火山基本図ベクトルの公式取得先・JGD2011平面直角IX系を特定したが、今回の環境ではZIP取得がネットワーク権限で拒否され、実座標・端点・汀線長は未抽出。[公式配布](https://web1.gsi.go.jp/bousaichiri/vbm-data_kanto_chubu.html)
+海岸長の概数は[東京観光公式の約6.5km](https://www.gotokyo.org/jp/spot/244/index.html)と村資料の約7kmを区別する。実装の約8.08kmは地形範囲の南北幅で、汀線の実測長ではない。GSIの2018火山基本図ベクトルの公式取得先・JGD2011平面直角IX系を特定したが、当初の取得は拒否されましたが、その後V7で実ZIPを取得・読解し、V8で標高補完も進めました。歴史線候補6,727.291mと名称付き端点の未確定は[最新検証](./verification-v8.md)に記録しています。[公式配布](https://web1.gsi.go.jp/bousaichiri/vbm-data_kanto_chubu.html)
 
 基本の分担は実行メタデータで確認したGPT-6.1 Sol/low。以前のGPT-6 Lunaによる写真調査も参照した。画像理解はブラウザの実画素観察と独立モデルレビューを使用。指定された名称のDecision APIは現在の利用可能ツールに見つからず、Blender評価接続も未稼働だった。未使用APIの有効化、波の数値測定、現地フォトグラメトリの取得を達成したとはしない。
+
