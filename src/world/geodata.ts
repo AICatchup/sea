@@ -173,6 +173,7 @@ export class TomariCoastSurface {
     this.width = (this.sourceMaxX - this.sourceMinX) * this.subdivision + 1;
     this.height = (this.sourceMaxZ - this.sourceMinZ) * this.subdivision + 1;
     this.ground = new Float32Array(this.width * this.height);
+    const legacyToe=options.dryToe?new Float32Array(this.ground.length):undefined;
     for (let iz = 0; iz < this.height; iz++) for (let ix = 0; ix < this.width; ix++) {
       const x = this.minX + ix * this.dx, z = this.minZ + iz * this.dz, y = baseHeightAt(x, z);
       const edge = Math.min(x - this.minX, this.maxX - x, z - this.minZ, this.maxZ - z);
@@ -181,6 +182,14 @@ export class TomariCoastSurface {
       // The nested 0.5m strand interpolates this surface, rather than applying the scarp twice.
       const rock = options.subdivision <= 4 ? structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z),options.coherentRock??false,options.dryToe??false) : y;
       this.ground[iz * this.width + ix] = y + (field.smoothHeightAt(x, z) - y) * beach + (rock-y)*(1-beach)*join;
+      if(legacyToe){const oldRock=structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z),options.coherentRock??false,false);legacyToe[iz*this.width+ix]=y+(field.smoothHeightAt(x,z)-y)*beach+(oldRock-y)*(1-beach)*join;}
+    }
+    if(legacyToe)for(let iz=0;iz<this.height;iz++)for(let ix=0;ix<this.width;ix++){
+      let lowest=Infinity;
+      // Every triangle sharing this vertex must be wholly dry. Protecting only
+      // the vertex height allowed interpolation to move wet/low neighbouring points.
+      for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){const x=ix+dx,z=iz+dz;if(x>=0&&x<this.width&&z>=0&&z<this.height)lowest=Math.min(lowest,legacyToe[z*this.width+x]);}
+      const i=iz*this.width+ix;this.ground[i]=legacyToe[i]+(this.ground[i]-legacyToe[i])*smoothstep(1.1,2.8,lowest);
     }
   }
 
@@ -201,8 +210,10 @@ export class IslandElevation {
   readonly coast:TomariCoastSurface|undefined;
   readonly beach:TomariCoastSurface|undefined;
   readonly coherentRock:boolean;
+  readonly dryToe:boolean;
   constructor(coherentRock=false,dryToe=false){
     this.coherentRock=coherentRock;
+    this.dryToe=coherentRock&&dryToe;
     this.coast=this.tomari?new TomariCoastSurface(this.tomari,(x,z)=>this.baseHeightAt(x,z),
       {subdivision:4,minX:40,maxX:190,minZ:50,maxZ:168,coherentRock,dryToe}):undefined;
     this.beach=this.tomari&&this.coast?new TomariCoastSurface(this.tomari,(x,z)=>this.coast!.heightAt(x,z),

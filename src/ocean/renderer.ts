@@ -126,7 +126,7 @@ export class Ocean {
     const experience=experienceOptions(location.search);
     this.shoreSolver=experience.surf?new ShoreSolver(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
-    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy');
+    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')==='1');
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
@@ -465,6 +465,10 @@ export class Ocean {
   setCausticResolution(count:128|256|512):128|256|512{const previous=this.caustics.photonResolution;this.caustics.setPhotonResolution(count);return previous;}
   getCausticResolution(){return this.caustics.photonResolution;}
   setSnellRay(enabled:boolean):boolean{const before=this.uniforms.uSnellRay.value>.5;this.uniforms.uSnellRay.value=enabled?1:0;return before;}
+  setObservationClock(time:number):void{
+    if(!this.visualCaptureLocked||!this.paused||!Number.isFinite(time)||time<0||time>86400)throw new Error('Finite 0..86400 observation clock requires paused, locked QA state');
+    this.time=time;this.simulation.advance(time,0,this.swell,this.uniforms.uChoppiness.value);
+  }
   setLeafAlphaThreshold(value:number){
     if(!Number.isFinite(value)||value<.05||value>.6)throw new Error('Leaf threshold .05..6 required');
     const before=new Map<THREE.MeshStandardMaterial,number>();
@@ -540,6 +544,7 @@ export class Ocean {
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
+      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe},
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,

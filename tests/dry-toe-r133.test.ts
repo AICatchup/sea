@@ -34,4 +34,9 @@ test('actual shared raster field changes dry foot while retaining source raster 
  console.log(JSON.stringify({changedVertices:changed,maxToeDelta:max}));
  for(let z=b.minZ;z<=b.maxZ;z+=10)assert.equal(b.heightAt(b.minX,z),a.heightAt(a.minX,z));
 });
+test('actual triangle interpolation retains every sampled wet and low coastal point',()=>{
+ const old=new IslandElevation(true),toe=new IslandElevation(true,true),c=old.coast!;let checked=0;
+ for(let z=c.minZ;z<c.maxZ;z+=.75)for(let x=c.minX;x<c.maxX;x+=.75){const height=old.heightAt(x,z);if(height>1.1)continue;assert.equal(toe.heightAt(x,z),height);checked++;}
+ assert.ok(checked>10000);
+});
 
