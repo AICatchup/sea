@@ -2,6 +2,7 @@ import { photographicSkySampling } from './photographic-sky.ts';
 import { capillarySampling, shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling } from './shore-solver.ts';
 import {surfaceFoamGLSL} from './surface-foam.ts';
+import {refractedSceneGLSL} from './refracted-path.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -229,6 +230,8 @@ export const oceanFragment = /* glsl */ `
   uniform float uPointwiseContact;
   uniform float uContactDebug;
   uniform float uWetStencil;
+  uniform float uSnellRay;
+  uniform mat4 uWaterProjection;
   uniform vec4 uBathyBounds;
   uniform vec2 uBathyResolution, uResolution, uNearFar;
   uniform float uUnderwater;
@@ -257,6 +260,7 @@ export const oceanFragment = /* glsl */ `
     return shoreSolvedSurface(world,(longDisplacement(p).y+shortDisplacement(p).y)*uSwell,0.).x;
   }
   float linearDepth(float d){float n=uNearFar.x,f=uNearFar.y;return 2.0*n*f/(f+n-(d*2.0-1.0)*(f-n));}
+  ${refractedSceneGLSL}
   float surfaceSunVisibility(vec3 p){
     if(uShadowReady<.5)return 1.0;
     vec4 projected=uSunShadowMatrix*vec4(p,1);vec3 q=projected.xyz/projected.w;
@@ -437,6 +441,14 @@ export const oceanFragment = /* glsl */ `
     if(linearDepth(behindDepth)<surfaceDistance+.06){refractionUV=screenUV;behindDepth=opaqueDepth;}
     float rayCos=max(.12,abs((viewMatrix*vec4(-view,0.0)).z));
     float opticalPath=clamp((linearDepth(behindDepth)-surfaceDistance)/rayCos,0.0,90.0);
+    float straightPath=opticalPath,snellUsed=0.,snellDistance=0.;vec3 snellHit=vWorld;
+    #ifndef CURVED_SURFACE
+    if(uSnellRay>.5){
+      vec3 ray=refract(-view,normal,1.0/1.333);
+      vec2 hitUV;
+      if(traceRefractedScene(vWorld,ray,snellDistance,snellHit,hitUV)){refractionUV=hitUV;behindDepth=texture2D(uSceneDepth,hitUV).r;opticalPath=snellDistance;snellUsed=1.;}
+    }
+    #endif
     #ifdef CURVED_SURFACE
     vec3 throughWave=refract(-view,normal,1.0/1.333);
     opticalPath=min(opticalPath,min(6.,vWaterThickness/max(.08,abs(dot(normal,throughWave)))));
@@ -514,7 +526,9 @@ export const oceanFragment = /* glsl */ `
       else if(uContactDebug<2.5)gl_FragColor=vec4(normal,1.);
       else if(uContactDebug<3.5)gl_FragColor=vec4(opticalPath,bottomContact,nV,1.);
       else if(uContactDebug<4.5)gl_FragColor=vec4(vWorld.y,contactHeight,coast.x,1.);
-      else gl_FragColor=vec4(vWorld.xz,reflected.y,1.);
+      else if(uContactDebug<5.5)gl_FragColor=vec4(vWorld.xz,reflected.y,1.);
+      else if(uContactDebug<6.5)gl_FragColor=vec4(straightPath,opticalPath,snellUsed,1.);
+      else gl_FragColor=vec4(snellHit,1.);
       return;
     }
     gl_FragColor=vec4(color,1.0);

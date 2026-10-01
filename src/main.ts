@@ -202,6 +202,23 @@ try {
         return {samples,provenance:'Actual requestAnimationFrame observations of the normal retained CPU poses during rendering; no fabricated simulation steps or GPU-buffer readback; not real animal behaviour or Human proof'};
       }finally{captureHost.restoreState(before);}
     },
+    async captureOpticalComparison(name:string){
+      await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown optical comparison');
+      const before=captureHost.readState(),previous=ocean.setSnellRay(false),variants=[];
+      try{
+        captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);
+        captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,3000));captureHost.setPaused(true);
+        const points=[.4,.6,.8].flatMap(x=>[.4,.5,.6,.7].map(y=>({x,y})));
+        for(const enabled of [false,true,false]){
+          ocean.setSnellRay(enabled);for(let i=0;i<8;i++)await captureHost.nextFrame();
+          const intervals=[];let last=await new Promise<number>(resolve=>requestAnimationFrame(resolve));
+          for(let i=0;i<24;i++){const now=await new Promise<number>(resolve=>requestAnimationFrame(resolve));intervals.push(now-last);last=now;}
+          const png=await capturePNG();if(!png)throw new Error('No optical PNG');
+          variants.push({png,metadata:{enabled,state:captureHost.readState(),time:ocean.diagnostics.time,probe:ocean.probeWaterContact(points),frameIntervalsMs:intervals}});
+        }
+        return {variants,scope:'One frozen camera, FFT, caustic state and light; straight screen ray vs Snell ray to visible scene-depth receiver. Missing/offscreen/hidden receivers retain legacy; bounded screen-space approximation, not full geometry ray tracing or movement/Human proof'};
+      }finally{ocean.setSnellRay(previous);captureHost.restoreState(before);}
+    },
     captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>{
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
       return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
@@ -308,7 +325,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }
