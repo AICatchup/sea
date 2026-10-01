@@ -69,6 +69,7 @@ async function execute(host: SceneCaptureHost, profiles: readonly CaptureProfile
         stable = same(last, current) ? stable + 1 : 0; last = current;
       }
       if (last.width !== options.width || last.height !== options.height) throw new Error(`Capture dimensions ${last.width}x${last.height}; expected ${options.width}x${options.height}`);
+      if(p.eyeY!==undefined&&Math.abs(last.camera[1]-p.eyeY)>1e-6)throw new Error('Aligned eye height differs from the actual camera');
       if (!last.locked || !last.paused || last.quality !== options.quality || last.preset !== options.preset) throw new Error('Capture settings changed');
       pendingCapture = host.capturePixels();
       const png = await bounded(pendingCapture);

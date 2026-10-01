@@ -29,9 +29,15 @@ test('two frames precede capture; metadata contains actual dimensions and origin
 test('reference eye height reaches the host while exact previous capture state restores',async()=>{
   const f=fake();let received:number|undefined;
   const original=f.host.viewpoint;
-  f.host.viewpoint=(x,z,yaw,pitch,mode,depth,eyeY)=>{received=eyeY;original(x,z,yaw,pitch,mode,depth);};
+  f.host.viewpoint=(x,z,yaw,pitch,mode,depth,eyeY)=>{received=eyeY;original(x,z,yaw,pitch,mode,depth);if(eyeY!==undefined){const state=f.host.readState();state.camera=[state.camera[0],eyeY,...state.camera.slice(2)];}};
   await captureNamed(f.host,{...CAPTURE_PROFILES[0],pose:{...CAPTURE_PROFILES[0].pose,eyeY:3.12}},options);
   assert.equal(received,3.12);assert.deepEqual(f.host.readState(),f.original);
+});
+
+test('a host that ignores requested eye height is rejected instead of producing false aligned evidence',async()=>{
+  const f=fake();await assert.rejects(captureNamed(f.host,{...CAPTURE_PROFILES[0],pose:{...CAPTURE_PROFILES[0].pose,eyeY:3.12}},options),/differs from the actual camera/);
+  assert.deepEqual(f.host.readState(),f.original);
+  await captureNamed(f.host,CAPTURE_PROFILES[0],options);
 });
 for (const failure of ['null', 'error', 'hidden', 'dispose', 'resize', 'timeout']) test(`restores after ${failure}`, async () => {
   const f = fake();
