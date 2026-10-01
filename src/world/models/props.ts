@@ -215,10 +215,12 @@ export class CoastalModels {
     // Bow casting seat and aft bench, thick cushions with a restrained blue piping line.
     batch.box(this.white, 0, 0.23, -1.77, 1.32, 0.23, 0.8);
     addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(0, 0.37, -1.77), 1.32, 0.075, 0.8);
-    batch.box(this.white, 0, 0.28, 1.89, 1.64, 0.28, 0.57);
-    addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(0, 0.45, 1.89), 1.66, 0.08, 0.58);
-    addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(0, 0.69, 2.18), 1.6, 0.08, 0.28, new THREE.Euler(Math.PI / 2, 0, 0), 2);
-    for (const x of [-0.48, 0.48]) {
+    // The port passage connects the stern ladder to the helm. Furniture leaves
+    // real room for the traveller instead of covering the boarding path.
+    batch.box(this.white,BOAT_ACCESS.aftBenchX,.28,1.89,BOAT_ACCESS.aftBenchWidth,.28,.57);
+    addBoatCushion(batch,upholstery,this.blue,new THREE.Vector3(BOAT_ACCESS.aftBenchX,.45,1.89),BOAT_ACCESS.aftBenchWidth+.02,.08,.58);
+    addBoatCushion(batch,upholstery,this.blue,new THREE.Vector3(BOAT_ACCESS.aftBenchX,.69,2.18),BOAT_ACCESS.aftBenchWidth,.08,.28,new THREE.Euler(Math.PI/2,0,0),2);
+    for (const x of [0.48]) {
       batch.rod(this.metal, new THREE.Vector3(x, 0.1, 0.89), new THREE.Vector3(x, 0.62, 0.89), 0.048);
       addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(x, 0.64, 0.89), 0.54, 0.115, 0.52, undefined, x * 7);
       addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(x, 0.87, 1.11), 0.51, 0.105, 0.44, new THREE.Euler(Math.PI / 2 - 0.12, 0, 0), x * 11);
@@ -254,7 +256,7 @@ export class CoastalModels {
       for (const dx of [-0.052, 0.052]) batch.rod(this.metal, new THREE.Vector3(x + dx, 0.39, z), new THREE.Vector3(x + dx, 0.45, z), 0.013);
     }
     for (let i = 0; i < 4; i++) batch.add(new THREE.TorusGeometry(0.13 + i * 0.014, 0.008, 5, 24), this.rope, new THREE.Vector3(-0.3, 0.433 + i * 0.008, -1.8), undefined, new THREE.Euler(Math.PI / 2, 0, 0));
-    batch.box(this.white, BOAT_ACCESS.ladderX, BOAT_ACCESS.platformY, BOAT_ACCESS.platformZ, 0.42, 0.07, 0.39);
+    batch.box(this.white, BOAT_ACCESS.ladderX, BOAT_ACCESS.platformY, BOAT_ACCESS.platformZ, 0.42, BOAT_ACCESS.platformThickness, 0.39);
     for (const x of [BOAT_ACCESS.ladderX-.17,BOAT_ACCESS.ladderX+.17]) batch.rod(this.metal, new THREE.Vector3(x,.16,BOAT_ACCESS.ladderTopZ),new THREE.Vector3(x,-.59,BOAT_ACCESS.ladderRungZ+.02),.017);
     for (const y of [-.07,-.31,-.54]) batch.rod(this.metal,new THREE.Vector3(BOAT_ACCESS.ladderX-.17,y,BOAT_ACCESS.ladderRungZ),new THREE.Vector3(BOAT_ACCESS.ladderX+.17,y,BOAT_ACCESS.ladderRungZ),.017);
     const boat = batch.finish(this.resources, '5.6 metre coastal motorboat');

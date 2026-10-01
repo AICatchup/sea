@@ -215,7 +215,7 @@ test('one world connects beach approach, smooth boarding, voyage and nearby wate
   assert.ok(state.message.includes('出航')); advance(controls, state.voyageRemaining/12+30);
   assert.equal(state.voyageTarget, null); assert.ok(pointDistance(state.boatPosition, destinations[1]) < .1);
   const boatEye = state.position.clone(), boat = state.boatPosition.clone();
-  controls.interact(); assert.ok(state.position.equals(boatEye)); advance(controls, 2.6);
+  controls.interact(); assert.ok(state.position.equals(boatEye)); advance(controls, 4.6);
   assert.equal(state.mode, 'swim'); assert.ok(pointDistance(state.position, boat) > 3 && pointDistance(state.position, boat) < 4.5);
   assert.ok(state.position.y > .2); controls.dispose();
 });
@@ -231,15 +231,27 @@ test('the actually drawn stern ladder boards continuously from the observed fail
   state.boatPosition.set(-118.5950068345507,0,-90.9578943776148);state.boatYaw=-.6;
   controls.viewpoint(-116.75051777212414,-88.5513561143137,-.65365,-.04,'swim');
   const start=state.position.clone();controls.interact();assert.ok(state.position.equals(start));assert.notEqual(state.mode,'boat');
-  advance(controls,1.55);
-  const platform=new THREE.Vector3(BOAT_ACCESS.ladderX,BOAT_ACCESS.platformY+1.64,BOAT_ACCESS.platformZ)
+  advance(controls,1.25);
+  const platform=new THREE.Vector3(BOAT_ACCESS.ladderX,BOAT_ACCESS.platformY+BOAT_ACCESS.platformThickness/2+1.64,BOAT_ACCESS.platformZ)
     .applyEuler(new THREE.Euler(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ')).add(state.boatPosition);
   assert.ok(state.position.distanceTo(platform)<.04);assert.equal(state.avatarAction,'climb');
-  advance(controls,1.7);assert.equal(state.mode,'boat');
-  controls.interact();advance(controls,2.5);assert.equal(state.mode,'swim');
+  advance(controls,4);assert.equal(state.mode,'boat');
+  controls.interact();advance(controls,4.6);assert.equal(state.mode,'swim');
   const stern=new THREE.Vector3(BOAT_ACCESS.ladderX,0,BOAT_ACCESS.waterZ+.35)
     .applyEuler(new THREE.Euler(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ')).add(state.boatPosition);
   assert.ok(pointDistance(state.position,stern)<.04);controls.dispose();
+});
+
+test('stern boarding and exit avoid the rear bench as an actual swept solid',()=>{
+  const solids=new WorldCollision(),{controls,state}=setup(withWorldCollision({heightAt:()=>-20},solids));
+  state.boatYaw=0;const boat=state.boatPosition.clone();
+  // Measured from the rendered bench/seat/back dimensions, independent of
+  // the path interpolator; the former direct route crossed this volume.
+  solids.addBox(new THREE.Box3(new THREE.Vector3(boat.x-.295,boat.y+.14,boat.z+1.60),
+    new THREE.Vector3(boat.x+.78,boat.y+.91,boat.z+2.27)));
+  controls.viewpoint(boat.x-.75,boat.z+3.35,0,0,'swim');controls.interact();advance(controls,5.2);
+  assert.equal(state.mode,'boat');controls.interact();advance(controls,4.6);
+  assert.equal(state.mode,'swim');solids.dispose();controls.dispose();
 });
 
 test('seated camera uses the same yaw-pitch-roll frame as the drawn vessel and helm body',()=>{

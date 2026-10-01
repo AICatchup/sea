@@ -32,7 +32,8 @@ export interface BodySweep {
 export const PLAYER_DIMENSIONS = { height: 1.75, eyeHeight: 1.64, radius: .25 } as const;
 /** Local vessel anchors shared by the drawn stern ladder and interactions. */
 export const BOAT_ACCESS={ladderX:-.75,ladderTopZ:2.78,ladderRungZ:2.92,platformZ:2.66,
-  platformY:.18,waterZ:3.35,helm:[.48,1.45,.76] as const} as const;
+  platformY:.18,platformThickness:.07,waterZ:3.35,helm:[.48,1.45,.76] as const,
+  aftBenchX:.24,aftBenchWidth:1.05,portPassageX:-.66,helmSideX:-.08} as const;
 export type TravelMode = 'walk' | 'swim' | 'dive' | 'boat';
 export type PlaceableKind = 'chair' | 'umbrella' | 'buoy' | 'tank' | 'rock' | 'pine';
 export interface WorldDestination {
