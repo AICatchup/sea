@@ -140,7 +140,7 @@ export class ShoreBreaker {
     if(this.group.visible)(this.material.uniforms.uOrigin.value as THREE.Vector2).set(x,z);
   }
   /** On-demand float probe reuses the exact current vertex driver text. */
-  probeDriver(renderer:THREE.WebGLRenderer){
+  probeDriver(renderer:THREE.WebGLRenderer,expanded=false){
     if(!renderer.extensions.has('EXT_color_buffer_float'))return {available:false};
     const code=this.material.vertexShader,start=code.indexOf('void main(){'),end=code.indexOf('float angle=',start);
     const prefix=code.slice(0,start).replace(/attribute[^;]+;/g,'').replace(/varying[^;]+;/g,'');
@@ -160,8 +160,59 @@ export class ShoreBreaker {
     const geometry=new THREE.PlaneGeometry(2,2),scene=new THREE.Scene();scene.add(new THREE.Mesh(geometry,material));
     const saved={target:renderer.getRenderTarget(),viewport:renderer.getViewport(new THREE.Vector4()),scissor:renderer.getScissor(new THREE.Vector4()),scissorTest:renderer.getScissorTest(),auto:renderer.autoClear,clear:renderer.getClearColor(new THREE.Color()),alpha:renderer.getClearAlpha()};
     const pixels=new Float32Array(30*3*4);
-    try{renderer.setRenderTarget(target);renderer.setScissorTest(false);renderer.setViewport(0,0,30,3);renderer.autoClear=true;renderer.setClearColor(0,0);renderer.render(scene,new THREE.Camera());renderer.readRenderTargetPixels(target,0,0,30,3,pixels);return {available:true,origin:(this.material.uniforms.uOrigin.value as THREE.Vector2).toArray(),rows:[-8,0,8].map((z,i)=>({z,values:Array.from({length:30},(_,j)=>Array.from(pixels.slice((i*30+j)*4,(i*30+j+1)*4)))}))};}
-    finally{renderer.setRenderTarget(saved.target);renderer.setViewport(saved.viewport);renderer.setScissor(saved.scissor);renderer.setScissorTest(saved.scissorTest);renderer.autoClear=saved.auto;renderer.setClearColor(saved.clear,saved.alpha);target.dispose();material.dispose();geometry.dispose();}
+    // Optional observation is wholly on demand; all formulas below are extracted
+    // from the production sampling strings, not a second physical closure.
+    const compression=whitewaterFlowSampling.slice(whitewaterFlowSampling.indexOf('float compression='),whitewaterFlowSampling.indexOf('float born='));
+    const surface=shoreSolverSampling.slice(shoreSolverSampling.indexOf('vec2 shoreSolvedSurface(')).replace('shoreSolvedSurface(', 'diagnosticSurface(').replace('return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);','diagnosticSurfaceHeight=surface.x;diagnosticConfidence=weighted.z;diagnosticBlend=blend;return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);');
+    const profileFragment=expanded?prefix+`\nfloat diagnosticSurfaceHeight,diagnosticConfidence,diagnosticBlend;${surface}
+    void main(){float rowZ=(gl_FragCoord.y-1.5)*8.;${driver}
+      float lane=floor(gl_FragCoord.x/65.),index=mod(floor(gl_FragCoord.x),65.),crossOffset=(index-32.)*1.5;
+      vec2 p=source-n*crossOffset+along*rowZ;
+      vec2 uv=(p-uShoreBounds.xy)/uShoreBounds.zw,buv=(p-uBathyBounds.xy)/uBathyBounds.zw,e=vec2(1./uShoreResolution,0);
+      bool bathyValid=all(greaterThanEqual(buv,vec2(0)))&&all(lessThanEqual(buv,vec2(1)));
+      bool domainValid=uShoreReady>.5&&all(greaterThanEqual(uv,vec2(0)))&&all(lessThanEqual(uv,vec2(1)));
+      bool stencilValid=domainValid&&all(greaterThanEqual(uv,e.xx))&&all(lessThanEqual(uv,vec2(1)-e.xx));
+      vec2 coast=bathyValid?sampleCoastalGround(uBathymetry,buv,uBathyResolution).rg:vec2(0);
+      vec4 c=vec4(0),r=vec4(0),l=vec4(0),t=vec4(0),b=vec4(0);
+      if(domainValid)c=texture2D(uShoreState,uv);
+      if(stencilValid){r=texture2D(uShoreState,uv+e);l=texture2D(uShoreState,uv-e);t=texture2D(uShoreState,uv+e.yx);b=texture2D(uShoreState,uv-e.yx);}
+      vec2 cellSize=uShoreBounds.zw/uShoreResolution;${compression}
+      if(!stencilValid)compression=0.;
+      float elevation=c.r+coast.r,restDepth=max(0.,-coast.r),ratio=2.*max(0.,elevation)/max(.2,restDepth);
+      float born=whitewaterSolvedFlow(p).z;
+      diagnosticSurfaceHeight=0.;diagnosticConfidence=0.;diagnosticBlend=0.;
+      float renderedHeight=diagnosticSurface(p,fftHeight(p),0.).x;
+      float incident=incidentHeight(p),previous=incidentHeight(p+n*1.5),next=incidentHeight(p-n*1.5);
+      bool flowValid=bathyValid&&stencilValid&&coast.g>=.18&&c.r>=.01;
+      if(lane<.5)gl_FragColor=vec4(p,crossOffset,rowZ);
+      else if(lane<1.5)gl_FragColor=vec4(bathyValid?1.:0.,domainValid?1.:0.,stencilValid?1.:0.,flowValid?1.:0.);
+      else if(lane<2.5)gl_FragColor=vec4(c.r,c.y,c.z,elevation);
+      else if(lane<3.5)gl_FragColor=vec4(compression,ratio,born,whitewaterSolvedFlow(p).w);
+      else if(lane<4.5)gl_FragColor=vec4(renderedHeight,incident,diagnosticSurfaceHeight,fftHeight(p));
+      else if(lane<5.5)gl_FragColor=vec4(diagnosticConfidence,diagnosticBlend,coast.r,coast.g);
+      else if(lane<6.5)gl_FragColor=vec4(clamp(compression*.7,0.,1.),1.-smoothstep(3.,7.,c.r),smoothstep(.05,.3,c.r),smoothstep(.55,.9,ratio));
+      else gl_FragColor=vec4(previous,next,incident>=previous&&incident>=next?1.:0.,abs(offset)>=12.?1.:0.);
+    }`:'';
+    const profileTarget=expanded?new THREE.WebGLRenderTarget(65*8,3,{type:THREE.FloatType,depthBuffer:false}):null;
+    if(profileTarget)profileTarget.texture.colorSpace=THREE.LinearSRGBColorSpace;
+    const profileMaterial=expanded?new THREE.ShaderMaterial({uniforms:this.material.uniforms,depthTest:false,depthWrite:false,toneMapped:false,vertexShader:material.vertexShader,fragmentShader:profileFragment}):null;
+    const profilePixels=expanded?new Float32Array(65*8*3*4):null;
+    try{
+      renderer.setRenderTarget(target);renderer.setScissorTest(false);renderer.setViewport(0,0,30,3);renderer.autoClear=true;renderer.setClearColor(0,0);
+      renderer.render(scene,new THREE.Camera());renderer.readRenderTargetPixels(target,0,0,30,3,pixels);
+      let profile;
+      if(profileTarget&&profileMaterial&&profilePixels){
+        (scene.children[0] as THREE.Mesh).material=profileMaterial;
+        renderer.setRenderTarget(profileTarget);renderer.setViewport(0,0,65*8,3);
+        renderer.render(scene,new THREE.Camera());renderer.readRenderTargetPixels(profileTarget,0,0,65*8,3,profilePixels);
+        profile={schemaVersion:1,coordinate:'worldXZ = depthCrossingSource - uphillNormal * crossOffsetM + alongshoreTangent * rowOffsetM; independent parallel rows, no crest shear',cellSpacingM:1.5,
+          channels:['worldX_M','worldZ_M','crossOffsetM','rowOffsetM','bathyValid','solverDomainValid','solverStencilValid','flowBirthValid','nearestDepthM','nearestQx_M2PerS','nearestQz_M2PerS','nearestElevationM','rawCompressionPerS','birthHeightDepthRatio','bornProxy','flowBlend','renderedSurfaceHeightM','incidentHeightM','bilinearWetSurfaceHeightM','fftHeightM','bilinearWetConfidence','surfaceBlend','groundHeightM','shelter','compressionOnsetGate','deepBirthGate','wetBirthGate','ratioBirthGate','previousIncidentHeightM','nextIncidentHeightM','profileLocalMaximum','driverEndpointRejected'],
+          rows:[-8,0,8].map((rowOffsetM,rowIndex)=>({rowOffsetM,samples:Array.from({length:65},(_,index)=>Array.from({length:8},(_,lane)=>Array.from(profilePixels.slice(((rowIndex*65*8)+lane*65+index)*4,((rowIndex*65*8)+lane*65+index+1)*4))).flat())}))};
+      }
+      return {available:true,origin:(this.material.uniforms.uOrigin.value as THREE.Vector2).toArray(),rows:[-8,0,8].map((z,i)=>({z,values:Array.from({length:30},(_,j)=>Array.from(pixels.slice((i*30+j)*4,(i*30+j+1)*4)))})),...(profile?{profile}:{})};
+    }
+    finally{renderer.setRenderTarget(saved.target);renderer.setViewport(saved.viewport);renderer.setScissor(saved.scissor);renderer.setScissorTest(saved.scissorTest);renderer.autoClear=saved.auto;renderer.setClearColor(saved.clear,saved.alpha);target.dispose();material.dispose();geometry.dispose();profileTarget?.dispose();profileMaterial?.dispose();}
   }
+
   dispose():void {if(this.disposed)return;this.disposed=true;this.geometry.dispose();this.material.dispose();this.group.clear();}
 }
