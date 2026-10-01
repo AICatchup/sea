@@ -61,7 +61,6 @@ export class ElevationField {
   readonly land: Uint8Array;
   readonly signedShore: Float32Array;
   readonly ground: Float32Array;
-  private readonly referenceGround?:Float32Array;
   readonly dx: number;
   readonly dz: number;
 
@@ -161,6 +160,7 @@ export class TomariCoastSurface {
   readonly height: number;
   readonly ground: Float32Array;
 
+  private readonly referenceGround?:Float32Array;
   constructor(field: ElevationField, baseHeightAt: (x: number, z: number) => number,
     options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean;dryToe?:boolean;referenceBase?:(x:number,z:number)=>number} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
     this.subdivision = options.subdivision;
