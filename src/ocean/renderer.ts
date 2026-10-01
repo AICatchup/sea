@@ -143,7 +143,7 @@ export class Ocean {
       .setWaterHeightSampler?.(this.waterHeights.sample);
     const p=presets.day;
     this.uniforms={
-      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},
+      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},
       uTime:{value:this.time},uSunDirection:{value:new THREE.Vector3(...p.sun).normalize()},
       uSunColor:{value:new THREE.Vector3(...p.sunColor)},uZenith:{value:new THREE.Vector3(...p.zenith)},
       uHorizon:{value:new THREE.Vector3(...p.horizon)},uCloudColor:{value:new THREE.Vector3(...p.cloud)},

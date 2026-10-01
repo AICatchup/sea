@@ -228,6 +228,7 @@ export const oceanFragment = /* glsl */ `
   uniform float uHasReflection;
   uniform float uPointwiseContact;
   uniform float uContactDebug;
+  uniform float uWetStencil;
   uniform vec4 uBathyBounds;
   uniform vec2 uBathyResolution, uResolution, uNearFar;
   uniform float uUnderwater;
@@ -315,6 +316,7 @@ export const oceanFragment = /* glsl */ `
       // inward face on a valid thin film and near-total dark reflection.
       float sx=shoreWetSurfaceSlope(contactHeight,renderedSurface(nx),coastAt(nx).x,renderedSurface(px),coastAt(px).x,step);
       float sz=shoreWetSurfaceSlope(contactHeight,renderedSurface(nz),coastAt(nz).x,renderedSurface(pz),coastAt(pz).x,step);
+      if(uWetStencil<.5){sx=(renderedSurface(px)-renderedSurface(nx))/(2.*step);sz=(renderedSurface(pz)-renderedSurface(nz))/(2.*step);}
       normal=normalize(vec3(-sx,1.,-sz));
     }
     normal.y=max(abs(normal.y),0.14);
