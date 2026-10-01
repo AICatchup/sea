@@ -142,6 +142,8 @@ export class Ocean {
   private breakerCandidateEnabled=true;
   readonly renderer:THREE.WebGLRenderer;
   readonly camera=new THREE.PerspectiveCamera(62,1,.12,35000);
+  private readonly reflectionViewCamera=new THREE.PerspectiveCamera();
+  private reflectionOverscan=1.3;
   readonly simulation:OceanSimulation;
   readonly scene=new THREE.Scene();
   readonly waterScene=new THREE.Scene();
@@ -204,7 +206,7 @@ export class Ocean {
     this.shoreSolver=new URLSearchParams(location.search).get('surf')==='1'?new ShoreSolver(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld();
-    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:new URLSearchParams(location.search).get('whitewater')!=='0'});
+    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:new URLSearchParams(location.search).get('whitewater')!=='0',volume:new URLSearchParams(location.search).get('whitewater')==='volume'});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);
@@ -256,7 +258,7 @@ export class Ocean {
       // Reflector mutates only the clip row and leaves its inverse stale. Sky
       // directions use the main camera's current intrinsic projection; camera
       // rotation/position above still come from the reflected camera.
-      this.uniforms.uInverseProjection.value=this.camera.projectionMatrixInverse;
+      this.uniforms.uInverseProjection.value=viewCamera===this.camera?this.camera.projectionMatrixInverse:this.reflectionViewCamera.projectionMatrixInverse;
     };
     this.scene.add(sky);
     const seaMat=new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:oceanVertex,fragmentShader:oceanFragment,
@@ -463,8 +465,14 @@ export class Ocean {
       // water, total internal reflection sees the real seabed and organisms.
       this.reflection.rotation.x=underwater>.5?Math.PI/2:-Math.PI/2;this.reflection.updateMatrixWorld(true);
       this.renderer.setClearColor(0,1);
-      this.reflection.onBeforeRender(this.renderer,this.scene,this.camera,this.reflection.geometry,this.reflection.material as THREE.Material,this.reflectionContext);
-      const reflectedCamera=this.reflection.getReflectionCamera(this.camera);
+      // Capture real offscreen geometry for distorted reflection rays. Fading
+      // an empty border to the sky only produced a wider bright edge band.
+      this.reflectionViewCamera.copy(this.camera);
+      this.reflectionViewCamera.projectionMatrix.elements[0]/=this.reflectionOverscan;
+      this.reflectionViewCamera.projectionMatrix.elements[5]/=this.reflectionOverscan;
+      this.reflectionViewCamera.projectionMatrixInverse.copy(this.reflectionViewCamera.projectionMatrix).invert();
+      this.reflection.onBeforeRender(this.renderer,this.scene,this.reflectionViewCamera,this.reflection.geometry,this.reflection.material as THREE.Material,this.reflectionContext);
+      const reflectedCamera=this.reflection.getReflectionCamera(this.reflectionViewCamera);
       reflectedCamera.projectionMatrixInverse.copy(reflectedCamera.projectionMatrix).invert();
       this.uniforms.uReflectionInverseProjection.value.copy(reflectedCamera.projectionMatrixInverse);
       this.uniforms.uReflectionCameraWorld.value.copy(reflectedCamera.matrixWorld);
@@ -535,6 +543,7 @@ export class Ocean {
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
+  setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
   probeShoreState(){return this.shoreSolver?.probeState()??null;}
   getBreakerCandidateEnabled():boolean{return this.breakerCandidateEnabled;}
   probeDepthSamples(points:readonly{x:number;y:number}[]){return this.compositor.probeDepthSamples(points);}

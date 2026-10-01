@@ -90,6 +90,7 @@ export class ShoreWhitewaterVolume {
       ${shoreSolverSampling}
       vec2 coastAt(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;}
       vec3 displacement(vec2 p){return (texture2D(uLongWaves,p/384.).xyz+texture2D(uShortWaves,p/24.).xyz)*uSwell*shoreWaveScale(coastAt(p),uSwell,uWind);}
+      float surfaceHeight(vec2 world){vec2 p=world;for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;return shoreSolvedSurface(world,displacement(p).y,0.).x;}
       void main(){vAlpha=aAlpha;vSeed=aSeed;vAge=aMotion.y;vLocal=position;if(aAlpha<.001){gl_Position=vec4(2,2,2,1);return;}
       float roll=aMotion.x;float cr=cos(roll),sr=sin(roll);vec3 q=position;vec3 n=normal;
       q.xy=mat2(cr,sr,-sr,cr)*q.xy;n.xy=mat2(cr,sr,-sr,cr)*n.xy;
@@ -102,6 +103,11 @@ export class ShoreWhitewaterVolume {
       vWet=min(base-coast.x,height-coast.x)*step(.18,coast.y)*step(-4.6,coast.x);
       vec2 horizon=world-cameraPosition.xz;height-=dot(horizon,horizon)/(2.*6371000.);
       n=normalize(n/vec3(aShape.z,aShape.y,aShape.x));vNormal=vec3(n.x*c-n.z*s,n.y,n.x*s+n.z*c);
+      // Inverse transpose of y -> y + surfaceHeight(x,z), including the
+      // shared solved surface rather than lighting a flat undeformed floc.
+      const float slopeStep=.75;
+      vec2 slope=vec2(surfaceHeight(world+vec2(slopeStep,0))-surfaceHeight(world-vec2(slopeStep,0)),surfaceHeight(world+vec2(0,slopeStep))-surfaceHeight(world-vec2(0,slopeStep)))/(2.*slopeStep);
+      slope-=horizon/6371000.;vNormal.xz-=slope*vNormal.y;
       gl_Position=projectionMatrix*viewMatrix*vec4(world.x,height,world.y,1);}`,
       fragmentShader:`uniform vec3 uTint,uSunDirection,uSunColor,uHorizon;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady;uniform vec2 uViewport;
       varying vec3 vLocal,vNormal;varying float vAlpha,vSeed,vAge,vWet;
@@ -111,7 +117,9 @@ export class ShoreWhitewaterVolume {
       float coarse=noise(vLocal*4.3);float fine=noise(vLocal*23.);float coverage=vAlpha*smoothstep(.18+vAge*.32,.65,coarse)*mix(.65,1.,fine);
       // Object-space binary coverage writes real depth: breakup reveals water
       // through holes and avoids a translucent fog shell as flocs age.
-      if(hash(floor(vLocal*160.))>coverage)discard;
+      // Coherent cavities replace unfiltered centimetre-sized binary grains.
+      // This remains opaque coverage; it does not claim subpixel integration.
+      if(noise(vLocal*11.7)>coverage)discard;
       vec3 n=normalize(vNormal);float sun=max(0.,dot(n,normalize(uSunDirection)));float cavity=.72+.28*coarse;
       vec3 color=uTint*(uHorizon*.36+uSunColor*(.22+.65*sun))*cavity;
       gl_FragColor=vec4(color,1.);

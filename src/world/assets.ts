@@ -90,12 +90,12 @@ export class AssetWorld {
       const slope = Math.hypot(gradientX, gradientZ);
       const isHeadland = height > 3 || x < -72 || x > 74 || z > 95;
       // Wind-shaped cover follows crests and soil pockets, leaving lower vertical rock exposed.
-      // Low-frequency clusters overlap low, wide wind-shaped crowns. The native leaf/branch
-      // topology stays unchanged; horizontal spread, rather than extra trunks, closes crest gaps.
+      // Keep crown proportions close to the native three-dimensional source.
+      // Flattening a 12m-wide crown to 2m high buried most leaves on hillside soil.
       const cluster = THREE.MathUtils.clamp(.55 + Math.sin(x * .034 + Math.sin(z * .021) * 1.9) * .27 + Math.cos(z * .039 - x * .012) * .22, 0, 1);
       if (height > 6 && height < 68 && slope < (height > 14 ? 1.65 : 1.12) && isHeadland && random() < (.14 + cluster * .22)) {
         const size = .74 + random() * .38;
-        trees[variant].push(this.transform(x, height - .07, z, size, yaw, 2.08 + random() * .38, .52 + random() * .18, 2.05)); treeCount++;
+        trees[variant].push(this.transform(x, height - .07, z, size, yaw, 1.35 + random() * .3, .9 + random() * .18, 1.35)); treeCount++;
       }
       if (height > 3.1 && height < 68 && isHeadland && slope < 1.75 && random() < (.67 + cluster * .3)) {
         const low = random() < .43, size = .88 + random() * .46;
@@ -121,7 +121,7 @@ export class AssetWorld {
       { nearDistance: 26, midDistance: 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000 });
     this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount, groundCover: groundCoverCount,
       strata: 'low wide nonuniform coastal crowns / overlapping shrubs / low true-3D leaf cover; lower steep rock faces exposed',
-      canopyScale: { horizontal: [2.08, 2.46], vertical: [.52, .70] }, groundCoverScale: { horizontal: [2.85, 3.35], vertical: [.27, .39] } };
+      canopyScale: { horizontal: [1.35, 1.65], vertical: [.9, 1.08] }, groundCoverScale: { horizontal: [2.85, 3.35], vertical: [.27, .39] } };
   }
 
   /** Small strand debris is clustered and varied, rather than an evenly tiled gravel carpet. */

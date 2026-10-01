@@ -83,6 +83,7 @@ export class ShoreSpray {
   private credits=new Float32Array(GRID*GRID);
   private emitted=0;
   private whitewaterEmitted=0;
+  private foamScanCursor=0;
   private maxSampleEnergy=0;
   private maxSampleCrest=0;
   private maxEstimatedHeightDepthRatio=0;
@@ -217,17 +218,23 @@ export class ShoreSpray {
       }
       if(this.whitewater&&this.foamCacheValid){
         let count=0;
-        for(let cell=0;cell<GRID*GRID&&count<24&&this.whitewater.pool.active<this.whitewater.pool.capacity;cell++){
+        for(let offset=0;offset<GRID*GRID&&count<24&&this.whitewater.pool.active<this.whitewater.pool.capacity;offset++){
+          const cell=(offset+this.foamScanCursor)%(GRID*GRID);
           const x=this.sampleOrigin.x+(cell%GRID+.5-GRID/2)*6,z=this.sampleOrigin.y+(Math.floor(cell/GRID)+.5-GRID/2)*6;
           const s=this.foamSample;if(!this.sampleFoam(x,z,s))continue;
           const rate=whitewaterBirthRate(s);if(rate<=0){this.foamCredits[cell]=0;continue;}
           this.foamCredits[cell]=Math.min(1.5,this.foamCredits[cell]+rate*dt);
           if(this.foamCredits[cell]<1)continue;this.foamCredits[cell]--;
           const norm=Math.hypot(s.gradientX,s.gradientZ),seed=this.random(),along=(seed-.5)*4;
-          const nx=s.gradientX/norm,nz=s.gradientZ/norm,bx=x-nz*along,bz=z+nx*along;
+          const nx=s.gradientX/norm,nz=s.gradientZ/norm;
+          // The coarse cache is Eulerian. Sample the actual wet field at a
+          // subcell position rather than stamping parallel 6m birth rows.
+          const across=this.whitewater instanceof ShoreWhitewaterVolume?(this.random()-.5)*5.4:0;
+          const bx=x-nz*along+nx*across,bz=z+nx*along+nz*across;
           if(!this.sampleFoam(bx,bz,s)||whitewaterBirthRate(s)<=0)continue;
           if(this.whitewater.pool.emit({x:bx,z:bz,height:s.height,energy:s.compression,nx,nz,seed})){count++;this.whitewaterEmitted++;}
         }
+        if(this.whitewater instanceof ShoreWhitewaterVolume)this.foamScanCursor=(this.foamScanCursor+137)%(GRID*GRID);
       }
     }
     const size=this.renderer.getDrawingBufferSize(new THREE.Vector2());

@@ -19,3 +19,10 @@ export function referenceWetSurface(nodes:{bed:number;h:number;foam:number}[],we
  if(total<.00001)return null;
  eta/=total;return {eta,foam:foam/total,depth:Math.max(0,eta-queryBed)};
 }
+
+/** Exact local coverage production/decay; advection is evaluated separately. */
+export function foamCoverageStep(coverage:number,compressionBirth:number,dt:number):number {
+ if(![coverage,compressionBirth,dt].every(Number.isFinite)||dt<=0)return coverage;
+ const production=4*Math.max(0,Math.min(1,compressionBirth)),rate=.35+production,equilibrium=production/rate;
+ return equilibrium+(Math.max(0,Math.min(1,coverage))-equilibrium)*Math.exp(-rate*dt);
+}

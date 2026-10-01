@@ -79,10 +79,13 @@ void main(){vec2 uv=gl_FragCoord.xy/uSize,p=world(uv);
     v/=1.+uDt*.025*speed/max(next.x,.05);next.yz=v*next.x;
   }
   // Advected concentration with dissipative birth at compressive shallow bores.
-  vec2 v=next.yz/max(next.x,.01);float foam=texture2D(uInput,clamp(uv-v*uDt/uBounds.zw,vec2(.5/uSize),vec2(1.-.5/uSize))).a*exp(-uDt*.35);
+  vec2 v=next.yz/max(next.x,.01);float foam=texture2D(uInput,clamp(uv-v*uDt/uBounds.zw,vec2(.5/uSize),vec2(1.-.5/uSize))).a;
   float compression=max(0.,-((r.y/max(r.x,.01)-l.y/max(l.x,.01))+(t.z/max(t.x,.01)-b.z/max(b.x,.01)))/(2.*uDx));
   float born=clamp(compression*.7,0.,1.)*(1.-smoothstep(3.,7.,next.x))*smoothstep(.05,.3,next.x);
-  foam=max(foam,born*(1.-exp(-uDt*4.)));
+  // Exact reaction dF/dt=4*born*(1-F)-.35*F. A per-step maximum capped
+  // persistent breaking at ~.03 coverage and changed with the CFL timestep.
+  float reaction=.35+4.*born,equilibrium=4.*born/reaction;
+  foam=equilibrium+(foam-equilibrium)*exp(-reaction*uDt);
   // Four-cell sponge keeps open boundary forcing out of the interior update.
   float edge=min(min(gl_FragCoord.x,gl_FragCoord.y),min(uSize-gl_FragCoord.x,uSize-gl_FragCoord.y));
   float relaxation=(1.-smoothstep(1.,6.,edge))*(1.-exp(-uDt*3.));

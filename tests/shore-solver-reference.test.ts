@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {referenceStep,referenceWetSurface} from '../src/ocean/shore-solver-reference.ts';
+import {referenceStep,referenceWetSurface,foamCoverageStep} from '../src/ocean/shore-solver-reference.ts';
 test('lake at rest over nonflat bed including dry emergent bank',()=>{
  const bed=Array.from({length:64},(_,i)=>-.8+1.3*Math.sin(i*Math.PI*2/64));
  const h=bed.map(b=>Math.max(0,-b)),q=h.map(()=>0);
@@ -26,4 +26,14 @@ test('wet-only world elevation never promotes dry bank into phantom lake water',
 test('lake-at-rest rendering stays level through sloping wet dry cells',()=>{
  const nodes=[{bed:-2,h:2,foam:0},{bed:-.1,h:.1,foam:0},{bed:.4,h:0,foam:0},{bed:1,h:0,foam:0}];
  for(let i=0;i<=100;i++){const f=i/100,weights=[(1-f)*.5,(1-f)*.5,f*.5,f*.5];const r=referenceWetSurface(nodes,weights,-.5+f);if(r){assert.equal(r.eta,0);assert.equal(r.depth,Math.max(0,.5-f));}}
+});
+
+test('persistent compression accumulates foam with the same coverage across CFL timesteps',()=>{
+ const evolve=(dt:number)=>{let f=0;for(let i=0;i<Math.round(2/dt);i++)f=foamCoverageStep(f,1,dt);return f;};
+ const fine=evolve(.001),coarse=evolve(.02);
+ assert.ok(fine>.9&&fine<.93);assert.ok(Math.abs(fine-coarse)<1e-12);
+});
+test('without breaking the foam decays in wall time and remains bounded',()=>{
+ assert.ok(Math.abs(foamCoverageStep(.8,0,2)-.8*Math.exp(-.7))<1e-12);
+ let coverage=.3;for(let i=0;i<2000;i++){coverage=foamCoverageStep(coverage,i%3/2,.01);assert.ok(coverage>=0&&coverage<=1);}
 });

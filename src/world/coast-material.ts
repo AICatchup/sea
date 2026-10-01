@@ -247,7 +247,9 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
       vec2 rockDxY = dFdx(cliffUVY), rockDyY = dFdy(cliffUVY);
       vec2 rockDxZ = dFdx(cliffUVZ), rockDyZ = dFdy(cliffUVZ);
       float sandMix = (1.0 - smoothstep(1.7, 7.0, vCoastPoint.y)) * smoothstep(.58, .88, abs(coastAxis.y));
-      float greenMix = smoothstep(5.0, 18.0, vCoastPoint.y) * smoothstep(.65, .92, abs(coastAxis.y));
+      // Match the existing headland shrub/soil domain: >3.1m, slope <=1.75.
+      // NormalY=1/sqrt(1+slope²); lower vertical rock stays exposed.
+      float greenMix = smoothstep(3.1, 12.0, vCoastPoint.y) * smoothstep(.496, .707, abs(coastAxis.y));
       CoastRockSample rockX = CoastRockSample(vec3(.16), vec3(0, 0, 1), .91, .82, .58);
       CoastRockSample rockY = rockX, rockZ = rockX;
       // Gradients are evaluated above the branches. A horizontal strand needs no rock

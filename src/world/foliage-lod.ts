@@ -19,6 +19,7 @@ export class FoliageLodField {
   private disposed = false;
   private fixedCount = 0;
   private trunkProxies: readonly TrunkProxy[] | null = null;
+  private readonly crownBounds=new Map<number,THREE.Box3>();
 
   constructor(group: THREE.Group, name: string, levels: FoliageLevels,
     matrices: THREE.Matrix4[][], settings: FoliageLodSettings) {
@@ -42,11 +43,23 @@ export class FoliageLodField {
   replaceLevels(levels: FoliageLevels): void {
     if (this.disposed) return;
     this.levels = levels; this.releaseBatches(); this.build(); this.lastPosition.set(Infinity, Infinity, Infinity);
+    this.crownBounds.clear();
+    this.plants.forEach(plant=>{const measured=this.plant(plant.matrix,plant.variant);plant.position.copy(measured.position);plant.height=measured.height;});
     this.trunkProxies = null;
   }
 
   private plant(matrix: THREE.Matrix4, variant: number): Plant {
-    return { matrix, position: new THREE.Vector3().setFromMatrixPosition(matrix), variant, level: 'far', height: Math.abs(matrix.elements[5]) * 6.3 };
+    let local=this.crownBounds.get(variant);
+    if(!local){
+      local=new THREE.Box3();
+      for(const part of this.levels.near[variant].parts){
+        const box=part.geometry.boundingBox?.clone()??new THREE.Box3().setFromBufferAttribute(part.geometry.getAttribute('position') as THREE.BufferAttribute);
+        local.union(box);
+      }
+      this.crownBounds.set(variant,local);
+    }
+    const bounds=local.clone().applyMatrix4(matrix),size=bounds.getSize(new THREE.Vector3());
+    return { matrix, position: bounds.getCenter(new THREE.Vector3()), variant, level: 'far', height: Math.max(size.x,size.y,size.z) };
   }
 
   /** Read-only world coordinates; render LOD selection never moves these physical trunks. */
@@ -92,7 +105,7 @@ export class FoliageLodField {
     const near: { plant: Plant; distance: number; score: number }[] = [], mid: typeof near = [];
     const near2 = this.settings.nearDistance ** 2, mid2 = this.settings.midDistance ** 2;
     for (const plant of this.plants) {
-      // Ground-centre distance includes tree height; switch bands only after meaningful movement.
+      // Distance to the transformed crown, including its real horizontal span.
       const distance = plant.position.distanceToSquared(position);
       plant.level = 'far';
       const score = plant.height * plant.height / Math.max(1, distance);
@@ -126,7 +139,7 @@ export class FoliageLodField {
     }
     this.group.userData[this.name] = { status: 'ready', placements: this.plants.length, originalPlacements: this.fixedCount,
       instances: counts, thresholds: this.settings, draws, triangles, nearTriangles: selectedNear.reduce((sum, entry) => sum + this.levels.near[entry.plant.variant].triangles, 0),
-      exclusiveLod: true, selection: 'apparent angular height within distance / triangle caps', source: 'CC0 all-angle branch/needle/leaf models in every ready band' };
+      exclusiveLod: true, selection: 'actual transformed crown angular span within distance / triangle caps', source: 'CC0 all-angle branch/needle/leaf models in every ready band' };
   }
 
   private releaseBatches(): void {

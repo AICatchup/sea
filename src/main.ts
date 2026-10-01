@@ -154,6 +154,7 @@ try {
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
     breakerEnabled:(enabled:boolean)=>ocean.setBreakerCandidateEnabled(enabled),
     shoreEnabled:(enabled:boolean)=>ocean.setShoreCandidateEnabled(enabled),
+    reflectionOverscan:(scale:number)=>ocean.setReflectionOverscan(scale),
     shoreState:()=>ocean.probeShoreState(),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
     capturePixels:capturePNG,
