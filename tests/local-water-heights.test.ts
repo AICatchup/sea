@@ -33,14 +33,33 @@ test('current solver uniforms retain identity and solved triangular surface samp
   assert.equal(f.material().uniforms.uShoreReady,ready);
   assert.match(f.material().fragmentShader,/shoreSolvedSurface\(world,displacement\(parameter\).y,0\.\)/);
   assert.match(f.material().fragmentShader,/sampleCoastalGround\(uBathymetry,uv,uBathyResolution\)/);
-  f.cache.dispose();f.resolve(new Uint8Array(512));await new Promise(r=>setImmediate(r));f.previous.dispose();state.value.dispose();
+  f.cache.dispose();f.resolve(new Uint8Array(1024));await new Promise(r=>setImmediate(r));f.previous.dispose();state.value.dispose();
 });
 
 function encodedHeight(height:number):Uint8Array{
-  const pixels=new Uint8Array(512),code=Math.round((height/16+.5)*65535);
+  const pixels=new Uint8Array(1024),code=Math.round((height/16+.5)*65535);
   for(let i=0;i<pixels.length;i+=4)pixels.set([code>>8,code&255,137,255],i);
   return pixels;
 }
+
+test('remote floating points use bounded exact requests and expire with the local cache',async()=>{
+  const f=fixture();
+  try{
+    f.update(1);f.resolve(encodedHeight(1));await new Promise(r=>setImmediate(r));
+    assert.equal(f.cache.sample(200,17),0,'unsampled remote points have no invented height');
+    f.update(1.25);
+    const points=(f.material().uniforms.uRequestedPoints.value as THREE.DataTexture).image.data as Float32Array;
+    assert.deepEqual(Array.from(points.slice(0,2)),[200,17]);
+    const pixels=encodedHeight(1),code=Math.round((2/16+.5)*65535);pixels[512]=code>>8;pixels[513]=code&255;
+    f.resolve(pixels);await new Promise(r=>setImmediate(r));
+    assert.ok(Math.abs(f.cache.sample(200,17)-2)<.00013);assert.ok(Math.abs(f.cache.sample(0,0)-1)<.00013);
+    for(let i=0;i<200;i++)f.cache.sample(1000+i,17);
+    f.update(1.5);f.resolve(encodedHeight(.5));await new Promise(r=>setImmediate(r));
+    assert.equal(f.cache.diagnostics.requestedPoints,128);assert.equal(f.cache.diagnostics.readbackBytes,1024);
+    f.update(2.1);assert.equal(f.cache.sample(200,17),0,'stale remote heights cannot freeze buoys');
+    f.resolve(encodedHeight(3));await new Promise(r=>setImmediate(r));assert.equal(f.cache.sample(200,17),0);
+  }finally{f.cache.dispose();f.previous.dispose();}
+});
 test('invalid coordinates cannot leak NaN into swimming or camera medium selection',async()=>{
   const f=fixture();f.update();f.resolve(encodedHeight(1));await new Promise(r=>setImmediate(r));
   for(const [x,z] of [[NaN,0],[0,NaN],[Infinity,0],[0,-Infinity]])assert.equal(f.cache.sample(x,z),0);
@@ -68,12 +87,12 @@ for(const failure of ['render','read'] as const)test(`FFT cache ${failure} failu
 test('FFT cache disposal waits for outstanding GPU readback and is idempotent',async()=>{
   const f=fixture();f.update();
   f.cache.dispose();f.cache.dispose();assert.equal(f.disposals(),0);
-  f.resolve(new Uint8Array(512));await new Promise(r=>setImmediate(r));
+  f.resolve(new Uint8Array(1024));await new Promise(r=>setImmediate(r));
   assert.equal(f.disposals(),1);assert.equal(f.cache.diagnostics.ready,false);
   f.previous.dispose();
 });
 test('valid decoded wave samples remain available inside their own patch only',async()=>{
-  const f=fixture();f.update();const pixels=new Uint8Array(512);
+  const f=fixture();f.update();const pixels=new Uint8Array(1024);
   // 1m water elevation, rounded to the production 16-bit encoding.
   const code=Math.round((1/16+.5)*65535);
   for(let i=0;i<pixels.length;i+=4)pixels.set([code>>8,code&255,137,255],i);

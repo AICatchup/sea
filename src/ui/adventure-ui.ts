@@ -266,7 +266,12 @@ export class AdventureUI {
       this.mode = state.mode;
       this.root.dataset.mode = state.mode;
       this.diveHud.hidden = state.mode !== 'dive' && state.mode !== 'swim';
-      this.verticalControls.hidden = state.mode !== 'dive' && state.mode !== 'swim';
+      const inWater=state.mode==='dive'||state.mode==='swim';
+      this.verticalControls.hidden=state.mode==='boat';
+      this.verticalControls.setAttribute('aria-label',inWater?'水中で上下へ移動':'ジャンプ');
+      const up=this.verticalControls.querySelector<HTMLButtonElement>('[data-direction="up"]')!;
+      up.setAttribute('aria-label',inWater?'水面へ上がる':'ジャンプ');text(up.querySelector('span')!,inWater?'上へ':'ジャンプ');
+      this.verticalControls.querySelector<HTMLButtonElement>('[data-direction="down"]')!.hidden=!inWater;
     }
     if (this.placedCount !== placedCount) {
       this.placedCount = placedCount;

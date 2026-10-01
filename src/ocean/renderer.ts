@@ -141,6 +141,7 @@ export class Ocean {
     this.adventure=new ExplorerControls(canvas,withWorldCollision(ground,this.collision),this.world.destinations,this.world.spawnPoint);
     (this.adventure as ExplorerControls&{setWaterHeightSampler?:(sample:(x:number,z:number)=>number)=>void})
       .setWaterHeightSampler?.(this.waterHeights.sample);
+    this.assets.setWaterHeightSampler(this.waterHeights.sample);
     const p=presets.day;
     this.uniforms={
       ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},

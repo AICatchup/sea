@@ -11,19 +11,24 @@ export function cameraSubmersion(eyeY:number,surfaceY:number):number{
   return THREE.MathUtils.clamp((water-eyeY)/.18,0,1);
 }
 
-/** Two 14m local patches, 128 GPU samples / 512 bytes, asynchronously at 5Hz.
+/** Two 14m local patches plus at most128 requested remote points,
+ * 256 GPU samples /1024 bytes, asynchronously at 5Hz.
  * This is the actual FFT height with choppy XZ inversion and coastal shelter.
  * It does not read either full simulation texture or stall every frame.
  */
 export class LocalWaterHeights {
   private readonly scene=new THREE.Scene();
   private readonly camera=new THREE.Camera();
-  private readonly target=new THREE.WebGLRenderTarget(8,16,{depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
+  private readonly target=new THREE.WebGLRenderTarget(8,32,{depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
+  private readonly requestedData=new Float32Array(8*16*4);
+  private readonly requestedTexture=new THREE.DataTexture(this.requestedData,8,16,THREE.RGBAFormat,THREE.FloatType);
+  private readonly requested=new Map<string,{x:number;z:number}>();
+  private readonly pointHeights=new Map<string,number>();
   private readonly geometry=new THREE.PlaneGeometry(2,2);
   private readonly material=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,
     vertexShader:'void main(){gl_Position=vec4(position.xy,0,1);}',fragmentShader:/* glsl */`
       precision highp float;
-      uniform sampler2D uLongWaves,uShortWaves,uBathymetry;
+      uniform sampler2D uLongWaves,uShortWaves,uBathymetry,uRequestedPoints;
       uniform vec4 uBathyBounds;uniform vec2 uBathyResolution,uPlayer,uBoat;
       uniform float uSwell,uChoppiness,uWind;
       ${shoreWaveSampling}
@@ -38,7 +43,8 @@ export class LocalWaterHeights {
       }
       void main(){
         vec2 center=gl_FragCoord.y<8.0?uPlayer:uBoat;
-        vec2 world=center+(vec2(gl_FragCoord.x,mod(gl_FragCoord.y,8.0))-.5-3.5)*2.0;
+        vec2 world=gl_FragCoord.y>=16.0?texture2D(uRequestedPoints,vec2(gl_FragCoord.x,gl_FragCoord.y-16.0)/vec2(8.,16.)).rg
+          :center+(vec2(gl_FragCoord.x,mod(gl_FragCoord.y,8.0))-.5-3.5)*2.0;
         vec2 parameter=world;
         for(int i=0;i<3;i++)parameter=world-displacement(parameter).xz*uChoppiness;
         float h=shoreSolvedSurface(world,displacement(parameter).y,0.).x;
@@ -58,6 +64,8 @@ export class LocalWaterHeights {
   private readonly renderer:THREE.WebGLRenderer;
   constructor(renderer:THREE.WebGLRenderer){
     this.renderer=renderer;
+    this.requestedTexture.needsUpdate=true;
+    this.material.uniforms.uRequestedPoints={value:this.requestedTexture};
     const quad=new THREE.Mesh(this.geometry,this.material);quad.frustumCulled=false;this.scene.add(quad);
   }
   sample=(x:number,z:number):number=>{
@@ -70,17 +78,24 @@ export class LocalWaterHeights {
       return THREE.MathUtils.lerp(THREE.MathUtils.lerp(at(x0,z0),at(x0+1,z0),fx),
         THREE.MathUtils.lerp(at(x0,z0+1),at(x0+1,z0+1),fx),fz);
     }
-    return 0;
+    // Remote floating assets cannot reuse the player/boat patches. Query their
+    // fixed world points in the same bounded asynchronous draw, never a CPU sine.
+    const key=`${x.toFixed(4)}:${z.toFixed(4)}`;
+    if(this.requested.has(key)||this.requested.size<128)this.requested.set(key,{x,z});
+    return this.pointHeights.get(key)??0;
   };
   update(clock:number,textures:THREE.Texture[],bathymetry:{texture:THREE.Texture;origin:THREE.Vector2;size:THREE.Vector2;triangulated?:boolean},
     player:THREE.Vector3,boat:THREE.Vector3,swell:number,choppiness:number,wind:number):void{
     if(!Number.isFinite(clock)||this.disposed)return;
-    if(clock<this.latestClock){this.pixels=null;this.lastUpdate=-Infinity;}
+    if(clock<this.latestClock){this.pixels=null;this.pointHeights.clear();this.lastUpdate=-Infinity;}
     this.latestClock=clock;
-    if(clock-this.sampleTime>.5)this.pixels=null;
+    if(clock-this.sampleTime>.5){this.pixels=null;this.pointHeights.clear();}
     if(this.pending||this.failed||clock-this.lastUpdate<.2)return;
     this.lastUpdate=clock;this.pending=true;
     const u=this.material.uniforms,origins=[new THREE.Vector2(player.x,player.z),new THREE.Vector2(boat.x,boat.z)];
+    const requested=[...this.requested.entries()];this.requested.clear();this.requestedData.fill(0);
+    requested.forEach(([,p],i)=>{this.requestedData[i*4]=p.x;this.requestedData[i*4+1]=p.z;});
+    this.requestedTexture.needsUpdate=true;
     u.uPlayer.value.copy(origins[0]);u.uBoat.value.copy(origins[1]);u.uLongWaves.value=textures[0];u.uShortWaves.value=textures[1];
     u.uBathymetry.value=bathymetry.texture;u.uBathyBounds.value.set(bathymetry.origin.x,bathymetry.origin.y,bathymetry.size.x,bathymetry.size.y);
     const image=bathymetry.texture.image as {width:number;height:number};u.uBathyResolution.value.set(image.width,image.height);
@@ -90,26 +105,27 @@ export class LocalWaterHeights {
     try{
       try{this.renderer.setRenderTarget(this.target);this.renderer.render(this.scene,this.camera);}
       finally{this.renderer.setRenderTarget(previous);}
-      readback=this.renderer.readRenderTargetPixelsAsync(this.target,0,0,8,16,new Uint8Array(512)) as Promise<Uint8Array>;
+      readback=this.renderer.readRenderTargetPixelsAsync(this.target,0,0,8,32,new Uint8Array(1024)) as Promise<Uint8Array>;
     }catch(error){this.pending=false;this.fail(error);return;}
     void readback.then(pixels=>{
       if(this.disposed||this.latestClock-clock>.5||this.latestClock<clock)return;
-      if(!(pixels instanceof Uint8Array)||pixels.length!==512||pixels.some((value,i)=>i%4===2&&value!==137)){
+      if(!(pixels instanceof Uint8Array)||pixels.length!==1024||pixels.some((value,i)=>i%4===2&&value!==137)){
         throw new Error('Uninitialized FFT height framebuffer');
       }
       this.pixels=pixels;this.sampleTime=clock;this.origins[0].copy(origins[0]);this.origins[1].copy(origins[1]);
+      this.pointHeights.clear();requested.forEach(([key],i)=>{const at=(128+i)*4;this.pointHeights.set(key,(pixels[at]*256+pixels[at+1])/65535*16-8);});
     }).catch(error=>{if(!this.disposed)this.fail(error);})
       .finally(()=>{this.pending=false;if(this.disposed)this.target.dispose();});
   }
   private fail(error:unknown):void{
-    this.failed=true;this.pixels=null;
+    this.failed=true;this.pixels=null;this.pointHeights.clear();
     console.warn('FFT surface-height cache unavailable; mean sea level retained',error);
   }
-  get diagnostics(){return {ready:!!this.pixels,failed:this.failed,samples:128,interval:.2,readbackBytes:512};}
+  get diagnostics(){return {ready:!!this.pixels,failed:this.failed,samples:256,requestedPoints:this.pointHeights.size,requestCapacity:128,interval:.2,readbackBytes:1024};}
   bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
   dispose():void{
     if(this.disposed)return;
-    this.disposed=true;this.pixels=null;
+    this.disposed=true;this.pixels=null;this.pointHeights.clear();this.requested.clear();this.requestedTexture.dispose();
     if(!this.pending)this.target.dispose();
     this.geometry.dispose();this.material.dispose();this.scene.clear();
   }

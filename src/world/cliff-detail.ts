@@ -76,7 +76,10 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
     const height=familyName==='plates'?.8+random(43)*.9:familyName==='columns'?1.6+random(43)*1.5:1.3+random(43)*1.5;
     const depth=.5+random(47)*.75;
     const split=familyName==='plates'?3+(random(51)>.7?1:0):random(51)>.4?2:1;
-    const gap=.22+random(53)*.38,shade=.58+random(81)*.16;
+    // Shared rock albedo already carries natural dark mineral/fissure detail.
+    // Let geometric sunlight and occlusion shade ledges instead of multiplying
+    // every separate rock piece by an additional near-black authored tint.
+    const gap=.22+random(53)*.38,shade=.89+random(81)*.10;
     const centre=new THREE.Vector3(px,y,pz);
     let emitted=0;
     const weights=Array.from({length:split},(_,part)=>.55+random(101+part)*.9);

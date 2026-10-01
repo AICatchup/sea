@@ -29,6 +29,7 @@ export class AssetWorld {
   private readonly foliagePosition = new THREE.Vector3(-36, 1.72, 27);
   private lastPineSignature = '';
   private previousTime = 0;
+  private waterHeightSampler:(x:number,z:number)=>number=()=>0;
   private disposed = false;
   private readonly matrix = new THREE.Matrix4();
   private readonly localMatrix = new THREE.Matrix4();
@@ -258,6 +259,8 @@ export class AssetWorld {
     this.placements.pop(); this.rebuildPlacements(0);
   }
 
+  setWaterHeightSampler(sample:(x:number,z:number)=>number):void{this.waterHeightSampler=sample;}
+  private waterAt(x:number,z:number):number{const y=this.waterHeightSampler(x,z);return Number.isFinite(y)?THREE.MathUtils.clamp(y,-4,4):0;}
   private rebuildPlacements(time: number): void {
     const placedPines: THREE.Matrix4[][] = [[], [], []];
     const pineSignature = this.placements.map((p, index) => p.kind === 'pine' ? `${index}:${p.x}:${p.y}:${p.z}:${p.yaw}` : '').join('|');
@@ -267,7 +270,8 @@ export class AssetWorld {
     for (let index = 0; index < this.placements.length; index++) {
       const placement = this.placements[index];
       const bob = placement.kind === 'buoy' ? Math.sin(time * 1.6 + index * 2.7) * 0.055 : 0;
-      this.position.set(placement.x, placement.y + bob, placement.z);
+      const surface=placement.kind==='buoy'?this.waterAt(placement.x,placement.z):0;
+      this.position.set(placement.x, placement.y + surface + bob, placement.z);
       this.quaternion.setFromAxisAngle(this.yAxis, placement.yaw); this.matrix.compose(this.position, this.quaternion, this.scale);
       if (placement.kind === 'pine') { if (updatePines) placedPines[index % 3].push(this.matrix.clone()); continue; }
       for (const batch of this.placementBatches.get(placement.kind)!) {
@@ -288,7 +292,7 @@ export class AssetWorld {
     this.foliagePosition.copy(position);
     this.pineField.update(position); this.shrubField.update(position);
     for (const marker of this.floatingMarkers) {
-      marker.object.position.y = 0.06 + Math.sin(time * 1.55 + marker.phase) * 0.052;
+      marker.object.position.y = this.waterAt(marker.object.position.x,marker.object.position.z)+0.06+Math.sin(time*1.55+marker.phase)*0.052;
       marker.object.rotation.z = Math.sin(time * 1.05 + marker.phase) * 0.04;
     }
     if (this.placements.some((placement) => placement.kind === 'buoy')) this.rebuildPlacements(time);

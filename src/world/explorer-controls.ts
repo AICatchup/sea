@@ -556,6 +556,11 @@ export class ExplorerControls {
     this.state.stamina = (this.state.stamina ?? 1) + resourceDelta * (running ? -.08 : .055);
     const walking = this.state.mode === 'walk' && this.state.grounded && this.state.speed > .12;
     if (walking) this.state.gaitPhase = (this.state.gaitPhase ?? 0) + this.state.speed * dt * 3.8;
+    else if(this.state.mode==='swim'||this.state.mode==='dive'){
+      // The render body consumes the controller phase. Keep slow sculling at
+      // rest and increase stroke cadence with actual horizontal/vertical motion.
+      this.state.gaitPhase=(this.state.gaitPhase??0)+dt*(1.9+Math.min(3,this.state.speed)*1.5+Math.min(2,Math.abs(this.velocity.y))*.5);
+    }
     const gait = this.state.gaitPhase ?? 0;
     const bob = walking ? (running ? .025 : .016) * Math.min(1, this.state.speed) : 0;
     const offset = this.state.viewOffset!;

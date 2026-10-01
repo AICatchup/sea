@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import * as THREE from 'three';
 import { ExplorerControls } from '../src/world/explorer-controls.ts';
+import { FirstPersonBody } from '../src/world/player-body.ts';
 import { BOAT_MIN_DEPTH, WORLD_LIMIT, findNearbyWater, footSegmentClear, isNavigableWater,
   planWaterRoute, pointDistance, waterSegmentClear, ROUTE_MIN_DEPTH, ROUTE_RADIUS } from '../src/world/navigation.ts';
 import type { GroundSampler, WorldDestination } from '../src/world/contracts.ts';
@@ -41,6 +42,38 @@ function key(canvas: TestCanvas, type: string, code: string, target?: object): E
   canvas.ownerDocument.defaultView.dispatchEvent(event);
   return event;
 }
+
+test('real swimming and diving controller phases drive both body wrists without synthetic phase updates',()=>{
+  const {controls,state}=setup({heightAt:()=>-12});
+  const body=new FirstPersonBody(),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera();scene.add(body.group);
+  const mesh=body.group.children.find(x=>x instanceof THREE.SkinnedMesh) as THREE.SkinnedMesh;
+  const wrists=['left wrist','right wrist'].map(name=>mesh.skeleton.bones.find(x=>x.name===name)!);
+  try{
+    for(const mode of ['swim','dive'] as const){
+      controls.viewpoint(0,0,0,-.1,mode,mode==='dive'?3:0);controls.setMove(0,1);
+      const initialPhase=state.gaitPhase??0;let initial:THREE.Vector3[]|undefined;const excursion=[0,0];
+      for(let frame=0;frame<120;frame++){
+        controls.update(1/60,frame/60);camera.position.copy(state.position);body.update(state,camera,1/60,frame/60);
+        const positions=wrists.map(x=>x.getWorldPosition(new THREE.Vector3()).sub(camera.position));
+        if(!initial)initial=positions.map(p=>p.clone());
+        positions.forEach((p,i)=>excursion[i]=Math.max(excursion[i],p.distanceTo(initial![i])));
+      }
+      assert.ok((state.gaitPhase??0)>initialPhase+2,'the controller advances the stroke phase');
+      excursion.forEach(d=>assert.ok(d>.08,`both rendered wrists stroke: ${d}`));
+      assert.equal(state.mode,mode);assert.ok(mesh.skeleton.boneMatrices.every(Number.isFinite));
+    }
+  }finally{controls.dispose();body.dispose();}
+});
+
+test('held touch jump takes off once, lands, and requires release before the next jump',()=>{
+  const {controls,state}=setup({heightAt:()=>0});
+  try{
+    advance(controls,.1);controls.setVertical(1);advance(controls,.15);assert.equal(state.grounded,false);
+    advance(controls,2);assert.equal(state.grounded,true);assert.ok(Math.abs(state.position.y-1.64)<.01);
+    advance(controls,.3);assert.equal(state.grounded,true);
+    controls.setVertical(0);controls.setVertical(1);advance(controls,.15);assert.equal(state.grounded,false);
+  }finally{controls.dispose();}
+});
 
 test('water route detours around land and every resulting segment clears the hull', () => {
   const ground: GroundSampler = { heightAt: (x, z) => x >= 20 && x <= 80 && Math.abs(z) < 25 ? 12 : -30 };

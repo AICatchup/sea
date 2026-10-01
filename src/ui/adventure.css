@@ -70,6 +70,7 @@
 .adventure-journey progress::-moz-progress-bar { background: #e0e8d5; border-radius: 2px; }
 .adventure-message { position: absolute; left: 50%; bottom: 172px; transform: translateX(-50%); max-width: min(440px, calc(100vw - 36px)); padding: 10px 17px; border-radius: 22px; border: 1px solid var(--adventure-border); background: rgba(6, 27, 38, .72); text-align: center; font-size: 11px; line-height: 1.7; backdrop-filter: blur(12px); }
 .adventure-touch-pad, .adventure-touch-vertical { display: none; }
+.adventure-touch-vertical button[hidden] { display: none; }
 .immersed .adventure-ui, .adventure-ui.is-unavailable { opacity: 0; visibility: hidden; pointer-events: none; }
 @media (max-width: 550px) {
   .adventure-heading { top: calc(82px + env(safe-area-inset-top)); left: 18px; }
