@@ -238,7 +238,7 @@ export const oceanFragment = /* glsl */ `
   varying vec2 vOcean;
   varying float vDistance;
   #ifdef CURVED_SURFACE
-  varying float vEnvelope, vLip;
+  varying float vEnvelope, vLip, vWaterThickness;
   #endif
   ${atmosphere}
   ${shoreWaveSampling}
@@ -437,13 +437,24 @@ export const oceanFragment = /* glsl */ `
     if(linearDepth(behindDepth)<surfaceDistance+.06){refractionUV=screenUV;behindDepth=opaqueDepth;}
     float rayCos=max(.12,abs((viewMatrix*vec4(-view,0.0)).z));
     float opticalPath=clamp((linearDepth(behindDepth)-surfaceDistance)/rayCos,0.0,90.0);
+    #ifdef CURVED_SURFACE
+    vec3 throughWave=refract(-view,normal,1.0/1.333);
+    opticalPath=min(opticalPath,min(6.,vWaterThickness/max(.08,abs(dot(normal,throughWave)))));
+    #endif
     vec3 absorption=vec3(.105,.021,.012);
     vec3 transmission=exp(-absorption*opticalPath);
     vec3 waterScatter=vec3(.003,.026,.041)*uWaterTint;
     float bottomContact=texture2D(uSceneOcclusion,refractionUV).r;
     vec3 refractedColor=texture2D(uSceneColor,refractionUV).rgb*bottomContact*transmission+waterScatter*(1.0-transmission);
     float visibleBottom=behindDepth<.999999?1.0:0.0;
+    #ifdef CURVED_SURFACE
+    // The base ocean's no-bottom case is deep water. A raised lip can instead
+    // exit into air and transmit sky, so it must not inherit that opaque tint.
+    if(visibleBottom<.5&&throughWave.y>0.)refractedColor=skyRadiance(normalize(throughWave),true)*transmission+waterScatter*(1.-transmission);
+    body=refractedColor;
+    #else
     body=mix(body,refractedColor,visibleBottom);
+    #endif
     body*=mix(1.0,0.60,uStorm);
     vec3 color=mix(body,reflection,fresnel);
 

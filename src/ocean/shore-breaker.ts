@@ -8,7 +8,7 @@ const smooth=(a:number,b:number,x:number)=>{const t=Math.max(0,Math.min(1,(x-a)/
 /** CPU mirror of the sheet gate, for boundedness and negative-path checks. */
 export function breakerSheetEnvelope(depth:number,energy:number,crest:number,slope:number,curvature:number,shelter:number):number {
   if(![depth,energy,crest,slope,curvature,shelter].every(Number.isFinite)||depth<=.2||depth>=3.8||shelter<.18)return 0;
-  return smooth(.2,.6,depth)*(1-smooth(2.8,3.8,depth))*smooth(.02,.25,energy)*smooth(.02,.2,crest)*smooth(.025,.22,slope)*smooth(.005,.12,-curvature)*Math.min(1,shelter);
+  return smooth(.2,.6,depth)*(1-smooth(2.8,3.8,depth))*smooth(.02,.25,energy)*smooth(.02,.2,crest)*smooth(.0001,.003,slope)*smooth(.00002,.001,-curvature)*Math.min(1,shelter);
 }
 
 /** Mirror of the bounded instantaneous upstream maximum search (metres).
@@ -27,10 +27,10 @@ export function breakerTrackedCrest(sample:(x:number)=>number,source:number):{pe
 export function breakerCurlSection(q:number,radius:number,base:number,crest:number,side=0):{x:number;y:number;nx:number;ny:number;active:boolean} {
   const angle=3.665191429188092; // 210 degrees, genuinely beyond vertical
   if(![q,radius,base,crest,side].every(Number.isFinite)||radius<=0||q<0||q>radius*angle)return {x:q,y:base,nx:0,ny:1,active:false};
-  const theta=q/radius,blend=smooth(0,.18,theta),thickness=radius*.035*side*blend;
-  return {x:q+(radius*Math.sin(theta)-q)*blend-Math.sin(theta)*thickness,
-    y:base+(crest+radius*(1-Math.cos(theta))-base)*blend+Math.cos(theta)*thickness,
-    nx:-Math.sin(theta),ny:Math.cos(theta),active:true};
+  const theta=q/radius,blend=smooth(0,.18,theta),thickness=radius*.25*side*blend;
+  return {x:q+(radius*(1-Math.cos(theta))-q)*blend-Math.cos(theta)*thickness,
+    y:base+(crest+radius*Math.sin(theta)-base)*blend+Math.sin(theta)*thickness,
+    nx:-Math.cos(theta),ny:Math.sin(theta),active:true};
 }
 
 /** Bounded instantaneous FFT-driven kinematic bilayer, with shared SWE base.
@@ -59,7 +59,7 @@ export class ShoreBreaker {
       uniforms:{...createShoreSolverUniforms(),uOrigin:{value:new THREE.Vector2()},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`uniform vec2 uOrigin;uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
       attribute float sheetSide;
-      varying vec3 vWorld;varying vec2 vOcean;varying float vDistance,vEnvelope,vLip;
+      varying vec3 vWorld;varying vec2 vOcean;varying float vDistance,vEnvelope,vLip,vWaterThickness;
       ${shoreWaveSampling}
       ${shoreBreakerDissipationSampling}
       ${shoreSolverSampling}
@@ -68,44 +68,61 @@ export class ShoreBreaker {
       vec3 displacement(vec2 p){return raw(p)*uSwell*shoreWaveScale(coast(p),uSwell,uWind);}
       vec2 inverseChop(vec2 world){vec2 p=world;for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;return p;}
       float fftHeight(vec2 world){return displacement(inverseChop(world)).y;}
+      float incidentHeight(vec2 world){return texture2D(uLongWaves,inverseChop(world)/384.).y*uSwell;}
       float baseHeight(vec2 world){return shoreSolvedSurface(world,fftHeight(world),0.).x;}
       void main(){
-        vec2 world=position.xz+uOrigin,source=world;
-        vec2 uphill=vec2(coast(world+vec2(2,0)).x-coast(world-vec2(2,0)).x,coast(world+vec2(0,2)).x-coast(world-vec2(0,2)).x);
+        // Every profile column in a row shares one crest anchor. Independent
+        // searches at every grid point made adjacent vertices choose different
+        // maxima and stretched the surface into glass-like spikes.
+        vec2 uphill=vec2(coast(uOrigin+vec2(2,0)).x-coast(uOrigin-vec2(2,0)).x,coast(uOrigin+vec2(0,2)).x-coast(uOrigin-vec2(0,2)).x);
         float terrainGradient=length(uphill);vec2 n=uphill/max(terrainGradient,.00001);
+        vec2 along=vec2(-n.y,n.x),row=uOrigin;
+        float depthOffset=0.,previousDepth=-coast(row).x;bool foundDepth=previousDepth>=2.;
+        for(int i=1;i<=12;i++){float t=float(i)*2.,currentDepth=-coast(row-n*t).x;if(!foundDepth&&previousDepth<2.&&currentDepth>=2.){depthOffset=t-2.+2.*clamp((2.-previousDepth)/max(.0001,currentDepth-previousDepth),0.,1.);foundDepth=true;}previousDepth=currentDepth;}
+        vec2 source=row-n*depthOffset,world=source;
         // A local, current FFT maximum anchors each descending shoulder. A
         // parabola refines the 0.5m search so the crest follows FFT phase.
         float best=-100000.,offset=0.;
-        for(int i=0;i<9;i++){float t=float(i)*.5;float h=fftHeight(source-n*t);if(h>best){best=h;offset=t;}}
+        for(int i=0;i<9;i++){float t=float(i)*.5;float h=incidentHeight(source-n*t);if(h>best){best=h;offset=t;}}
         vec2 peak=source-n*offset;
-        float h=fftHeight(peak),behind=fftHeight(peak-n*.5),ahead=fftHeight(peak+n*.5);
+        float h=incidentHeight(peak),behind=incidentHeight(peak-n*.5),ahead=incidentHeight(peak+n*.5);
         float curvature=(ahead+behind-2.*h)/.25;
         float refine=clamp((ahead-behind)/max(.0001,-curvature),-.25,.25);
-        peak+=n*refine;float q=dot(source-peak,n);h=fftHeight(peak);
+        peak+=n*refine;
+        // Continue one long-wave ridge across the whole ribbon. Its Hessian
+        // gives the local crest tangent; short ripples belong in the optical
+        // normal, not in independent macro-crest identities at every row.
+        float mixed=incidentHeight(peak+n*.5+along*.5)-incidentHeight(peak+n*.5-along*.5)-incidentHeight(peak-n*.5+along*.5)+incidentHeight(peak-n*.5-along*.5);
+        float shear=clamp(-mixed/min(-.0001,curvature),-1.25,1.25);
+        peak+=along*position.z+n*shear*position.z;
+        h=incidentHeight(peak);behind=incidentHeight(peak-n*.5);ahead=incidentHeight(peak+n*.5);curvature=(ahead+behind-2.*h)/.25;
         vec2 c=coast(peak);float d=-c.x;
-        float slope=(h-fftHeight(peak+n*.75))/.75;
-        float energy=shoreBreakerDissipation(raw(inverseChop(peak)).y,c,uSwell,uWind);
-        float gate=smoothstep(.2,.6,d)*(1.-smoothstep(2.8,3.8,d))*smoothstep(.02,.25,energy)*smoothstep(.02,.2,h)*smoothstep(.025,.22,slope)*smoothstep(.005,.12,-curvature)*clamp(c.y,0.,1.)*smoothstep(.0001,.01,terrainGradient);
+        float slope=(h-incidentHeight(peak+n*.75))/.75;
+        float energy=shoreBreakerDissipation(h/max(.3,uSwell),c,uSwell,uWind);
+        // Depth-cap loss is the breaking criterion. Slope and curvature only
+        // establish a descending convex front: demanding a steep slope at the
+        // maximum itself suppressed broad breaking crests by construction.
+        float gate=smoothstep(.2,.6,d)*(1.-smoothstep(2.8,3.8,d))*smoothstep(.02,.25,energy)*smoothstep(.02,.2,h)*smoothstep(.0001,.003,slope)*smoothstep(.00002,.001,-curvature)*clamp(c.y,0.,1.)*smoothstep(.0001,.01,terrainGradient);
         if(!(d>.2&&d<3.8&&c.y>=.18)||offset>=4.)gate=0.;
         // Radius is local-depth AND actual-crest bounded. No global added wave.
         float radius=min(1.25,min(d*.36,max(0.,h)*.9))*gate;
-        float theta=q/max(.00001,radius),angle=3.665191429;
-        if(!(theta>=0.&&theta<=angle))gate=0.;
-        theta=clamp(theta,0.,angle);
+        float angle=3.665191429;
+        float theta=clamp(position.x/SPAN+.5,0.,1.)*angle,q=radius*theta;
         float blend=smoothstep(0.,.18,theta);
-        float thick=radius*.035*sheetSide*blend;
+        float thick=radius*.25*sheetSide*blend;
+        source=peak+n*q;
         float base=baseHeight(source),crest=baseHeight(peak);
-        vec2 curled=peak+n*(radius*sin(theta)-sin(theta)*thick);
+        vec2 curled=peak+n*(radius*(1.-cos(theta))-cos(theta)*thick);
         world=mix(source,curled,blend);
-        float y=mix(base,crest+radius*(1.-cos(theta))+cos(theta)*thick,blend);
+        float y=mix(base,crest+radius*sin(theta)+sin(theta)*thick,blend);
         // Source bed/wetness rejects disconnected land sheets; final lip bed
         // clipping is performed independently at its displaced destination.
-        if(base<coast(source).x+.01)gate=0.;
-        float edge=max(abs(position.x),abs(position.z));gate*=1.-smoothstep(SPAN*.5-3.,SPAN*.5,edge);
+        if(crest<coast(peak).x+.01||terrainGradient<.00001)gate=0.;
+        float edge=abs(position.z);gate*=1.-smoothstep(SPAN*.5-3.,SPAN*.5,edge);
         vec2 delta=world-cameraPosition.xz;y-=dot(delta,delta)/(2.*6371000.);
-        vWorld=vec3(world.x,y,world.y);vOcean=inverseChop(source);vDistance=length(cameraPosition-vWorld);vEnvelope=gate;vLip=theta/angle;
+        vWorld=vec3(world.x,y,world.y);vOcean=inverseChop(source);vDistance=length(cameraPosition-vWorld);vEnvelope=gate;vLip=theta/angle;vWaterThickness=radius*.25;
         gl_Position=projectionMatrix*viewMatrix*vec4(vWorld,1.);
-      }`.replaceAll('SPAN',String(SPAN)),
+      }`.replaceAll('SPAN',SPAN.toFixed(1)),
       fragmentShader:oceanFragment});
     const mesh=new THREE.Mesh(this.geometry,this.material);mesh.frustumCulled=false;mesh.renderOrder=1;this.group.add(mesh);
   }

@@ -367,9 +367,6 @@ export class Ocean {
     this.spray.update(this.time,this.paused?0:delta,this.camera,this.uniforms);
     if(this.breaker){
       this.breaker.bindUniforms(this.uniforms);
-      this.breaker.material.uniforms.uOccludingDepth.value=this.uniforms.uSceneDepth.value;
-      this.breaker.material.uniforms.uOccludingDepthReady.value=this.uniforms.uSceneDepth.value?1:0;
-      this.renderer.getDrawingBufferSize(this.breaker.material.uniforms.uViewport.value);
       this.breaker.update(this.camera.position.x,this.camera.position.z,underwater>.5);
       this.breaker.group.visible&&=this.breakerCandidateEnabled;
     }

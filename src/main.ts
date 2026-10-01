@@ -209,13 +209,13 @@ try {
         return {png,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null}};
       }finally{captureHost.restoreState(before);}
     },
-    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1){
+    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number}){
       if(stops.length<1||stops.length>6||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown temporal capture view');
       const frames=[];
       try{
         captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');ocean.setWind(Math.max(2,Math.min(18,wind)));ocean.setSwell(Math.max(.3,Math.min(2,swell)));
-        const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);captureHost.setPaused(true);await captureHost.nextFrame();
+        const p=profile.pose;captureHost.viewpoint(Number.isFinite(look?.x)?look!.x!:p.x,Number.isFinite(look?.z)?look!.z!:p.z,Number.isFinite(look?.yaw)?look!.yaw!:p.yaw,Number.isFinite(look?.pitch)?Math.max(-1.35,Math.min(1.35,look!.pitch!)):p.pitch,look?.mode??p.mode,Number.isFinite(look?.depth)?Math.max(0,Math.min(100,look!.depth!)):p.depth);captureHost.setPaused(true);await captureHost.nextFrame();
         for(let i=0;i<stops.length;i++){
           if(i){captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,(stops[i]-stops[i-1])*1000));captureHost.setPaused(true);}
           await captureHost.nextFrame();const png=await capturePNG();if(!png)throw new Error('No temporal capture');
