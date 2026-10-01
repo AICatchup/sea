@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { BOAT_ACCESS } from '../contracts';
 import { addBoatCushion, boatUpholsteryMaterial } from './boat-upholstery';
 import { ModelBatch, ModelResources, rockGeometry, standard, surfaceTexture } from './procedural';
 
@@ -253,9 +254,9 @@ export class CoastalModels {
       for (const dx of [-0.052, 0.052]) batch.rod(this.metal, new THREE.Vector3(x + dx, 0.39, z), new THREE.Vector3(x + dx, 0.45, z), 0.013);
     }
     for (let i = 0; i < 4; i++) batch.add(new THREE.TorusGeometry(0.13 + i * 0.014, 0.008, 5, 24), this.rope, new THREE.Vector3(-0.3, 0.433 + i * 0.008, -1.8), undefined, new THREE.Euler(Math.PI / 2, 0, 0));
-    batch.box(this.white, -0.75, 0.18, 2.66, 0.42, 0.07, 0.39);
-    for (const x of [-0.92, -0.58]) batch.rod(this.metal, new THREE.Vector3(x, 0.16, 2.78), new THREE.Vector3(x, -0.59, 2.94), 0.017);
-    for (const y of [-0.07, -0.31, -0.54]) batch.rod(this.metal, new THREE.Vector3(-0.92, y, 2.92), new THREE.Vector3(-0.58, y, 2.92), 0.017);
+    batch.box(this.white, BOAT_ACCESS.ladderX, BOAT_ACCESS.platformY, BOAT_ACCESS.platformZ, 0.42, 0.07, 0.39);
+    for (const x of [BOAT_ACCESS.ladderX-.17,BOAT_ACCESS.ladderX+.17]) batch.rod(this.metal, new THREE.Vector3(x,.16,BOAT_ACCESS.ladderTopZ),new THREE.Vector3(x,-.59,BOAT_ACCESS.ladderRungZ+.02),.017);
+    for (const y of [-.07,-.31,-.54]) batch.rod(this.metal,new THREE.Vector3(BOAT_ACCESS.ladderX-.17,y,BOAT_ACCESS.ladderRungZ),new THREE.Vector3(BOAT_ACCESS.ladderX+.17,y,BOAT_ACCESS.ladderRungZ),.017);
     const boat = batch.finish(this.resources, '5.6 metre coastal motorboat');
     boat.userData.provenance = 'Authored adventure vessel; not a reconstruction of a photographed local boat.';
     boat.userData.footprint = { radius: 1.13, halfLength: 2.8, height: 2.18 };

@@ -6,6 +6,7 @@ import { ExplorerControls } from '../src/world/explorer-controls.ts';
 import { BOAT_MIN_DEPTH, WORLD_LIMIT, findNearbyWater, footSegmentClear, isNavigableWater,
   planWaterRoute, pointDistance, waterSegmentClear, ROUTE_MIN_DEPTH, ROUTE_RADIUS } from '../src/world/navigation.ts';
 import type { GroundSampler, WorldDestination } from '../src/world/contracts.ts';
+import { BOAT_ACCESS } from '../src/world/contracts.ts';
 import { WorldCollision, withWorldCollision } from '../src/world/world-collision.ts';
 
 class TestDocument extends EventTarget {
@@ -214,8 +215,8 @@ test('one world connects beach approach, smooth boarding, voyage and nearby wate
   assert.ok(state.message.includes('出航')); advance(controls, state.voyageRemaining/12+30);
   assert.equal(state.voyageTarget, null); assert.ok(pointDistance(state.boatPosition, destinations[1]) < .1);
   const boatEye = state.position.clone(), boat = state.boatPosition.clone();
-  controls.interact(); assert.ok(state.position.equals(boatEye)); advance(controls, 1.5);
-  assert.equal(state.mode, 'swim'); assert.ok(pointDistance(state.position, boat) > 2 && pointDistance(state.position, boat) < 3);
+  controls.interact(); assert.ok(state.position.equals(boatEye)); advance(controls, 2.6);
+  assert.equal(state.mode, 'swim'); assert.ok(pointDistance(state.position, boat) > 3 && pointDistance(state.position, boat) < 4.5);
   assert.ok(state.position.y > .2); controls.dispose();
 });
 
@@ -224,6 +225,22 @@ function board(controls: ExplorerControls): void {
   controls.viewpoint(boat.x + 1.7, boat.z, 0, 0, 'swim'); controls.interact(); advance(controls, 1.7);
   assert.equal(controls.state.mode, 'boat');
 }
+
+test('the actually drawn stern ladder boards continuously from the observed failing approach',()=>{
+  const {controls,state}=setup({heightAt:()=>-20});
+  state.boatPosition.set(-118.5950068345507,0,-90.9578943776148);state.boatYaw=-.6;
+  controls.viewpoint(-116.75051777212414,-88.5513561143137,-.65365,-.04,'swim');
+  const start=state.position.clone();controls.interact();assert.ok(state.position.equals(start));assert.notEqual(state.mode,'boat');
+  advance(controls,1.55);
+  const platform=new THREE.Vector3(BOAT_ACCESS.ladderX,BOAT_ACCESS.platformY+1.64,BOAT_ACCESS.platformZ)
+    .applyEuler(new THREE.Euler(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ')).add(state.boatPosition);
+  assert.ok(state.position.distanceTo(platform)<.04);assert.equal(state.avatarAction,'climb');
+  advance(controls,1.7);assert.equal(state.mode,'boat');
+  controls.interact();advance(controls,2.5);assert.equal(state.mode,'swim');
+  const stern=new THREE.Vector3(BOAT_ACCESS.ladderX,0,BOAT_ACCESS.waterZ+.35)
+    .applyEuler(new THREE.Euler(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ')).add(state.boatPosition);
+  assert.ok(pointDistance(state.position,stern)<.04);controls.dispose();
+});
 
 test('seated camera uses the same yaw-pitch-roll frame as the drawn vessel and helm body',()=>{
   const {controls,state}=setup({heightAt:()=>-12});board(controls);

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { AdventureState, BodyPoint, BodyPose, GroundSampler, TravelMode, WorldDestination } from './contracts.ts';
-import { PLAYER_DIMENSIONS } from './contracts.ts';
+import { PLAYER_DIMENSIONS,BOAT_ACCESS } from './contracts.ts';
 import { ROUTE_MIN_DEPTH, ROUTE_RADIUS, clampWorld, findNearbyWater, footSegmentClear, groundHeight,
   isNavigableWater, planWaterRoute, pointDistance, waterSegmentClear, type NavigationPoint } from './navigation.ts';
 
@@ -20,7 +20,12 @@ const editable = (target: EventTarget | null): boolean => {
     || Boolean(element.closest?.('[contenteditable="true"]'));
 };
 interface MotionInput { x: number; forward: number; vertical: number; running: boolean; }
-interface Boarding { from: THREE.Vector3; to: THREE.Vector3; elapsed: number; duration: number; leaving: boolean; }
+interface Boarding { from: THREE.Vector3; to: THREE.Vector3; elapsed: number; duration: number; leaving: boolean; via?:readonly[number,number,number]; }
+function boardingPosition(from:THREE.Vector3,to:THREE.Vector3,progress:number,via?:THREE.Vector3):THREE.Vector3{
+  const leg=via?progress<.5?progress*2:(progress-.5)*2:progress,t=leg*leg*(3-2*leg);
+  const p=via?progress<.5?from.clone().lerp(via,t):via.clone().lerp(to,t):from.clone().lerp(to,t);
+  p.y+=Math.sin(leg*Math.PI)*.27;return p;
+}
 
 /** One embodied traveller: movement state follows the local ground, water and vessel. */
 export class ExplorerControls {
@@ -196,22 +201,33 @@ export class ExplorerControls {
       boat.z + Math.sin(yaw) * distance * side);
   }
   private boatEye(): THREE.Vector3 {
-    return new THREE.Vector3(.48, 1.45, .76)
+    return new THREE.Vector3(...BOAT_ACCESS.helm)
       .applyEuler(new THREE.Euler(this.state.boatPitch ?? 0, -this.state.boatYaw, this.state.boatRoll ?? 0,'YXZ'))
       .add(this.state.boatPosition);
   }
-  private canBoard(): boolean {
-    if (this.boarding || this.state.mode === 'boat' || !isNavigableWater(this.ground, this.state.boatPosition)) return false;
-    const p = this.state.position, surface = this.waterAt(p.x, p.z);
-    return p.y > surface - 0.7 && p.y < surface + 3 && Math.min(pointDistance(p, this.boardingPoint()),
-      pointDistance(p, this.boardingPoint(-1))) < 2.2 && this.boardingPathClear(p,this.boatEye());
+  private vesselPoint(local:readonly[number,number,number]):THREE.Vector3{
+    return new THREE.Vector3(...local).applyEuler(new THREE.Euler(this.state.boatPitch??0,-this.state.boatYaw,this.state.boatRoll??0,'YXZ')).add(this.state.boatPosition);
   }
-  private boardingPathClear(from:THREE.Vector3,to:THREE.Vector3):boolean {
+  private sternWaterPoint(z:number=BOAT_ACCESS.waterZ):THREE.Vector3{
+    const p=this.vesselPoint([BOAT_ACCESS.ladderX,0,z]);p.y=this.waterAt(p.x,p.z)+SURFACE_EYE;return p;
+  }
+  private boardingEntry():{via?:readonly[number,number,number]}|null{
+    const p=this.state.position,surface=this.waterAt(p.x,p.z);
+    if(this.boarding||this.state.mode==='boat'||!isNavigableWater(this.ground,this.state.boatPosition)||p.y<=surface-.7||p.y>=surface+3)return null;
+    const via=[BOAT_ACCESS.ladderX,BOAT_ACCESS.platformY+EYE_HEIGHT,BOAT_ACCESS.platformZ] as const;
+    if(pointDistance(p,this.sternWaterPoint())<2.2&&this.boardingPathClear(p,this.boatEye(),this.vesselPoint(via)))return {via};
+    // A nearby gunwale can still be climbed; it is distinct from the drawn ladder.
+    if(Math.min(pointDistance(p,this.boardingPoint()),pointDistance(p,this.boardingPoint(-1)))<2.2&&this.boardingPathClear(p,this.boatEye()))return {};
+    return null;
+  }
+  private canBoard(): boolean {
+    return this.boardingEntry()!==null;
+  }
+  private boardingPathClear(from:THREE.Vector3,to:THREE.Vector3,via?:THREE.Vector3):boolean {
     if(!this.ground.sweepBody) return true;
     let previous=from.clone();
     for(let i=1;i<=24;i++) {
-      const progress=i/24,t=progress*progress*(3-2*progress),next=from.clone().lerp(to,t);
-      next.y+=Math.sin(progress*Math.PI)*.27;
+      const progress=i/24,next=boardingPosition(from,to,progress,via);
       if(this.ground.sweepBody({x:previous.x,y:previous.y-EYE_HEIGHT,z:previous.z},
         {x:next.x,y:next.y-EYE_HEIGHT,z:next.z},PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height).blocked) return false;
       previous=next;
@@ -239,23 +255,27 @@ export class ExplorerControls {
         this.state.message = '船を停めてから、舷側のはしごで下船できます。'; return;
       }
       let target: THREE.Vector3 | null = null;
-      for (const side of [1, -1]) {
-        const point = this.boardingPoint(side, 2.35);
+      let via:readonly[number,number,number]|undefined;
+      const platform=[BOAT_ACCESS.ladderX,BOAT_ACCESS.platformY+EYE_HEIGHT,BOAT_ACCESS.platformZ] as const;
+      for (const entry of [{point:this.sternWaterPoint(BOAT_ACCESS.waterZ+.35),via:platform},
+        {point:this.boardingPoint(1,2.35),via:undefined},{point:this.boardingPoint(-1,2.35),via:undefined}]) {
+        const point=entry.point;
         const floor = groundHeight(this.ground, point.x, point.z);
         const water = this.waterAt(point.x, point.z);
         if (floor > water + 0.7 || !Number.isFinite(floor)) continue;
         point.y = floor >= water - 1.3 ? floor + EYE_HEIGHT : water + SURFACE_EYE;
-        if(!this.boardingPathClear(this.state.position,point)) continue;
-        target = point; break;
+        if(!this.boardingPathClear(this.state.position,point,entry.via?this.vesselPoint(entry.via):undefined)) continue;
+        target = point;via=entry.via; break;
       }
       if (!target) { this.state.message = '舷側の足元が塞がっています。少し沖へ移動してください。'; return; }
-      this.boarding = { from: this.state.position.clone(), to: target, elapsed: 0, duration: 1.35, leaving: true };
-      this.state.message = 'はしごを降りて、船のすぐそばの海へ。';
+      this.boarding = { from: this.state.position.clone(), to: target, elapsed: 0, duration: via?2.4:1.35, leaving: true,via };
+      this.state.message = via?'船尾のはしごを降りて、すぐそばの海へ。':'船の縁から、すぐそばの海へ。';
     } else if (this.canBoard()) {
+      const entry=this.boardingEntry()!;
       this.velocity.set(0, 0, 0); this.boatVelocity = 0;
       this.boarding = { from: this.state.position.clone(), to: this.boatEye(),
-        elapsed: 0, duration: 1.6, leaving: false };
-      this.state.message = '舷側のはしごをつかんで乗船しています。';
+        elapsed: 0, duration: entry.via?3.1:1.6, leaving: false,via:entry.via };
+      this.state.message = entry.via?'船尾のはしごを登り、操船席へ移動しています。':'船の縁をつかんで乗船しています。';
     } else this.state.message = '海に浮かぶ船の舷側へ近づいて、Eで乗船できます。';
     this.updateInteraction();
   }
@@ -337,11 +357,10 @@ export class ExplorerControls {
   }
   private updateBoarding(dt: number): void {
     const motion = this.boarding!; motion.elapsed += dt;
-    const progress = clamp(motion.elapsed / motion.duration, 0, 1), t = progress * progress * (3 - 2 * progress);
+    const progress = clamp(motion.elapsed / motion.duration, 0, 1);
     const before = this.state.position.clone();
     if (!motion.leaving) motion.to.copy(this.boatEye());
-    this.state.position.lerpVectors(motion.from, motion.to, t);
-    this.state.position.y += Math.sin(progress * Math.PI) * .27;
+    this.state.position.copy(boardingPosition(motion.from,motion.to,progress,motion.via?this.vesselPoint(motion.via):undefined));
     const contact=this.ground.sweepBody?.({x:before.x,y:before.y-EYE_HEIGHT,z:before.z},
       {x:this.state.position.x,y:this.state.position.y-EYE_HEIGHT,z:this.state.position.z},PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height);
     if(contact?.blocked) {
