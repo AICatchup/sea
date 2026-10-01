@@ -3,6 +3,7 @@ import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { type WhitewaterBirth, type WhitewaterSample, type WhitewaterSampler } from './shore-whitewater.ts';
 import { relaxWhitewaterVelocity, whitewaterAerationStrength } from './whitewater-flow.ts';
+import { whitewaterPoreGLSL } from './whitewater-pores.ts';
 
 export const VOLUME_CAPACITY=384;
 const finite=(s:WhitewaterSample)=>Object.values(s).every(Number.isFinite);
@@ -98,7 +99,7 @@ export class ShoreWhitewaterVolume {
     this.material=new THREE.ShaderMaterial({depthTest:true,depthWrite:true,transparent:false,side:THREE.FrontSide,
       uniforms:{...createShoreSolverUniforms(),uTint:{value:new THREE.Color(.91,.96,.95)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`attribute vec3 aCenter;attribute vec4 aShape;attribute vec2 aMotion;attribute float aAlpha,aSeed;
-      varying vec3 vLocal,vNormal;varying float vAlpha,vSeed,vAge,vWet;
+      varying vec3 vLocal,vNormal;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
       ${shoreWaveSampling}
       ${shoreSolverSampling}
@@ -117,7 +118,7 @@ export class ShoreWhitewaterVolume {
       q.xy=mat2(cr,sr,-sr,cr)*q.xy;n.xy=mat2(cr,sr,-sr,cr)*n.xy;
       // Local x is the forward collapse direction, z spans the breaker front.
       q*=vec3(aShape.z,aShape.y,aShape.x)*.5;q.y+=aShape.y*.28;
-      float c=cos(aShape.w),s=sin(aShape.w);vec2 offset=vec2(q.x*c-q.z*s,q.x*s+q.z*c);vec2 world=aCenter.xz+offset,p=world;
+      float c=cos(aShape.w),s=sin(aShape.w);vec2 offset=vec2(q.x*c-q.z*s,q.x*s+q.z*c);vec2 world=aCenter.xz+offset,p=world;vWorld=world;
       for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;
       vec2 coast=coastAt(world);float base=shoreSolvedSurface(world,displacement(p).y,0.).x;
       float height=base+q.y;
@@ -131,24 +132,32 @@ export class ShoreWhitewaterVolume {
       slope-=horizon/6371000.;vNormal.xz-=slope*vNormal.y;
       gl_Position=projectionMatrix*viewMatrix*vec4(world.x,height,world.y,1);}`,
       fragmentShader:`uniform vec3 uTint,uSunDirection,uSunColor,uHorizon;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady;uniform vec2 uViewport;
-      varying vec3 vLocal,vNormal;varying float vAlpha,vSeed,vAge,vWet;
-      float hash(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7))+vSeed*137.)*43758.5453);}
-      float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
+      varying vec3 vLocal,vNormal;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet;
+      ${whitewaterPoreGLSL}
       void main(){if(vAlpha<.001||vWet<.02)discard;if(uOccludingDepthReady>.5&&texture2D(uOccludingDepth,gl_FragCoord.xy/uViewport).r<gl_FragCoord.z-.0000002)discard;
-      float coarse=noise(vLocal*vec3(2.7,1.8,4.1));
-      float channels=noise(vLocal*vec3(3.,2.,10.));
-      float erosion=smoothstep(.12,.85,vAge);
-      float coverage=clamp(vAlpha*(1.25-.2*erosion),0.,1.);
-      // Young collapse is a connected dense body, then a perforated sheet,
-      // then elongated remnants. No centimetre hash enters binary coverage.
-      float pores=mix(coarse,channels,erosion);
-      if(pores<mix(.08,.75,1.-coverage))discard;
-      // Fine bubbles affect only low-contrast shading when resolved on screen;
-      // they cannot turn the foam silhouette into distant white sparkles.
-      float resolved=1.-smoothstep(.015,.07,length(fwidth(vLocal)));
-      float fine=mix(.5,noise(vLocal*23.),resolved);
-      vec3 n=normalize(vNormal);float sun=max(0.,dot(n,normalize(uSunDirection)));float cavity=.72+.28*coarse;
-      vec3 color=uTint*(uHorizon*.36+uSunColor*(.22+.65*sun))*cavity*(.97+.06*fine);
+      // Shared world-metric channels keep a hole open through ALL overlapping
+      // flocs. Seed affects only macro geometry, never the pore phase.
+      // This stationary Eulerian field is an authored coverage closure; the
+      // volume centres still advect with SWE. It is not a material foam tracer.
+      float pore=whitewaterPore(vWorld);
+      float footprint=length(fwidth(vWorld));
+      float poreResolved=1.-smoothstep(.20,.65,footprint);
+      float threshold=whitewaterPoreThreshold(vAlpha,vAge);
+      // Subpixel channels become their aggregate coverage, preventing glitter.
+      float effectivePore=mix(.5,pore,poreResolved);
+      if(effectivePore<threshold)discard;
+      float cavityNoise=whitewaterNoise(vWorld*2.6);
+      float resolved=1.-smoothstep(.035,.12,footprint);
+      float fine=mix(.5,whitewaterNoise(vWorld*18.),resolved);
+      vec2 bump=vec2(whitewaterNoise((vWorld+vec2(.025,0))*18.)-whitewaterNoise((vWorld-vec2(.025,0))*18.),whitewaterNoise((vWorld+vec2(0,.025))*18.)-whitewaterNoise((vWorld-vec2(0,.025))*18.));
+      vec3 n=normalize(vNormal+vec3(bump.x,0,bump.y)*.32*resolved);
+      float sun=max(0.,dot(n,normalize(uSunDirection)));
+      // Lambert's albedo/pi applies to incident sunlight. The previous .22
+      // constant direct term lit cavities even when sun incidence was zero.
+      vec3 irradiance=uHorizon*(.18+.32*max(0.,n.y))+uSunColor*(sun/3.14159265);
+      float cavity=.38+.62*cavityNoise;
+      float bubbles=.65+.35*fine;
+      vec3 color=uTint*irradiance*cavity*bubbles;
       gl_FragColor=vec4(color,1.);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
