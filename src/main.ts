@@ -1,6 +1,7 @@
 import './style.css';
 import { inspectBodyHands } from './qa/body-inspection';
 import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
+import {createCaptureGate} from './qa/capture-exclusivity.ts';
 import { Ocean, type Quality } from './ocean/renderer';
 import { presets, type PresetName } from './ocean/presets';
 import { SurfAudio } from './audio';
@@ -277,6 +278,13 @@ try {
     },
     captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),
   }});
+  if(import.meta.env.DEV){
+    const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
+    const gate=createCaptureGate();
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels']){
+      const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
+    }
+  }
   updateRanges();
   void ocean.ready.then(() => {
     if (!disposed) requestAnimationFrame(() => element('loading').classList.add('done'));
