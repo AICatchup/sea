@@ -11,6 +11,18 @@ export function underwaterTransmission(path: number, extinction: number): number
   return Math.exp(-Math.max(0, extinction) * Math.max(0, path));
 }
 
+export interface DepthProbePoint { readonly x: number; readonly y: number }
+export interface DepthProbeSample extends DepthProbePoint {
+  landDepth: number; waterDepth: number; waterAlpha: number;
+}
+export function validateDepthProbePoints(points: readonly DepthProbePoint[]): void {
+  if (points.length > 8) throw new RangeError('Depth probe accepts at most 8 UV points');
+  for (const p of points) {
+    if (!Number.isFinite(p.x) || !Number.isFinite(p.y) || p.x < 0 || p.x > 1 || p.y < 0 || p.y > 1)
+      throw new RangeError('Depth probe UV coordinates must be finite and in [0,1]');
+  }
+}
+
 const vertex = `varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}`;
 const occlusionFragment = /* glsl */ `
  precision highp float;
@@ -188,6 +200,59 @@ export class SceneCompositor {
     this.quad = new THREE.Mesh(this.geometry, this.merge);
     this.quad.frustumCulled = false; this.scene.add(this.quad);
     this.fxaa.uniforms.tDiffuse.value = this.colorTarget.texture;
+  }
+
+  /** QA only: UV origin is bottom-left. Samples the most recently rendered buffers. */
+  async probeDepthSamples(points: readonly DepthProbePoint[]): Promise<DepthProbeSample[]> {
+    validateDepthProbePoints(points);
+    if (points.length === 0) return [];
+    if (!this.renderer.extensions.has('EXT_color_buffer_float'))
+      throw new Error('Depth probe requires EXT_color_buffer_float');
+    // Capture caller data before the asynchronous read, so it cannot change labels.
+    const samples = points.map(p => ({x:p.x,y:p.y}));
+    const target = new THREE.WebGLRenderTarget(samples.length,1,{
+      type:THREE.FloatType,format:THREE.RGBAFormat,depthBuffer:false,
+      minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
+    const material = new THREE.ShaderMaterial({vertexShader:vertex,
+      fragmentShader:`precision highp float;
+        uniform sampler2D uLandDepth,uWaterDepth,uWater;
+        uniform vec2 uPoints[8];
+        void main(){
+          int index=int(gl_FragCoord.x);
+          vec2 uv=uPoints[index];
+          gl_FragColor=vec4(texture2D(uLandDepth,uv).r,
+            texture2D(uWaterDepth,uv).r,texture2D(uWater,uv).a,1.0);
+        }`,depthTest:false,depthWrite:false,toneMapped:false,
+      uniforms:{uLandDepth:{value:this.landTarget.depthTexture},
+        uWaterDepth:{value:this.waterTarget.depthTexture},uWater:{value:this.waterTarget.texture},
+        uPoints:{value:Array.from({length:8},(_,i)=>new THREE.Vector2(samples[i]?.x??0,samples[i]?.y??0))}}});
+    const geometry = new THREE.PlaneGeometry(2,2);
+    const scene = new THREE.Scene();
+    const mesh = new THREE.Mesh(geometry,material);mesh.frustumCulled=false;scene.add(mesh);
+    const renderer=this.renderer, previousTarget=renderer.getRenderTarget();
+    const previousFace=renderer.getActiveCubeFace(),previousMip=renderer.getActiveMipmapLevel();
+    const viewport=renderer.getViewport(new THREE.Vector4());
+    const scissor=renderer.getScissor(new THREE.Vector4()),scissorTest=renderer.getScissorTest();
+    const previousAutoClear=renderer.autoClear;
+    const data=new Float32Array(samples.length*4);
+    let pending: Promise<unknown>;
+    try {
+      renderer.autoClear=false;
+      renderer.setRenderTarget(target);renderer.setViewport(0,0,samples.length,1);
+      renderer.setScissorTest(false);renderer.render(scene,this.camera);
+      pending=renderer.readRenderTargetPixelsAsync(target,0,0,samples.length,1,data);
+    } catch(error) {
+      target.dispose();geometry.dispose();material.dispose();throw error;
+    } finally {
+      // Restore before awaiting the GPU fence: animation may render meanwhile.
+      renderer.setRenderTarget(previousTarget,previousFace,previousMip);
+      renderer.setViewport(viewport);renderer.setScissor(scissor);renderer.setScissorTest(scissorTest);
+      renderer.autoClear=previousAutoClear;
+    }
+    try {
+      await pending;
+      return samples.map((p,i)=>({...p,landDepth:data[i*4],waterDepth:data[i*4+1],waterAlpha:data[i*4+2]}));
+    } finally { target.dispose();geometry.dispose();material.dispose(); }
   }
 
   resize(width:number,height:number):void {

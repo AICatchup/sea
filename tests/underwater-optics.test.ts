@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { underwaterRayDistance, underwaterTransmission } from '../src/ocean/compositor.ts';
+import { underwaterRayDistance, underwaterTransmission, validateDepthProbePoints } from '../src/ocean/compositor.ts';
 
 test('perspective depth converts to metric ray length including wide field edges', () => {
   assert.equal(underwaterRayDistance(12, 1), 12);
@@ -32,4 +32,13 @@ test('Beer-Lambert stays bounded, continuous and compositional through surface c
     assert.ok(Math.abs(underwaterTransmission(90, sigma)
       - underwaterTransmission(30, sigma) * underwaterTransmission(60, sigma)) < 1e-12);
   }
+});
+
+
+test('QA depth probe has bounded finite UV inputs', () => {
+  validateDepthProbePoints([]);
+  validateDepthProbePoints([{x:0,y:0},{x:1,y:1}]);
+  assert.throws(() => validateDepthProbePoints(Array.from({length:9},()=>({x:.5,y:.5}))), RangeError);
+  for (const p of [{x:NaN,y:.5},{x:.5,y:Infinity},{x:-.001,y:.5},{x:.5,y:1.001}])
+    assert.throws(() => validateDepthProbePoints([p]), RangeError);
 });

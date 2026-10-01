@@ -15,3 +15,12 @@
 数値テストは視線距離、負距離、近距離連続性、エネルギー境界、Beer-Lambert積則、遠距離減衰を検査する。TypeScript検査はGLSLコンパイルを保証しない。水面下面の反射は引き続き水中放射の近似で、反射された海底形状のray tracingは行っていない。
 
 rootの実機ブラウザで day high、x5930 z-923.918 cameraY-1.373 の同じ向きから比較する。歩行→泳ぎ→潜水の経路、正面・上向きSnell window・下向き海底、浅い岸際とreef、出水直後を確認する。帯の消失だけでなく遠距離の滑らかな収束、近くの魚・海底のコントラスト、GLSL console error、深度遮蔽と水面境界の連続性を確認して初めて描画合格とする。
+
+
+## 実描画後の追記: 未解決
+
+rootによるv9 Secret/reef画像をview_imageで確認。シアンの強さは下がったが、Secretの約y296..358に水平帯が残っている。上記の距離修正だけでは帯の原因を解決していない。さらなる色調変更では原因を確定できないため、QA限定の `SceneCompositor.probeDepthSamples` を追加した。通常描画に呼出やreadbackは追加しない。
+
+直前の描画bufferに対し最大8点の正規化UVを受け取り、Float targetの一時描画からraw landDepth、水面depth、水面alphaを非同期取得する。UVは左下原点なので画面上からy=270,290,310,330,350,370,390を採る場合 y=1-screenY/720、x=.5。readbackを起動した直後にrender target/cube face/mip/viewport/scissor/autoClearを復元し、GPU終了後に一時資源を破棄する。Float color buffer非対応は明示的に失敗する。
+
+このデータで帯がwater alpha=0の背景領域か、finite depthの地形領域かを分離する。返却値がない段階ではどちらも未確定。対応するカメラpose・frame・UVをrootで記録すること。probeのGLSLコンパイルとFloat readbackは実GPUでの呼出が必要。
