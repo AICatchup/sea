@@ -49,9 +49,17 @@ const photonVertex = /* glsl */ `
     // Emit at regularly spaced crossings of the mean water plane. Invert the
     // choppy displacement to preserve incident photon density in WORLD space.
     float sourceSpan=uBounds.z*1.5;
-    vec2 meanXZ=uBounds.xy+uBounds.z*.5+position.xy*sourceSpan;
     vec3 incident=-normalize(uSunDirection);
     incident.y=min(incident.y,-.035);
+    // The finite emitter window must sit upstream of the receiving seabed.
+    // Centre it using a flat reference ray, then keep its photon lattice fixed
+    // in world space. This prevents deep/oblique light from missing half the ROI.
+    vec2 receiverCenter=uBounds.xy+uBounds.zw*.5;
+    vec3 referenceRay=refract(incident,vec3(0.,1.,0.),1./1.333);
+    float referenceDepth=max(0.,-coastAt(receiverCenter).r);
+    float sourceCell=sourceSpan/uPhotonResolution;
+    vec2 sourceCenter=floor((receiverCenter-referenceRay.xz*(referenceDepth/max(.02,-referenceRay.y)))/sourceCell)*sourceCell;
+    vec2 meanXZ=sourceCenter+position.xy*sourceSpan;
     vec2 parameter=meanXZ;
     for(int i=0;i<4;i++) {
       vec3 water=surfaceAt(parameter);
