@@ -54,7 +54,7 @@ test('pointwise contact preserves a shallow positive bore and respects mesh dept
   }
   assert.ok(shoreContactDepth(.1,.4,.2)<0,'pointwise height must not lift submerged geometry');
   const shader=readFileSync(new URL('../src/ocean/shaders.ts',import.meta.url),'utf8');
-  assert.match(shader,/vec3 coast=coastAt\(vWorld\.xz\)/);
+  assert.match(shader,/coastAt\(uPointwiseContact>\.5\?vWorld\.xz:vOcean\)/);
   assert.match(shader,/contactHeight=renderedSurface\(vWorld\.xz\)/);
   assert.match(shader,/shoreContactDepth\(vWorld\.y,contactHeight,coast\.x\)/);
 });

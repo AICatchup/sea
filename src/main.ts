@@ -168,7 +168,7 @@ try {
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
       return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
     },
-    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false){
+    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false,compareContact=false){
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');
       try{
         captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');
@@ -194,7 +194,14 @@ try {
           try{ocean.setBreakerCandidateEnabled(false);await captureHost.nextFrame();await captureHost.nextFrame();pngWithoutBreaker=await capturePNG();}
           finally{ocean.setBreakerCandidateEnabled(enabled);}
         }
-        return {png,pngWithoutBreaker,pngWithoutShore,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null}};
+        const contactProbe=compareContact?ocean.probeWaterContact([{x:840/1280,y:400/720},{x:800/1280,y:405/720},{x:750/1280,y:415/720},{x:650/1280,y:430/720}]):null;
+        let pngWithoutContact:string|null=null;
+        if(compareContact){
+          const enabled=ocean.uniforms.uPointwiseContact.value;
+          try{ocean.uniforms.uPointwiseContact.value=0;await captureHost.nextFrame();await captureHost.nextFrame();pngWithoutContact=await capturePNG();}
+          finally{ocean.uniforms.uPointwiseContact.value=enabled;}
+        }
+        return {png,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,contactProbe,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null}};
       }finally{captureHost.restoreState(before);}
     },
     captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),

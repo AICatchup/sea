@@ -143,7 +143,7 @@ export class Ocean {
       .setWaterHeightSampler?.(this.waterHeights.sample);
     const p=presets.day;
     this.uniforms={
-      ...createShoreSolverUniforms(),
+      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},
       uTime:{value:this.time},uSunDirection:{value:new THREE.Vector3(...p.sun).normalize()},
       uSunColor:{value:new THREE.Vector3(...p.sunColor)},uZenith:{value:new THREE.Vector3(...p.zenith)},
       uHorizon:{value:new THREE.Vector3(...p.horizon)},uCloudColor:{value:new THREE.Vector3(...p.cloud)},
@@ -467,6 +467,26 @@ export class Ocean {
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
   probeShoreState(){return this.shoreSolver?.probeState()??null;}
+  /** Raw floating-point water-only probes; no tone mapping or temporal update. */
+  probeWaterContact(points:readonly{x:number;y:number}[]){
+    if(points.length>16||points.some(p=>![p.x,p.y].every(Number.isFinite)||p.x<0||p.x>1||p.y<0||p.y>1))throw new Error('Up to sixteen normalized contact probes required');
+    if(!this.renderer.extensions.has('EXT_color_buffer_float'))return {available:false,reason:'float color target unavailable'};
+    const r=this.renderer,size=r.getDrawingBufferSize(new THREE.Vector2());
+    const target=new THREE.WebGLRenderTarget(size.x,size.y,{type:THREE.FloatType,depthBuffer:false});
+    target.texture.colorSpace=THREE.LinearSRGBColorSpace;
+    const saved={target:r.getRenderTarget(),viewport:r.getViewport(new THREE.Vector4()),scissor:r.getScissor(new THREE.Vector4()),scissorTest:r.getScissorTest(),clear:r.getClearColor(new THREE.Color()),alpha:r.getClearAlpha(),auto:r.autoClear,tone:r.toneMapping,color:r.outputColorSpace,debug:this.uniforms.uContactDebug.value};
+    const result=points.map(point=>({point,values:[] as number[][]})),pixel=new Float32Array(4);
+    try{
+      r.autoClear=true;r.toneMapping=THREE.NoToneMapping;r.outputColorSpace=THREE.LinearSRGBColorSpace;r.setClearColor(0,0);r.setScissorTest(false);r.setRenderTarget(target);r.setViewport(0,0,size.x,size.y);
+      for(let mode=1;mode<=5;mode++){
+        this.uniforms.uContactDebug.value=mode;r.render(this.waterScene,this.camera);
+        for(const row of result){const x=Math.min(size.x-1,Math.floor(row.point.x*size.x)),y=Math.min(size.y-1,Math.floor((1-row.point.y)*size.y));r.readRenderTargetPixels(target,x,y,1,1,pixel);row.values.push(Array.from(pixel));}
+      }
+      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY'],result};
+    }finally{
+      this.uniforms.uContactDebug.value=saved.debug;r.setRenderTarget(saved.target);r.setViewport(saved.viewport);r.setScissor(saved.scissor);r.setScissorTest(saved.scissorTest);r.setClearColor(saved.clear,saved.alpha);r.autoClear=saved.auto;r.toneMapping=saved.tone;r.outputColorSpace=saved.color;target.dispose();
+    }
+  }
   getBreakerCandidateEnabled():boolean{return this.breakerCandidateEnabled;}
   probeDepthSamples(points:readonly{x:number;y:number}[]){return this.compositor.probeDepthSamples(points);}
   /** Developer picking of foliage only; tight per-instance bounds avoid testing

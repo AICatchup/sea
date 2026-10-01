@@ -226,6 +226,8 @@ export const oceanFragment = /* glsl */ `
   uniform sampler2D uReflectionDepth;
   uniform mat4 uReflectionInverseProjection,uReflectionCameraWorld;
   uniform float uHasReflection;
+  uniform float uPointwiseContact;
+  uniform float uContactDebug;
   uniform vec4 uBathyBounds;
   uniform vec2 uBathyResolution, uResolution, uNearFar;
   uniform float uUnderwater;
@@ -280,9 +282,9 @@ export const oceanFragment = /* glsl */ `
     if(gl_FragCoord.z>opaqueDepth+0.0000001)discard;
     // The SWE surface is Eulerian: vertices sample it after FFT horizontal
     // displacement. Clip at that same world location, not the FFT origin.
-    vec3 coast=coastAt(vWorld.xz);
+    vec3 coast=coastAt(uPointwiseContact>.5?vWorld.xz:vOcean);
     float contactHeight=vWorld.y;
-    if(uShoreReady>.5&&coast.x> -11.&&coast.y>=.18){
+    if(uPointwiseContact>.5&&uShoreReady>.5&&coast.x> -11.&&coast.y>=.18){
       // Barycentric vertex height alone can bridge locally dry cells and
       // paint a sharp polygon above sand. Recheck the pointwise surface,
       // retaining positive runup whenever it actually clears the local bed.
@@ -460,6 +462,14 @@ export const oceanFragment = /* glsl */ `
     float fog=1.0-exp(-vDistance*mix(0.000045,0.00042,uStorm));
     vec3 horizon=skyRadiance(normalize(vec3(-view.x,0.005,-view.z)),false);
     color=mix(color,horizon,clamp(fog,0.0,0.995));
+    if(uContactDebug>.5){
+      if(uContactDebug<1.5)gl_FragColor=vec4(fresnel,skyVisibility,visibleBottom,1.);
+      else if(uContactDebug<2.5)gl_FragColor=vec4(normal,1.);
+      else if(uContactDebug<3.5)gl_FragColor=vec4(opticalPath,bottomContact,nV,1.);
+      else if(uContactDebug<4.5)gl_FragColor=vec4(vWorld.y,contactHeight,coast.x,1.);
+      else gl_FragColor=vec4(vWorld.xz,reflected.y,1.);
+      return;
+    }
     gl_FragColor=vec4(color,1.0);
   }
 `;
