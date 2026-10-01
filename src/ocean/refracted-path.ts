@@ -27,3 +27,14 @@ export const refractedSceneGLSL=`
     hit=origin+ray*distance;return refractedReceiver(hit,uv,residual);
   }
 `;
+
+/** Actual barycentric bathymetry height-field, independent of camera visibility. */
+export const refractedBedGLSL=`
+bool traceRefractedBed(vec3 origin,vec3 ray,out float distance,out vec3 hit){
+  distance=0.;hit=origin;if(ray.y>=-.08)return false;float previous=0.;bool found=false;
+  for(int i=0;i<11;i++){float current=min(90.,.125*exp2(float(i)));vec3 p=origin+ray*current;vec2 uv=(p.xz-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return false;if(p.y<=coastAt(p.xz).x){distance=current;found=true;break;}previous=current;}
+  if(!found)return false;for(int i=0;i<8;i++){float t=(previous+distance)*.5;vec3 p=origin+ray*t;if(p.y<=coastAt(p.xz).x)distance=t;else previous=t;}
+  hit=origin+ray*distance;return true;
+}
+vec3 refractedBedNormal(vec3 p){float e=.25;return normalize(vec3(coastAt(p.xz-vec2(e,0)).x-coastAt(p.xz+vec2(e,0)).x,2.*e,coastAt(p.xz-vec2(0,e)).x-coastAt(p.xz+vec2(0,e)).x));}
+`;

@@ -26,7 +26,7 @@ const visible = (o: THREE.Object3D): boolean => o.visible && (!o.parent || visib
 /** Owns packed textures only; all scene geometry/materials remain borrowed. Rebuild for topology/material changes. */
 export class GeometryReceivers {
   readonly materials: THREE.Material[] = [];
-  readonly diagnostics: { available: boolean; reason: string; coverage: string; triangles: number; instances: number; nodes: number; bytes: number; version: number; rebuilds: number; refits: number; excludedSurfaces: number };
+  readonly diagnostics: { available: boolean; reason: string; coverage: string; triangles: number; instances: number; nodes: number; bytes: number; version: number; rebuilds: number; refits: number; excludedSurfaces: number; lastChange?:string };
   readonly uniforms: Record<string, { value: THREE.DataTexture | number }>;
   private readonly options: Required<Omit<ReceiverOptions, 'include'>> & Pick<ReceiverOptions, 'include'>;
   private readonly triangles: Triangle[] = [];
@@ -129,7 +129,8 @@ export class GeometryReceivers {
   refit(): boolean {
     if (this.disposed || !this.diagnostics.available) return false;
     try {
-      if (this.sceneSignature() !== this.signature) this.rebuild();
+      const signature=this.sceneSignature();
+      if(signature!==this.signature){const a=this.signature.split('|'),b=signature.split('|'),index=b.findIndex((row,i)=>row!==a[i]),row=b[index]??'',uuid=row.split(':')[0],object=this.scene.getObjectByProperty('uuid',uuid);this.diagnostics.lastChange=`${object?.name??uuid} old=${a[index]?.slice(0,250)} new=${row.slice(0,250)}`;this.rebuild();}
       this.nodes.length = this.blasNodeCount; const found: Instance[] = [];
       for (const mesh of this.selected) {
         if (!visible(mesh)) continue; const blas = this.getBlas(mesh); if (blas.root < 0) continue;
@@ -156,8 +157,10 @@ export class GeometryReceivers {
     let hit: ReceiverHit | null = null;
     // Independent triangle oracle deliberately ignores packed BVH traversal.
     for (const instance of this.instances) {
+      if(!new THREE.Ray(origin,ray).intersectsBox(instance.box))continue;
       const o = origin.clone().applyMatrix4(instance.inverse), d = ray.clone().applyMatrix3(new THREE.Matrix3().setFromMatrix4(instance.inverse));
-      const visit = (nodeId: number) => { const node = this.nodes[nodeId]; if (!node.count) { visit(node.left); visit(node.right); return; }
+      const localRay=new THREE.Ray(o,d);
+      const visit = (nodeId: number) => { const node = this.nodes[nodeId];if(!localRay.intersectsBox(node.box))return; if (!node.count) { visit(node.left); visit(node.right); return; }
         for (let k = 0; k < node.count; k++) {
           const t = this.triangles[node.start + k], e1 = t.p[1].clone().sub(t.p[0]), e2 = t.p[2].clone().sub(t.p[0]), q = d.clone().cross(e2), det = e1.dot(q);
           if (Math.abs(det) < 1e-10) continue;
@@ -170,6 +173,18 @@ export class GeometryReceivers {
       }; visit(instance.blas.root);
     }
     return hit;
+  }
+  /** Bounded actual-triangle rays for developer GPU/CPU comparison, not synthetic proxy targets. */
+  inspectionRays(center:THREE.Vector3,limit=4){
+    const rays:{origin:THREE.Vector3;direction:THREE.Vector3;maxDistance:number;source:string}[]=[];
+    for(const instance of [...this.instances].sort((a,b)=>a.box.distanceToPoint(center)-b.box.distanceToPoint(center))){
+      if(rays.length>=Math.min(4,Math.max(0,limit)))break;
+      let node=this.nodes[instance.blas.root];while(!node.count)node=this.nodes[node.left];const triangle=this.triangles[node.start];if(!triangle)continue;
+      const matrix=instance.inverse.clone().invert(),point=triangle.p[0].clone().add(triangle.p[1]).add(triangle.p[2]).multiplyScalar(1/3).applyMatrix4(matrix);
+      const normal=triangle.n[0].clone().add(triangle.n[1]).add(triangle.n[2]).applyMatrix3(instance.normal).normalize();if(normal.lengthSq()<.9)continue;
+      rays.push({origin:point.clone().addScaledVector(normal,2),direction:normal.negate(),maxDistance:5,source:instance.mesh.name});
+    }
+    return rays;
   }
   dispose() { if (this.disposed) return; this.disposed = true; for (const key of ['receiverNodes', 'receiverTLAS', 'receiverTriangles', 'receiverInstances']) (this.uniforms[key].value as THREE.DataTexture).dispose(); this.uniforms.receiverAvailable.value = 0; }
 }

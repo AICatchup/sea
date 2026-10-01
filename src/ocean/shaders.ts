@@ -2,7 +2,9 @@ import { photographicSkySampling } from './photographic-sky.ts';
 import { capillarySampling, shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling } from './shore-solver.ts';
 import {surfaceFoamGLSL} from './surface-foam.ts';
-import {refractedSceneGLSL} from './refracted-path.ts';
+import {refractedSceneGLSL,refractedBedGLSL} from './refracted-path.ts';
+import {packedReceiverGLSL,receiverMaterialGLSL} from './receiver-bridge.ts';
+import {waveCausticsSampling} from './caustics.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -271,6 +273,12 @@ export const oceanFragment = /* glsl */ `
   }
   ${capillarySampling}
   ${surfaceFoamGLSL}
+  #ifdef GEOMETRIC_REFRACTION
+  ${packedReceiverGLSL}
+  ${refractedBedGLSL}
+  ${waveCausticsSampling}
+  ${receiverMaterialGLSL}
+  #endif
 
   // Exact unpolarized dielectric interface. Schlick overestimates water's
   // grazing reflectance and misses the underwater critical-angle transition.
@@ -442,12 +450,22 @@ export const oceanFragment = /* glsl */ `
     float rayCos=max(.12,abs((viewMatrix*vec4(-view,0.0)).z));
     float opticalPath=clamp((linearDepth(behindDepth)-surfaceDistance)/rayCos,0.0,90.0);
     float straightPath=opticalPath,snellUsed=0.,snellDistance=0.;vec3 snellHit=vWorld;
+    vec3 geometryNormal=vec3(0),geometryRadiance=vec3(0);vec2 geometryUV=vec2(0);int geometryMaterial=-1;float geometryKind=0.;
+    #ifdef GEOMETRIC_REFRACTION
+    vec3 transmittedRay=refract(-view,normal,1.0/1.333),bedHit;float bedDistance;
+    bool hasBed=traceRefractedBed(vWorld,transmittedRay,bedDistance,bedHit);
+    vec3 colour;
+    if(traceReceiver(vWorld,transmittedRay,hasBed?bedDistance:90.,snellHit,geometryNormal,geometryUV,geometryMaterial,colour))geometryKind=2.;
+    else if(hasBed){snellHit=bedHit;geometryNormal=refractedBedNormal(bedHit);geometryUV=bedHit.xz/2.14;geometryMaterial=receiverBedMaterial;colour=vec3(1);geometryKind=1.;}
+    if(geometryKind>.5){opticalPath=length(snellHit-vWorld);snellDistance=opticalPath;snellUsed=1.;geometryRadiance=receiverSurfaceColour(geometryMaterial,geometryUV,colour,snellHit,geometryNormal,-transmittedRay);}
+    #else
     #ifndef CURVED_SURFACE
     if(uSnellRay>.5){
       vec3 ray=refract(-view,normal,1.0/1.333);
       vec2 hitUV;
       if(traceRefractedScene(vWorld,ray,snellDistance,snellHit,hitUV)){refractionUV=hitUV;behindDepth=texture2D(uSceneDepth,hitUV).r;opticalPath=snellDistance;snellUsed=1.;}
     }
+    #endif
     #endif
     #ifdef CURVED_SURFACE
     vec3 throughWave=refract(-view,normal,1.0/1.333);
@@ -456,9 +474,20 @@ export const oceanFragment = /* glsl */ `
     vec3 absorption=vec3(.105,.021,.012);
     vec3 transmission=exp(-absorption*opticalPath);
     vec3 waterScatter=vec3(.003,.026,.041)*uWaterTint;
+    #ifdef GEOMETRIC_REFRACTION
+    float bottomContact=1.;
+    #else
     float bottomContact=texture2D(uSceneOcclusion,refractionUV).r;
+    #endif
+    #ifdef GEOMETRIC_REFRACTION
+    vec3 refractedColor=geometryRadiance*transmission+waterScatter*(1.0-transmission);
+    #else
     vec3 refractedColor=texture2D(uSceneColor,refractionUV).rgb*bottomContact*transmission+waterScatter*(1.0-transmission);
+    #endif
     float visibleBottom=behindDepth<.999999?1.0:0.0;
+    #ifdef GEOMETRIC_REFRACTION
+    visibleBottom=geometryKind>.5?1.:0.;
+    #endif
     #ifdef CURVED_SURFACE
     // The base ocean's no-bottom case is deep water. A raised lip can instead
     // exit into air and transmit sky, so it must not inherit that opaque tint.
@@ -528,7 +557,9 @@ export const oceanFragment = /* glsl */ `
       else if(uContactDebug<4.5)gl_FragColor=vec4(vWorld.y,contactHeight,coast.x,1.);
       else if(uContactDebug<5.5)gl_FragColor=vec4(vWorld.xz,reflected.y,1.);
       else if(uContactDebug<6.5)gl_FragColor=vec4(straightPath,opticalPath,snellUsed,1.);
-      else gl_FragColor=vec4(snellHit,1.);
+      else if(uContactDebug<7.5)gl_FragColor=vec4(snellHit,1.);
+      else if(uContactDebug<8.5)gl_FragColor=vec4(geometryNormal,geometryKind);
+      else gl_FragColor=vec4(geometryUV,float(geometryMaterial),geometryKind);
       return;
     }
     gl_FragColor=vec4(color,1.0);

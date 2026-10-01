@@ -3,10 +3,10 @@ import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import type { Ocean } from '../ocean/renderer';
 
 /** DEV asset observer. Borrowed geometry/textures are never disposed or mutated. */
-export function inspectBodyHands(ocean: Ocean) {
+export function inspectBodyHands(ocean: Ocean,source:THREE.Group=ocean.body.group,wetClearcoat=.18) {
   const renderer = ocean.renderer;
   const saved = { target: renderer.getRenderTarget(), color: renderer.getClearColor(new THREE.Color()), alpha: renderer.getClearAlpha(), tone: renderer.toneMapping, exposure: renderer.toneMappingExposure, space: renderer.outputColorSpace, viewport: renderer.getViewport(new THREE.Vector4()), scissor: renderer.getScissor(new THREE.Vector4()), scissorTest: renderer.getScissorTest(), autoClear: renderer.autoClear };
-  const observer = clone(ocean.body.group);
+  const observer = clone(source);
   const ownedMaterials: THREE.Material[] = [];
   const skeletons: THREE.Skeleton[] = [];
   observer.traverse(object => {
@@ -47,7 +47,7 @@ export function inspectBodyHands(ocean: Ocean) {
         for (const wetness of [0,1]) {
           const skin = ownedMaterials.find(m => m.name === 'sun-exposed skin') as THREE.MeshPhysicalMaterial;
           // Identical to createPlayerSkin.setWetness; cloned maps and vertex colors retained.
-          skin.roughness = .78-wetness*.22; skin.clearcoat = wetness*.32; skin.sheen = .08*(1-wetness); skin.normalScale.setScalar(.38-wetness*.08);
+          skin.roughness = .78-wetness*.22; skin.clearcoat = wetness*wetClearcoat; skin.sheen = .08*(1-wetness); skin.normalScale.setScalar(.38-wetness*.08);
           renderer.render(scene,camera); renderer.readRenderTargetPixels(target,0,0,1024,1024,pixels);
           const image = context.createImageData(1024,1024);
           for(let y=0;y<1024;y++) image.data.set(pixels.subarray((1023-y)*4096,(1024-y)*4096),y*4096);

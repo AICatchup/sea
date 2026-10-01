@@ -22,6 +22,9 @@ import { ShoreBreaker } from './shore-breaker';
 import { ShoreSolver, createShoreSolverUniforms } from './shore-solver.ts';
 import { buildPhotoCoastPresentation } from '../world/photo-coast-presentation';
 import { experienceOptions } from '../qa/experience-options';
+import {ReceiverBridge} from './receiver-bridge.ts';
+import {loadSandTextures,type SandTextureSet} from '../world/sand-material.ts';
+import {inspectGeometryRays} from '../qa/geometry-inspection.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -49,6 +52,10 @@ function makeOceanGrid(): THREE.BufferGeometry {
 }
 
 export class Ocean {
+  private receiverBridge:ReceiverBridge|null=null;
+  private receiverSand:SandTextureSet|null=null;
+  private receiverInitialization:Promise<void>|null=null;
+  private geometryRefraction=false;
   /** Development capture lock only; normal movement never enables it. */
   visualCaptureLocked=false;
   readonly collision=new WorldCollision();
@@ -349,6 +356,7 @@ export class Ocean {
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5);
     this.marine.update(this.time,this.camera.position,underwater>.5);
+    if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);if(!this.receiverBridge.sync())this.setGeometryShader(false);}
     const waterMap=this.world.waterMapFor(this.camera.position.x,this.camera.position.z);
     this.uniforms.uBathymetry.value=waterMap.texture;
     this.uniforms.uBathyBounds.value.set(waterMap.origin.x,waterMap.origin.y,waterMap.size.x,waterMap.size.y);
@@ -464,6 +472,36 @@ export class Ocean {
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
   setCausticResolution(count:128|256|512):128|256|512{const previous=this.caustics.photonResolution;this.caustics.setPhotonResolution(count);return previous;}
   getCausticResolution(){return this.caustics.photonResolution;}
+  async prepareGeometryReceivers():Promise<void>{
+    if(this.receiverBridge)return;
+    if(this.receiverInitialization)return this.receiverInitialization;
+    this.receiverInitialization=(async()=>{
+      await this.ready;if(this.disposed)throw new Error('Ocean disposed');
+      this.receiverSand=loadSandTextures();await this.receiverSand.ready;if(this.disposed)throw new Error('Ocean disposed');
+      this.scene.updateMatrixWorld(true);
+      const include=(mesh:THREE.Mesh)=>{
+        if(mesh instanceof THREE.SkinnedMesh||mesh.geometry.morphAttributes.position?.length||mesh.userData.foliageLod||mesh.userData.surface||/DEM|forest|pine|foliage|needles|sprays|shrub|seagrass|leaf|leaves|cloud/i.test(mesh.name))return false;
+        for(let p:THREE.Object3D|null=mesh;p;p=p.parent)if(p.userData.foliageLod)return false;
+        const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];if(materials.some(m=>!(m instanceof THREE.MeshStandardMaterial||m instanceof THREE.MeshBasicMaterial)))return false;
+        if(!materials.some(m=>m.visible&&!m.transparent&&m.opacity>=1&&m.alphaTest===0&&(!('alphaMap' in m)||!m.alphaMap)&&(!('transmission' in m)||m.transmission===0)))return false;
+        if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();let box:THREE.Box3;
+        if(mesh instanceof THREE.InstancedMesh){mesh.computeBoundingBox();box=mesh.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);}else box=mesh.geometry.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);
+        return box.min.y<=4;
+      };
+      const gl=this.renderer.getContext() as WebGL2RenderingContext;this.receiverBridge=new ReceiverBridge(this.scene,include,this.renderer.capabilities.maxTextureSize,gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),this.receiverSand.albedo);
+      if(!this.receiverBridge.diagnostics.available)throw new Error(this.receiverBridge.diagnostics.reason);
+      Object.assign(this.uniforms,this.receiverBridge.uniforms);
+    })();
+    try{await this.receiverInitialization;}finally{this.receiverInitialization=null;}
+  }
+  private setGeometryShader(enabled:boolean):void{
+    this.geometryRefraction=enabled;
+    this.waterScene.traverse(object=>{if(!(object instanceof THREE.Mesh))return;for(const m of Array.isArray(object.material)?object.material:[object.material])if(m instanceof THREE.ShaderMaterial&&m.fragmentShader===oceanFragment&&!m.defines?.CURVED_SURFACE){m.defines??={};if(enabled)m.defines.GEOMETRIC_REFRACTION=1;else delete m.defines.GEOMETRIC_REFRACTION;m.needsUpdate=true;}});
+  }
+  async setGeometryRefraction(enabled:boolean):Promise<boolean>{const previous=this.geometryRefraction;if(enabled){await this.prepareGeometryReceivers();if(!this.receiverBridge?.sync())throw new Error(this.receiverBridge?.diagnostics.reason??'Receiver unavailable');}this.setGeometryShader(enabled);return previous;}
+  getGeometryRefraction(){return this.geometryRefraction;}
+  async inspectGeometryReceivers(){await this.prepareGeometryReceivers();this.scene.updateMatrixWorld(true);if(!this.receiverBridge?.sync())throw new Error('Receiver unavailable');return inspectGeometryRays(this.renderer,this.receiverBridge,this.camera.position);}
+  probeGeometryReceivers(){return {enabled:this.geometryRefraction,bridge:this.receiverBridge?{...this.receiverBridge.diagnostics}:null,geometry:this.receiverBridge?{...this.receiverBridge.geometry.diagnostics}:null,maxTextures:this.renderer.capabilities.maxTextures,maxTextureSize:this.renderer.capabilities.maxTextureSize};}
   setSnellRay(enabled:boolean):boolean{const before=this.uniforms.uSnellRay.value>.5;this.uniforms.uSnellRay.value=enabled?1:0;return before;}
   setObservationClock(time:number):void{
     if(!this.visualCaptureLocked||!this.paused||!Number.isFinite(time)||time<0||time>86400)throw new Error('Finite 0..86400 observation clock requires paused, locked QA state');
@@ -500,11 +538,11 @@ export class Ocean {
     const result=points.map(point=>({point,values:[] as number[][]})),pixel=new Float32Array(4);
     try{
       r.autoClear=true;r.toneMapping=THREE.NoToneMapping;r.outputColorSpace=THREE.LinearSRGBColorSpace;r.setClearColor(0,0);r.setScissorTest(false);r.setRenderTarget(target);r.setViewport(0,0,size.x,size.y);
-      for(let mode=1;mode<=7;mode++){
+      for(let mode=1;mode<=9;mode++){
         this.uniforms.uContactDebug.value=mode;r.render(this.waterScene,this.camera);
         for(const row of result){const x=Math.min(size.x-1,Math.floor(row.point.x*size.x)),y=Math.min(size.y-1,Math.floor((1-row.point.y)*size.y));r.readRenderTargetPixels(target,x,y,1,1,pixel);row.values.push(Array.from(pixel));}
       }
-      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY','straightPath,acceptedPath,snellUsed','snellHitXYZ'],result};
+      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY','straightPath,acceptedPath,snellUsed','snellHitXYZ','receiverNormalXYZ,kind','receiverUV,materialId,kind'],result};
     }finally{
       this.uniforms.uContactDebug.value=saved.debug;r.setRenderTarget(saved.target);r.setViewport(saved.viewport);r.setScissor(saved.scissor);r.setScissorTest(saved.scissorTest);r.setClearColor(saved.clear,saved.alpha);r.autoClear=saved.auto;r.toneMapping=saved.tone;r.outputColorSpace=saved.color;target.dispose();
     }
@@ -545,6 +583,7 @@ export class Ocean {
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
       topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe},
+      geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
@@ -558,6 +597,7 @@ export class Ocean {
   dispose():void{
     if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.animationFrame);this.abort.abort();
     this.captureNextFrame?.(null);this.captureNextFrame=null;
+    this.receiverBridge?.dispose();this.receiverSand?.textures.forEach(texture=>texture.dispose());
     this.photoCoast?.dispose();this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();

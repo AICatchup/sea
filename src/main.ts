@@ -164,6 +164,19 @@ try {
     terrainAt:(x:number,y:number)=>ocean.probeFoliage(x/window.innerWidth*2-1,1-y/window.innerHeight*2,false,true),
     depthSamples:(points:readonly{x:number;y:number}[])=>ocean.probeDepthSamples(points),
     inspectBodyHands:()=>inspectBodyHands(ocean),
+    inspectGeometryReceivers:()=>ocean.inspectGeometryReceivers(),
+    async inspectBodyComparison(){
+      await ocean.ready;const before=captureHost.readState();const {FirstPersonBody:OriginalBody}=await import('./qa/legacy-body.ts');const original=new OriginalBody();
+      try{
+        captureHost.visualLock(true);captureHost.setPaused(true);await captureHost.nextFrame();
+        const copyPose=(old:import('three').Object3D,current:import('three').Object3D)=>{
+          if(old.type!==current.type||old.name!==current.name||old.children.length!==current.children.length)throw new Error('Body pose graph changed; aligned comparison unavailable');
+          old.position.copy(current.position);old.quaternion.copy(current.quaternion);old.scale.copy(current.scale);old.visible=current.visible;
+          old.children.forEach((node,index)=>copyPose(node,current.children[index]));
+        };copyPose(original.group,ocean.body.group);original.group.updateMatrixWorld(true);
+        return {original:inspectBodyHands(ocean,original.group,.32),candidate:inspectBodyHands(ocean),scope:'Original cce15ff anatomy/skin vs current; same borrowed environment, copied bone pose and studio cameras. Actual old/new wet responses; isolated asset comparison, not gameplay/photo/Human proof'};
+      }finally{original.dispose();captureHost.restoreState(before);}
+    },
     inspectFlatCaustics:()=>inspectFlatCaustics(ocean.renderer),
     fishMotion:()=>({time:ocean.diagnostics.time,fish:ocean.marine.inspectFishMotion()}),
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
@@ -228,6 +241,21 @@ try {
         for(let i=0;i<20;i++)await captureHost.nextFrame();const png=await capturePNG();if(!png)throw new Error('No terrain PNG');
         return {png,metadata:{name,state:captureHost.readState(),time:ocean.diagnostics.time,topography:ocean.diagnostics.topography,scope:'Separate fully initialized terrain instances, aligned actual camera and FFT time; static terrain/foliage comparison only, no identical fish/solver histories or movement/Human proof'}};
       }finally{try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
+    },
+    async captureGeometryComparison(name:string){
+      await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Known geometry view required');
+      const before=captureHost.readState(),previous=ocean.getGeometryRefraction(),variants=[];
+      try{
+        captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);
+        captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,3000));captureHost.setPaused(true);await ocean.prepareGeometryReceivers();
+        const points=[.4,.6,.8].flatMap(x=>[.4,.5,.6,.7].map(y=>({x,y})));
+        for(const enabled of [false,true,false]){
+          await ocean.setGeometryRefraction(enabled);for(let i=0;i<8;i++)await captureHost.nextFrame();
+          const intervals=[];let last=await new Promise<number>(resolve=>requestAnimationFrame(resolve));for(let i=0;i<24;i++){const now=await new Promise<number>(resolve=>requestAnimationFrame(resolve));intervals.push(now-last);last=now;}
+          const png=await capturePNG();if(!png)throw new Error('No geometry PNG');variants.push({png,metadata:{enabled,state:captureHost.readState(),time:ocean.diagnostics.time,probe:ocean.probeWaterContact(points),receiver:ocean.probeGeometryReceivers(),frameIntervalsMs:intervals}});
+        }
+        return {variants,scope:'Frozen actual camera/FFT/instance poses/light; legacy screen receiver vs actual opaque triangle BVH + barycentric bed. Diffuse atlas and macro PBR lighting, not full normal-map/IBL/material parity or Human/travel proof'};
+      }finally{try{await ocean.setGeometryRefraction(previous);}finally{captureHost.restoreState(before);}}
     },
     captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>{
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
@@ -335,7 +363,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureGeometryComparison','inspectBodyComparison']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }
