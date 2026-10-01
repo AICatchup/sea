@@ -251,6 +251,10 @@ test('stern boarding and exit avoid the rear bench as an actual swept solid',()=
     new THREE.Vector3(boat.x+.78,boat.y+.91,boat.z+2.27)));
   solids.addBox(new THREE.Box3(new THREE.Vector3(boat.x+.21,boat.y+.5825,boat.z+.63),
     new THREE.Vector3(boat.x+.75,boat.y+.6975,boat.z+1.15)));
+  solids.addBox(new THREE.Box3(new THREE.Vector3(boat.x-.9,boat.y+2.279,boat.z+.9),
+    new THREE.Vector3(boat.x+.9,boat.y+2.311,boat.z+.94)));
+  solids.addBox(new THREE.Box3(new THREE.Vector3(boat.x-.925,boat.y+2.259,boat.z+.9775),
+    new THREE.Vector3(boat.x+.925,boat.y+2.321,boat.z+1.0025)));
   controls.viewpoint(boat.x-.75,boat.z+3.35,0,0,'swim');controls.interact();advance(controls,5.2);
   assert.equal(state.mode,'boat');controls.interact();advance(controls,4.6);
   assert.equal(state.mode,'swim');solids.dispose();controls.dispose();
