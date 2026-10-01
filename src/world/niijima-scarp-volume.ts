@@ -33,15 +33,20 @@ export class NiijimaScarpVolume {
     this.material.vertexColors=true;
     this.material.side=THREE.FrontSide;
     const positions:number[]=[], colors:number[]=[], indices:number[]=[];
-    const sections=401, faceSteps=96, roofSteps=12, ring=faceSteps+roofSteps+3;
+    const faceSteps=96, roofSteps=12, ring=faceSteps+roofSteps+3;
     const frontage=NIIJIMA_VOLUME_FRONTAGE,span=frontage.maxZ-frontage.minZ;
+    const gullies=Array.from({length:67},(_,g)=>({centre:frontage.minZ+8+noise(g*13.713,27)*(span-16),width:1.3+noise(g*4.3,6)*2.2}));
+    const samples=Array.from({length:401},(_,i)=>frontage.minZ+i*span/400);
+    for(const g of gullies)samples.push(g.centre-g.width,g.centre,g.centre+g.width);
+    samples.sort((a,b)=>a-b);
+    const stations=samples.filter((z,i)=>!i||z-samples[i-1]>.02),sections=stations.length;
     let minimumToeShore=Infinity, maximumHeight=-Infinity;
     const put=(x:number,y:number,z:number,shade:number)=> {
       positions.push(x,y,z); colors.push(shade,shade*.985,shade*.95);
       maximumHeight=Math.max(maximumHeight,y);
     };
     for(let i=0;i<sections;i++) {
-      const z=frontage.minZ+i*span/(sections-1);
+      const z=stations[i];
       // Smooth shore-following centreline. Parallel transport a fixed inland
       // horizontal frame, then shear sections along the centreline: every ring
       // stays in its own z plane, so neighbouring or distant stations cannot fold.
@@ -53,7 +58,7 @@ export class NiijimaScarpVolume {
       minimumToeShore=Math.min(minimumToeShore,source.shoreAt(toe.x,toe.z));
       const toeY=ground.heightAt(toe.x,toe.z)-1.5;
       const top=source.heightAt(crest.x,crest.z)+2;
-      const fade=ease(0,frontage.feather,i*span/(sections-1))*ease(0,frontage.feather,(sections-1-i)*span/(sections-1));
+      const fade=ease(0,frontage.feather,z-frontage.minZ)*ease(0,frontage.feather,frontage.maxZ-z);
       put(toe.x,toeY,toe.z,.83);
       let previousD=0;
       for(let j=1;j<=faceSteps;j++) {
@@ -63,20 +68,26 @@ export class NiijimaScarpVolume {
         const talus=14*Math.min(1,t/.18);
         const slope=7*t;
         let incision=0;
-        for(let g=0;g<45;g++) {
-          const centre=frontage.minZ+7+g*9.3+(noise(g*3.71,8)-.5)*6;
+        for(let g=0;g<67;g++) {
+          const centre=gullies[g].centre;
           const bend=(noise(g*1.7,3)-.5)*3*t+(noise(g*2.3,9)-.5)*1.2*t*t;
-          const width=.8+noise(g*4.3,6)*1.9;
+          const width=gullies[g].width;
           const q=Math.abs(z-centre-bend)/width;
           const active=ease(.08+noise(g,2)*.16,.3,t)*(1-.45*ease(.72,.98,t));
-          incision+=Math.max(0,1-q)*(.9+noise(g,7)*3.6)*active;
+          incision+=Math.max(0,1-q)*(2+noise(g,7)*5.2)*active;
         }
         const broad=(noise(z*.025,3)-.5)*3;
         // Piecewise angular bedding: thin broken lips, never rounded sine shelves.
-        const bed=h/4.6+noise(z*.014,11)*.8;
-        const fraction=bed-Math.floor(bed);
-        const lip=Math.max(0,1-Math.abs(fraction-.16)/.13);
-        const strata=(noise(Math.floor(bed),z*.025)-.5)*1.8-lip*(.45+noise(z*.06,Math.floor(bed))*1.3);
+        let strata=0;
+        // Sparse uneven hard beds terminate across frontage. Fissures dominate.
+        for(let layer=0;layer<15;layer++){
+          const level=9+noise(layer*17.31,81)*112;
+          const drift=(noise(z*.009,layer*3.7)-.5)*2.8;
+          const width=.22+noise(layer*3.3,18)*.45;
+          const lip=Math.max(0,1-Math.abs(h-level-drift)/width);
+          const exposed=Math.max(0,noise(z*.04,layer*4.3)-.32);
+          strata-=lip*exposed*.85;
+        }
         const fine=(noise(z*.42,h*.38)-.5)*.65;
         const rawD=talus+slope+(broad+incision+fine+strata)*fade*ease(.12,.24,t);
         const d=t>.8?Math.max(previousD+.025,rawD):rawD;previousD=d;

@@ -46,10 +46,10 @@ test('source is unchanged and dry beach corridor has no volume intersection',()=
 test('transported rings have no local inversions or nonadjacent station folds',()=>{
   const volume=new NiijimaScarpVolume(ground,source),p=volume.geometry.getAttribute('position'),ring=111;
   const cross=(a:number,b:number,c:number)=> (p.getX(b)-p.getX(a))*(p.getY(c)-p.getY(a))-(p.getY(b)-p.getY(a))*(p.getX(c)-p.getX(a));
-  for(let i=0;i<401;i++){
+  for(let i=0;i<volume.diagnostics.sections;i++){
     const z=p.getZ(i*ring);
     for(let j=0;j<ring;j++) assert.equal(p.getZ(i*ring+j),z);
-    if(i)assert.ok(z-p.getZ((i-1)*ring)>1.44);
+    if(i)assert.ok(z-p.getZ((i-1)*ring)>.019);
     // Strict segment intersections detect folded cross sections. The separate
     // station planes then establish that nonadjacent rings cannot intersect.
     for(let a=0;a<ring;a++)for(let b=a+2;b<ring;b++){
@@ -69,7 +69,7 @@ test('transported rings have no local inversions or nonadjacent station folds',(
 
 test('both terminal rings embed under support and source shoreline corridor is invariant',()=>{
   const volume=new NiijimaScarpVolume(ground,source),p=volume.geometry.getAttribute('position');
-  for(const station of [0,400])for(let j=0;j<111;j++){
+  for(const station of [0,volume.diagnostics.sections-1])for(let j=0;j<111;j++){
     const k=station*111+j,x=p.getX(k),z=p.getZ(k);
     assert.ok(p.getY(k)<ground.heightAt(x,z),`unburied endpoint ${station}/${j}`);
   }
