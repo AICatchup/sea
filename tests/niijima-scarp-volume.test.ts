@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { NiijimaDEM } from '../src/world/niijima-detail.ts';
-import { NiijimaScarpVolume } from '../src/world/niijima-scarp-volume.ts';
+import { NiijimaScarpVolume,niijimaShoreStation } from '../src/world/niijima-scarp-volume.ts';
 const source=new NiijimaDEM();
 const ground={heightAt:(x:number,z:number)=>source.refinedHeightAt(x,z)};
 test('indexed scarp is finite, closed, connected, nondegenerate and bounded',()=>{
@@ -21,16 +21,15 @@ test('indexed scarp is finite, closed, connected, nondegenerate and bounded',()=
   assert.ok([...edges.values()].every(v=>v===2));
   assert.equal(p.count-edges.size+index.count/3,2);
   assert.ok(volume.diagnostics.triangles<150000);
-  assert.ok(volume.bounds.max.z-volume.bounds.min.z>220&&volume.bounds.max.z-volume.bounds.min.z<310);
+  assert.ok(volume.bounds.max.z-volume.bounds.min.z>400&&volume.bounds.max.z-volume.bounds.min.z<460);
   assert.ok(volume.diagnostics.minimumToeShore>27);
   console.log(volume.diagnostics,{signedVolume:signed,minDoubleArea:minArea,bounds:volume.bounds});volume.dispose();
 });
 test('source is unchanged and dry beach corridor has no volume intersection',()=>{
   const snapshot=source.heights.slice(),volume=new NiijimaScarpVolume(ground,source),mesh=volume.group.children[0] as THREE.Mesh;
   mesh.updateMatrixWorld(true);const ray=new THREE.Raycaster();
-  for(let z=-1130;z<=-910;z+=5){
-    let x=5898;
-    for(let k=0;k<12;k++){const g=(source.shoreAt(x+1,z)-source.shoreAt(x-1,z))/2;x+=(12-source.shoreAt(x,z))/g;}
+  for(let z=-975;z<=-605;z+=5){
+    const x=niijimaShoreStation(source,z,12);
     ray.set(new THREE.Vector3(x,200,z),new THREE.Vector3(0,-1,0));
     assert.equal(ray.intersectObject(mesh).length,0);
     assert.ok(ground.heightAt(x,z)>0);

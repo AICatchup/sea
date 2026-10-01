@@ -4,10 +4,27 @@ export interface ScarpSource {
   shoreAt(x: number, z: number): number;
 }
 export const NIIJIMA_SCARP_BOUNDS = { minX: 5720, maxX: 5970, minZ: -1500, maxZ: -450 } as const;
+export const NIIJIMA_VOLUME_FRONTAGE={minZ:-1000,maxZ:-580,feather:24} as const;
 const smooth = (a: number, b: number, v: number): number => {
   const t = Math.max(0, Math.min(1, (v - a) / (b - a)));
   return t * t * (3 - 2 * t);
 };
+
+/** Candidate apron below a separate closed scarp. The source raster is retained;
+ * only the shared rendered/support field is graded. Unknown cliff dimensions
+ * remain authored, and the lower 12m shoreline corridor is invariant. */
+export function niijimaScarpApronHeight(source:ScarpSource,x:number,z:number,legacy:number):number {
+  const b=NIIJIMA_VOLUME_FRONTAGE;if(z<=b.minZ||z>=b.maxZ)return legacy;
+  const d=source.shoreAt(x,z);
+  if(d<=12||d>=140)return legacy;
+  const gx=(source.shoreAt(x+2,z)-source.shoreAt(x-2,z))/4;
+  const gz=(source.shoreAt(x,z+2)-source.shoreAt(x,z-2))/4;
+  const length=Math.hypot(gx,gz);if(length<.1)return legacy;
+  const anchor=source.heightAt(x-gx/length*(d-12),z-gz/length*(d-12));
+  const floor=anchor+Math.max(0,d-12)*.055;
+  const w=smooth(b.minZ,b.minZ+b.feather,z)*(1-smooth(b.maxZ-b.feather,b.maxZ,z))*smooth(12,27,d)*(1-smooth(125,140,d));
+  return legacy+(Math.min(legacy,floor)-legacy)*w;
+}
 
 /** Reparameterize a single connected terrain surface along its inland normal.
  * The low strand is invariant; talus, face and crest are parts of this field,
@@ -45,5 +62,5 @@ export function niijimaScarpHeight(source: ScarpSource, x: number, z: number, le
   const edge = smooth(b.minX, b.minX + 30, x) * (1 - smooth(b.maxX - 25, b.maxX, x))
     * smooth(b.minZ, b.minZ + 100, z) * (1 - smooth(b.maxZ - 160, b.maxZ, z));
   const weight = edge * smooth(3, 7, original) * smooth(12, 18, d) * (1 - smooth(130, 145, d));
-  return legacy + (target - legacy) * weight;
+  return legacy + Math.max(-58,Math.min(58,(target-legacy)*weight));
 }

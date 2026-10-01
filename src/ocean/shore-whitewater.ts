@@ -76,11 +76,11 @@ export class ShoreWhitewater {
     this.geometry.instanceCount=this.pool.capacity;
     this.material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,side:THREE.FrontSide,
       uniforms:{uTint:{value:new THREE.Color(.78,.86,.86)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},
-        uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
+        uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`attribute vec3 aCenter,aShape;attribute float aAlpha,aSeed;varying vec2 vUv;varying float vAlpha,vSeed;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
       ${shoreWaveSampling}
-      vec2 foamCoast(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return texture2D(uBathymetry,uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution).rg;}
+      vec2 foamCoast(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;}
       vec3 foamDisplacement(vec2 p){return (texture2D(uLongWaves,p/384.0).xyz+texture2D(uShortWaves,p/24.0).xyz)*uSwell*shoreWaveScale(foamCoast(p),uSwell,uWind);}
       void main(){vUv=position.xz+.5;vAlpha=aAlpha;vSeed=aSeed;if(aAlpha<.001){gl_Position=vec4(2,2,2,1);return;}
       vec2 q=position.xz*aShape.xy;float c=cos(aShape.z),s=sin(aShape.z);vec2 offset=vec2(q.x*c-q.y*s,q.x*s+q.y*c),world=aCenter.xz+offset,p=world;

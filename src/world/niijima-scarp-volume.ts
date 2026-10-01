@@ -1,8 +1,23 @@
 import * as THREE from 'three';
 import type { GroundSampler } from './contracts.ts';
 import { NiijimaDEM, noise, ease } from './niijima-detail.ts';
+import { NIIJIMA_VOLUME_FRONTAGE } from './niijima-scarp.ts';
 
 export interface ScarpVolumeSource { heightAt(x:number,z:number):number; shoreAt(x:number,z:number):number; }
+/** Easternmost bracketed shore station; a flat distance field cannot derail a
+ * Newton iteration into a different terrain region. No fabricated fallback. */
+export function niijimaShoreStation(source:ScarpVolumeSource,z:number,distance:number):number {
+  let east=6030,previous=source.shoreAt(east,z)-distance;
+  for(let west=east-2;west>=5620;west-=2){
+    const value=source.shoreAt(west,z)-distance;
+    if(value>=0&&previous<=0){
+      for(let i=0;i<20;i++){const middle=(west+east)/2;if(source.shoreAt(middle,z)>=distance)west=middle;else east=middle;}
+      return (west+east)/2;
+    }
+    east=west;previous=value;
+  }
+  throw new Error('No bracketed shore station within Niijima candidate bounds');
+}
 /** Authored closed rock volume; elevations remain unmodified. Dimensions are hypotheses. */
 export class NiijimaScarpVolume {
   readonly group = new THREE.Group();
@@ -14,24 +29,20 @@ export class NiijimaScarpVolume {
     this.group.name='Niijima connected pumice scarp volume';
     this.group.userData.worldSolid=true;
     this.material=material?.clone() ?? new THREE.MeshStandardMaterial({color:0xe1ddce,roughness:.98});
+    if(material){this.material.onBeforeCompile=material.onBeforeCompile;this.material.customProgramCacheKey=material.customProgramCacheKey;}
     this.material.vertexColors=true;
     this.material.side=THREE.FrontSide;
     const positions:number[]=[], colors:number[]=[], indices:number[]=[];
-    const sections=181, faceSteps=64, roofSteps=12, ring=faceSteps+roofSteps+3;
+    const sections=301, faceSteps=64, roofSteps=12, ring=faceSteps+roofSteps+3;
+    const frontage=NIIJIMA_VOLUME_FRONTAGE,span=frontage.maxZ-frontage.minZ;
     let minimumToeShore=Infinity, maximumHeight=-Infinity;
     const put=(x:number,y:number,z:number,shade:number)=> {
       positions.push(x,y,z); colors.push(shade,shade*.985,shade*.95);
       maximumHeight=Math.max(maximumHeight,y);
     };
     for(let i=0;i<sections;i++) {
-      const z=-1150+i*260/(sections-1);
-      let coastX=5890;
-      // Alongshore stations follow the real distance field, never camera orientation.
-      for(let k=0;k<12;k++) {
-        const gradient=(source.shoreAt(coastX+1,z)-source.shoreAt(coastX-1,z))/2;
-        if(Math.abs(gradient)<.1) throw new Error('Scarp volume needs a resolvable shoreline gradient');
-        coastX+=(28-source.shoreAt(coastX,z))/gradient;
-      }
+      const z=frontage.minZ+i*span/(sections-1);
+      const coastX=niijimaShoreStation(source,z,28);
       const gx=source.shoreAt(coastX+2,z)-source.shoreAt(coastX-2,z);
       const gz=source.shoreAt(coastX,z+2)-source.shoreAt(coastX,z-2);
       const norm=Math.hypot(gx,gz), nx=gx/norm,nz=gz/norm;
@@ -40,7 +51,7 @@ export class NiijimaScarpVolume {
       minimumToeShore=Math.min(minimumToeShore,source.shoreAt(toe.x,toe.z));
       const toeY=ground.heightAt(toe.x,toe.z)-1.5;
       const top=source.heightAt(crest.x,crest.z)+2;
-      const fade=ease(0,24,i*260/(sections-1))*ease(0,24,(sections-1-i)*260/(sections-1));
+      const fade=ease(0,frontage.feather,i*span/(sections-1))*ease(0,frontage.feather,(sections-1-i)*span/(sections-1));
       put(toe.x,toeY,toe.z,.83);
       for(let j=1;j<=faceSteps;j++) {
         const t=j/faceSteps, h=toeY+(top-toeY)*t;

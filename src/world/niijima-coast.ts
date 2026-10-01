@@ -5,6 +5,7 @@ import { ELEVATION_RASTERS } from './geodata.generated.ts';
 import { NIIJIMA_NORTH_RASTER, NIIJIMA_NORTH_PROVENANCE } from './niijima-north.generated.ts';
 import { NIIJIMA_SOUTH_RASTER, NIIJIMA_SOUTH_PROVENANCE } from './niijima-south.generated.ts';
 import type { SandTextureSet } from './sand-material.ts';
+import { niijimaScarpApronHeight } from './niijima-scarp.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };
 export { NIIJIMA_NORTH_PROVENANCE };
 export { NIIJIMA_SOUTH_PROVENANCE };
@@ -87,6 +88,13 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet): 
       float niiWash=pow(abs(sin(vNiijimaPoint.x*2.3+niiNoise(vNiijimaPoint*.09)*1.7)),4.0);
       float niiWet=1.0-smoothstep(.15,2.1,vNiijimaPoint.y+niiNoise(vNiijimaPoint*.035)*.35);
       diffuseColor.rgb*=mix(vec3(1),vec3(niiSandGrain*(1.0-.10*niiWash)*mix(1.0,.45,niiWet)),niiSandMask);
+      // The observed White Mama strand has dark, fine deposits and long
+      // meandering wash lines. This bounded distribution is authored; the
+      // photograph is not copied into the material or treated as a survey.
+      float niiAshRegion=smoothstep(950.0,1040.0,vNiijimaPoint.z)*(1.0-smoothstep(1400.0,1510.0,vNiijimaPoint.z));
+      float niiDeposit=niiNoise(vec3(vNiijimaPoint.x*.65,0.0,vNiijimaPoint.z*.024));
+      float niiStrand=(1.0-smoothstep(2.4,5.0,vNiijimaPoint.y))*niiSandMask*niiAshRegion;
+      diffuseColor.rgb*=mix(1.0,.36+.22*niiDeposit,niiStrand*.85);
       `:''}
     `);
     if(sand)shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
@@ -127,7 +135,7 @@ export class NiijimaCoast implements GroundSampler {
   private readonly baseGround: GroundSampler;
   private readonly maps = new Map<string, { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 }>();
 
-  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;sand?:SandTextureSet}={}) {
+  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;volume?:boolean;sand?:SandTextureSet}={}) {
     this.dem=new NiijimaDEM(undefined,{scarp:options.scarp??false});
     this.baseGround = baseGround;
     this.group.name = 'Niijima Horikiri, Shiromama and actual Secret surf region';
@@ -135,7 +143,8 @@ export class NiijimaCoast implements GroundSampler {
     this.material = pumiceMaterial(material,options.sand);
     const authored = { heightAt: (x: number, z: number) => {
       if(z>=-300&&z<=-100){const w=ease(-300,-100,z);return this.dem.refinedHeightAt(x,z)*(1-w)+this.southDem.refinedHeightAt(x,z)*w;}
-      return this.demAt(z).refinedHeightAt(x, z);
+      const y=this.demAt(z).refinedHeightAt(x,z);
+      return options.volume?niijimaScarpApronHeight(this.dem,x,z,y):y;
     } };
     const distant = new NiijimaSurface(this.bounds, step, baseGround, authored, 20);
     const fine = PATCHES.map(patch => new NiijimaSurface(patch.bounds, patch.spacing, distant, authored, 16));

@@ -10,9 +10,10 @@ import { makeTerrainMaterial } from './coast-material.ts';
 import { NiijimaCoast } from './niijima-coast.ts';
 import { HabushiMainGate } from './habushi-main-gate.ts';
 import { HabushiGround } from './habushi-ground.ts';
+import { NiijimaScarpVolume } from './niijima-scarp-volume.ts';
 const atlasURL=new URL('../assets/tomari-atlas-v1.png',import.meta.url).href;
 
-interface WaterMap { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2; }
+interface WaterMap { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2; triangulated?:boolean; }
 const fract = (n: number) => n - Math.floor(n);
 const random = (x: number, z: number, seed = 1) => fract(Math.sin(x * 12.9898 + z * 78.233 + seed * 23.13) * 43758.5453);
 
@@ -73,6 +74,7 @@ export class IslandWorld {
   readonly niijimaCoast:NiijimaCoast;
   readonly habushiGate:HabushiMainGate;
   readonly habushiGround:HabushiGround;
+  readonly scarpVolume:NiijimaScarpVolume|null;
   private readonly maps = new Map<string, WaterMap>();
   private readonly niijimaShaderMaps = new WeakMap<THREE.Texture, WaterMap>();
   private readonly textures: THREE.Texture[] = [];
@@ -91,7 +93,11 @@ export class IslandWorld {
     const terrainMaterial = makeTerrainMaterial(grain, atlas, sand); this.materials.push(terrainMaterial);
     this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve()]).then(()=>{});
     const scarp=typeof location!=='undefined'&&new URLSearchParams(location.search).get('scarp')==='1';
-    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand});this.group.add(this.niijimaCoast.group);
+    const volume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('volume')==='1';
+    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume});this.group.add(this.niijimaCoast.group);
+    const cliffMaterial=(this.niijimaCoast.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
+    this.scarpVolume=volume?new NiijimaScarpVolume(this.niijimaCoast,this.niijimaCoast.dem,cliffMaterial):null;
+    if(this.scarpVolume)this.group.add(this.scarpVolume.group);
     this.habushiGate=new HabushiMainGate(this.niijimaCoast);
     this.niijimaCoast.applyGrading(this.habushiGate.grading);this.group.add(this.habushiGate.group);
     this.habushiGround=new HabushiGround(this.habushiGate);
@@ -138,7 +144,7 @@ export class IslandWorld {
       const dx=raw.size.x/image.width,dz=raw.size.y/image.height;
       // Niijima supplies padded texel-centre bounds; all ocean shaders add the
       // half-texel transform themselves, so expose the first/last sample bounds.
-      const map={texture:raw.texture,origin:raw.origin.clone().add(new THREE.Vector2(dx*.5,dz*.5)),size:new THREE.Vector2(raw.size.x-dx,raw.size.y-dz)};
+      const map={texture:raw.texture,origin:raw.origin.clone().add(new THREE.Vector2(dx*.5,dz*.5)),size:new THREE.Vector2(raw.size.x-dx,raw.size.y-dz),triangulated:true};
       this.niijimaShaderMaps.set(raw.texture,map);return map;
     }
     const field = this.elevation.fieldAt(x, z);
@@ -168,6 +174,7 @@ export class IslandWorld {
   }
 
   dispose(): void {
+    this.scarpVolume?.dispose();
     this.habushiGround.dispose();
     this.habushiGate.dispose();
     this.niijimaCoast.dispose();

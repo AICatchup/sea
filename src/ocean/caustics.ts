@@ -4,6 +4,7 @@ import { capillarySampling, shoreWaveSampling } from './surface-detail';
 export interface CausticBathymetry {
   /** R: seabed height in metres, G: local wave shelter, as in oceanVertex. */
   texture: THREE.Texture;
+  triangulated?:boolean;
   origin: THREE.Vector2;
   size: THREE.Vector2;
 }
@@ -31,8 +32,7 @@ const photonVertex = /* glsl */ `
   vec2 coastAt(vec2 p) {
     vec2 uv=bathyUv(p);
     if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0)))) return vec2(-110.0,1.0);
-    uv=uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution;
-    return texture2D(uBathymetry,uv).rg;
+    return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;
   }
   vec3 surfaceAt(vec2 p) {
     vec2 coast=coastAt(p);
@@ -181,7 +181,7 @@ export class WaveCaustics {
       // AdditiveBlending's default SRC_ALPHA factor would zero these photons.
       premultipliedAlpha: true,
       uniforms: {
-        uLongWaves: { value: null }, uShortWaves: { value: null }, uBathymetry: { value: null },
+        uLongWaves: { value: null }, uShortWaves: { value: null }, uBathymetry: { value: null },uBathyTriangulated:{value:0},
         uBounds: { value: this.bounds }, uBathyBounds: { value: new THREE.Vector4() },
         uBathyResolution: { value: new THREE.Vector2() }, uSunDirection: { value: new THREE.Vector3(0, 1, 0) },
         uSwell: { value: 1 }, uChoppiness: { value: 1.55 }, uWind: { value: 8 }, uTime:{value:0},
@@ -238,7 +238,7 @@ export class WaveCaustics {
     u.uLongWaves.value = longWaves; u.uShortWaves.value = shortWaves; u.uBathymetry.value = bathymetry.texture;
     u.uBathyBounds.value.set(bathymetry.origin.x, bathymetry.origin.y, bathymetry.size.x, bathymetry.size.y);
     const image = bathymetry.texture.image as { width: number; height: number };
-    u.uBathyResolution.value.set(image.width, image.height);
+    u.uBathyResolution.value.set(image.width, image.height);u.uBathyTriangulated.value=bathymetry.triangulated?1:0;
     u.uSunDirection.value.copy(sunDirection).normalize();
     u.uSwell.value = swell; u.uWind.value = wind; u.uChoppiness.value = choppiness;
     u.uTime.value=time;

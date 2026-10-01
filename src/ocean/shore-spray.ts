@@ -108,7 +108,7 @@ export class ShoreSpray {
     this.whitewater=options.whitewater?new ShoreWhitewater():null;
     if(this.whitewater)this.group.add(this.whitewater.group);
     this.sampleMaterial=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,
-      uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55},uDepthCapLoss:{value:options.whitewater?1:0}},
+      uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55},uDepthCapLoss:{value:options.whitewater?1:0}},
       vertexShader:'void main(){gl_Position=vec4(position.xy,0,1);}',fragmentShader:/* glsl */`
       precision highp float;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;
@@ -119,7 +119,7 @@ export class ShoreSpray {
       vec2 coastAt(vec2 p){
         vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
         if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);
-        return texture2D(uBathymetry,uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution).rg;
+        return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;
       }
       vec3 longAt(vec2 p){return texture2D(uLongWaves,p/384.0).xyz*shoreWaveScale(coastAt(p),uSwell,uWind);}
       vec3 shortAt(vec2 p){return texture2D(uShortWaves,p/24.0).xyz*shoreWaveScale(coastAt(p),uSwell,uWind);}
@@ -172,7 +172,7 @@ export class ShoreSpray {
       material.uniforms.uOccludingDepthReady.value=uniforms.uSceneDepth?.value?1:0;
       material.uniforms.uViewport.value.copy(viewport);
     }
-    if(this.whitewater)for(const key of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uSwell','uWind','uChoppiness'])
+    if(this.whitewater)for(const key of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness'])
       if(uniforms[key])this.whitewater.material.uniforms[key]=uniforms[key];
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
@@ -235,7 +235,7 @@ export class ShoreSpray {
     if(this.pending||this.failed||time-this.lastRequest<INTERVAL||!uniforms.uLongWaves?.value||!uniforms.uShortWaves?.value||!uniforms.uBathymetry?.value)return;
     this.lastRequest=time;this.pending=true;
     const origin=new THREE.Vector2(Math.round(camera.position.x/6)*6,Math.round(camera.position.z/6)*6);
-    for(const name of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uSwell','uWind','uChoppiness']){
+    for(const name of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness']){
       if(uniforms[name])this.sampleMaterial.uniforms[name].value=uniforms[name].value;
     }
     this.sampleMaterial.uniforms.uCenter.value.copy(origin);

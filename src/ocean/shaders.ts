@@ -187,8 +187,7 @@ export const oceanVertex = /* glsl */ `
   vec3 vertexCoast(vec2 p){
     vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
     if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return vec3(-110.0,1.0,0.0);
-    uv=uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution;
-    return texture2D(uBathymetry,uv).rgb;
+    return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rgb;
   }
   void main() {
     vec2 origin = position.xz + cameraPosition.xz;
@@ -235,8 +234,7 @@ export const oceanFragment = /* glsl */ `
   vec3 coastAt(vec2 p){
     vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
     if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return vec3(-110.0,1.0,0.0);
-    uv=uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution;
-    return texture2D(uBathymetry,uv).rgb;
+    return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rgb;
   }
   float shoalAt(vec2 p){return shoreWaveScale(coastAt(p).rg,uSwell,uWind);}
   vec3 longDisplacement(vec2 p) { return texture2D(uLongWaves,p/384.0).xyz*shoalAt(p); }

@@ -18,6 +18,7 @@ import { shoreWaveSampling } from './surface-detail';
 import { WorldCollision, withWorldCollision } from '../world/world-collision';
 import { WorldSolidBinding } from '../world/world-solid-binding';
 import { ShoreSpray } from './shore-spray';
+import { ShoreBreaker } from './shore-breaker';
 import { buildPhotoCoastPresentation } from '../world/photo-coast-presentation';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
@@ -42,7 +43,7 @@ class LocalWaterHeights {
       vec3 displacement(vec2 p){
         vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;vec2 coast=vec2(-110,1);
         if(all(greaterThanEqual(uv,vec2(0)))&&all(lessThanEqual(uv,vec2(1)))){
-          uv=uv*(uBathyResolution-1.0)/uBathyResolution+.5/uBathyResolution;coast=texture2D(uBathymetry,uv).rg;
+          coast=sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;
         }
         float shelter=shoreWaveScale(coast,uSwell,uWind);
         return (texture2D(uLongWaves,p/384.0).xyz+texture2D(uShortWaves,p/24.0).xyz)*shelter*uSwell;
@@ -55,7 +56,7 @@ class LocalWaterHeights {
         float h=displacement(parameter).y;
         float code=floor(clamp(h/16.0+.5,0.0,1.0)*65535.0+.5);
         gl_FragColor=vec4(floor(code/256.0),mod(code,256.0),137.0,255.0)/255.0;
-      }`,uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},
+      }`,uniforms:{uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},
         uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
         uPlayer:{value:new THREE.Vector2()},uBoat:{value:new THREE.Vector2()},uSwell:{value:1},uChoppiness:{value:1.55},uWind:{value:8.5}}});
   private pixels:Uint8Array|null=null;
@@ -79,7 +80,7 @@ class LocalWaterHeights {
     }
     return 0;
   };
-  update(clock:number,textures:THREE.Texture[],bathymetry:{texture:THREE.Texture;origin:THREE.Vector2;size:THREE.Vector2},
+  update(clock:number,textures:THREE.Texture[],bathymetry:{texture:THREE.Texture;origin:THREE.Vector2;size:THREE.Vector2;triangulated?:boolean},
     player:THREE.Vector3,boat:THREE.Vector3,swell:number,choppiness:number,wind:number):void{
     if(this.pending||this.failed||this.disposed||clock-this.lastUpdate<.2)return;
     this.lastUpdate=clock;this.pending=true;
@@ -87,7 +88,7 @@ class LocalWaterHeights {
     u.uPlayer.value.copy(origins[0]);u.uBoat.value.copy(origins[1]);u.uLongWaves.value=textures[0];u.uShortWaves.value=textures[1];
     u.uBathymetry.value=bathymetry.texture;u.uBathyBounds.value.set(bathymetry.origin.x,bathymetry.origin.y,bathymetry.size.x,bathymetry.size.y);
     const image=bathymetry.texture.image as {width:number;height:number};u.uBathyResolution.value.set(image.width,image.height);
-    u.uSwell.value=swell;u.uChoppiness.value=choppiness;u.uWind.value=wind;
+    u.uBathyTriangulated.value=bathymetry.triangulated?1:0;u.uSwell.value=swell;u.uChoppiness.value=choppiness;u.uWind.value=wind;
     const previous=this.renderer.getRenderTarget();
     this.renderer.setRenderTarget(this.target);this.renderer.render(this.scene,this.camera);this.renderer.setRenderTarget(previous);
     void this.renderer.readRenderTargetPixelsAsync(this.target,0,0,8,16,new Uint8Array(512)).then(pixels=>{
@@ -132,6 +133,8 @@ export class Ocean {
   private photoCoast:ReturnType<typeof buildPhotoCoastPresentation>|null=null;
   private solidContactReady=false;
   private readonly spray:ShoreSpray;
+  private readonly breaker:ShoreBreaker|null;
+  private breakerCandidateEnabled=true;
   readonly renderer:THREE.WebGLRenderer;
   readonly camera=new THREE.PerspectiveCamera(62,1,.12,35000);
   readonly simulation:OceanSimulation;
@@ -199,6 +202,8 @@ export class Ocean {
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);
+    this.breaker=new URLSearchParams(location.search).get('breaker')==='1'?new ShoreBreaker():null;
+    if(this.breaker)this.waterScene.add(this.breaker.group);
     this.assets=new AssetWorld(this.world);
     this.marine=new MarineLife(this.world);
     const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),
@@ -216,7 +221,7 @@ export class Ocean {
       uExposure:{value:p.exposure},uStorm:{value:p.storm},uLongWaves:{value:null},uShortWaves:{value:null},
       uSwell:{value:this.swell},uChoppiness:{value:1.55},uWind:{value:this.wind},
       uCameraWorld:{value:this.camera.matrixWorld},uInverseProjection:{value:this.camera.projectionMatrixInverse},
-      uBathymetry:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
+      uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
       uSceneColor:{value:null},uSceneDepth:{value:null},uSceneOcclusion:{value:null},uResolution:{value:new THREE.Vector2()},
       uNearFar:{value:new THREE.Vector2(this.camera.near,this.camera.far)},uUnderwater:{value:0},
       uReflection:{value:this.reflection.getRenderTarget().texture},uReflectionMatrix:{value:this.reflectionMatrix},uHasReflection:{value:0},
@@ -410,13 +415,21 @@ export class Ocean {
     this.uniforms.uBathymetry.value=waterMap.texture;
     this.uniforms.uBathyBounds.value.set(waterMap.origin.x,waterMap.origin.y,waterMap.size.x,waterMap.size.y);
     const image=waterMap.texture.image as {width:number;height:number};
-    this.uniforms.uBathyResolution.value.set(image.width,image.height);
+    this.uniforms.uBathyResolution.value.set(image.width,image.height);this.uniforms.uBathyTriangulated.value=waterMap.triangulated?1:0;
     const textures=this.simulation.textures;this.uniforms.uLongWaves.value=textures[0];this.uniforms.uShortWaves.value=textures[1];
     this.waterHeights.update(stamp*.001,textures,waterMap,state.position,state.boatPosition,this.swell,this.uniforms.uChoppiness.value,this.wind);
     this.caustics.update(this.time,this.paused?0:delta,textures[0],textures[1],waterMap,this.camera.position,this.uniforms.uSunDirection.value,this.swell,this.wind,1.55);
     this.uniforms.uCaustics.value=this.caustics.texture;
     this.uniforms.uTime.value=this.time;this.uniforms.uSwell.value=this.swell;this.uniforms.uWind.value=this.wind;
     this.spray.update(this.time,this.paused?0:delta,this.camera,this.uniforms);
+    if(this.breaker){
+      this.breaker.bindUniforms(this.uniforms);
+      this.breaker.material.uniforms.uOccludingDepth.value=this.uniforms.uSceneDepth.value;
+      this.breaker.material.uniforms.uOccludingDepthReady.value=this.uniforms.uSceneDepth.value?1:0;
+      this.renderer.getDrawingBufferSize(this.breaker.material.uniforms.uViewport.value);
+      this.breaker.update(this.camera.position.x,this.camera.position.z,underwater>.5);
+      this.breaker.group.visible&&=this.breakerCandidateEnabled;
+    }
     this.sun.position.copy(this.camera.position).addScaledVector(this.uniforms.uSunDirection.value,650);
     this.sun.target.position.copy(this.camera.position);
     const solarColor=this.uniforms.uSunColor.value as THREE.Vector3;
@@ -487,7 +500,7 @@ export class Ocean {
   }
   undoPlacement():void{this.assets.undoPlacement();this.syncSolids();}
   private syncSolids():void{
-    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup]);
+    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup,...(this.world.scarpVolume?[this.world.scarpVolume.group]:[])]);
     this.solidContactReady=true;
   }
   capture():Promise<Blob|null>{
@@ -495,6 +508,7 @@ export class Ocean {
     this.captureNextFrame?.(null);return new Promise(resolve=>{this.captureNextFrame=resolve;});
   }
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
+  setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
   /** Developer picking of foliage only; tight per-instance bounds avoid testing
    * the full island terrain or an entire dense instance field. */
   probeFoliage(x:number,y:number,foliageOnly=true){
@@ -541,7 +555,7 @@ export class Ocean {
     this.captureNextFrame?.(null);this.captureNextFrame=null;
     this.photoCoast?.dispose();this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
     this.reefGeometries.forEach(geometry=>geometry.dispose());
-    this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();
+    this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();
     this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
     this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();

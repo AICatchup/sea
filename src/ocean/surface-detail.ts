@@ -38,6 +38,18 @@ export const capillarySampling=/* glsl */`
  * Shared verbatim by geometry, shading, photon tracing and CPU-height cache.
  */
 export const shoreWaveSampling=/* glsl */`
+  uniform float uBathyTriangulated;
+  vec4 sampleCoastalGround(sampler2D map,vec2 uv,vec2 resolution){
+    vec2 node=clamp(uv,vec2(0),vec2(1))*(resolution-1.0);
+    vec4 filtered=texture2D(map,(node+.5)/resolution);
+    // Match Niijima's indexed triangle diagonal near the wet contact. A
+    // bilinear saddle can sit above/below the actual flat render triangle.
+    if(uBathyTriangulated<.5||abs(filtered.r)>3.0)return filtered;
+    vec2 base=min(floor(node),max(vec2(0),resolution-2.0)),f=node-base;
+    vec4 a=texture2D(map,(base+.5)/resolution),b=texture2D(map,(base+vec2(1.5,.5))/resolution);
+    vec4 c=texture2D(map,(base+vec2(.5,1.5))/resolution),d=texture2D(map,(base+1.5)/resolution);
+    return f.x+f.y<=1.0?a+(b-a)*f.x+(c-a)*f.y:d+(c-d)*(1.0-f.x)+(b-d)*(1.0-f.y);
+  }
   float shoreWaveScale(vec2 coast,float swell,float wind){
     float depth=max(0.0,-coast.x);
     float transport=pow(clamp(18.0/max(depth,1.0),1.0,8.0),.125);

@@ -1,4 +1,4 @@
-import { NIIJIMA_DETAIL_RASTER as raster, NIIJIMA_DETAIL_PROVENANCE } from './niijima-detail.generated.ts';
+import { NIIJIMA_DETAIL_RASTER as raster, NIIJIMA_DETAIL_PROVENANCE } from './niijima-detail-repaired.generated.ts';
 import type { GroundSampler } from './contracts.ts';
 import { niijimaScarpHeight } from './niijima-scarp.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };

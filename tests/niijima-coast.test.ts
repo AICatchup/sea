@@ -17,14 +17,15 @@ function gpuHeight(x: number, z: number): number {
   const px = (x - map.origin.x) / map.size.x * image.width - .5, pz = (z - map.origin.y) / map.size.y * image.height - .5;
   const ix = Math.floor(px), iz = Math.floor(pz), fx = px - ix, fz = pz - iz;
   const read = (x: number, z: number) => THREE.DataUtils.fromHalfFloat((image.data as Uint16Array)[(z * image.width + x) * 4]);
-  return (read(ix, iz) * (1 - fx) + read(ix + 1, iz) * fx) * (1 - fz) + (read(ix, iz + 1) * (1 - fx) + read(ix + 1, iz + 1) * fx) * fz;
+  const a=read(ix,iz),b=read(ix+1,iz),c=read(ix,iz+1),d=read(ix+1,iz+1);
+  return fx+fz<=1?a+(b-a)*fx+(c-a)*fz:d+(c-d)*(1-fx)+(b-d)*(1-fz);
 }
 
 test('Niijima macroshape is bound to high-resolution GSI sources and distinct official surf markers', () => {
   const p = NIIJIMA_DETAIL_PROVENANCE;
   assert.equal(p.publisher, '国土地理院 / Geospatial Information Authority of Japan');
   assert.ok(p.tiles.filter(t => t.url.includes('dem5a_png/15/')).length >= 12);
-  assert.ok(p.tiles.every(t => /^[a-f0-9]{64}$/.test(t.sha256)));
+  assert.ok(p.tiles.every(t => "sha256" in t ? /^[a-f0-9]{64}$/.test(t.sha256) : "status" in t && t.status===404));
   assert.match(p.authored, /bathymetry is inferred/);
   assert.deepEqual(p.markers.map(m => [m.lat, m.lon]), [[34.35561844, 139.2758477], [34.34428046, 139.2757618]]);
   const peak = geoToWorld(34.348, 139.270);
@@ -58,7 +59,7 @@ test('all nested surfaces and legacy field join continuously', () => {
   }
 });
 
-test('cell-centre water UVs match ground nodes and interpolated wet strand stays within 2.5cm', () => {
+test('cell-centre water UVs match ground nodes and triangulated wet strand stays within 2.5cm', () => {
   const map = coast.waterMap(), image = map.texture.image, bytes = image.data as Uint16Array;
   assert.ok(map.size.x / image.width <= 2 && map.size.y / image.height <= 2);
   assert.ok(bytes.byteLength < 66_000_000);
@@ -71,7 +72,7 @@ test('cell-centre water UVs match ground nodes and interpolated wet strand stays
     const y = coast.heightAt(x, z); if (Math.abs(y) > 1.2) continue;
     maximum = Math.max(maximum, Math.abs(gpuHeight(x, z) - y)); samples++;
   }
-  assert.ok(samples > 10_000); assert.ok(maximum <= .025, `maximum bilinear water error ${maximum}m`);
+  assert.ok(samples > 10_000); assert.ok(maximum <= .025, `maximum triangulated water error ${maximum}m`);
 });
 
 test('new east coast arrivals are open water and seamless boat routes preserve existing Maehama destination', () => {
