@@ -175,6 +175,20 @@ try {
     capturePixels:capturePNG,
     captureNamed:(name:string)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');return captureNamed(captureHost,profile,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
     captureAligned:(name:string,eyeY:number)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile||!Number.isFinite(eyeY))throw new Error('Known view and finite reference eye height required');return captureNamed(captureHost,{...profile,pose:{...profile.pose,eyeY},provenance:'QA bookmark with absolute eye height pinned to an earlier actual capture; no surveyed pose or travel proof'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
+    async captureLeafComparison(name:string){
+      await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown leaf comparison');
+      const before=captureHost.readState(),variants=[];
+      try{
+        captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);
+        for(const alpha of [.38,.18,.38]){
+          const saved=ocean.setLeafAlphaThreshold(alpha);
+          try{for(let i=0;i<20;i++)await captureHost.nextFrame();const png=await capturePNG();if(!png)throw new Error('No foliage PNG');variants.push({png,metadata:{alpha,state:captureHost.readState(),time:ocean.diagnostics.time,materials:saved.size}});}
+          finally{ocean.restoreLeafAlphaThreshold(saved);}
+        }
+        return {variants,scope:'Frozen pose/time/instances/geometry/light; only native leaf alpha cutoff changed, shadow updated; no travel or local botany proof'};
+      }finally{captureHost.restoreState(before);}
+    },
     captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>{
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
       return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
@@ -281,7 +295,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

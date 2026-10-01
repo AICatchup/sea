@@ -463,6 +463,13 @@ export class Ocean {
   probeOptics(){return {caustics:this.caustics.readEnergy(),sun:this.uniforms.uSunDirection.value.toArray(),underwater:this.uniforms.uUnderwater.value};}
   setCausticResolution(count:128|256|512):128|256|512{const previous=this.caustics.photonResolution;this.caustics.setPhotonResolution(count);return previous;}
   getCausticResolution(){return this.caustics.photonResolution;}
+  setLeafAlphaThreshold(value:number){
+    if(!Number.isFinite(value)||value<.05||value>.6)throw new Error('Leaf threshold .05..6 required');
+    const before=new Map<THREE.MeshStandardMaterial,number>();
+    this.assets.group.traverse(object=>{if(!(object instanceof THREE.Mesh))return;for(const material of Array.isArray(object.material)?object.material:[object.material])if(material instanceof THREE.MeshStandardMaterial&&material.userData.foliageRole==='leaves'&&!before.has(material)){before.set(material,material.alphaTest);material.alphaTest=value;}});
+    this.renderer.shadowMap.needsUpdate=true;return before;
+  }
+  restoreLeafAlphaThreshold(before:Map<THREE.MeshStandardMaterial,number>){for(const [material,value] of before)material.alphaTest=value;this.renderer.shadowMap.needsUpdate=true;}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
