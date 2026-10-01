@@ -225,6 +225,7 @@ export class FirstPersonBody {
     this.materials.forEach((material, i) => { material.name = ['sun-exposed skin', 'neoprene', 'reinforced cloth', 'stitched binding', 'boot rubber', 'gear metal', 'natural nails'][i]; });
     const geometry = sculpt.build(), positions = geometry.getAttribute('position');
     const colors = new Float32Array(positions.count * 3).fill(1);
+    const skinIndices = geometry.getAttribute('skinIndex');
     // Palmar skin is warmer and less sun-darkened than the dorsal surface. A
     // geometry-bound tint follows articulation without texture seams or an atlas.
     for (let i = 0; i < positions.count; i++) {
@@ -234,6 +235,22 @@ export class FirstPersonBody {
         colors[i * 3] = 1 + palmar * .07;
         colors[i * 3 + 1] = 1 - palmar * .025;
         colors[i * 3 + 2] = 1 - palmar * .04;
+        const bone = this.bones[skinIndices.getX(i)];
+        const isFinger = /proximal|middle|distal|metacarpal/.test(bone.name);
+        if (isFinger) {
+          const rest = bone.userData.restPoint as THREE.Vector3;
+          const jointDistance = Math.abs(y - rest.y);
+          const knuckle = Math.exp(-((jointDistance / .0065) ** 2));
+          const dorsal = clamp((z + .052) / .009, 0, 1);
+          const distal = bone.name.includes('distal');
+          const pulp = distal ? clamp((rest.y - y) / .016, 0, 1) * palmar : 0;
+          const nailBed = distal ? Math.exp(-(((rest.y - y - .009) / .006) ** 2)) * dorsal : 0;
+          // Blood-rich joint skin and fingertip pulp, contrasted with the paler
+          // broad nail bed. These are anatomical fields, not uncorrelated noise.
+          colors[i * 3] += knuckle * .045 + pulp * .045 + nailBed * .025;
+          colors[i * 3 + 1] -= knuckle * .085 + pulp * .025 - nailBed * .05;
+          colors[i * 3 + 2] -= knuckle * .085 + pulp * .035 - nailBed * .035;
+        }
       }
     }
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
@@ -246,6 +263,9 @@ export class FirstPersonBody {
     this.group.add(this.pelvis, this.mesh); this.group.updateMatrixWorld(true);
     this.mesh.bind(new THREE.Skeleton(this.bones)); this.mesh.normalizeSkinWeights();
     this.group.userData.geometryBudget = { triangles: this.mesh.geometry.index!.count / 3, materialDraws: this.materials.length, bones: this.bones.length };
+    this.group.userData.handMorphology = { creaseConstruction: 'concave shell displacement',
+      palmCreaseDepthMetres: [.0008, .00115], fingerPulpOffsetMetres: .0022,
+      phalanxWaistRatio: [.78, .88], raisedSkinCreaseTubes: 0 };
   }
 
   private bone(name: string, point: THREE.Vector3, parent?: THREE.Bone): THREE.Bone {
@@ -362,25 +382,41 @@ export class FirstPersonBody {
   private sculptHand(s: Sculpt, side: number, hand: THREE.Bone, origin: THREE.Vector3): Finger[] {
     const h = this.index(hand), weight = rigid(h);
     const handPoint = (x: number, y: number, z: number) => origin.clone().add(v(x, y, z));
-    s.loft([
+    const palmSections: Ring[] = [
       { p: handPoint(0, .008, 0), a: .025, b: .023, weights: weight },
       { p: handPoint(0, -.018, -.002), a: .030, b: .022, weights: weight },
       { p: handPoint(-side * .003, -.044, -.002), a: .040, b: .020, weights: weight },
       { p: handPoint(0, -.072, .001), a: .046, b: .017, weights: weight },
       { p: handPoint(side * .002, -.093, .002), a: .044, b: .014, weights: weight },
       { p: handPoint(side * .003, -.105, .002), a: .031, b: .010, weights: weight },
-    ], SKIN, 32, v(1, 0, 0), v(0, 0, 1), (point, r, theta) => {
+    ];
+    // Dense sections surround the transverse flexion folds. All detail belongs to
+    // the same closed palm shell, including the thenar/hypothenar cushions.
+    const palmLevels = [.008, -.004, -.018, -.026, -.036, -.044, -.052, -.061,
+      -.066, -.069, -.071, -.073, -.075, -.077, -.081, -.086, -.089, -.091, -.093, -.095, -.099, -.105];
+    const palmRings = palmLevels.map(y => {
+      let i = 0; while (i < palmSections.length - 2 && y < palmSections[i + 1].p.y - origin.y) i++;
+      const a = palmSections[i], b = palmSections[i + 1];
+      const t = clamp((y - (a.p.y - origin.y)) / (b.p.y - a.p.y), 0, 1);
+      return { p: a.p.clone().lerp(b.p, t), a: THREE.MathUtils.lerp(a.a, b.a, t), b: THREE.MathUtils.lerp(a.b, b.b, t), weights: weight };
+    });
+    s.loft(palmRings, SKIN, 40, v(1, 0, 0), v(0, 0, 1), (point, _r, theta) => {
+      const x = (point.x - origin.x) * side, y = point.y - origin.y;
+      const palmar = Math.max(0, -Math.sin(theta)), dorsal = Math.max(0, Math.sin(theta));
       // The fleshy thenar side and metacarpal ridge are asymmetric, never a flat slab.
-      if (r >= 1 && r <= 3 && Math.cos(theta) * side < 0 && Math.sin(theta) < 0) point.z -= .007;
-      // Four low tendon ridges follow the dorsal metacarpals; the palmar transverse
-      // folds are actual shallow depressions in the surface rather than raised cords.
-      if (Math.sin(theta) > .35 && r >= 2) {
+      const thenar = Math.exp(-(((x + .023) / .023) ** 2 + ((y + .043) / .026) ** 2));
+      const hypothenar = Math.exp(-(((x - .026) / .018) ** 2 + ((y + .066) / .030) ** 2));
+      point.z -= palmar * palmar * (.012 * thenar + .004 * hypothenar);
+      if (dorsal > .35 && y < -.032) {
         for (const x of [-.030, -.009, .014, .034]) point.z += .0012 * Math.exp(-(((point.x - origin.x - side * x) / .004) ** 2));
       }
-      if (Math.sin(theta) < -.5 && (r === 3 || r === 4)) point.z += .0007;
+      // Actual concave folds: inward displacement towards the palm interior.
+      const transverse = Math.exp(-(((y + .073 + x * .10) / .0016) ** 2));
+      const distal = Math.exp(-(((y + .091 - x * .12) / .0015) ** 2));
+      const lifeX = -.031 + ((y + .047) / .024) ** 2 * .011;
+      const life = Math.exp(-(((x - lifeX) / .0015) ** 2)) * Math.exp(-(((y + .047) / .031) ** 6));
+      point.z += palmar * palmar * (.00115 * transverse + .00085 * distal + .0008 * life);
     });
-    s.ellipsoid(handPoint(-side * .023, -.043, -.013), v(.024, .027, .012), weight, SKIN, 20, 14);
-    s.ellipsoid(handPoint(side * .025, -.067, -.007), v(.018, .027, .010), weight, SKIN, 20, 12);
     const fingers: Finger[] = [];
     const specs = [
       { name: 'index', x: -side * .030, y: -.096, lengths: [.035, .024, .018], radius: .0102, spread: -side * .065 },
@@ -400,12 +436,12 @@ export class FirstPersonBody {
       s.loft([
         fingerRing(basePoint.clone().add(v(0, .009, 0)), spec.radius * .93, mix(h, a, .35)),
         fingerRing(basePoint.clone().add(v(0, .001, 0)), spec.radius, mix(h, a, .9)),
-        fingerRing(basePoint.clone().lerp(joint1, .45), spec.radius * .98, rigid(a)),
-        fingerRing(joint1.clone().add(v(0, .006, 0)), spec.radius * 1.01, mix(a, b, .2)),
+        fingerRing(basePoint.clone().lerp(joint1, .45), spec.radius * .88, rigid(a)),
+        fingerRing(joint1.clone().add(v(0, .006, 0)), spec.radius * 1.04, mix(a, b, .2)),
         fingerRing(joint1.clone().add(v(0, .0018, 0)), spec.radius * 1.03, mix(a, b, .43)),
         fingerRing(joint1, spec.radius * .96, mix(a, b, .5)),
         fingerRing(joint1.clone().add(v(0, -.0018, 0)), spec.radius * 1.00, mix(a, b, .57)),
-        fingerRing(joint1.clone().lerp(joint2, .45), spec.radius * .85, rigid(b)),
+        fingerRing(joint1.clone().lerp(joint2, .45), spec.radius * .78, rigid(b)),
         fingerRing(joint2.clone().add(v(0, .0015, 0)), spec.radius * .86, mix(b, c, .42)),
         fingerRing(joint2, spec.radius * .80, mix(b, c, .5)),
         fingerRing(joint2.clone().add(v(0, -.0015, 0)), spec.radius * .85, mix(b, c, .58)),
@@ -415,17 +451,17 @@ export class FirstPersonBody {
       ], SKIN, 20, v(1, 0, 0), v(0, 0, 1), (point, r, theta) => {
         // Broad volar pulp and flatter dorsal phalanges, with a tapered pad below
         // the nail free edge. This breaks the cylindrical sausage silhouette.
-        const dorsal = Math.max(0, Math.sin(theta));
-        if (r > 1) point.z -= dorsal * dorsal * .0007;
-        if (r >= 10 && Math.sin(theta) < 0) point.z -= Math.abs(Math.sin(theta)) * .0011;
+        const dorsal = Math.max(0, Math.sin(theta)), palmar = Math.max(0, -Math.sin(theta));
+        if (r > 1) point.z -= dorsal * dorsal * .0011;
+        // Knuckles broaden dorsally; crease-ring depressions are localized to
+        // dorsal and volar surfaces, preserving the sidewall's fleshy thickness.
+        if (r === 4 || r === 8) point.z += dorsal * dorsal * .00065;
+        if (r === 5 || r === 9) point.z -= dorsal * dorsal * .00065 - palmar * palmar * .00055;
+        if (r >= 10) point.z -= palmar * palmar * .0022;
+        // Wider, flatter distal pulp below a narrow dorsal nail bed.
+        if (r === 11 || r === 12) point.x += Math.cos(theta) * spec.radius * .07 * palmar;
       });
       this.sculptNail(s, joint2, tipPoint, spec.radius, rigid(c));
-      for (const [joint, index] of [[joint1, b], [joint2, c]] as [THREE.Vector3, number][]) {
-        // Fine shallow dorsal folds: narrower than a millimetre, not black ring bands.
-        s.line([joint.clone().add(v(-spec.radius * .65, .001, spec.radius * .76)),
-          joint.clone().add(v(0, .002, spec.radius * .88)), joint.clone().add(v(spec.radius * .65, .001, spec.radius * .76))], .00035, rigid(index), SKIN, 5);
-      }
-      s.ellipsoid(basePoint.clone().add(v(0, .005, .007)), v(spec.radius * .83, .009, .004), mix(h, a, .4), SKIN, 14, 8);
       fingers.push({ base, middle, tip, thumb: false });
     }
     // The thumb has its own saddle/metacarpal rotation and opposed palmar pad.
@@ -453,11 +489,6 @@ export class FirstPersonBody {
       s.ellipsoid(handPoint(x, -.097, 0), v(.007, .009, .010), weight, SKIN, 14, 8);
     }
     fingers.push({ base, middle, tip, thumb: true });
-    // Palm lines are small shallow folds with the skin material, visible only nearby.
-    const crease = (points: [number, number, number][]) => s.line(points.map(p => handPoint(p[0], p[1], p[2])), .00045, weight, SKIN, 5);
-    crease([[-side * .020, -.026, -.021], [-side * .032, -.046, -.023], [-side * .024, -.066, -.025]]);
-    crease([[-side * .030, -.068, -.020], [0, -.073, -.019], [side * .033, -.069, -.017]]);
-    crease([[-side * .026, -.089, -.011], [0, -.092, -.013], [side * .031, -.086, -.013]]);
     return fingers;
   }
 

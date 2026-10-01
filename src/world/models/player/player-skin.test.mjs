@@ -45,6 +45,33 @@ for (const u of adjacency.keys()) if (!visited.has(u)) {
   while (stack.length) for (const v of adjacency.get(stack.pop())) if (!visited.has(v)) { visited.add(v); stack.push(v); }
 }
 assert.equal(nailShells, 10, 'each digit has one closed keratin plate');
+const skinIndex = geometry.getAttribute('skinIndex');
+const leftWrist = mesh.skeleton.bones.findIndex(x => x.name === 'left wrist');
+const palmSurfaceZ = y => {
+  let z = Infinity;
+  for (let i = 0; i < p.count; i++) if (skinIndex.getX(i) === leftWrist
+    && Math.abs(p.getY(i) - y) < 1e-6 && Math.abs(p.getX(i) + .266) < .002) z = Math.min(z, p.getZ(i));
+  return z;
+};
+const palmConcavity = palmSurfaceZ(.771) - (palmSurfaceZ(.773) + palmSurfaceZ(.769)) / 2;
+assert.ok(palmConcavity > .00065 && palmConcavity < .0015, `palmar fold recedes into skin: ${palmConcavity}`);
+const proximal = mesh.skeleton.bones.findIndex(x => x.name === 'left index proximal');
+const baseY = mesh.skeleton.bones[proximal].userData.restPoint.y;
+const ringWidth = y => {
+  let min = Infinity, max = -Infinity;
+  for (let i = 0; i < p.count; i++) if (skinIndex.getX(i) === proximal && Math.abs(p.getY(i) - y) < 1e-6) {
+    min = Math.min(min, p.getX(i)); max = Math.max(max, p.getX(i));
+  }
+  return max - min;
+};
+const knuckleWaistRatio = ringWidth(baseY - .035 + .0018) / ringWidth(baseY - .035 * .45);
+assert.ok(knuckleWaistRatio > 1.14, `knuckle broadens above phalanx waist: ${knuckleWaistRatio}`);
+const color = geometry.getAttribute('color');
+let greenMin = Infinity, greenMax = -Infinity;
+for (let i = 0; i < p.count; i++) if (Math.abs(p.getX(i)) > .19 && p.getY(i) > .64 && p.getY(i) < .87) {
+  greenMin = Math.min(greenMin, color.getY(i)); greenMax = Math.max(greenMax, color.getY(i));
+}
+assert.ok(greenMax - greenMin > .10, 'joint / pulp / nail-bed color fields have local contrast');
 const skin = createPlayerSkin();
 skin.setWetness(0); const dryRoughness = skin.material.roughness;
 skin.setWetness(1); assert.ok(skin.material.roughness < dryRoughness); assert.equal(skin.material.clearcoat, .32);
@@ -52,4 +79,4 @@ skin.setWetness(NaN); assert.equal(skin.material.roughness, dryRoughness);
 assert.equal(skin.material.userData.microdetail.tileMetres, 1/9);
 assert.ok(skin.material.normalMap.image.data.some((n, i) => i % 4 === 0 && n !== 128));
 skin.material.dispose(); skin.textures.forEach(t => t.dispose()); body.dispose();
-console.log(JSON.stringify({ triangles: indices.count / 3, nailShells, openEdges: 0, overlappingEdges: [...edges.values()].filter(n => n > 2).length, minTriangleArea: minArea, wetness: 'bounded', pass: true }));
+console.log(JSON.stringify({ triangles: indices.count / 3, nailShells, openEdges: 0, overlappingEdges: [...edges.values()].filter(n => n > 2).length, minTriangleArea: minArea, palmConcavityMetres: palmConcavity, knuckleWaistRatio, localGreenSpan: greenMax - greenMin, wetness: 'bounded', pass: true }));
