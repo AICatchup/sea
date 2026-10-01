@@ -467,6 +467,8 @@ export class Ocean {
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
   probeShoreState(){return this.shoreSolver?.probeState()??null;}
+  setWhitewaterVisible(visible:boolean):boolean{const material=this.spray.whitewater?.material;const before=material?.visible??false;if(material)material.visible=visible;return before;}
+  probeWhitewaterSites(){const pool=this.spray.whitewater?.pool;if(!pool)return [];const sites=[];for(let i=0;i<pool.capacity&&sites.length<32;i++)if(pool.alpha[i]>.01){const x=pool.positions[i*3],y=pool.positions[i*3+1],z=pool.positions[i*3+2];sites.push({x,y,z,alpha:pool.alpha[i],distance:Math.hypot(x-this.camera.position.x,z-this.camera.position.z)});}return sites;}
   /** Raw floating-point water-only probes; no tone mapping or temporal update. */
   probeWaterContact(points:readonly{x:number;y:number}[]){
     if(points.length>16||points.some(p=>![p.x,p.y].every(Number.isFinite)||p.x<0||p.x>1||p.y<0||p.y>1))throw new Error('Up to sixteen normalized contact probes required');

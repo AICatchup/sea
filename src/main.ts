@@ -161,6 +161,7 @@ try {
     shoreEnabled:(enabled:boolean)=>ocean.setShoreCandidateEnabled(enabled),
     reflectionOverscan:(scale:number)=>ocean.setReflectionOverscan(scale),
     shoreState:()=>ocean.probeShoreState(),
+    whitewaterSites:()=>ocean.probeWhitewaterSites(),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
     capturePixels:capturePNG,
     captureNamed:(name:string)=>{const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');return captureNamed(captureHost,profile,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});},
@@ -206,6 +207,23 @@ try {
           finally{ocean.uniforms.uPointwiseContact.value=enabled;}
         }
         return {png,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null}};
+      }finally{captureHost.restoreState(before);}
+    },
+    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1){
+      if(stops.length<1||stops.length>6||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
+      await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown temporal capture view');
+      const frames=[];
+      try{
+        captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');ocean.setWind(Math.max(2,Math.min(18,wind)));ocean.setSwell(Math.max(.3,Math.min(2,swell)));
+        const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);captureHost.setPaused(true);await captureHost.nextFrame();
+        for(let i=0;i<stops.length;i++){
+          if(i){captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,(stops[i]-stops[i-1])*1000));captureHost.setPaused(true);}
+          await captureHost.nextFrame();const png=await capturePNG();if(!png)throw new Error('No temporal capture');
+          frames.push({png,metadata:{...captureHost.readState(),name,requestedSeconds:stops[i],time:ocean.diagnostics.time,spray:{...ocean.diagnostics.spray},shoreSolver:ocean.diagnostics.shoreSolver,provenance:'One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions',humanAccepted:false}});
+        }
+        const visible=ocean.setWhitewaterVisible(false);
+        try{await captureHost.nextFrame();await captureHost.nextFrame();const pngWithoutWhitewater=await capturePNG();return {frames,pngWithoutWhitewater,whitewaterComparison:'Frozen same solver, particles, camera and light; volume/legacy material visible vs hidden only'};}
+        finally{ocean.setWhitewaterVisible(visible);}
       }finally{captureHost.restoreState(before);}
     },
     captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),
