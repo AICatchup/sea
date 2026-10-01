@@ -1,5 +1,5 @@
-import { photographicSkySampling } from './photographic-sky';
-import { capillarySampling, shoreWaveSampling } from './surface-detail';
+import { photographicSkySampling } from './photographic-sky.ts';
+import { capillarySampling, shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling } from './shore-solver.ts';
 import {surfaceFoamGLSL} from './surface-foam.ts';
 
@@ -237,6 +237,9 @@ export const oceanFragment = /* glsl */ `
   varying vec3 vWorld;
   varying vec2 vOcean;
   varying float vDistance;
+  #ifdef CURVED_SURFACE
+  varying float vEnvelope, vLip;
+  #endif
   ${atmosphere}
   ${shoreWaveSampling}
   ${shoreSolverSampling}
@@ -283,8 +286,14 @@ export const oceanFragment = /* glsl */ `
     if(gl_FragCoord.z>opaqueDepth+0.0000001)discard;
     // The SWE surface is Eulerian: vertices sample it after FFT horizontal
     // displacement. Clip at that same world location, not the FFT origin.
+    #ifdef CURVED_SURFACE
+    if(vEnvelope<.006)discard;
+    vec3 coast=coastAt(vWorld.xz);
+    #else
     vec3 coast=coastAt(uPointwiseContact>.5?vWorld.xz:vOcean);
+    #endif
     float contactHeight=vWorld.y;
+    #ifndef CURVED_SURFACE
     if(uPointwiseContact>.5&&uShoreReady>.5&&coast.x> -11.&&coast.y>=.18){
       // Barycentric vertex height alone can bridge locally dry cells and
       // paint a sharp polygon above sand. Recheck the pointwise surface,
@@ -292,6 +301,11 @@ export const oceanFragment = /* glsl */ `
       contactHeight=renderedSurface(vWorld.xz);
     }
     if(shoreContactDepth(vWorld.y,contactHeight,coast.x)<-.03)discard;
+    #else
+    // A folded lip can clear a dry bed ahead of the Eulerian surface.
+    // Clip its actual height, never min(lipHeight, pointwiseBaseHeight).
+    if(vWorld.y<coast.x+.008)discard;
+    #endif
     float footprint = max(length(dFdx(vOcean)),length(dFdy(vOcean)));
     // Widen the slope stencil with the pixel footprint: distant waves retain
     // their swell while unresolved capillary and whitecap detail falls away.
@@ -306,6 +320,7 @@ export const oceanFragment = /* glsl */ `
     vec3 tangentX=vec3(1.0+dx.x*chop,dx.y*uSwell,dx.z*chop);
     vec3 tangentZ=vec3(dz.x*chop,dz.y*uSwell,1.0+dz.z*chop);
     vec3 normal=normalize(cross(tangentZ,tangentX));
+    #ifndef CURVED_SURFACE
     vec2 shoreUV=(vWorld.xz-uShoreBounds.xy)/uShoreBounds.zw;
     if(uShoreReady>.5&&coast.x> -11.&&coast.x<2.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))){
       float step=max(1.5,footprint*.65);
@@ -320,6 +335,14 @@ export const oceanFragment = /* glsl */ `
       normal=normalize(vec3(-sx,1.,-sz));
     }
     normal.y=max(abs(normal.y),0.14);
+    #else
+    // The curl is multivalued: FFT/SWE height stencils cannot describe it.
+    normal=normalize(cross(dFdx(vWorld),dFdy(vWorld)));
+    // Orient toward the air camera, or away from the underwater camera so
+    // the shared belowNormal=-normal branch sees its incident medium.
+    vec3 incidentView=normalize(cameraPosition-vWorld);
+    if(dot(normal,incidentView)*(uUnderwater>.5?-1.:1.)<0.)normal=-normal;
+    #endif
     // Metric stochastic detail is shared with the photon caustics. Pixel
     // filtering removes unresolved slopes, while retaining their variance.
     float missingVariance;
@@ -329,7 +352,9 @@ export const oceanFragment = /* glsl */ `
     normal.xz-=capillarySurfaceSlopeFiltered(vOcean,uTime,footprint,missingVariance)*microScale*normal.y;
     // The vertex surface includes Earth curvature. Its analytic slope must
     // also participate in the optical normal, in the same camera-relative XZ.
+    #ifndef CURVED_SURFACE
     normal.xz+=(vWorld.xz-cameraPosition.xz)/6371000.0*normal.y;
+    #endif
     normal=normalize(normal);
     float normalVariation=max(dot(dFdx(normal),dFdx(normal)),dot(dFdy(normal),dFdy(normal)));
     float slopeVariance=.0007+.0012*clamp(uWind/12.0,0.0,1.0)+missingVariance*microScale*microScale;
@@ -455,6 +480,10 @@ export const oceanFragment = /* glsl */ `
     float foamPattern=.7*noise(vOcean*.23+foamDrift*.1)+.3*foamDetail;
     float solvedFoam=shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y;
     foam=max(foam,surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern)));
+    #ifdef CURVED_SURFACE
+    // Aeration remains a narrow lip detail; the rolling face keeps optics.
+    foam=max(foam,smoothstep(.88,1.,vLip)*vEnvelope*pores*.35);
+    #endif
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
     color=mix(color,foamColor,clamp(foam,0.0,0.85));
     float shoreDepth=max(0.0,-coast.x);

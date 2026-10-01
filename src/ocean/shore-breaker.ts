@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { shoreWaveSampling, shoreBreakerDissipationSampling } from './surface-detail.ts';
+import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
+import { oceanFragment } from './shaders.ts';
 
-const SEGMENTS=96, SPAN=96;
+const SEGMENTS=96, SPAN=32;
 const smooth=(a:number,b:number,x:number)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
 /** CPU mirror of the sheet gate, for boundedness and negative-path checks. */
 export function breakerSheetEnvelope(depth:number,energy:number,crest:number,slope:number,curvature:number,shelter:number):number {
@@ -9,62 +11,113 @@ export function breakerSheetEnvelope(depth:number,energy:number,crest:number,slo
   return smooth(.2,.6,depth)*(1-smooth(2.8,3.8,depth))*smooth(.02,.25,energy)*smooth(.02,.2,crest)*smooth(.025,.22,slope)*smooth(.005,.12,-curvature)*Math.min(1,shelter);
 }
 
-/** Current-FFT supplemental crest shell. No clock, births, readback or textures.
- * It sharpens only incident shallow positive crests. This is a kinematic fold,
- * not a free-surface solver; see docs/shore-breaker-v8.md. */
+/** Mirror of the bounded instantaneous upstream maximum search (metres).
+ * Exposes sampling counterexamples without a GPU/readback. */
+export function breakerTrackedCrest(sample:(x:number)=>number,source:number):{peak:number;curvature:number;interior:boolean} {
+  let best=-Infinity,offset=0;
+  for(let i=0;i<9;i++){const t=i*.5,h=sample(source-t);if(h>best){best=h;offset=t;}}
+  const peak=source-offset,h=sample(peak),behind=sample(peak-.5),ahead=sample(peak+.5);
+  const curvature=(ahead+behind-2*h)/.25;
+  const refine=Math.max(-.25,Math.min(.25,(ahead-behind)/Math.max(.0001,-curvature)));
+  return {peak:peak+refine,curvature,interior:offset<4&&[best,curvature,refine].every(Number.isFinite)};
+}
+
+/** CPU mirror of the metric ribbon section, also useful for envelope audits.
+ * q is material distance along the incident shoulder, not elapsed time. */
+export function breakerCurlSection(q:number,radius:number,base:number,crest:number,side=0):{x:number;y:number;nx:number;ny:number;active:boolean} {
+  const angle=3.665191429188092; // 210 degrees, genuinely beyond vertical
+  if(![q,radius,base,crest,side].every(Number.isFinite)||radius<=0||q<0||q>radius*angle)return {x:q,y:base,nx:0,ny:1,active:false};
+  const theta=q/radius,blend=smooth(0,.18,theta),thickness=radius*.035*side*blend;
+  return {x:q+(radius*Math.sin(theta)-q)*blend-Math.sin(theta)*thickness,
+    y:base+(crest+radius*(1-Math.cos(theta))-base)*blend+Math.cos(theta)*thickness,
+    nx:-Math.sin(theta),ny:Math.cos(theta),active:true};
+}
+
+/** Bounded instantaneous FFT-driven kinematic bilayer, with shared SWE base.
+ * No clock, readback, new texture, persistent breaker IDs, or fluid closure. */
 export class ShoreBreaker {
   readonly group=new THREE.Group();
   readonly material:THREE.ShaderMaterial;
-  readonly triangleCount=SEGMENTS*SEGMENTS*2;
-  private readonly geometry=new THREE.PlaneGeometry(SPAN,SPAN,SEGMENTS,SEGMENTS);
+  readonly triangleCount=SEGMENTS*SEGMENTS*4;
+  private readonly geometry:THREE.BufferGeometry;
   private disposed=false;
   constructor(){
-    this.geometry.rotateX(-Math.PI/2);
-    this.material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,side:THREE.DoubleSide,
-      uniforms:{uOrigin:{value:new THREE.Vector2()},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)}},
+    const plane=new THREE.PlaneGeometry(SPAN,SPAN,SEGMENTS,SEGMENTS);plane.rotateX(-Math.PI/2);
+    const a=plane.getAttribute('position'),count=a.count;
+    const positions=new Float32Array(count*6),sides=new Float32Array(count*2);
+    for(let i=0;i<count;i++)for(let j=0;j<2;j++){
+      const k=i+j*count;positions[k*3]=a.getX(i);positions[k*3+2]=a.getZ(i);sides[k]=j===0?.5:-.5;
+    }
+    const original=plane.index!,indices=new Uint32Array(original.count*2);
+    for(let i=0;i<original.count;i+=3){
+      indices.set([original.getX(i),original.getX(i+1),original.getX(i+2)],i);
+      indices.set([original.getX(i+2)+count,original.getX(i+1)+count,original.getX(i)+count],original.count+i);
+    }
+    this.geometry=new THREE.BufferGeometry();this.geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
+    this.geometry.setAttribute('sheetSide',new THREE.BufferAttribute(sides,1));this.geometry.setIndex(new THREE.BufferAttribute(indices,1));plane.dispose();
+    this.material=new THREE.ShaderMaterial({depthWrite:true,depthTest:true,side:THREE.DoubleSide,defines:{CURVED_SURFACE:1},
+      uniforms:{...createShoreSolverUniforms(),uOrigin:{value:new THREE.Vector2()},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`uniform vec2 uOrigin;uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
-      varying vec3 vWorld;varying float vEnvelope,vLip,vDepth;
+      attribute float sheetSide;
+      varying vec3 vWorld;varying vec2 vOcean;varying float vDistance,vEnvelope,vLip;
       ${shoreWaveSampling}
       ${shoreBreakerDissipationSampling}
+      ${shoreSolverSampling}
       vec2 coast(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;}
       vec3 raw(vec2 p){return texture2D(uLongWaves,p/384.).xyz+texture2D(uShortWaves,p/24.).xyz;}
       vec3 displacement(vec2 p){return raw(p)*uSwell*shoreWaveScale(coast(p),uSwell,uWind);}
       vec2 inverseChop(vec2 world){vec2 p=world;for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;return p;}
-      float height(vec2 world){return displacement(inverseChop(world)).y;}
-      void main(){vec2 world=position.xz+uOrigin,p=inverseChop(world);vec2 c=coast(world);float d=-c.x,h=height(world);
-        // Terrain uphill normal supplies the local incident direction. No guessed time-period.
+      float fftHeight(vec2 world){return displacement(inverseChop(world)).y;}
+      float baseHeight(vec2 world){return shoreSolvedSurface(world,fftHeight(world),0.).x;}
+      void main(){
+        vec2 world=position.xz+uOrigin,source=world;
         vec2 uphill=vec2(coast(world+vec2(2,0)).x-coast(world-vec2(2,0)).x,coast(world+vec2(0,2)).x-coast(world-vec2(0,2)).x);
         float terrainGradient=length(uphill);vec2 n=uphill/max(terrainGradient,.00001);
-        float behind=height(world-n*.75),ahead=height(world+n*.75);
-        float slope=(h-ahead)/.75,curvature=(ahead+behind-2.*h)/(.75*.75);
-        float energy=shoreBreakerDissipation(raw(p).y,c,uSwell,uWind);
+        // A local, current FFT maximum anchors each descending shoulder. A
+        // parabola refines the 0.5m search so the crest follows FFT phase.
+        float best=-100000.,offset=0.;
+        for(int i=0;i<9;i++){float t=float(i)*.5;float h=fftHeight(source-n*t);if(h>best){best=h;offset=t;}}
+        vec2 peak=source-n*offset;
+        float h=fftHeight(peak),behind=fftHeight(peak-n*.5),ahead=fftHeight(peak+n*.5);
+        float curvature=(ahead+behind-2.*h)/.25;
+        float refine=clamp((ahead-behind)/max(.0001,-curvature),-.25,.25);
+        peak+=n*refine;float q=dot(source-peak,n);h=fftHeight(peak);
+        vec2 c=coast(peak);float d=-c.x;
+        float slope=(h-fftHeight(peak+n*.75))/.75;
+        float energy=shoreBreakerDissipation(raw(inverseChop(peak)).y,c,uSwell,uWind);
         float gate=smoothstep(.2,.6,d)*(1.-smoothstep(2.8,3.8,d))*smoothstep(.02,.25,energy)*smoothstep(.02,.2,h)*smoothstep(.025,.22,slope)*smoothstep(.005,.12,-curvature)*clamp(c.y,0.,1.)*smoothstep(.0001,.01,terrainGradient);
-        if(!(d>.2&&d<3.8&&c.y>=.18))gate=0.;
-        // Bounded forward folding on the descending crest shoulder. FFT slope is phase.
-        float phase=clamp(slope/.7,0.,1.);float radius=min(.65,d*.24)*gate;
-        float angle=phase*2.7;
-        world+=n*radius*(1.-cos(angle));float y=h+.018+radius*sin(angle);
+        if(!(d>.2&&d<3.8&&c.y>=.18)||offset>=4.)gate=0.;
+        // Radius is local-depth AND actual-crest bounded. No global added wave.
+        float radius=min(1.25,min(d*.36,max(0.,h)*.9))*gate;
+        float theta=q/max(.00001,radius),angle=3.665191429;
+        if(!(theta>=0.&&theta<=angle))gate=0.;
+        theta=clamp(theta,0.,angle);
+        float blend=smoothstep(0.,.18,theta);
+        float thick=radius*.035*sheetSide*blend;
+        float base=baseHeight(source),crest=baseHeight(peak);
+        vec2 curled=peak+n*(radius*sin(theta)-sin(theta)*thick);
+        world=mix(source,curled,blend);
+        float y=mix(base,crest+radius*(1.-cos(theta))+cos(theta)*thick,blend);
+        // Source bed/wetness rejects disconnected land sheets; final lip bed
+        // clipping is performed independently at its displaced destination.
+        if(base<coast(source).x+.01)gate=0.;
+        float edge=max(abs(position.x),abs(position.z));gate*=1.-smoothstep(SPAN*.5-3.,SPAN*.5,edge);
         vec2 delta=world-cameraPosition.xz;y-=dot(delta,delta)/(2.*6371000.);
-        vWorld=vec3(world.x,y,world.y);vEnvelope=gate;vLip=phase;vDepth=d;
+        vWorld=vec3(world.x,y,world.y);vOcean=inverseChop(source);vDistance=length(cameraPosition-vWorld);vEnvelope=gate;vLip=theta/angle;
         gl_Position=projectionMatrix*viewMatrix*vec4(vWorld,1.);
-      }`,
-      fragmentShader:`uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady;uniform vec2 uViewport;varying vec3 vWorld;varying float vEnvelope,vLip,vDepth;
-      void main(){if(vEnvelope<.006||vDepth<=.2||vDepth>=3.8)discard;
-        if(uOccludingDepthReady>.5&&texture2D(uOccludingDepth,gl_FragCoord.xy/uViewport).r<gl_FragCoord.z-.0000002)discard;
-        vec3 n=normalize(cross(dFdx(vWorld),dFdy(vWorld)));vec3 eye=normalize(cameraPosition-vWorld);
-        float fresnel=pow(1.-abs(dot(n,eye)),5.);float foam=smoothstep(.65,.95,vLip)*vEnvelope;
-        vec3 tint=mix(vec3(.12,.49,.51),vec3(.72,.83,.84),fresnel*.6+foam*.45);
-        gl_FragColor=vec4(tint,vEnvelope*(.18+.45*fresnel+.16*foam));
-      }`});
-    const mesh=new THREE.Mesh(this.geometry,this.material);mesh.frustumCulled=false;this.group.add(mesh);
+      }`.replaceAll('SPAN',String(SPAN)),
+      fragmentShader:oceanFragment});
+    const mesh=new THREE.Mesh(this.geometry,this.material);mesh.frustumCulled=false;mesh.renderOrder=1;this.group.add(mesh);
   }
-  /** Bind shared IUniform objects: renderer updates then remain authoritative. */
+  /** Root MUST supply the entire ocean material uniform dictionary, including
+   * scene depth/color, reflection, sky, solar shadow, solver and atmosphere.
+   * Borrow objects, never copy textures or dispose renderer-owned resources. */
   bindUniforms(uniforms:Record<string,THREE.IUniform>):void {
-    for(const name of Object.keys(this.material.uniforms))if(name!=='uOrigin'&&uniforms[name])this.material.uniforms[name]=uniforms[name];
+    for(const [name,uniform] of Object.entries(uniforms))if(name!=='uOrigin')this.material.uniforms[name]=uniform;
   }
-  update(x:number,z:number,underwater:boolean):void {
+  update(x:number,z:number,_underwater:boolean):void {
     if(this.disposed)return;
-    this.group.visible=!underwater&&Number.isFinite(x)&&Number.isFinite(z);
+    this.group.visible=Number.isFinite(x)&&Number.isFinite(z);
     if(this.group.visible)(this.material.uniforms.uOrigin.value as THREE.Vector2).set(x,z);
   }
   dispose():void {if(this.disposed)return;this.disposed=true;this.geometry.dispose();this.material.dispose();this.group.clear();}
