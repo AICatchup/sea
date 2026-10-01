@@ -6,7 +6,7 @@ const birth:WhitewaterBirth={x:0,z:0,height:.3,energy:.8,nx:1,nz:0,seed:.4};
 const sampler=(_x:number,_z:number,out:WhitewaterSample)=>{Object.assign(out,water);return true;};
 test('birth gates require current compression, wet shallow water, exposed gradient and finite samples',()=>{
   assert.ok(whitewaterBirthRate(water)>0);
-  for(const change of [{compression:0},{compression:.12},{depth:0},{depth:4},{shelter:.1},{ground:.3},{gradientX:0},{height:NaN}])assert.equal(whitewaterBirthRate({...water,...change}),0);
+  for(const change of [{compression:0},{depth:0},{depth:4},{shelter:.1},{ground:.3},{gradientX:0},{height:NaN}])assert.equal(whitewaterBirthRate({...water,...change}),0);
 });
 test('fixed pool preserves births, rejects invalid values and expires for full elapsed dt',()=>{
   const pool=new WhitewaterPool(2);assert.ok(pool.emit(birth));assert.ok(pool.emit(birth));assert.equal(pool.emit(birth),false);

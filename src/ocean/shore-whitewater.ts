@@ -1,15 +1,19 @@
 import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
+import { whitewaterAerationStrength } from './whitewater-flow.ts';
 
 const LIMIT=1024;
 export interface WhitewaterSample {height:number;compression:number;depth:number;shelter:number;ground:number;gradientX:number;gradientZ:number;waveGradientX?:number;waveGradientZ?:number;flowX?:number;flowZ?:number}
 export type WhitewaterSampler=(x:number,z:number,out:WhitewaterSample)=>boolean;
 export interface WhitewaterBirth {x:number;z:number;height:number;energy:number;nx:number;nz:number;seed:number}
-/** Compression is current breaker energy, never FFT's accumulated foam alpha. */
+/** Current birth proxy, never accumulated foam alpha. The SWE value is
+ * compression times a 0.7s onset window, so .12 is not a universal strength
+ * threshold. A 36m² cache cell supplies ~9 four-square-metre flocs per unit
+ * birth proxy per second; persistence builds coverage downstream. */
 export function whitewaterBirthRate(s:WhitewaterSample):number {
-  if(!Object.values(s).every(Number.isFinite)||s.depth<.2||s.depth>3.8||s.shelter<.18||s.compression<=.12||s.ground>=s.height-.08||Math.hypot(s.gradientX,s.gradientZ)<1e-6)return 0;
-  return 2.5*Math.min(1,s.compression)*Math.min(1,s.shelter)*Math.min(1,(s.depth-.2)/.4)*Math.min(1,(3.8-s.depth)/1.2);
+  if(!Object.values(s).every(Number.isFinite)||s.depth<.2||s.depth>3.8||s.shelter<.18||s.compression<=0||s.ground>=s.height-.08||Math.hypot(s.gradientX,s.gradientZ)<1e-6)return 0;
+  return 9*Math.min(1,s.compression)*Math.min(1,s.shelter)*Math.min(1,(s.depth-.2)/.4)*Math.min(1,(3.8-s.depth)/1.2);
 }
 
 /** Analytic horizontal transport avoids frame-rate-dependent integration. Surface
@@ -31,11 +35,11 @@ export class WhitewaterPool {
     this.capacity=capacity;this.positions=new Float32Array(capacity*3);this.shape=new Float32Array(capacity*3);this.alpha=new Float32Array(capacity);this.seeds=new Float32Array(capacity);this.ages=new Float64Array(capacity);this.births=Array(capacity).fill(null);
   }
   emit(b:WhitewaterBirth):boolean {
-    if(this.disposed||!Object.values(b).every(Number.isFinite)||Math.abs(b.x)>1e6||Math.abs(b.z)>1e6||Math.abs(b.height)>1e4||b.energy<=.12||b.energy>1||Math.hypot(b.nx,b.nz)<.9||Math.hypot(b.nx,b.nz)>1.1||b.seed<0||b.seed>1)return false;
+    if(this.disposed||!Object.values(b).every(Number.isFinite)||Math.abs(b.x)>1e6||Math.abs(b.z)>1e6||Math.abs(b.height)>1e4||b.energy<=0||b.energy>1||Math.hypot(b.nx,b.nz)<.9||Math.hypot(b.nx,b.nz)>1.1||b.seed<0||b.seed>1)return false;
     for(let n=0;n<this.capacity;n++){
       const i=(n+this.cursor)%this.capacity;if(this.births[i])continue;
       this.births[i]={...b};this.ages[i]=0;this.seeds[i]=b.seed;this.positions.set([b.x,b.height+.025,b.z],i*3);
-      this.shape.set([1.2+b.seed*2.5,.22+b.energy*.6,Math.atan2(b.nz,b.nx)+Math.PI/2],i*3);this.alpha[i]=0;this.active++;this.cursor=(i+1)%this.capacity;return true;
+      this.shape.set([1.2+b.seed*2.5,.22+whitewaterAerationStrength(b.energy)*.6,Math.atan2(b.nz,b.nx)+Math.PI/2],i*3);this.alpha[i]=0;this.active++;this.cursor=(i+1)%this.capacity;return true;
     }return false;
   }
   advance(delta:number,sampler:WhitewaterSampler):void {
@@ -52,7 +56,7 @@ export class WhitewaterPool {
       if(age>=life||!sampler(x,z,s)||!Object.values(s).every(Number.isFinite)||Math.abs(s.height)>1e4||s.depth<=0||s.depth>5||s.ground>=s.height-.015){this.births[i]=null;this.alpha[i]=0;this.active--;continue;}
       this.positions.set([x,s.height+.025,z],i*3);
       this.shape[i*3]=(1.2+b.seed*2.5)*(1+age*.12);
-      this.shape[i*3+1]=(.22+b.energy*.6)*(1+age*.32);
+      this.shape[i*3+1]=(.22+whitewaterAerationStrength(b.energy)*.6)*(1+age*.32);
       const wet=s.depth<.2?Math.min(1,s.depth/.2):1;
       // Dense aerated whitewater scatters strongly at birth; its holes and age
       // control coverage. A mist-like base opacity erased the surface ribbons.

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { shoreWaveSampling,shoreBreakerDissipationSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { ShoreWhitewaterVolume } from './shore-whitewater-volume.ts';
-import { whitewaterFlowSampling, decodeWhitewaterVelocity } from './whitewater-flow.ts';
+import { whitewaterFlowSampling, decodeWhitewaterVelocity, whitewaterAerationStrength } from './whitewater-flow.ts';
 import { ShoreWhitewater, whitewaterBirthRate, type WhitewaterSample } from './shore-whitewater.ts';
 
 const GRID=24, SPAN=144, INTERVAL=.2, LIMIT=1500;
@@ -49,11 +49,13 @@ export class SprayPool {
   }
 }
 
-/** Negative paths deliberately produce no substitute fog or deep-water spray. */
+/** 36m² sampled cell: one sparse mist packet per m² per unit instantaneous
+ * birth proxy per second. Zero source has zero rate; historical foam supplies
+ * no packets. Packets use finite ballistic lives, never background fog. */
 export function sprayBirthRate(depth:number,energy:number,shelter:number,distance:number):number{
-  if(![depth,energy,shelter,distance].every(Number.isFinite)||depth<.2||depth>4||energy<=.08||shelter<.18||distance>90)return 0;
+  if(![depth,energy,shelter,distance].every(Number.isFinite)||depth<.2||depth>4||energy<=0||shelter<.18||distance>90)return 0;
   const shore=Math.min(1,(depth-.2)/.4)*Math.min(1,(4-depth)/1.2);
-  return 10*shore*Math.max(0,Math.min(1,energy))*Math.max(0,Math.min(1,shelter))*Math.max(0,1-distance/100);
+  return 36*shore*Math.max(0,Math.min(1,energy))*Math.max(0,Math.min(1,shelter))*Math.max(0,1-distance/100);
 }
 
 /** 576 surface samples, RG16 height/B breaker energy/A depth, 2304 bytes.
@@ -227,17 +229,25 @@ export class ShoreSpray {
           if(!Number.isFinite(ground)||ground>=h-.08){this.credits[cell]=0;continue;}
           const rate=sprayBirthRate(depth,energy,1,distance);
           if(rate<=0){this.credits[cell]=0;continue;}
-          this.credits[cell]=Math.min(2,this.credits[cell]+rate*dt);
-          if(this.credits[cell]<1)continue;this.credits[cell]--;
+          // A short crest event must have a chance to emit immediately. Requiring
+          // a whole credit before a source switches off erased weak pulses.
+          // Bernoulli sampling preserves expected rate and decorrelates cells.
+          if(this.random()>=Math.min(1,rate*dt))continue;
           // Local bathymetric uphill points onshore. Light droplets drag offshore.
           const gx=this.ground.heightAt(x+2,z)-this.ground.heightAt(x-2,z);
           const gz=this.ground.heightAt(x,z+2)-this.ground.heightAt(x,z-2);
           const norm=Math.hypot(gx,gz)||1,nx=gx/norm,nz=gz/norm;
-          const mist=this.random()<.65,speed=.6+this.random()*1.9;
-          const jitter=(this.random()-.5)*.3;
-          const born=this.pool.emit({x:x+jitter,y:h+(this.whitewater instanceof ShoreWhitewaterVolume ? .12+energy*.3 : .04),z:z+jitter,vx:nx*speed+(this.random()-.5),vy:.8+this.random()*2.6*energy,vz:nz*speed+(this.random()-.5),
+          const strength=whitewaterAerationStrength(energy);
+          const mist=this.random()<.78,speed=.6+this.random()*1.9;
+          const along=(this.random()-.5)*3.6,across=(this.random()-.5)*.7;
+          const bx=x-nz*along+nx*across,bz=z+nx*along+nz*across;
+          // Recheck the jittered site's water contact; spray never starts over
+          // dry ground merely because the centre of a six-metre cell was wet.
+          const site=this.foamSample;
+          if(!this.sampleFoam(bx,bz,site)||site.depth<.2||site.depth>4||site.ground>=site.height-.08||site.compression<=0)continue;
+          const born=this.pool.emit({x:bx,y:site.height+(this.whitewater instanceof ShoreWhitewaterVolume ? .12+strength*.3 : .04),z:bz,vx:nx*speed+(this.random()-.5),vy:.8+this.random()*2.6*strength,vz:nz*speed+(this.random()-.5),
             windX:-nx*wind*.12,windZ:-nz*wind*.12,drag:mist?2.4:.6,life:mist?.35+this.random()*.45:.2+this.random()*.35,
-            size:mist?.045+this.random()*.09:.012+this.random()*.028,opacity:mist?.10:.24});
+            size:mist?.10+this.random()*.18:.012+this.random()*.028,opacity:mist?.12:.24});
           if(born){births++;this.emitted++;}
         }
       }
@@ -248,8 +258,7 @@ export class ShoreSpray {
           const x=this.sampleOrigin.x+(cell%GRID+.5-GRID/2)*6,z=this.sampleOrigin.y+(Math.floor(cell/GRID)+.5-GRID/2)*6;
           const s=this.foamSample;if(!this.sampleFoam(x,z,s))continue;
           const rate=whitewaterBirthRate(s);if(rate<=0){this.foamCredits[cell]=0;continue;}
-          this.foamCredits[cell]=Math.min(1.5,this.foamCredits[cell]+rate*dt);
-          if(this.foamCredits[cell]<1)continue;this.foamCredits[cell]--;
+          if(this.random()>=Math.min(1,rate*dt))continue;
           const norm=Math.hypot(s.gradientX,s.gradientZ),seed=this.random(),along=(seed-.5)*4;
           const nx=s.gradientX/norm,nz=s.gradientZ/norm;
           // The coarse cache is Eulerian. Sample the actual wet field at a
@@ -305,7 +314,7 @@ export class ShoreSpray {
     this.failed=true;this.pixels=null;this.foamCacheValid=false;
     this.credits.fill(0);this.foamCredits.fill(0);
   }
-  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:this.whitewater?2:1,whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?2048:0,whitewaterMode:this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,approximation:this.whitewater instanceof ShoreWhitewaterVolume?'6m grid / <=0.5s cache; instantaneous compression births; sampled SWE flow with FFT-only heuristic fallback; no overturning CFD':'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater bilinear cached height, ground-culling, analytic onshore drift'};}
+  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:this.whitewater?2:1,whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?2048:0,whitewaterMode:this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input',approximation:this.whitewater instanceof ShoreWhitewaterVolume?'6m grid / <=0.5s cache; instantaneous compression births; sampled SWE flow with FFT-only heuristic fallback; no overturning CFD':'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater bilinear cached height, ground-culling, analytic onshore drift'};}
   dispose():void{
     if(this.disposed)return;this.disposed=true;
     this.whitewater?.dispose();

@@ -20,7 +20,7 @@ test('fixed volume pool fills, rejects invalid input, pauses and recycles',()=>{
 });
 test('energy controls real thickness, collapse spreads and sampled wave slope changes flow',()=>{
   const a=new WhitewaterVolumePool(1),b=new WhitewaterVolumePool(1);a.emit(birth);b.emit({...birth,energy:.2});
-  a.advance(.15,sample);b.advance(.15,sample);assert.ok(a.shape[1]>b.shape[1]*2);
+  a.advance(.15,sample);b.advance(.15,sample);assert.ok(a.shape[1]>b.shape[1]*1.4);
   const thickness=a.shape[1],depth=a.shape[2];a.advance(.6,sample);assert.ok(a.shape[1]<thickness);assert.ok(a.shape[2]>depth);assert.ok(a.motion[0]>0);
   const c=new WhitewaterVolumePool(1),d=new WhitewaterVolumePool(1);c.emit(birth);d.emit(birth);
   c.advance(.1,sample);d.advance(.1,(_x,_z,out)=>{Object.assign(out,{...water,waveGradientX:.4,waveGradientZ:.3,height:.9});return true;});

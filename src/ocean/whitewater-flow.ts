@@ -37,3 +37,12 @@ export function relaxWhitewaterVelocity(previous:number,target:number,dt:number)
   const tau=.28,decay=Math.exp(-dt/tau);
   return {distance:target*dt+(previous-target)*tau*(1-decay),velocity:target+(previous-target)*decay};
 }
+
+/** Integrate a current, unitless birth-rate proxy over a two-second collapse
+ * window. The square root controls geometric aeration, not emission count;
+ * a weak current source stays sparse instead of becoming a white sheet.
+ * This is an authored closure, not a measured dissipation rate. */
+export function whitewaterAerationStrength(birthProxy:number):number {
+  if(!Number.isFinite(birthProxy)||birthProxy<=0)return 0;
+  return Math.sqrt(-Math.expm1(-2*Math.min(1,birthProxy)));
+}

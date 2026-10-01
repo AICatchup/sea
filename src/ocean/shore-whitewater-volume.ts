@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { type WhitewaterBirth, type WhitewaterSample, type WhitewaterSampler } from './shore-whitewater.ts';
-import { relaxWhitewaterVelocity } from './whitewater-flow.ts';
+import { relaxWhitewaterVelocity, whitewaterAerationStrength } from './whitewater-flow.ts';
 
 export const VOLUME_CAPACITY=384;
 const finite=(s:WhitewaterSample)=>Object.values(s).every(Number.isFinite);
@@ -27,13 +27,14 @@ export class WhitewaterVolumePool {
     this.capacity=capacity;this.positions=new Float32Array(capacity*3);this.shape=new Float32Array(capacity*4);this.motion=new Float32Array(capacity*2);this.alpha=new Float32Array(capacity);this.seeds=new Float32Array(capacity);this.births=Array(capacity).fill(null);this.ages=new Float64Array(capacity);this.velocity=new Float64Array(capacity*2);
   }
   emit(b:WhitewaterBirth):boolean{
-    if(this.disposed||!Object.values(b).every(Number.isFinite)||Math.abs(b.x)>1e6||Math.abs(b.z)>1e6||Math.abs(b.height)>1e4||b.energy<=.12||b.energy>1||Math.abs(Math.hypot(b.nx,b.nz)-1)>.1||b.seed<0||b.seed>1)return false;
+    if(this.disposed||!Object.values(b).every(Number.isFinite)||Math.abs(b.x)>1e6||Math.abs(b.z)>1e6||Math.abs(b.height)>1e4||b.energy<=0||b.energy>1||Math.abs(Math.hypot(b.nx,b.nz)-1)>.1||b.seed<0||b.seed>1)return false;
     for(let n=0;n<this.capacity;n++){
       const i=(this.cursor+n)%this.capacity;if(this.births[i])continue;
       this.births[i]={...b};this.ages[i]=0;this.seeds[i]=b.seed;
       this.velocity[i*2]=0;this.velocity[i*2+1]=0;
       this.positions[i*3]=b.x;this.positions[i*3+1]=b.height;this.positions[i*3+2]=b.z;
-      this.shape[i*4]=2+2.6*b.seed;this.shape[i*4+1]=.12+.75*b.energy;this.shape[i*4+2]=.5+.9*b.energy;this.shape[i*4+3]=Math.atan2(b.nz,b.nx);
+      const strength=whitewaterAerationStrength(b.energy);
+      this.shape[i*4]=3.2+2.8*b.seed;this.shape[i*4+1]=.06+.85*strength;this.shape[i*4+2]=1.2+1.1*strength;this.shape[i*4+3]=Math.atan2(b.nz,b.nx);
       this.alpha[i]=0;this.active++;this.cursor=(i+1)%this.capacity;return true;
     }return false;
   }
@@ -61,11 +62,11 @@ export class WhitewaterVolumePool {
       }
       if(!sampler(this.positions[i*3],this.positions[i*3+2],s)||!finite(s)||s.depth<=0||s.ground>=s.height-.015){this.births[i]=null;this.alpha[i]=0;this.active--;continue;}
       this.positions[i*3+1]=s.height;
-      const collapse=Math.exp(-age*1.05),remaining=1-age/life;
-      this.shape[i*4]=(2+2.6*b.seed)*(1+age*.12);
-      this.shape[i*4+1]=(.12+.75*b.energy)*collapse+.055*remaining;
-      this.shape[i*4+2]=(.5+.9*b.energy)*(1+age*.5);
-      this.motion[i*2]=(1-collapse)*2.3;this.motion[i*2+1]=age/life;
+      const strength=whitewaterAerationStrength(b.energy),collapse=Math.exp(-age*1.05),remaining=1-age/life;
+      this.shape[i*4]=(3.2+2.8*b.seed)*(1+age*.10);
+      this.shape[i*4+1]=(.06+.85*strength)*collapse+.055*remaining;
+      this.shape[i*4+2]=(1.2+1.1*strength)*(1+age*.38);
+      this.motion[i*2]=(1-collapse)*.8;this.motion[i*2+1]=age/life;
       this.alpha[i]=Math.min(1,age/.12)*Math.pow(remaining,.7)*Math.min(1,s.depth/.2)*(.78+.2*b.energy);
     }
   }
@@ -95,7 +96,7 @@ export class ShoreWhitewaterVolume {
     for(const [name,array,size] of [['aCenter',this.pool.positions,3],['aShape',this.pool.shape,4],['aMotion',this.pool.motion,2],['aAlpha',this.pool.alpha,1],['aSeed',this.pool.seeds,1]] as const)this.geometry.setAttribute(name,new THREE.InstancedBufferAttribute(array,size).setUsage(THREE.DynamicDrawUsage));
     this.geometry.instanceCount=this.pool.capacity;
     this.material=new THREE.ShaderMaterial({depthTest:true,depthWrite:true,transparent:false,side:THREE.FrontSide,
-      uniforms:{...createShoreSolverUniforms(),uTint:{value:new THREE.Color(.82,.89,.88)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
+      uniforms:{...createShoreSolverUniforms(),uTint:{value:new THREE.Color(.91,.96,.95)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`attribute vec3 aCenter;attribute vec4 aShape;attribute vec2 aMotion;attribute float aAlpha,aSeed;
       varying vec3 vLocal,vNormal;varying float vAlpha,vSeed,vAge,vWet;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
@@ -106,6 +107,13 @@ export class ShoreWhitewaterVolume {
       float surfaceHeight(vec2 world){vec2 p=world;for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;return shoreSolvedSurface(world,displacement(p).y,0.).x;}
       void main(){vAlpha=aAlpha;vSeed=aSeed;vAge=aMotion.y;vLocal=position;if(aAlpha<.001){gl_Position=vec4(2,2,2,1);return;}
       float roll=aMotion.x;float cr=cos(roll),sr=sin(roll);vec3 q=position;vec3 n=normal;
+      // Each crest fragment has a different fold and height along its front.
+      // The inverse-transpose updates lighting for this actual deformation.
+      float phase=aSeed*6.2831853;
+      float fold=.18*sin(q.z*5.+phase),foldSlope=.9*cos(q.z*5.+phase);
+      q.x+=fold;n.z-=foldSlope*n.x;
+      float ridge=.78+.22*sin(q.z*7.+phase),ridgeSlope=1.54*cos(q.z*7.+phase);
+      n.z-=n.y*q.y*ridgeSlope/ridge;n.y/=ridge;q.y*=ridge;
       q.xy=mat2(cr,sr,-sr,cr)*q.xy;n.xy=mat2(cr,sr,-sr,cr)*n.xy;
       // Local x is the forward collapse direction, z spans the breaker front.
       q*=vec3(aShape.z,aShape.y,aShape.x)*.5;q.y+=aShape.y*.28;
