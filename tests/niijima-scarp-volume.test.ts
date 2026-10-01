@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { NiijimaDEM } from '../src/world/niijima-detail.ts';
 import { NiijimaScarpVolume,niijimaShoreStation } from '../src/world/niijima-scarp-volume.ts';
+import { niijimaScarpApronHeight } from '../src/world/niijima-scarp.ts';
 const source=new NiijimaDEM();
-const ground={heightAt:(x:number,z:number)=>source.refinedHeightAt(x,z)};
+const ground={heightAt:(x:number,z:number)=>niijimaScarpApronHeight(source,x,z,source.refinedHeightAt(x,z))};
 test('indexed scarp is finite, closed, connected, nondegenerate and bounded',()=>{
   const volume=new NiijimaScarpVolume(ground,source),p=volume.geometry.getAttribute('position'),n=volume.geometry.getAttribute('normal'),index=volume.geometry.index!;
   const edges=new Map<string,number>();let signed=0,minArea=Infinity;
@@ -21,7 +22,7 @@ test('indexed scarp is finite, closed, connected, nondegenerate and bounded',()=
   assert.ok([...edges.values()].every(v=>v===2));
   assert.equal(p.count-edges.size+index.count/3,2);
   assert.ok(volume.diagnostics.triangles<150000);
-  assert.ok(volume.bounds.max.z-volume.bounds.min.z>400&&volume.bounds.max.z-volume.bounds.min.z<460);
+  assert.ok(volume.bounds.max.z-volume.bounds.min.z>570&&volume.bounds.max.z-volume.bounds.min.z<590);
   assert.ok(volume.diagnostics.minimumToeShore>27);
   console.log(volume.diagnostics,{signedVolume:signed,minDoubleArea:minArea,bounds:volume.bounds});volume.dispose();
 });
@@ -35,9 +36,43 @@ test('source is unchanged and dry beach corridor has no volume intersection',()=
     assert.ok(ground.heightAt(x,z)>0);
   }
   assert.deepEqual(source.heights,snapshot);
-  const p=volume.geometry.getAttribute('position'),ring=79,deltas:number[]=[];
+  const p=volume.geometry.getAttribute('position'),ring=111,deltas:number[]=[];
   for(let i=0;i<160;i++)deltas.push(p.getX((i+1)*ring+32)-p.getX(i*ring+32));
   for(const period of [8,16,32])assert.ok(deltas.slice(period).some((v,i)=>Math.abs(v-deltas[i])>.1));
   volume.dispose();
 });
 
+
+test('transported rings have no local inversions or nonadjacent station folds',()=>{
+  const volume=new NiijimaScarpVolume(ground,source),p=volume.geometry.getAttribute('position'),ring=111;
+  const cross=(a:number,b:number,c:number)=> (p.getX(b)-p.getX(a))*(p.getY(c)-p.getY(a))-(p.getY(b)-p.getY(a))*(p.getX(c)-p.getX(a));
+  for(let i=0;i<401;i++){
+    const z=p.getZ(i*ring);
+    for(let j=0;j<ring;j++) assert.equal(p.getZ(i*ring+j),z);
+    if(i)assert.ok(z-p.getZ((i-1)*ring)>1.44);
+    // Strict segment intersections detect folded cross sections. The separate
+    // station planes then establish that nonadjacent rings cannot intersect.
+    for(let a=0;a<ring;a++)for(let b=a+2;b<ring;b++){
+      if(a===0&&b===ring-1)continue;
+      const aa=i*ring+a,ab=i*ring+(a+1)%ring,ba=i*ring+b,bb=i*ring+(b+1)%ring;
+      assert.ok(!(cross(aa,ab,ba)*cross(aa,ab,bb)<-1e-7&&cross(ba,bb,aa)*cross(ba,bb,ab)<-1e-7),`cross-section ${i}: ${a}/${b}`);
+    }
+  }
+  const mesh=volume.group.children[0] as THREE.Mesh;mesh.updateMatrixWorld(true);
+  const ray=new THREE.Raycaster();
+  for(let z=-1080;z<=-500;z+=3)for(const distance of [4,8,12])for(const offset of [-.45,.45]){
+    const x=niijimaShoreStation(source,z,distance)+offset;
+    ray.set(new THREE.Vector3(x,200,z),new THREE.Vector3(0,-1,0));assert.equal(ray.intersectObject(mesh).length,0);
+  }
+  volume.dispose();
+});
+
+test('both terminal rings embed under support and source shoreline corridor is invariant',()=>{
+  const volume=new NiijimaScarpVolume(ground,source),p=volume.geometry.getAttribute('position');
+  for(const station of [0,400])for(let j=0;j<111;j++){
+    const k=station*111+j,x=p.getX(k),z=p.getZ(k);
+    assert.ok(p.getY(k)<ground.heightAt(x,z),`unburied endpoint ${station}/${j}`);
+  }
+  for(let z=-1080;z<=-500;z+=5){const x=niijimaShoreStation(source,z,12);const h=source.refinedHeightAt(x,z);assert.ok(Math.abs(niijimaScarpApronHeight(source,x,z,h)-h)<1e-8);}
+  volume.dispose();
+});

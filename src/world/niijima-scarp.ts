@@ -4,7 +4,7 @@ export interface ScarpSource {
   shoreAt(x: number, z: number): number;
 }
 export const NIIJIMA_SCARP_BOUNDS = { minX: 5720, maxX: 5970, minZ: -1500, maxZ: -450 } as const;
-export const NIIJIMA_VOLUME_FRONTAGE={minZ:-1000,maxZ:-580,feather:24} as const;
+export const NIIJIMA_VOLUME_FRONTAGE={minZ:-1080,maxZ:-500,feather:80} as const;
 const smooth = (a: number, b: number, v: number): number => {
   const t = Math.max(0, Math.min(1, (v - a) / (b - a)));
   return t * t * (3 - 2 * t);

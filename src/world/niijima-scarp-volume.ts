@@ -33,7 +33,7 @@ export class NiijimaScarpVolume {
     this.material.vertexColors=true;
     this.material.side=THREE.FrontSide;
     const positions:number[]=[], colors:number[]=[], indices:number[]=[];
-    const sections=301, faceSteps=64, roofSteps=12, ring=faceSteps+roofSteps+3;
+    const sections=401, faceSteps=96, roofSteps=12, ring=faceSteps+roofSteps+3;
     const frontage=NIIJIMA_VOLUME_FRONTAGE,span=frontage.maxZ-frontage.minZ;
     let minimumToeShore=Infinity, maximumHeight=-Infinity;
     const put=(x:number,y:number,z:number,shade:number)=> {
@@ -42,42 +42,57 @@ export class NiijimaScarpVolume {
     };
     for(let i=0;i<sections;i++) {
       const z=frontage.minZ+i*span/(sections-1);
-      const coastX=niijimaShoreStation(source,z,28);
-      const gx=source.shoreAt(coastX+2,z)-source.shoreAt(coastX-2,z);
-      const gz=source.shoreAt(coastX,z+2)-source.shoreAt(coastX,z-2);
-      const norm=Math.hypot(gx,gz), nx=gx/norm,nz=gz/norm;
-      const point=(d:number)=>({x:coastX+nx*d,z:z+nz*d});
+      // Smooth shore-following centreline. Parallel transport a fixed inland
+      // horizontal frame, then shear sections along the centreline: every ring
+      // stays in its own z plane, so neighbouring or distant stations cannot fold.
+      let coastX=0, weight=0;
+      for(let k=-4;k<=4;k++){const w=5-Math.abs(k);coastX+=niijimaShoreStation(source,z+k*6,34)*w;weight+=w;}
+      coastX=coastX/weight-3;
+      const point=(d:number)=>({x:coastX-d,z});
       const toe=point(0), crest=point(59), back=point(110);
       minimumToeShore=Math.min(minimumToeShore,source.shoreAt(toe.x,toe.z));
       const toeY=ground.heightAt(toe.x,toe.z)-1.5;
       const top=source.heightAt(crest.x,crest.z)+2;
       const fade=ease(0,frontage.feather,i*span/(sections-1))*ease(0,frontage.feather,(sections-1-i)*span/(sections-1));
       put(toe.x,toeY,toe.z,.83);
+      let previousD=0;
       for(let j=1;j<=faceSteps;j++) {
         const t=j/faceSteps, h=toeY+(top-toeY)*t;
-        // Talus transitions into steep face; shelves can overhang lower sections.
-        const talus=12*ease(0,.19,t);
-        const slope=8*t;
-        const broad=(noise(z*.037,t*2.8)-.5)*7;
-        const incision=Math.pow(noise(z*.17+noise(z*.013,1)*4,t*.7),5)*9;
-        const fine=(noise(z*.61,t*23)-.5)*1.4;
-        const strata=(noise(Math.floor(h/3.7),z*.012)-.5)*3.5;
-        const shelf=(ease(.25,.30,t)-ease(.33,.37,t))*3.1
-          +(ease(.57,.61,t)-ease(.65,.68,t))*2.2;
-        const d=talus+slope+(broad+incision+fine+strata-shelf)*fade;
+        // Angular talus and near-vertical wall. Long, asymmetric fissures
+        // share a world-space path through height, with staggered birth/termination.
+        const talus=14*Math.min(1,t/.18);
+        const slope=7*t;
+        let incision=0;
+        for(let g=0;g<45;g++) {
+          const centre=frontage.minZ+7+g*9.3+(noise(g*3.71,8)-.5)*6;
+          const bend=(noise(g*1.7,3)-.5)*3*t+(noise(g*2.3,9)-.5)*1.2*t*t;
+          const width=.8+noise(g*4.3,6)*1.9;
+          const q=Math.abs(z-centre-bend)/width;
+          const active=ease(.08+noise(g,2)*.16,.3,t)*(1-.45*ease(.72,.98,t));
+          incision+=Math.max(0,1-q)*(.9+noise(g,7)*3.6)*active;
+        }
+        const broad=(noise(z*.025,3)-.5)*3;
+        // Piecewise angular bedding: thin broken lips, never rounded sine shelves.
+        const bed=h/4.6+noise(z*.014,11)*.8;
+        const fraction=bed-Math.floor(bed);
+        const lip=Math.max(0,1-Math.abs(fraction-.16)/.13);
+        const strata=(noise(Math.floor(bed),z*.025)-.5)*1.8-lip*(.45+noise(z*.06,Math.floor(bed))*1.3);
+        const fine=(noise(z*.42,h*.38)-.5)*.65;
+        const rawD=talus+slope+(broad+incision+fine+strata)*fade*ease(.12,.24,t);
+        const d=t>.8?Math.max(previousD+.025,rawD):rawD;previousD=d;
         const p=point(d);
         // Ends sink into the existing slope, hiding finite-volume caps.
-        const y=ground.heightAt(p.x,p.z)-1.5+(h-ground.heightAt(p.x,p.z)+1.5)*fade;
+        const buried=source.heightAt(p.x,p.z)-3;
+        const y=buried+(h-buried)*fade;
         put(p.x,y,p.z,.83+noise(z*.19,h*.23)*.13-incision*.006);
       }
-      const front=point(20+(noise(z*.037,2.8)-.5)*7*fade
-        +Math.pow(noise(z*.17+noise(z*.013,1)*4,.7),5)*9*fade
-        +(noise(z*.61,23)-.5)*1.4*fade+(noise(Math.floor(top/3.7),z*.012)-.5)*3.5*fade);
-      const frontY=ground.heightAt(front.x,front.z)-1.5+(top-ground.heightAt(front.x,front.z)+1.5)*fade;
+      // Roof starts at the exact final face vertex; no mismatched bridge triangles.
+      const front={x:positions[positions.length-3],z:positions[positions.length-1]};
+      const frontY=positions[positions.length-2];
       for(let j=1;j<=roofSteps;j++) {
         const t=j/roofSteps, p={x:front.x+(back.x-front.x)*t,z:front.z+(back.z-front.z)*t};
         const g=ground.heightAt(p.x,p.z);
-        const y=Math.max(frontY+(g-frontY)*ease(0,.78,t),g+1.2*fade)*(1-ease(.88,1,t))+(g-2)*ease(.88,1,t);
+        const y=frontY+(g-3-frontY)*t+4*fade*Math.min(t/.2,(1-t)/.2,1);
         put(p.x,y,p.z,.82+noise(z*.06,t*5)*.1);
       }
       put(back.x,Math.min(toeY,ground.heightAt(back.x,back.z))-5,back.z,.8);
