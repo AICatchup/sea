@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { AdventureState } from './contracts.ts';
+import { createPlayerSkin } from './player-skin.ts';
 
 /**
  * Original, metre-scale anatomy; no downloaded model, photographed skin or likeness.
@@ -52,7 +53,10 @@ class Sculpt {
     for (let r = 0; r < rings.length; r++) {
       if (r > 0) length += rings[r].p.distanceTo(rings[r - 1].p);
       for (let s = 0; s <= segments; s++) {
-        const theta = s / segments * Math.PI * 2, ring = rings[r];
+        // Use the exact same angle for the duplicated UV seam. sin(2π) is slightly
+        // negative, which otherwise enters one-sided anatomical deformation and
+        // leaves millimetre-wide cracks in palms, chest and head.
+        const theta = s === segments ? 0 : s / segments * Math.PI * 2, ring = rings[r];
         const point = ring.p.clone().addScaledVector(axisA, Math.cos(theta) * ring.a)
           .addScaledVector(axisB, Math.sin(theta) * ring.b);
         deform?.(point, r, theta);
@@ -125,17 +129,14 @@ class Sculpt {
   }
 }
 
-/** Deterministic microstructure, generated locally rather than a painted photograph. */
-function microTexture(kind: 'skin' | 'cloth', normal: boolean): THREE.DataTexture {
+/** Deterministic textile microstructure, generated locally rather than a photograph. */
+function microTexture(normal: boolean): THREE.DataTexture {
   const size = 128, data = new Uint8Array(size * size * 4);
-  const field = (x: number, y: number) => kind === 'cloth'
-    ? Math.sin(x * Math.PI / 2) * Math.sin(y * Math.PI / 2) * .65 + Math.sin((x + y) * .9) * .14
-    : Math.sin(x * Math.PI * 30 / size + Math.sin(y * Math.PI * 14 / size) * 1.6)
-      * Math.sin(y * Math.PI * 54 / size) * .27 + Math.sin(x * Math.PI * 86 / size + y * Math.PI * 110 / size) * .11;
+  const field = (x: number, y: number) => Math.sin(x * Math.PI / 2) * Math.sin(y * Math.PI / 2) * .65 + Math.sin((x + y) * .9) * .14;
   for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
     const i = (y * size + x) * 4, f = field(x, y);
     if (normal) {
-      const strength = kind === 'cloth' ? .13 : .11;
+      const strength = .13;
       const dx = (field(x + 1, y) - field(x - 1, y)) * strength;
       const dy = (field(x, y + 1) - field(x, y - 1)) * strength;
       const n = v(-dx, -dy, 1).normalize();
@@ -147,7 +148,7 @@ function microTexture(kind: 'skin' | 'cloth', normal: boolean): THREE.DataTextur
     data[i + 3] = 255;
   }
   const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
-  texture.name = `original-${kind}-${normal ? 'normal' : 'roughness'}`;
+  texture.name = `original-cloth-${normal ? 'normal' : 'roughness'}`;
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
   texture.magFilter = THREE.LinearFilter; texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.generateMipmaps = true; texture.needsUpdate = true;
@@ -161,6 +162,7 @@ export class FirstPersonBody {
   private readonly mesh: THREE.SkinnedMesh;
   private readonly materials: THREE.MeshStandardMaterial[];
   private readonly textures: THREE.Texture[];
+  private readonly skin = createPlayerSkin();
   private readonly pelvis: THREE.Bone;
   private readonly spine: THREE.Bone;
   private readonly chest: THREE.Bone;
@@ -209,21 +211,34 @@ export class FirstPersonBody {
       this.legs.push(this.sculptLeg(sculpt, side));
     }
     this.sculptGear(sculpt);
-    const skinNormal = microTexture('skin', true), skinRoughness = microTexture('skin', false);
-    const clothNormal = microTexture('cloth', true), clothRoughness = microTexture('cloth', false);
-    this.textures = [skinNormal, skinRoughness, clothNormal, clothRoughness];
+    const clothNormal = microTexture(true), clothRoughness = microTexture(false);
+    this.textures = [...this.skin.textures, clothNormal, clothRoughness];
     const standard = (color: number, roughness: number, metalness = 0) => new THREE.MeshStandardMaterial({
       color, roughness, metalness, side: THREE.FrontSide, });
     this.materials = [
-      standard(0xae8063, .74), standard(0x172a31, .89), standard(0x34474a, .91),
-      standard(0x596767, .88), standard(0x12191a, .92), standard(0x6e7674, .44, .73), standard(0xcda89b, .53),
+      this.skin.material, standard(0x172a31, .89), standard(0x34474a, .91),
+      standard(0x596767, .88), standard(0x12191a, .92), standard(0x6e7674, .44, .73), standard(0xb58c7d, .43),
     ];
-    this.materials[SKIN].normalMap = skinNormal; this.materials[SKIN].normalScale.set(.55, .55); this.materials[SKIN].roughnessMap = skinRoughness;
     for (const i of [SUIT, PANEL, SEAM]) {
       this.materials[i].normalMap = clothNormal; this.materials[i].normalScale.set(.65, .65); this.materials[i].roughnessMap = clothRoughness;
     }
     this.materials.forEach((material, i) => { material.name = ['sun-exposed skin', 'neoprene', 'reinforced cloth', 'stitched binding', 'boot rubber', 'gear metal', 'natural nails'][i]; });
-    this.mesh = new THREE.SkinnedMesh(sculpt.build(), this.materials);
+    const geometry = sculpt.build(), positions = geometry.getAttribute('position');
+    const colors = new Float32Array(positions.count * 3).fill(1);
+    // Palmar skin is warmer and less sun-darkened than the dorsal surface. A
+    // geometry-bound tint follows articulation without texture seams or an atlas.
+    for (let i = 0; i < positions.count; i++) {
+      const x = positions.getX(i), y = positions.getY(i), z = positions.getZ(i);
+      if (Math.abs(x) > .19 && y > .64 && y < .87) {
+        const palmar = clamp((-.052 - z) / .022, 0, 1);
+        colors[i * 3] = 1 + palmar * .07;
+        colors[i * 3 + 1] = 1 - palmar * .025;
+        colors[i * 3 + 2] = 1 - palmar * .04;
+      }
+    }
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    this.skin.material.vertexColors = true;
+    this.mesh = new THREE.SkinnedMesh(geometry, this.materials);
     this.mesh.name = 'Continuous volumetric anatomy';
     this.mesh.castShadow = true; this.mesh.receiveShadow = true;
     // A skinned body is always within the nearby camera capsule; avoid stale rest-pose culling.
@@ -357,6 +372,12 @@ export class FirstPersonBody {
     ], SKIN, 32, v(1, 0, 0), v(0, 0, 1), (point, r, theta) => {
       // The fleshy thenar side and metacarpal ridge are asymmetric, never a flat slab.
       if (r >= 1 && r <= 3 && Math.cos(theta) * side < 0 && Math.sin(theta) < 0) point.z -= .007;
+      // Four low tendon ridges follow the dorsal metacarpals; the palmar transverse
+      // folds are actual shallow depressions in the surface rather than raised cords.
+      if (Math.sin(theta) > .35 && r >= 2) {
+        for (const x of [-.030, -.009, .014, .034]) point.z += .0012 * Math.exp(-(((point.x - origin.x - side * x) / .004) ** 2));
+      }
+      if (Math.sin(theta) < -.5 && (r === 3 || r === 4)) point.z += .0007;
     });
     s.ellipsoid(handPoint(-side * .023, -.043, -.013), v(.024, .027, .012), weight, SKIN, 20, 14);
     s.ellipsoid(handPoint(side * .025, -.067, -.007), v(.018, .027, .010), weight, SKIN, 20, 12);
@@ -380,17 +401,25 @@ export class FirstPersonBody {
         fingerRing(basePoint.clone().add(v(0, .009, 0)), spec.radius * .93, mix(h, a, .35)),
         fingerRing(basePoint.clone().add(v(0, .001, 0)), spec.radius, mix(h, a, .9)),
         fingerRing(basePoint.clone().lerp(joint1, .45), spec.radius * .98, rigid(a)),
-        fingerRing(joint1.clone().add(v(0, .006, 0)), spec.radius * .96, mix(a, b, .2)),
-        fingerRing(joint1, spec.radius * 1.02, mix(a, b, .5)),
+        fingerRing(joint1.clone().add(v(0, .006, 0)), spec.radius * 1.01, mix(a, b, .2)),
+        fingerRing(joint1.clone().add(v(0, .0018, 0)), spec.radius * 1.03, mix(a, b, .43)),
+        fingerRing(joint1, spec.radius * .96, mix(a, b, .5)),
+        fingerRing(joint1.clone().add(v(0, -.0018, 0)), spec.radius * 1.00, mix(a, b, .57)),
         fingerRing(joint1.clone().lerp(joint2, .45), spec.radius * .85, rigid(b)),
-        fingerRing(joint2, spec.radius * .84, mix(b, c, .5)),
+        fingerRing(joint2.clone().add(v(0, .0015, 0)), spec.radius * .86, mix(b, c, .42)),
+        fingerRing(joint2, spec.radius * .80, mix(b, c, .5)),
+        fingerRing(joint2.clone().add(v(0, -.0015, 0)), spec.radius * .85, mix(b, c, .58)),
         fingerRing(joint2.clone().lerp(tipPoint, .5), spec.radius * .78, rigid(c)),
         fingerRing(tipPoint.clone().add(v(0, .003, 0)), spec.radius * .61, rigid(c)),
         fingerRing(tipPoint, spec.radius * .23, rigid(c)),
-      ], SKIN, 18);
-      // Rounded keratin plate on the dorsal side, with exposed fingertip below it.
-      const nailCenter = joint2.clone().lerp(tipPoint, .58); nailCenter.z += spec.radius * .72;
-      s.ellipsoid(nailCenter, v(spec.radius * .59, spec.lengths[2] * .37, .0011), rigid(c), NAIL, 16, 8);
+      ], SKIN, 20, v(1, 0, 0), v(0, 0, 1), (point, r, theta) => {
+        // Broad volar pulp and flatter dorsal phalanges, with a tapered pad below
+        // the nail free edge. This breaks the cylindrical sausage silhouette.
+        const dorsal = Math.max(0, Math.sin(theta));
+        if (r > 1) point.z -= dorsal * dorsal * .0007;
+        if (r >= 10 && Math.sin(theta) < 0) point.z -= Math.abs(Math.sin(theta)) * .0011;
+      });
+      this.sculptNail(s, joint2, tipPoint, spec.radius, rigid(c));
       for (const [joint, index] of [[joint1, b], [joint2, c]] as [THREE.Vector3, number][]) {
         // Fine shallow dorsal folds: narrower than a millimetre, not black ring bands.
         s.line([joint.clone().add(v(-spec.radius * .65, .001, spec.radius * .76)),
@@ -417,7 +446,7 @@ export class FirstPersonBody {
       { p: thumbDistal.clone().lerp(thumbEnd, .7), a: .0092, b: .0085, weights: rigid(c) },
       { p: thumbEnd, a: .003, b: .003, weights: rigid(c) },
     ], SKIN, 20);
-    s.ellipsoid(thumbDistal.clone().lerp(thumbEnd, .57).add(v(0, 0, .008)), v(.007, .008, .0012), rigid(c), NAIL, 18, 8);
+    this.sculptNail(s, thumbDistal, thumbEnd, .0113, rigid(c), .0017);
     // Webbing under the four finger roots keeps their attachment fleshy and volumetric.
     for (let i = 0; i < specs.length - 1; i++) {
       const x = (specs[i].x + specs[i + 1].x) * .5;
@@ -430,6 +459,23 @@ export class FirstPersonBody {
     crease([[-side * .030, -.068, -.020], [0, -.073, -.019], [side * .033, -.069, -.017]]);
     crease([[-side * .026, -.089, -.011], [0, -.092, -.013], [side * .031, -.086, -.013]]);
     return fingers;
+  }
+
+  /** A closed 0.5 mm keratin shell follows the nail bed's longitudinal taper and
+   * transverse arch. Its proximal edge sits inside the skin; pulp extends beyond it.
+   * Unlike a flattened ellipsoid, the free edge never appears as a white disk cap. */
+  private sculptNail(s: Sculpt, joint: THREE.Vector3, end: THREE.Vector3, radius: number, weights: SkinWeight, lift = 0): void {
+    const sections = [
+      [.18, .24, .70], [.24, .47, .70], [.35, .56, .69],
+      [.52, .56, .65], [.67, .53, .59], [.78, .43, .51], [.82, .25, .47],
+    ];
+    const rings = sections.map(([t, width, elevation]) => ({
+      p: joint.clone().lerp(end, t).add(v(0, 0, radius * elevation - .0002 + lift)),
+      a: radius * width, b: .00026, weights,
+    }));
+    s.loft(rings, NAIL, 16, v(1, 0, 0), v(0, 0, 1), (point, _r, theta) => {
+      point.z -= Math.cos(theta) ** 2 * radius * .13;
+    });
   }
 
   private sculptLeg(s: Sculpt, side: number): Limb {
@@ -499,7 +545,7 @@ export class FirstPersonBody {
     this.phase = Number.isFinite(state.gaitPhase) ? state.gaitPhase! : this.phase + dt * (speed * 2.2 + (swim + dive) * 3.4);
     const gait = Math.sin(this.phase), water = swim + dive;
     this.wet += (clamp(finite(state.immersion, water), 0, 1) - this.wet) * (1 - Math.exp(-dt * 3));
-    this.materials[SKIN].roughness = .74 - this.wet * .18;
+    this.skin.setWetness(this.wet);
     this.materials[SUIT].roughness = .89 - this.wet * .28; this.materials[PANEL].roughness = .91 - this.wet * .24;
     const leanTarget = swim * 1.03 + dive * 1.16;
     this.lean = this.initialized ? this.lean + clamp(leanTarget - this.lean, -dt * 1.8, dt * 1.8) : leanTarget;
