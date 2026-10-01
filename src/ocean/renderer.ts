@@ -470,6 +470,12 @@ export class Ocean {
     this.renderer.shadowMap.needsUpdate=true;return before;
   }
   restoreLeafAlphaThreshold(before:Map<THREE.MeshStandardMaterial,number>){for(const [material,value] of before)material.alphaTest=value;this.renderer.shadowMap.needsUpdate=true;}
+  setLeafColourMips(enabled:boolean){
+    const before=new Map<THREE.MeshStandardMaterial,THREE.Texture|null>();
+    this.assets.group.traverse(object=>{if(!(object instanceof THREE.Mesh))return;for(const material of Array.isArray(object.material)?object.material:[object.material])if(material instanceof THREE.MeshStandardMaterial&&material.userData.correctedLeafMap&&!before.has(material)){before.set(material,material.map);material.map=enabled?material.userData.correctedLeafMap:material.userData.originalLeafMap;}});
+    if(!before.size)throw new Error('Detailed native leaf colour maps are unavailable');return before;
+  }
+  restoreLeafColourMips(before:Map<THREE.MeshStandardMaterial,THREE.Texture|null>){for(const [material,map] of before)material.map=map;}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
@@ -532,6 +538,7 @@ export class Ocean {
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
+      foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
       spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,habushiGround:this.world.habushiGround.diagnostics,

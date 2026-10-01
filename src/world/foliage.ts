@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { cylinderBetween, ModelResources, randomSeed, surfaceTexture } from './models/procedural.ts';
 import { coarseFoliage, preserveLeafCoverage } from './foliage-coarse.ts';
+import { leafColourMips } from './foliage-texture.ts';
 
 const sourceAssets = [
   { kind: 'pine', id: 'island_tree_01', prefix: 'canopy0', variant: 0, count: 1, url: new URL('../assets/foliage/cc0/canopy/canopy0-lod-1k.glb', import.meta.url).href },
@@ -74,6 +75,7 @@ export class CoastalFoliage {
         } }); abandoned.dispose(); return;
       }
       if (nativeAlpha) { nativeAlpha.colorSpace = THREE.NoColorSpace; nativeAlpha.flipY = false; nativeAlpha.anisotropy = 8; this.resources.texture(nativeAlpha); }
+      const colourMaps=new Map<THREE.Texture,THREE.DataTexture>();
       // One parse creates all LODs; each shared map and material is registered once.
       const variants: Record<'near' | 'mid' | 'far', FoliageVariant[]> = { near: [], mid: [], far: [] };
       const loadLevels: ('near' | 'mid' | 'far')[] = source.kind === 'pine' ? ['near', 'mid', 'far'] : ['near', 'mid'];
@@ -87,6 +89,19 @@ export class CoastalFoliage {
           material.color.set('#ffffff'); material.roughness = .92; material.metalness = 0;
           const leafy = source.kind === 'shrub' || material.name.includes('leaves');
           if (leafy && nativeAlpha) material.alphaMap = nativeAlpha;
+          if(leafy&&nativeAlpha&&material.map&&!material.userData.correctedLeafMap){
+            const original=material.map;let corrected=colourMaps.get(original);
+            if(!corrected){
+              const photo=original.image as HTMLImageElement,width=photo.width,height=photo.height,canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+              const context=canvas.getContext('2d',{willReadFrequently:true});if(!context)throw new Error('Leaf photo mip canvas unavailable');
+              context.drawImage(photo,0,0,width,height);const rgb=context.getImageData(0,0,width,height).data;
+              context.clearRect(0,0,width,height);context.drawImage(nativeAlpha.image,0,0,width,height);const alpha=context.getImageData(0,0,width,height).data;
+              const mips=leafColourMips(rgb,alpha,width,height);corrected=new THREE.DataTexture(mips[0].data,width,height);const ownedSource=corrected.source;THREE.Texture.prototype.copy.call(corrected,original);corrected.source=ownedSource;
+              corrected.mipmaps=mips;corrected.generateMipmaps=false;corrected.colorSpace=THREE.SRGBColorSpace;corrected.needsUpdate=true;
+              this.resources.texture(original);this.resources.texture(corrected);colourMaps.set(original,corrected);
+            }
+            material.userData.originalLeafMap=original;material.userData.correctedLeafMap=corrected;material.map=corrected;
+          }
           material.alphaTest = leafy ? .38 : 0; // Individual curved leaf geometry retains native photo alpha.
           material.alphaToCoverage = leafy;
           material.transparent = false; material.depthWrite = true; material.dithering = true;
