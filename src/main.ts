@@ -233,11 +233,13 @@ try {
       if(!Number.isFinite(seconds)||seconds<=0||seconds>12||!Number.isFinite(interval)||interval<.2||interval>2||Math.ceil(seconds/interval)+1>64)throw new Error('Bounded crest series: 0..12 seconds, interval .2..2 seconds, at most64 samples');
       if(!Number.isFinite(wind)||!Number.isFinite(swell)||wind<0||wind>18||swell<.5||swell>1.5)throw new Error('Finite bounded wind/swell required');
       if(look&&(![look.x,look.z,look.yaw,look.pitch,look.depth??0].every(Number.isFinite)||Math.abs(look.pitch)>1.35||(look.depth??0)<0||(look.depth??0)>100||!['walk','swim','dive'].includes(look.mode??'walk')))throw new Error('Finite bounded capture pose required');
-      await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown crest series view');
-      const before=captureHost.readState(),samples=[];
+      const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown crest series view');
+      let before:CaptureState|undefined;const samples=[];
       let initialPNG:string|null=null,finalPNG:string|null=null;
       crestSeriesBusy=true;
       try{
+        // Acquire before the first await, including an already-resolved ready.
+        await ocean.ready;before=captureHost.readState();
         captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');ocean.setWind(wind);ocean.setSwell(swell);
         const p=look??profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode??'walk',p.depth);captureHost.setPaused(false);
         // One initialization and warmup; never reset solver or particle history between samples.
@@ -253,7 +255,7 @@ try {
           captureHost.setPaused(false);
         }
         return {samples,initialPNG,finalPNG,provenance:'One QA pose/preset/spectrum initialization; continuous solved history, paused only for observations; actual simulation/wall timestamps recorded. No travel, surveyed conditions or Human proof.',compressionEvidence:'Named GPU channels; interpret only valid domain/stencil samples. Invalid samples are not physical zeros.'};
-      }finally{try{captureHost.restoreState(before);}finally{crestSeriesBusy=false;}}
+      }finally{try{if(before)captureHost.restoreState(before);}finally{crestSeriesBusy=false;}}
     },
     captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),
   }});
