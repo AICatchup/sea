@@ -257,9 +257,14 @@ test('stern boarding and exit avoid the rear bench as an actual swept solid',()=
     new THREE.Vector3(boat.x+.925,boat.y+2.321,boat.z+1.0025)));
   solids.addBox(new THREE.Box3(new THREE.Vector3(boat.x-1.039,boat.y+.47,boat.z+1.12),
     new THREE.Vector3(boat.x-1.001,boat.y+1.539,boat.z+1.38)));
+  const supportGeometry=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-1.02,.47,1.36),new THREE.Vector3(-1.02,1.52,1.14),
+    new THREE.Vector3(-1.02,2.25,.85),new THREE.Vector3(-1.02,2.30,-.66)]),18,.019,8,false);
+  const supportMaterial=new THREE.MeshBasicMaterial(),support=new THREE.Mesh(supportGeometry,supportMaterial);
+  support.position.copy(boat);support.updateMatrixWorld(true);solids.addMesh(support);
   controls.viewpoint(boat.x-.75,boat.z+3.35,0,0,'swim');controls.interact();advance(controls,5.2);
   assert.equal(state.mode,'boat');controls.interact();advance(controls,4.6);
-  assert.equal(state.mode,'swim');solids.dispose();controls.dispose();
+  assert.equal(state.mode,'swim');solids.dispose();controls.dispose();supportGeometry.dispose();supportMaterial.dispose();
 });
 
 test('seated camera uses the same yaw-pitch-roll frame as the drawn vessel and helm body',()=>{

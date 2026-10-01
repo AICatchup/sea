@@ -243,14 +243,13 @@ export class CoastalModels {
     for (const x of [-0.28, 0.76]) batch.rod(this.metal, new THREE.Vector3(x, 1.0, -0.45), new THREE.Vector3(x, 1.51, -0.55), 0.014);
     batch.rod(this.metal, new THREE.Vector3(-0.28, 1.51, -0.55), new THREE.Vector3(0.76, 1.51, -0.55), 0.015);
     // Light canvas bimini, with tubular support arcs rather than a heavy roof.
-    for (const x of [-0.87, 0.87]) {
-      const footX=Math.sign(x)*1.02;
-      batch.tube(this.metal,[new THREE.Vector3(footX,.47,1.36),new THREE.Vector3(footX,1.52,1.14),new THREE.Vector3(x,BOAT_ACCESS.canopyY-.05,.85),new THREE.Vector3(x,BOAT_ACCESS.canopyY,-.66)],.019,18);
-      batch.rod(this.metal,new THREE.Vector3(footX,.45,-.21),new THREE.Vector3(x,BOAT_ACCESS.canopyY-.06,-.55),.017);
+    for (const x of [-1.02,1.02]) {
+      batch.tube(this.metal,[new THREE.Vector3(x,.47,1.36),new THREE.Vector3(x,1.52,1.14),new THREE.Vector3(x,BOAT_ACCESS.canopyY-.05,.85),new THREE.Vector3(x,BOAT_ACCESS.canopyY,-.66)],.019,18);
+      batch.rod(this.metal,new THREE.Vector3(x,.45,-.21),new THREE.Vector3(x,BOAT_ACCESS.canopyY-.06,-.55),.017);
     }
-    batch.box(this.canvas,0,BOAT_ACCESS.canopyY,.12,1.84,.027,1.74);
-    batch.box(this.blue,0,BOAT_ACCESS.canopyY-.01,.99,1.85,.062,.025);
-    for(const z of [-.67,.92])batch.rod(this.metal,new THREE.Vector3(-.88,BOAT_ACCESS.canopyY-.005,z),new THREE.Vector3(.88,BOAT_ACCESS.canopyY-.005,z),.016);
+    batch.box(this.canvas,0,BOAT_ACCESS.canopyY,.12,2.18,.027,1.74);
+    batch.box(this.blue,0,BOAT_ACCESS.canopyY-.01,.99,2.20,.062,.025);
+    for(const z of [-.67,.92])batch.rod(this.metal,new THREE.Vector3(-1.04,BOAT_ACCESS.canopyY-.005,z),new THREE.Vector3(1.04,BOAT_ACCESS.canopyY-.005,z),.016);
     // Bow cleat, stern cleats, coiled mooring rope, hatch hinges, and ladder.
     for (const [x, z] of [[0, -2.33], [-0.77, 2.23], [0.77, 2.23]]) {
       batch.box(this.metal, x, 0.44, z, 0.16, 0.026, 0.042);
