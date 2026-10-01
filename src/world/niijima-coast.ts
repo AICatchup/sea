@@ -147,6 +147,7 @@ export class NiijimaCoast implements GroundSampler {
   readonly surfaces: readonly NiijimaSurface[];
   readonly triangleCount: number;
   readonly ready:Promise<void>;
+  readonly materialDiagnostics:{pumice:'loading'|'ready'|'failed'|'not-loaded'}={pumice:'loading'};
   private readonly pumiceTexture:THREE.Texture;
   private readonly geometries: THREE.BufferGeometry[] = [];
   private readonly material: THREE.MeshStandardMaterial;
@@ -161,8 +162,8 @@ export class NiijimaCoast implements GroundSampler {
     const pumiceReady={value:0};
     let resolvePumice:()=>void=()=>{};
     this.ready=new Promise<void>(resolve=>{resolvePumice=resolve;});
-    this.pumiceTexture=typeof document!=='undefined'?new THREE.TextureLoader().load(pumiceURL,()=>{pumiceReady.value=1;resolvePumice();},undefined,()=>resolvePumice()):new THREE.Texture();
-    if(typeof document==='undefined')resolvePumice();
+    this.pumiceTexture=typeof document!=='undefined'?new THREE.TextureLoader().load(pumiceURL,()=>{pumiceReady.value=1;this.materialDiagnostics.pumice='ready';resolvePumice();},undefined,()=>{this.materialDiagnostics.pumice='failed';console.warn('Niijima pumice image unavailable; procedural fallback retained');resolvePumice();}):new THREE.Texture();
+    if(typeof document==='undefined'){this.materialDiagnostics.pumice='not-loaded';resolvePumice();}
     this.pumiceTexture.colorSpace=THREE.SRGBColorSpace;this.pumiceTexture.wrapS=this.pumiceTexture.wrapT=THREE.RepeatWrapping;
     this.pumiceTexture.anisotropy=8;this.pumiceTexture.minFilter=THREE.LinearMipmapLinearFilter;
     this.material = pumiceMaterial(material,options.sand,this.pumiceTexture,pumiceReady);
