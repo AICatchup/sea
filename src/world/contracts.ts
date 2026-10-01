@@ -57,6 +57,8 @@ export interface AdventureState {
   velocity?: THREE.Vector3;
   interactionLabel?: string;
   boardingProgress?: number;
+  /** Continuous standing-to-seated posture during the final boarding leg. */
+  seatingBlend?: number;
   avatarAction?: 'idle' | 'walk' | 'run' | 'swim' | 'dive' | 'helm' | 'climb';
   boatPitch?: number;
   boatRoll?: number;

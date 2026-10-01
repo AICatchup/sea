@@ -244,11 +244,13 @@ test('the actually drawn stern ladder boards continuously from the observed fail
 
 test('stern boarding and exit avoid the rear bench as an actual swept solid',()=>{
   const solids=new WorldCollision(),{controls,state}=setup(withWorldCollision({heightAt:()=>-20},solids));
-  state.boatYaw=0;const boat=state.boatPosition.clone();
+  state.boatYaw=0;state.boatPosition.y=0;const boat=state.boatPosition.clone();
   // Measured from the rendered bench/seat/back dimensions, independent of
   // the path interpolator; the former direct route crossed this volume.
   solids.addBox(new THREE.Box3(new THREE.Vector3(boat.x-.295,boat.y+.14,boat.z+1.60),
     new THREE.Vector3(boat.x+.78,boat.y+.91,boat.z+2.27)));
+  solids.addBox(new THREE.Box3(new THREE.Vector3(boat.x+.21,boat.y+.5825,boat.z+.63),
+    new THREE.Vector3(boat.x+.75,boat.y+.6975,boat.z+1.15)));
   controls.viewpoint(boat.x-.75,boat.z+3.35,0,0,'swim');controls.interact();advance(controls,5.2);
   assert.equal(state.mode,'boat');controls.interact();advance(controls,4.6);
   assert.equal(state.mode,'swim');solids.dispose();controls.dispose();

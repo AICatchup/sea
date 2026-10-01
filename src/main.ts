@@ -112,7 +112,7 @@ try {
     ready:ocean.ready,
     readState(){
       const d=ocean.diagnostics,s=ocean.adventure.state;
-      if(!captureOnly||s.mode==='boat'||s.voyageTarget||s.speed>.01)throw new Error('Use a dedicated idle QA instance with capture=1');
+      if(!captureOnly||s.mode==='boat'||s.voyageTarget||s.speed>.01||(s.boardingProgress??0)>0)throw new Error('Use a dedicated idle QA instance with capture=1');
       return {pose:{x:s.position.x,z:s.position.z,yaw:s.yaw,pitch:s.pitch,mode:s.mode,depth:s.depth},
         camera:[...ocean.camera.position.toArray(),...ocean.camera.quaternion.toArray()],width:d.resolution[0],height:d.resolution[1],
         quality:d.quality,preset:d.preset,paused:d.paused,locked:d.visualCaptureLocked,hidden:document.hidden,disposed,

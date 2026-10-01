@@ -167,7 +167,7 @@ export class FirstPersonBody {
   private readonly head: THREE.Bone;
   private readonly arms: Limb[] = [];
   private readonly legs: Limb[] = [];
-  private readonly weights = ACTIONS.map(a => a === 'idle' ? 1 : 0);
+  private readonly weights:number[] = ACTIONS.map(a => a === 'idle' ? 1 : 0);
   private readonly eye = new THREE.Vector3();
   private readonly localEye = new THREE.Vector3();
   private readonly inverseGroup = new THREE.Matrix4();
@@ -490,6 +490,10 @@ export class FirstPersonBody {
     const action: Action = state.avatarAction ?? (state.mode === 'boat' ? 'helm' : state.mode === 'dive' ? 'dive' : state.mode === 'swim' ? 'swim' : Math.abs(state.speed) > 3.5 ? 'run' : Math.abs(state.speed) > .1 ? 'walk' : 'idle');
     const damping = this.initialized ? 1 - Math.exp(-dt * 7.5) : 1;
     for (let i = 0; i < ACTIONS.length; i++) this.weights[i] += ((ACTIONS[i] === action ? 1 : 0) - this.weights[i]) * damping;
+    if(Number.isFinite(state.seatingBlend)&&state.seatingBlend!>0){
+      const seated=clamp(state.seatingBlend!,0,1);
+      for(let i=0;i<ACTIONS.length;i++)this.weights[i]=ACTIONS[i]==='helm'?seated:ACTIONS[i]==='climb'?1-seated:0;
+    }
     const [idle, walk, run, swim, dive, helm, climb] = this.weights;
     const speed = clamp(Math.abs(state.speed), 0, 7), moving = walk + run;
     this.phase = Number.isFinite(state.gaitPhase) ? state.gaitPhase! : this.phase + dt * (speed * 2.2 + (swim + dive) * 3.4);

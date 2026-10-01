@@ -21,11 +21,22 @@ const editable = (target: EventTarget | null): boolean => {
 };
 interface MotionInput { x: number; forward: number; vertical: number; running: boolean; }
 interface Boarding { from: THREE.Vector3; to: THREE.Vector3; elapsed: number; duration: number; leaving: boolean; via?:readonly(readonly[number,number,number])[]; }
-function boardingPosition(from:THREE.Vector3,to:THREE.Vector3,progress:number,via:readonly THREE.Vector3[]=[]):THREE.Vector3{
+function boardingPosition(from:THREE.Vector3,to:THREE.Vector3,progress:number,via:readonly THREE.Vector3[]=[],leaving=false):THREE.Vector3{
   const points=[from,...via,to],scaled=progress*(points.length-1),index=Math.min(points.length-2,Math.floor(scaled));
   const leg=Math.min(1,scaled-index),t=leg*leg*(3-2*leg);
   const p=points[index].clone().lerp(points[index+1],t);
-  p.y+=Math.sin(leg*Math.PI)*.27;return p;
+  const arc=via.length>=3?(index===(leaving?3:0)?.27:index===(leaving?2:1)?.10:0):.27;
+  p.y+=Math.sin(leg*Math.PI)*arc;return p;
+}
+function seatingBlend(progress:number,legs:number,leaving:boolean):number{
+  const phase=leaving?Math.max(0,1-progress*legs):Math.max(0,progress*legs-(legs-1));
+  const t=clamp(phase,0,1);return t*t*(3-2*t);
+}
+function boardingBody(point:THREE.Vector3,blend:number):{feet:BodyPoint;height:number}{
+  // A seated torso rests above its cushion. Raised knees are represented by
+  // the transition lift; the final torso capsule does not model every limb.
+  const offset=EYE_HEIGHT*(1-blend)+.7425*blend;
+  return {feet:{x:point.x,y:point.y-offset+Math.sin(blend*Math.PI)*.25,z:point.z},height:PLAYER_DIMENSIONS.height*(1-blend)+.85*blend};
 }
 
 /** One embodied traveller: movement state follows the local ground, water and vessel. */
@@ -228,14 +239,15 @@ export class ExplorerControls {
   private canBoard(): boolean {
     return this.boardingEntry()!==null;
   }
-  private boardingPathClear(from:THREE.Vector3,to:THREE.Vector3,via:readonly THREE.Vector3[]=[]):boolean {
+  private boardingPathClear(from:THREE.Vector3,to:THREE.Vector3,via:readonly THREE.Vector3[]=[],leaving=false):boolean {
     if(!this.ground.sweepBody) return true;
     let previous=from.clone();
     const samples=24*(via.length+1);
     for(let i=1;i<=samples;i++) {
-      const progress=i/samples,next=boardingPosition(from,to,progress,via);
-      if(this.ground.sweepBody({x:previous.x,y:previous.y-EYE_HEIGHT,z:previous.z},
-        {x:next.x,y:next.y-EYE_HEIGHT,z:next.z},PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height).blocked) return false;
+      const progress=i/samples,next=boardingPosition(from,to,progress,via,leaving);
+      const a=boardingBody(previous,via.length?seatingBlend((i-1)/samples,via.length+1,leaving):0);
+      const b=boardingBody(next,via.length?seatingBlend(progress,via.length+1,leaving):0);
+      if(this.ground.sweepBody(a.feet,b.feet,PLAYER_DIMENSIONS.radius,Math.max(a.height,b.height)).blocked)return false;
       previous=next;
     }
     return true;
@@ -270,7 +282,7 @@ export class ExplorerControls {
         const water = this.waterAt(point.x, point.z);
         if (floor > water + 0.7 || !Number.isFinite(floor)) continue;
         point.y = floor >= water - 1.3 ? floor + EYE_HEIGHT : water + SURFACE_EYE;
-        if(!this.boardingPathClear(this.state.position,point,entry.via?.map(v=>this.vesselPoint(v)))) continue;
+        if(!this.boardingPathClear(this.state.position,point,entry.via?.map(v=>this.vesselPoint(v)),!!entry.via)) continue;
         target = point;via=entry.via; break;
       }
       if (!target) { this.state.message = '舷側の足元が塞がっています。少し沖へ移動してください。'; return; }
@@ -307,7 +319,7 @@ export class ExplorerControls {
     this.state.boatYaw = this.destinations.find(destination => destination.id === 'tomari')?.heading ?? 0;
     this.targetYaw = this.state.boatYaw; this.targetPitch = -0.035;
     this.state.yaw = this.targetYaw; this.state.pitch = this.targetPitch;
-    this.state.depth = 0; this.state.oxygen = 1; this.state.stamina = 1; this.state.boardingProgress = 0;
+    this.state.depth = 0; this.state.oxygen = 1; this.state.stamina = 1; this.state.boardingProgress = 0;this.state.seatingBlend=undefined;
     this.autoAscent = false; this.state.viewOffset?.set(0, 0, 0); this.updateInteraction();
   }
   recenterLook(): void {
@@ -317,7 +329,7 @@ export class ExplorerControls {
   /** Named scenic entries are explicit QA/bookmark starting points. */
   viewpoint(x: number, z: number, yaw: number, pitch: number, mode: TravelMode = 'walk', depth = 4): void {
     if (this.disposed || ![x, z, yaw, pitch, depth].every(Number.isFinite)) return;
-    this.resetInput(new Event('reset')); this.cancelVoyage(); this.boarding = null; this.autoAscent = false;
+    this.resetInput(new Event('reset')); this.cancelVoyage(); this.boarding = null;this.state.seatingBlend=undefined; this.autoAscent = false;
     const bottom = groundHeight(this.ground, x, z), water = this.waterAt(x, z);
     this.state.mode = mode; this.state.position.set(x, mode === 'dive' ? Math.max(bottom + .75, water - depth)
       : mode === 'swim' ? water + SURFACE_EYE : bottom + EYE_HEIGHT, z);
@@ -362,15 +374,18 @@ export class ExplorerControls {
     this.state.boatRoll = (this.state.boatRoll ?? 0) + (clamp(Math.atan2(starboard - port, 1.9), -.28, .28) - (this.state.boatRoll ?? 0)) * smooth;
   }
   private updateBoarding(dt: number): void {
-    const motion = this.boarding!; motion.elapsed += dt;
+    const motion = this.boarding!,priorProgress=clamp(motion.elapsed/motion.duration,0,1); motion.elapsed += dt;
     const progress = clamp(motion.elapsed / motion.duration, 0, 1);
     const before = this.state.position.clone();
     if (!motion.leaving) motion.to.copy(this.boatEye());
-    this.state.position.copy(boardingPosition(motion.from,motion.to,progress,motion.via?.map(v=>this.vesselPoint(v))));
-    const contact=this.ground.sweepBody?.({x:before.x,y:before.y-EYE_HEIGHT,z:before.z},
-      {x:this.state.position.x,y:this.state.position.y-EYE_HEIGHT,z:this.state.position.z},PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height);
+    this.state.position.copy(boardingPosition(motion.from,motion.to,progress,motion.via?.map(v=>this.vesselPoint(v)),motion.leaving));
+    const priorBlend=motion.via?seatingBlend(priorProgress,motion.via.length+1,motion.leaving):0;
+    const blend=motion.via?seatingBlend(progress,motion.via.length+1,motion.leaving):0;
+    const a=boardingBody(before,priorBlend),b=boardingBody(this.state.position,blend);
+    const contact=this.ground.sweepBody?.(a.feet,b.feet,PLAYER_DIMENSIONS.radius,Math.max(a.height,b.height));
     if(contact?.blocked) {
-      this.state.position.set(contact.position.x,contact.position.y+EYE_HEIGHT,contact.position.z);
+      this.state.position.set(contact.position.x,contact.position.y+(this.state.position.y-b.feet.y),contact.position.z);
+      this.state.seatingBlend=undefined;
       this.boarding=null;this.velocity.set(0,0,0);this.state.speed=0;this.state.boardingProgress=0;
       const floor=this.supportAt(this.state.position.x,this.state.position.z,this.state.position.y-EYE_HEIGHT,.03);
       this.state.mode=floor>=this.waterAt(this.state.position.x,this.state.position.z)-1.3?'walk':'swim';
@@ -378,10 +393,14 @@ export class ExplorerControls {
       return;
     }
     this.velocity.copy(this.state.position).sub(before).divideScalar(dt);
-    this.state.boardingProgress = progress; this.state.avatarAction = 'climb'; this.state.grounded = false;
+    this.state.boardingProgress = progress; this.state.seatingBlend=motion.via?blend:undefined;
+    const walking=!!motion.via&&progress>.2501&&progress<.75;
+    this.state.avatarAction=blend>.5?'helm':walking?'walk':'climb'; this.state.grounded = false;
+    if(walking)this.state.gaitPhase=(this.state.gaitPhase??0)+dt*Math.min(3,this.velocity.length())*2.2;
     this.state.speed = this.velocity.length();
     if (progress >= 1) {
       this.boarding = null; this.velocity.set(0, 0, 0); this.state.speed = 0; this.state.boardingProgress = 0;
+      this.state.seatingBlend=undefined;
       const floor = groundHeight(this.ground, motion.to.x, motion.to.z), water = this.waterAt(motion.to.x, motion.to.z);
       this.state.mode = motion.leaving ? floor >= water - 1.3 ? 'walk' : 'swim' : 'boat';
       this.state.message = motion.leaving ? '船のすぐそばへ下りました。泳いで浜へ進めます。'
