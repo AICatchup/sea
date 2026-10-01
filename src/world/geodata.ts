@@ -161,7 +161,7 @@ export class TomariCoastSurface {
   readonly ground: Float32Array;
 
   constructor(field: ElevationField, baseHeightAt: (x: number, z: number) => number,
-    options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
+    options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean;dryToe?:boolean} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
     this.subdivision = options.subdivision;
     this.sourceMinX = options.minX; this.sourceMaxX = options.maxX;
     this.sourceMinZ = options.minZ; this.sourceMaxZ = options.maxZ;
@@ -179,7 +179,7 @@ export class TomariCoastSurface {
       const join = smoothstep(0, 16, edge);
       const beach = sandAt(x, z) * (1 - smoothstep(3, 7, Math.abs(y))) * join;
       // The nested 0.5m strand interpolates this surface, rather than applying the scarp twice.
-      const rock = options.subdivision <= 4 ? structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z),options.coherentRock??false) : y;
+      const rock = options.subdivision <= 4 ? structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z),options.coherentRock??false,options.dryToe??false) : y;
       this.ground[iz * this.width + ix] = y + (field.smoothHeightAt(x, z) - y) * beach + (rock-y)*(1-beach)*join;
     }
   }
@@ -201,10 +201,10 @@ export class IslandElevation {
   readonly coast:TomariCoastSurface|undefined;
   readonly beach:TomariCoastSurface|undefined;
   readonly coherentRock:boolean;
-  constructor(coherentRock=false){
+  constructor(coherentRock=false,dryToe=false){
     this.coherentRock=coherentRock;
     this.coast=this.tomari?new TomariCoastSurface(this.tomari,(x,z)=>this.baseHeightAt(x,z),
-      {subdivision:4,minX:40,maxX:190,minZ:50,maxZ:168,coherentRock}):undefined;
+      {subdivision:4,minX:40,maxX:190,minZ:50,maxZ:168,coherentRock,dryToe}):undefined;
     this.beach=this.tomari&&this.coast?new TomariCoastSurface(this.tomari,(x,z)=>this.coast!.heightAt(x,z),
       {subdivision:8,minX:80,maxX:139,minZ:95,maxZ:143}):undefined;
   }

@@ -31,9 +31,9 @@ function panelRelief(u: number, v: number): number {
 /** Sharpen only an already steep source face; crown, sandy ground and seabed stay tied to the source. */
 export function structuralCoastHeight(
   x: number, z: number, y: number, baseHeightAt: (x:number,z:number)=>number, sand: number,
-  candidate = false,
+  candidate = false, dryToe = false,
 ): number {
-  if(candidate)return coherentCoastHeight(x,z,y,baseHeightAt,sand);
+  if(candidate)return coherentCoastHeight(x,z,y,baseHeightAt,sand,dryToe);
   const strand=sand*(1-ease(5,10,y));
   if(y<3.5 || y>62 || strand>.62)return y;
   const gx=(baseHeightAt(x+5,z)-baseHeightAt(x-5,z))/10;
@@ -69,7 +69,7 @@ export function structuralCoastHeight(
 }
 
 /** Opt-in authored erosion. Dry, already steep source rock only; no inferred survey detail. */
-function coherentCoastHeight(x:number,z:number,y:number,base:(x:number,z:number)=>number,sand:number):number {
+function coherentCoastHeight(x:number,z:number,y:number,base:(x:number,z:number)=>number,sand:number,dryToe:boolean):number {
   // The shoreline, sea floor and high crown remain exact anchors. A separate
   // caller-owned raster join must still fade this delta at the source boundary.
   if(y<=1.1 || y>=62 || !Number.isFinite(y))return y;
@@ -87,5 +87,17 @@ function coherentCoastHeight(x:number,z:number,y:number,base:(x:number,z:number)
   const shelves=panelRelief((z*.86+x*.51)*.46,(y*.7-x*.035)*.62)*.45;
   const relief=panelRelief(u,v)*.58+shelves;
   const toeLimit=.55+ease(2,7,y)*1.35;
-  return y+clamp(relief,-toeLimit,toeLimit)*strength;
+  const legacy = clamp(relief,-toeLimit,toeLimit)*strength;
+  if(!dryToe || y>=10)return y+legacy;
+  // Shared oblique joint coordinate connects the foot to the upper face.
+  // Analytic waves keep the erosion continuous across panel ownership changes.
+  const jointPhase=u*(Math.PI*2/7.3)+Math.sin(u*.19)*.44+v*.08;
+  const groove=Math.pow((1+Math.cos(jointPhase))*.5,8);
+  const bands=y*2.35+Math.sin(u*.31)*.62+Math.sin(u*.13)*.3;
+  const shelf=Math.sin(bands)*.22+Math.sin(bands*.57+.8)*.13;
+  const toeWeight=ease(1.1,2.8,y)*(1-ease(7,10,y));
+  // Concave joints dominate, with unequal shallow shelves between them.
+  // Keep a dry source point above the shoreline anchor even at maximal erosion.
+  const erosion=clamp(shelf-groove*.95,-Math.min(1.1,y-1.1),.35);
+  return y+legacy+erosion*toeWeight*strength;
 }

@@ -1,0 +1,37 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { structuralCoastHeight } from '../src/world/coast-structure.ts';
+import { IslandElevation } from '../src/world/geodata.ts';
+const slope=(x:number,_z:number)=>5+x*1.5;
+const sample=(x:number,z:number,y:number,sand=0,toe=true)=>structuralCoastHeight(x,z,y,slope,sand,true,toe);
+test('dry toe preserves low, sandy, crown and gentle source anchors',()=>{
+ for(const y of [-8,0,1.1,10,30,62,70])assert.equal(sample(2,3,y),sample(2,3,y,0,false));
+ for(const y of [2,4,7])assert.equal(sample(2,3,y,1),sample(2,3,y,1,false));
+ assert.equal(structuralCoastHeight(2,3,5,()=>5,0,true,true),5);
+});
+test('dry toe erosion is finite, bounded and continuous with meaningful low-face relief',()=>{
+ let impact=0;
+ for(let z=-25;z<25;z+=.2)for(const y of [1.1001,2,3,5,7,9.9999]){
+  const a=sample(0,z,y),legacy=sample(0,z,y,0,false);
+  assert.ok(Number.isFinite(a));assert.ok(Math.abs(a-legacy)<=1.100000001);
+  assert.ok(Math.abs(sample(0,z+.00001,y)-a)<.001);
+  assert.ok(Math.abs(sample(0,z,y+.00001)-a)<.001);
+  impact=Math.max(impact,Math.abs(a-legacy));
+ }
+ assert.ok(impact>.5,`foot impact ${impact}`);
+});
+test('actual shared raster field changes dry foot while retaining source raster joins',()=>{
+ const old=new IslandElevation(true),toe=new IslandElevation(true,true);
+ const r=toe.tomari!.raster;
+ for(const [x,z] of [[r.minX,80],[r.maxX,80],[-100,r.minZ],[-100,r.maxZ]])assert.equal(toe.heightAt(x,z),old.heightAt(x,z));
+ let changed=0,max=0;
+ const a=old.coast!,b=toe.coast!;
+ for(let i=0;i<a.ground.length;i++){
+  const delta=Math.abs(a.ground[i]-b.ground[i]);assert.ok(Number.isFinite(b.ground[i]));
+  max=Math.max(max,delta);if(delta>.05)changed++;
+ }
+ assert.ok(max>.2,`raster max ${max}`);assert.ok(max<=1.101);assert.ok(changed>50,`changed vertices ${changed}`);
+ console.log(JSON.stringify({changedVertices:changed,maxToeDelta:max}));
+ for(let z=b.minZ;z<=b.maxZ;z+=10)assert.equal(b.heightAt(b.minX,z),a.heightAt(a.minX,z));
+});
+
