@@ -4,7 +4,7 @@ CPU implementation and parameter/cache tests passed. GPU compilation, photograph
 
 ## Integration contract
 
-`ReceiverBridge(scene, include, maxTextureSize, maxLayers, sand, options?)` accepts `{ extraMaterials?: () => readonly THREE.Material[], bedNormal?: THREE.Texture, bedARM?: THREE.Texture }`. The callback is read each sync; its ordering defines extra receiver IDs. `receiverExtraMaterialBase` equals the static geometry material count. `receiverBedMaterial` follows the extras. Source textures/materials are borrowed, never disposed. The bridge owns its synthetic bed material and its three packed textures.
+`ReceiverBridge(scene, include, maxTextureSize, maxLayers, sand, options?)` accepts `{ extraMaterials?: () => readonly THREE.Material[], extraDynamicData?: () => Float32Array, bedNormal?: THREE.Texture, bedARM?: THREE.Texture }`. The callback is read each sync; its ordering defines extra receiver IDs. `receiverExtraMaterialBase` equals the static geometry material count. `receiverBedMaterial` follows the extras. Source textures/materials are borrowed, never disposed. The bridge owns its synthetic bed material and its three packed textures.
 
 `traceReceiverDetailed(origin, ray, maxDistance, out hitWorld, out normalWorld, out uv, out materialId, out vertexColor, out tangentWorld, out bitangentWorld)` adds a UV0 triangle basis transformed by the actual forward world matrix. Inverse-transpose remains reserved for normals. Reflection handedness is recovered from transformed bitangent. Degenerate UVs return zero basis and skip the normal map. The original `traceReceiver` signature remains available.
 
@@ -23,3 +23,5 @@ Optional `receiverIBLGround`, `receiverIBLSky`, `receiverIBLStrength` accept lin
 ## Verification
 
 `node node_modules/typescript/bin/tsc --noEmit` passed. The existing receiver bridge/geometry tests plus new material tests passed (16/16). New tests exercise independent gamma metadata and UV transforms, rejected channels/object normals, mixed extra-material IDs, scalar wetness static-upload preservation, texture epoch atlas refresh, layer-limit failure, and negative/nonuniform basis math. Canvas atlas tests use an explicit CPU mock; they do not establish browser/GPU image correctness.
+
+`extraDynamicData` is read every sync and appended after material parameters in `receiverDynamic`. `receiverExtraDataOffset` is the first appended texel address and may be aliased as skinnedDataOffset. Root updates the body cache before sync. No fourth sampler is introduced.
