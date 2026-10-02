@@ -51,7 +51,7 @@ export class CoastalFoliage {
   private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }
 
   /** AssetWorld alone owns and loads the original photographic maps and 3D LODs. */
-  async loadDetailed(): Promise<void> {
+  async loadDetailed(fullerUnderstory=false): Promise<void> {
     if (typeof document === 'undefined') return;
     for (const source of sourceAssets) {
       const gltf = await new GLTFLoader().loadAsync(source.url);
@@ -141,7 +141,7 @@ export class CoastalFoliage {
       }
       const levels = source.kind === 'pine' ? this.pineLevels : this.shrubLevels;
       if (source.kind === 'shrub') {
-        variants.far = await Promise.all(variants.mid.map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed)));
+        variants.far = await Promise.all(variants.mid.map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed,fullerUnderstory?160:96)));
         // The 96-triangle shrub reduction otherwise drops fine leaf silhouettes on ledges.
         // Expand each retained disconnected leaf component by at most 8cm, preserving
         // its original UVs, normals, gaps and all-angle topology. No extra draws/triangles.

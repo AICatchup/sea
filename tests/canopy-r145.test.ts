@@ -37,7 +37,7 @@ test('canopy continuity is opt-in, preserves roots, and restores low understory 
       for(const key of ['pineField','shrubField'] as const) fields(candidate)[key].update(position,true);
       for(const name of ['coastalPineLod','coastalShrubLod']){
         const status=candidate.group.userData[name];
-        assert.equal(status.instances.near+status.instances.mid+status.instances.far,status.placements);
+        assert.equal(status.instances.near+status.instances.mid+status.instances.far+(status.culled??0),status.placements);
         assert.ok(status.instances.near<=status.thresholds.nearCapacity);
         assert.ok(status.instances.mid<=status.thresholds.midCapacity);
         assert.ok(status.triangles<=status.thresholds.triangleBudget);

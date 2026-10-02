@@ -36,7 +36,7 @@ export function preserveLeafCoverage(positions: Float32Array, indices: Uint32Arr
 }
 
 /** Reduce the original all-angle model, retaining original UVs and a connected woody hierarchy. */
-export async function coarseFoliage(source: FoliageVariant, resources: ModelResources, kind: 'pine' | 'shrub', cancelled = () => false): Promise<FoliageVariant> {
+export async function coarseFoliage(source: FoliageVariant, resources: ModelResources, kind: 'pine' | 'shrub', cancelled = () => false, shrubTriangles=96): Promise<FoliageVariant> {
   await MeshoptSimplifier.ready;
   if (cancelled()) return { parts: [], triangles: 0 };
   const parts: FoliagePart[] = [];
@@ -46,7 +46,7 @@ export async function coarseFoliage(source: FoliageVariant, resources: ModelReso
     const positions = new Float32Array(p.array), normals = new Float32Array(n.array), uvs = new Float32Array(uv.array);
     const indices = g.index ? new Uint32Array(g.index.array) : Uint32Array.from({ length: p.count }, (_, i) => i);
     const bark = kind === 'pine' && part.material.name.includes('bark');
-    const target = kind === 'shrub' ? 96 : bark ? 72 : 160;
+    const target = kind === 'shrub' ? shrubTriangles : bark ? 72 : 160;
     const attributes = new Float32Array(p.count * 5);
     for (let i = 0; i < p.count; i++) attributes.set([normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2], uvs[i * 2], uvs[i * 2 + 1]], i * 5);
     const [reduced, error] = MeshoptSimplifier.simplifyWithAttributes(indices, positions, 3, attributes, 5,

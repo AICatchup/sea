@@ -16,7 +16,9 @@ test('actual connected-form raster changes dry cliffs and preserves V19 wet tria
   }
   for(let z=a.minZ;z<=a.maxZ;z+=3)for(const x of [a.minX,a.maxX])assert.ok(Math.abs(b.heightAt(x,z)-a.heightAt(x,z))<1e-8,'source X join changed beyond floating interpolation precision');
   for(let x=a.minX;x<=a.maxX;x+=3)for(const z of [a.minZ,a.maxZ])assert.ok(Math.abs(b.heightAt(x,z)-a.heightAt(x,z))<1e-8,'source Z join changed beyond floating interpolation precision');
-  assert.ok(changed>500);assert.ok(max>.5&&max<6.1);assert.ok(protectedSamples>100);
+  // New relief is bounded relative to the DEM; V19 also had its own signed
+  // 1.9m joint relief and up to1.1m toe refinement, so their difference is larger.
+  assert.ok(changed>500);assert.ok(max>.5&&max<9.1,`V19-to-candidate maximum ${max}`);assert.ok(protectedSamples>100);
   console.log(JSON.stringify({connectedRaster:{changed,max,protectedSamples}}));
 });
 

@@ -81,7 +81,7 @@ export class IslandWorld {
   private readonly materials: THREE.Material[] = [];
   private readonly geometries: THREE.BufferGeometry[] = [];
 
-  constructor(coherentRock=false,dryToe=false,connectedForm=false) {
+  constructor(coherentRock=false,dryToe=false,connectedForm=false,forestGround=false) {
     this.elevation=new IslandElevation(coherentRock,dryToe,connectedForm);
     this.group.name = '式根島・泊 / GSI land DEM with inferred seabed';
     const grain = detailTexture(); this.textures.push(grain);
@@ -91,7 +91,7 @@ export class IslandWorld {
     atlas.anisotropy=8;atlas.minFilter=THREE.LinearMipmapLinearFilter;atlas.magFilter=THREE.LinearFilter;
     this.textures.push(atlas);
     const sand=loadSandTextures();this.textures.push(...sand.textures);
-    const terrainMaterial = makeTerrainMaterial(grain, atlas, sand); this.materials.push(terrainMaterial);
+    const terrainMaterial = makeTerrainMaterial(grain, atlas, sand,forestGround); this.materials.push(terrainMaterial);
     const scarp=typeof location!=='undefined'&&new URLSearchParams(location.search).get('scarp')==='1';
     const volume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('volume')==='1';
     this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume});this.group.add(this.niijimaCoast.group);

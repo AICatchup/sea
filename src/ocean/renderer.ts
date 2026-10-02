@@ -138,7 +138,7 @@ export class Ocean {
     const experience=experienceOptions(location.search);
     this.shoreSolver=experience.surf?new ShoreSolver(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
-    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1');
+    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')==='1');
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
@@ -360,7 +360,7 @@ export class Ocean {
     this.body.update(state,this.camera,delta,this.time);
     const underwater=cameraSubmersion(this.camera.position.y,this.waterHeights.sample(this.camera.position.x,this.camera.position.z));
     this.uniforms.uUnderwater.value=underwater;
-    this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5);
+    this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()));
     this.marine.update(this.time,this.camera.position,underwater>.5);
     if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge.sync()||!this.skinnedReceivers?.diagnostics.available)this.setGeometryShader(false);}
     const waterMap=this.world.waterMapFor(this.camera.position.x,this.camera.position.z);

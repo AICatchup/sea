@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import type { FoliageLevels, FoliageVariant } from './foliage.ts';
 import { makeInstances, updateInstanceBounds } from './models/procedural.ts';
 
-interface Plant { matrix: THREE.Matrix4; position: THREE.Vector3; variant: number; level: 'near' | 'mid' | 'far'; height: number; }
+interface Plant { matrix: THREE.Matrix4; position: THREE.Vector3; variant: number; level: 'near' | 'mid' | 'far'; height: number; visible?:boolean; }
 interface Batch { mesh: THREE.InstancedMesh; variant: number; triangles: number; }
-export interface FoliageLodSettings { nearDistance: number; midDistance: number; nearCapacity: number; midCapacity: number; triangleBudget?: number; }
+export interface FoliageLodSettings { nearDistance: number; midDistance: number; nearCapacity: number; midCapacity: number; triangleBudget?: number; viewAware?:boolean; }
 export interface TrunkProxy { readonly x: number; readonly y: number; readonly z: number; readonly radius: number; readonly height: number; }
 
 /** Exclusive LOD partitions reuse the original placement matrices. No duplicated coverage. */
@@ -15,6 +15,7 @@ export class FoliageLodField {
   private plants: Plant[] = [];
   private batches: Record<'near' | 'mid' | 'far', Batch[]> = { near: [], mid: [], far: [] };
   private lastPosition = new THREE.Vector3(Infinity, Infinity, Infinity);
+  private lastDirection=new THREE.Vector3(0,0,-1);
   private levels: FoliageLevels;
   private disposed = false;
   private fixedCount = 0;
@@ -89,7 +90,7 @@ export class FoliageLodField {
       variants.forEach((variant, index) => variant.parts.forEach((part, partIndex) => {
         const mesh = makeInstances(part.geometry, part.material, capacity, `${this.name} ${level} ${index} part ${partIndex}`);
         mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.count = 0;
-        mesh.castShadow = level === 'near'; mesh.receiveShadow = true;
+        mesh.castShadow = level === 'near'||(this.settings.viewAware===true&&level==='mid'); mesh.receiveShadow = true;
         mesh.userData.foliageLod = level; mesh.userData.source = part.material.userData.source ?? 'Authored distant volume proxy';
         this.group.add(mesh); this.batches[level].push({ mesh, variant: index, triangles: (part.geometry.index?.count ?? part.geometry.getAttribute('position').count) / 3 });
       }));
@@ -99,22 +100,32 @@ export class FoliageLodField {
     create('far', this.levels.far, this.fixedCount + 96);
   }
 
-  update(position: THREE.Vector3, force = false): void {
-    if (this.disposed || (!force && this.lastPosition.distanceToSquared(position) < 3.24)) return;
+  update(position: THREE.Vector3, force = false,forward?:THREE.Vector3): void {
+    const viewAware=this.settings.viewAware===true;
+    const direction=viewAware&&forward?new THREE.Vector3(forward.x,0,forward.z).normalize():this.lastDirection;
+    const turned=viewAware&&direction.dot(this.lastDirection)<.9986;
+    if (this.disposed || (!force&&!turned && this.lastPosition.distanceToSquared(position) < 3.24)) return;
     this.lastPosition.copy(position);
+    if(viewAware)this.lastDirection.copy(direction);
     const near: { plant: Plant; distance: number; score: number }[] = [], mid: typeof near = [];
     const near2 = this.settings.nearDistance ** 2, mid2 = this.settings.midDistance ** 2;
     for (const plant of this.plants) {
       // Distance to the transformed crown, including its real horizontal span.
       const distance = plant.position.distanceToSquared(position);
+      const dx=plant.position.x-position.x,dz=plant.position.z-position.z,horizontal=Math.hypot(dx,dz);
+      // Keep every nearby shadow caster and a generous horizontal view cone.
+      // The water reflection camera has the same horizontal azimuth; radius
+      // margin includes crowns and reflection overscan. Physical plants remain.
+      plant.visible=!viewAware||distance<110*110||horizontal<1||(dx*direction.x+dz*direction.z)/horizontal>.2-plant.height/Math.max(1,horizontal);
       plant.level = 'far';
+      if(!plant.visible)continue;
       const score = plant.height * plant.height / Math.max(1, distance);
       if (distance < near2) near.push({ plant, distance, score }); else if (distance < mid2) mid.push({ plant, distance, score });
     }
     // Angular height gives large visible silhouettes priority rather than allocating all detail
     // to small near seedlings. Far remains the same original model with connected bark.
     near.sort((a, b) => b.score - a.score); mid.sort((a, b) => b.score - a.score);
-    let budgetUsed = this.plants.reduce((sum, p) => sum + this.levels.far[p.variant].triangles, 0);
+    let budgetUsed = this.plants.reduce((sum, p) => sum + (p.visible===false?0:this.levels.far[p.variant].triangles), 0);
     const budget = this.settings.triangleBudget ?? Infinity;
     const selectedNear: typeof near = [], selectedMid: typeof near = [];
     const select = (list: typeof near, level: 'near' | 'mid', capacity: number, output: typeof near) => {
@@ -129,16 +140,17 @@ export class FoliageLodField {
     const middleCandidates = [...near.filter(e => e.plant.level === 'far'), ...mid].sort((a, b) => b.score - a.score);
     select(middleCandidates, 'mid', this.settings.midCapacity, selectedMid);
     let draws = 0, triangles = 0;
-    const counts = { near: selectedNear.length, mid: selectedMid.length, far: this.plants.length - selectedNear.length - selectedMid.length };
+    const rendered=this.plants.filter(p=>p.visible!==false).length;
+    const counts = { near: selectedNear.length, mid: selectedMid.length, far: rendered - selectedNear.length - selectedMid.length };
     for (const level of ['near', 'mid', 'far'] as const) for (const batch of this.batches[level]) {
       let count = 0;
-      for (const plant of this.plants) if (plant.level === level && plant.variant === batch.variant) batch.mesh.setMatrixAt(count++, plant.matrix);
+      for (const plant of this.plants) if (plant.visible!==false&&plant.level === level && plant.variant === batch.variant) batch.mesh.setMatrixAt(count++, plant.matrix);
       batch.mesh.count = count; batch.mesh.visible = count > 0;
       updateInstanceBounds(batch.mesh); if (count) draws++;
       triangles += count * batch.triangles;
     }
     this.group.userData[this.name] = { status: 'ready', placements: this.plants.length, originalPlacements: this.fixedCount,
-      instances: counts, thresholds: this.settings, draws, triangles, nearTriangles: selectedNear.reduce((sum, entry) => sum + this.levels.near[entry.plant.variant].triangles, 0),
+      rendered,culled:this.plants.length-rendered,viewAware,instances: counts, thresholds: this.settings, draws, triangles, nearTriangles: selectedNear.reduce((sum, entry) => sum + this.levels.near[entry.plant.variant].triangles, 0),
       exclusiveLod: true, selection: 'actual transformed crown angular span within distance / triangle caps', source: 'CC0 all-angle branch/needle/leaf models in every ready band' };
   }
 
