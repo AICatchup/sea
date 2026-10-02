@@ -490,7 +490,17 @@ export const oceanFragment = /* glsl */ `
     vec3 bodyHit,bodyNormal,bodyColour,bodyTangent,bodyBitangent;vec2 bodyUV;int bodyMaterial;
     float nearest=geometryKind>.5?length(snellHit-vWorld):90.;
     if(traceSkinnedReceiver(vWorld,transmittedRay,nearest,bodyHit,bodyNormal,bodyUV,bodyMaterial,bodyColour,bodyTangent,bodyBitangent)){snellHit=bodyHit;geometryNormal=bodyNormal;geometryUV=bodyUV;geometryMaterial=receiverExtraMaterialBase+bodyMaterial;colour=bodyColour;tangent=bodyTangent;bitangent=bodyBitangent;geometryKind=3.;}
-    if(geometryKind>.5){opticalPath=length(snellHit-vWorld);snellDistance=opticalPath;snellUsed=1.;geometryRadiance=receiverSurfaceColourDetailed(geometryMaterial,geometryUV,colour,snellHit,geometryNormal,-transmittedRay,tangent,bitangent);}
+    if(geometryKind>.5){
+      opticalPath=length(snellHit-vWorld);snellDistance=opticalPath;snellUsed=1.;geometryRadiance=receiverSurfaceColourDetailed(geometryMaterial,geometryUV,colour,snellHit,geometryNormal,-transmittedRay,tangent,bitangent);
+      // Use the ordinary renderer's complete material radiance only when its
+      // visible opaque point agrees with this independent geometric ray hit.
+      // Hidden receivers retain the decoded material/lighting approximation.
+      vec4 hitView=viewMatrix*vec4(snellHit,1),hitClip=uWaterProjection*hitView;vec2 hitUV=hitClip.xy/max(.0001,hitClip.w)*.5+.5;
+      if(hitClip.w>0.&&all(greaterThan(hitUV,vec2(.002)))&&all(lessThan(hitUV,vec2(.998)))){
+        float hitDepth=textureLod(uSceneDepth,hitUV,0.).r;
+        if(hitDepth<.999999&&abs(linearDepth(hitDepth)+hitView.z)<.03+.001*opticalPath)geometryRadiance=textureLod(uSceneColor,hitUV,0.).rgb;
+      }
+    }
     #else
     #ifndef CURVED_SURFACE
     if(uSnellRay>.5){
