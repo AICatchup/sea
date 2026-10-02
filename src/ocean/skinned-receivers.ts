@@ -15,12 +15,13 @@ const supported = (m: THREE.Material) => m.visible && !m.transparent && m.opacit
  */
 export class SkinnedReceivers {
   readonly materials: THREE.Material[] = [];
-  readonly diagnostics = { available: false, reason: '', triangles: 0, vertices: 0, nodes: 0, bytes: 0, rebuilds: 0, refits: 0, timeMs: 0, excludedSurfaces: 0, maxDepth: 0 };
+  readonly diagnostics = { available: false, reason: '', triangles: 0, vertices: 0, nodes: 0, bytes: 0, rebuilds: 0, refits: 0, skipped:0, timeMs: 0, excludedSurfaces: 0, maxDepth: 0 };
   readonly packed = { data: new Float32Array(0), nodeOffset: 0, triangleOffset: 0, root: -1, texels: 0 };
   private surfaces: Surface[] = [];
   private triangles: Triangle[] = [];
   private nodes: Node[] = [];
   private disposed = false;
+  private poseKey='';
   private maxDepth: number;
   private leafSize: number;
   constructor(root: THREE.Object3D, options: SkinnedReceiverOptions = {}) {
@@ -123,6 +124,9 @@ export class SkinnedReceivers {
     if (this.disposed) { this.fail('disposed'); return; }
     const start=performance.now();
     try {
+      for(const s of this.surfaces){const attrs=[s.mesh.geometry.index!,...Object.values(s.mesh.geometry.attributes)];if(attrs.length!==s.attributes.length||attrs.some((a,i)=>a!==s.attributes[i]))throw new Error('attribute replacement requires rebuild');}
+      const key=this.surfaces.map(s=>[this.signature(s.mesh),visible(s.mesh),...s.mesh.matrixWorld.elements,...s.mesh.bindMatrix.elements,...s.mesh.bindMatrixInverse.elements,...(s.mesh.skeleton.boneMatrices??[]),this.materials.map(m=>supported(m)).join(',')].join(',')).join('|');
+      if(this.diagnostics.available&&key===this.poseKey){this.diagnostics.skipped++;this.diagnostics.timeMs=performance.now()-start;return;}
       this.pose(); const data=this.packed.data;
       for (let ti=0; ti<this.triangles.length; ti++) {
         const t=this.triangles[ti], s=this.surfaces[t.surface], g=s.mesh.geometry, uv=g.getAttribute('uv'), color=g.getAttribute('color');
@@ -146,11 +150,18 @@ export class SkinnedReceivers {
         data[base+3]=node.left;data[base+7]=node.right;data[base+8]=node.start;data[base+9]=node.count;
       }
       if (!finite(data)) throw new Error('nonfinite packed data');
-      this.diagnostics.available=true;this.diagnostics.reason='';this.diagnostics.refits++;
+      this.diagnostics.available=true;this.diagnostics.reason='';this.diagnostics.refits++;this.poseKey=key;
     } catch(error) { this.fail(error); }
     this.diagnostics.timeMs=performance.now()-start;
   }
   /** Independent brute-force Three Ray oracle (does not traverse the packed BVH). */
+  inspectionRays(limit=4){
+    const rays:{origin:THREE.Vector3;direction:THREE.Vector3;maxDistance:number;material:number}[]=[];
+    for(const t of this.triangles){if(rays.length>=Math.min(4,limit))break;const s=this.surfaces[t.surface];if(!visible(s.mesh)||!supported(this.materials[t.material])||rays.some(r=>r.material===t.material))continue;
+      const point=new THREE.Vector3(),normal=new THREE.Vector3();for(const vi of t.indices){point.add(new THREE.Vector3().fromArray(s.vertices,vi*3));normal.add(new THREE.Vector3().fromArray(s.normals,vi*3));}point.multiplyScalar(1/3);normal.normalize();if(normal.lengthSq()<.9)continue;
+      rays.push({origin:point.clone().addScaledVector(normal,.25),direction:normal.negate(),maxDistance:1,material:t.material});
+    }return rays;
+  }
   traceCPU(origin: THREE.Vector3, unitRay: THREE.Vector3, maxDistance: number): SkinnedReceiverHit | null {
     if(!this.diagnostics.available || maxDistance<=0 || !finite(origin.toArray()) || !finite(unitRay.toArray()) || Math.abs(unitRay.lengthSq()-1)>1e-5) return null;
     const ray=new THREE.Ray(origin,unitRay), a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),point=new THREE.Vector3(), bary=new THREE.Vector3();

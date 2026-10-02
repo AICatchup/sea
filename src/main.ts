@@ -165,6 +165,7 @@ try {
     depthSamples:(points:readonly{x:number;y:number}[])=>ocean.probeDepthSamples(points),
     inspectBodyHands:()=>inspectBodyHands(ocean),
     inspectGeometryReceivers:()=>ocean.inspectGeometryReceivers(),
+    inspectSkinnedReceivers:()=>ocean.inspectSkinnedReceivers(),
     async inspectBodyComparison(){
       await ocean.ready;const before=captureHost.readState();const {FirstPersonBody:OriginalBody}=await import('./qa/legacy-body.ts');const original=new OriginalBody();
       try{
@@ -242,13 +243,17 @@ try {
         return {png,metadata:{name,state:captureHost.readState(),time:ocean.diagnostics.time,topography:ocean.diagnostics.topography,scope:'Separate fully initialized terrain instances, aligned actual camera and FFT time; static terrain/foliage comparison only, no identical fish/solver histories or movement/Human proof'}};
       }finally{try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
     },
-    async captureGeometryComparison(name:string){
+    async captureGeometryComparison(name:string,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},probePoints?:readonly{x:number;y:number}[]){
       await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Known geometry view required');
       const before=captureHost.readState(),previous=ocean.getGeometryRefraction(),variants=[];
       try{
-        captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);
+        captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');const p=profile.pose;
+        const x=look?.x??p.x,z=look?.z??p.z,yaw=look?.yaw??p.yaw,pitch=look?.pitch??p.pitch,depth=look?.depth??p.depth,mode=look?.mode??p.mode;
+        if(![x,z,yaw,pitch,depth??0].every(Number.isFinite)||Math.abs(pitch)>1.35||(depth??0)<0||(depth??0)>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite bounded geometry comparison pose required');
+        captureHost.viewpoint(x,z,yaw,pitch,mode,depth);
         captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,3000));captureHost.setPaused(true);await ocean.prepareGeometryReceivers();
-        const points=[.4,.6,.8].flatMap(x=>[.4,.5,.6,.7].map(y=>({x,y})));
+        const points=probePoints??[.4,.6,.8].flatMap(x=>[.4,.5,.6,.7].map(y=>({x,y})));
+        if(points.length>16||points.some(p=>![p.x,p.y].every(Number.isFinite)||p.x<0||p.x>1||p.y<0||p.y>1))throw new Error('At most16 finite normalized receiver probes required');
         for(const enabled of [false,true,false]){
           await ocean.setGeometryRefraction(enabled);for(let i=0;i<8;i++)await captureHost.nextFrame();
           const intervals=[];let last=await new Promise<number>(resolve=>requestAnimationFrame(resolve));for(let i=0;i<24;i++){const now=await new Promise<number>(resolve=>requestAnimationFrame(resolve));intervals.push(now-last);last=now;}

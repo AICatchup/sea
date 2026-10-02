@@ -25,6 +25,8 @@ import { experienceOptions } from '../qa/experience-options';
 import {ReceiverBridge} from './receiver-bridge.ts';
 import {loadSandTextures,type SandTextureSet} from '../world/sand-material.ts';
 import {inspectGeometryRays} from '../qa/geometry-inspection.ts';
+import {SkinnedReceivers} from './skinned-receivers.ts';
+import {LightProbeGenerator} from 'three/addons/lights/LightProbeGenerator.js';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -53,9 +55,11 @@ function makeOceanGrid(): THREE.BufferGeometry {
 
 export class Ocean {
   private receiverBridge:ReceiverBridge|null=null;
+  private skinnedReceivers:SkinnedReceivers|null=null;
   private receiverSand:SandTextureSet|null=null;
   private receiverInitialization:Promise<void>|null=null;
   private geometryRefraction=false;
+  private readonly environmentProbes=new Map<PresetName,Promise<THREE.LightProbe>>();
   /** Development capture lock only; normal movement never enables it. */
   visualCaptureLocked=false;
   readonly collision=new WorldCollision();
@@ -315,7 +319,8 @@ export class Ocean {
       const previous=this.renderer.getRenderTarget();
       cam.update(this.renderer,envScene);target=this.pmrem.fromCubemap(cube.texture);
       this.environmentTargets.set(name,target);
-      cube.dispose();geometry.dispose();material.dispose();this.renderer.setRenderTarget(previous);
+      const probe=LightProbeGenerator.fromCubeRenderTarget(this.renderer,cube).finally(()=>cube.dispose());this.environmentProbes.set(name,probe);void probe.catch(error=>console.warn('Environment irradiance probe unavailable',error));
+      geometry.dispose();material.dispose();this.renderer.setRenderTarget(previous);
     }
     this.scene.environment=target.texture;this.scene.environmentIntensity=.48;
   }
@@ -356,7 +361,7 @@ export class Ocean {
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5);
     this.marine.update(this.time,this.camera.position,underwater>.5);
-    if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);if(!this.receiverBridge.sync())this.setGeometryShader(false);}
+    if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge.sync()||!this.skinnedReceivers?.diagnostics.available)this.setGeometryShader(false);}
     const waterMap=this.world.waterMapFor(this.camera.position.x,this.camera.position.z);
     this.uniforms.uBathymetry.value=waterMap.texture;
     this.uniforms.uBathyBounds.value.set(waterMap.origin.x,waterMap.origin.y,waterMap.size.x,waterMap.size.y);
@@ -488,9 +493,14 @@ export class Ocean {
         if(mesh instanceof THREE.InstancedMesh){mesh.computeBoundingBox();box=mesh.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);}else box=mesh.geometry.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);
         return box.min.y<=4;
       };
-      const gl=this.renderer.getContext() as WebGL2RenderingContext;this.receiverBridge=new ReceiverBridge(this.scene,include,this.renderer.capabilities.maxTextureSize,gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),this.receiverSand.albedo);
+      this.skinnedReceivers=new SkinnedReceivers(this.body.group);this.updateSkinnedReceivers();
+      const gl=this.renderer.getContext() as WebGL2RenderingContext;this.receiverBridge=new ReceiverBridge(this.scene,include,this.renderer.capabilities.maxTextureSize,gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),this.receiverSand.albedo,{bedNormal:this.receiverSand.normalGL,bedARM:this.receiverSand.arm,extraMaterials:()=>this.skinnedReceivers?.materials??[],extraDynamicData:()=>this.skinnedReceivers?.packed.data??new Float32Array(0)});
       if(!this.receiverBridge.diagnostics.available)throw new Error(this.receiverBridge.diagnostics.reason);
       Object.assign(this.uniforms,this.receiverBridge.uniforms);
+      this.uniforms.receiverIBLHasProbe={value:0};this.uniforms.receiverSH={value:Array.from({length:9},()=>new THREE.Vector3())};this.uniforms.receiverEnvironmentIntensity={value:this.scene.environmentIntensity};
+      await this.bindReceiverEnvironment();
+      this.uniforms.skinnedDataOffset=this.receiverBridge.uniforms.receiverExtraDataOffset;
+      this.uniforms.skinnedTriangleOffset={value:this.skinnedReceivers.packed.triangleOffset};this.uniforms.skinnedRoot={value:this.skinnedReceivers.packed.root};this.uniforms.skinnedAvailable={value:this.skinnedReceivers.diagnostics.available?1:0};
     })();
     try{await this.receiverInitialization;}finally{this.receiverInitialization=null;}
   }
@@ -498,10 +508,19 @@ export class Ocean {
     this.geometryRefraction=enabled;
     this.waterScene.traverse(object=>{if(!(object instanceof THREE.Mesh))return;for(const m of Array.isArray(object.material)?object.material:[object.material])if(m instanceof THREE.ShaderMaterial&&m.fragmentShader===oceanFragment&&!m.defines?.CURVED_SURFACE){m.defines??={};if(enabled)m.defines.GEOMETRIC_REFRACTION=1;else delete m.defines.GEOMETRIC_REFRACTION;m.needsUpdate=true;}});
   }
-  async setGeometryRefraction(enabled:boolean):Promise<boolean>{const previous=this.geometryRefraction;if(enabled){await this.prepareGeometryReceivers();if(!this.receiverBridge?.sync())throw new Error(this.receiverBridge?.diagnostics.reason??'Receiver unavailable');}this.setGeometryShader(enabled);return previous;}
+  private updateSkinnedReceivers(){
+    if(!this.skinnedReceivers)return;this.body.group.traverse(object=>{if(object instanceof THREE.SkinnedMesh)object.skeleton.update();});this.skinnedReceivers.update();
+    if(this.uniforms.skinnedAvailable)this.uniforms.skinnedAvailable.value=this.skinnedReceivers.diagnostics.available?1:0;
+  }
+  private async bindReceiverEnvironment(){
+    const preset=this.currentPreset,pending=this.environmentProbes.get(preset);if(!pending||!this.uniforms.receiverSH)return;
+    try{const probe=await pending;if(this.disposed||this.currentPreset!==preset||this.environmentProbes.get(preset)!==pending)return;this.uniforms.receiverSH.value=probe.sh.coefficients.map(coefficient=>coefficient.clone());this.uniforms.receiverIBLHasProbe.value=1;this.uniforms.receiverEnvironmentIntensity.value=this.scene.environmentIntensity;}catch{this.uniforms.receiverIBLHasProbe.value=0;}
+  }
+  async setGeometryRefraction(enabled:boolean):Promise<boolean>{const previous=this.geometryRefraction;if(enabled){await this.prepareGeometryReceivers();await this.bindReceiverEnvironment();this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge?.sync()||!this.skinnedReceivers?.diagnostics.available)throw new Error(this.receiverBridge?.diagnostics.reason??'Receiver unavailable');}this.setGeometryShader(enabled);return previous;}
   getGeometryRefraction(){return this.geometryRefraction;}
   async inspectGeometryReceivers(){await this.prepareGeometryReceivers();this.scene.updateMatrixWorld(true);if(!this.receiverBridge?.sync())throw new Error('Receiver unavailable');return inspectGeometryRays(this.renderer,this.receiverBridge,this.camera.position);}
-  probeGeometryReceivers(){return {enabled:this.geometryRefraction,bridge:this.receiverBridge?{...this.receiverBridge.diagnostics}:null,geometry:this.receiverBridge?{...this.receiverBridge.geometry.diagnostics}:null,maxTextures:this.renderer.capabilities.maxTextures,maxTextureSize:this.renderer.capabilities.maxTextureSize};}
+  async inspectSkinnedReceivers(){await this.prepareGeometryReceivers();this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge?.sync()||!this.skinnedReceivers?.diagnostics.available)throw new Error('Skinned receiver unavailable');return inspectGeometryRays(this.renderer,this.receiverBridge,this.camera.position,this.skinnedReceivers,{skinnedDataOffset:this.uniforms.skinnedDataOffset,skinnedRoot:this.uniforms.skinnedRoot,skinnedAvailable:this.uniforms.skinnedAvailable,skinnedTriangleOffset:this.uniforms.skinnedTriangleOffset});}
+  probeGeometryReceivers(){return {enabled:this.geometryRefraction,bridge:this.receiverBridge?{...this.receiverBridge.diagnostics}:null,geometry:this.receiverBridge?{...this.receiverBridge.geometry.diagnostics}:null,skinned:this.skinnedReceivers?{...this.skinnedReceivers.diagnostics}:null,maxTextures:this.renderer.capabilities.maxTextures,maxTextureSize:this.renderer.capabilities.maxTextureSize};}
   setSnellRay(enabled:boolean):boolean{const before=this.uniforms.uSnellRay.value>.5;this.uniforms.uSnellRay.value=enabled?1:0;return before;}
   setObservationClock(time:number):void{
     if(!this.visualCaptureLocked||!this.paused||!Number.isFinite(time)||time<0||time>86400)throw new Error('Finite 0..86400 observation clock requires paused, locked QA state');
@@ -597,7 +616,7 @@ export class Ocean {
   dispose():void{
     if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.animationFrame);this.abort.abort();
     this.captureNextFrame?.(null);this.captureNextFrame=null;
-    this.receiverBridge?.dispose();this.receiverSand?.textures.forEach(texture=>texture.dispose());
+    this.skinnedReceivers?.dispose();this.receiverBridge?.dispose();this.receiverSand?.textures.forEach(texture=>texture.dispose());
     this.photoCoast?.dispose();this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();

@@ -13,6 +13,13 @@ function fixture() {
   g.setAttribute('skinWeight',new THREE.Float32BufferAttribute(weights,4));
   const bone=new THREE.Bone(),mesh=new THREE.SkinnedMesh(g,new THREE.MeshBasicMaterial());mesh.add(bone);mesh.bind(new THREE.Skeleton([bone]));mesh.position.z=-5;mesh.updateMatrixWorld(true);mesh.skeleton.update();return {mesh,bone,g};
 }
+test('unchanged posed buffers skip refit while changed pose and replaced attributes remain authoritative',()=>{
+ const {mesh,bone,g}=fixture(),r=new SkinnedReceivers(mesh),refits=r.diagnostics.refits;
+ r.update();assert.equal(r.diagnostics.refits,refits);assert.equal(r.diagnostics.skipped,1);
+ bone.rotation.y=.2;mesh.updateMatrixWorld(true);mesh.skeleton.update();r.update();assert.equal(r.diagnostics.refits,refits+1);
+ const positions=g.getAttribute('position');g.setAttribute('position',positions.clone());r.update();assert.equal(r.diagnostics.available,false);
+ r.dispose();g.dispose();(mesh.material as THREE.Material).dispose();
+});
 // Independent source-geometry oracle: Three's applyBoneTransform, then Ray.intersectTriangle.
 function oracle(mesh: THREE.SkinnedMesh, origin: THREE.Vector3, dir: THREE.Vector3, max=100) {
   const g=mesh.geometry,p=g.getAttribute('position'),points:THREE.Vector3[]=[];

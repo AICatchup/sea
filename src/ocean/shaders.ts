@@ -5,6 +5,7 @@ import {surfaceFoamGLSL} from './surface-foam.ts';
 import {refractedSceneGLSL,refractedBedGLSL} from './refracted-path.ts';
 import {packedReceiverGLSL,receiverMaterialGLSL} from './receiver-bridge.ts';
 import {waveCausticsSampling} from './caustics.ts';
+import {skinnedReceiverTraceGLSL} from './skinned-receivers-glsl.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -190,10 +191,24 @@ export const oceanVertex = /* glsl */ `
   varying float vDistance;
   ${shoreWaveSampling}
   ${shoreSolverSampling}
+
+  #ifdef GEOMETRIC_REFRACTION
+  vec4 receiverGround(vec2 uv){
+    vec2 node=clamp(uv,vec2(0),vec2(1))*(uBathyResolution-1.);vec4 filtered=textureLod(uBathymetry,(node+.5)/uBathyResolution,0.);
+    if(uBathyTriangulated<.5||abs(filtered.r)>3.)return filtered;
+    vec2 base=min(floor(node),max(vec2(0),uBathyResolution-2.)),f=node-base;
+    vec4 a=textureLod(uBathymetry,(base+.5)/uBathyResolution,0.),b=textureLod(uBathymetry,(base+vec2(1.5,.5))/uBathyResolution,0.),c=textureLod(uBathymetry,(base+vec2(.5,1.5))/uBathyResolution,0.),d=textureLod(uBathymetry,(base+1.5)/uBathyResolution,0.);
+    return f.x+f.y<=1.?a+(b-a)*f.x+(c-a)*f.y:d+(c-d)*(1.-f.x)+(b-d)*(1.-f.y);
+  }
+  #endif
   vec3 vertexCoast(vec2 p){
     vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
     if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return vec3(-110.0,1.0,0.0);
+    #ifdef GEOMETRIC_REFRACTION
+    return receiverGround(uv).rgb;
+    #else
     return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rgb;
+    #endif
   }
   void main() {
     vec2 origin = position.xz + cameraPosition.xz;
@@ -275,6 +290,7 @@ export const oceanFragment = /* glsl */ `
   ${surfaceFoamGLSL}
   #ifdef GEOMETRIC_REFRACTION
   ${packedReceiverGLSL}
+  ${skinnedReceiverTraceGLSL}
   ${refractedBedGLSL}
   ${waveCausticsSampling}
   ${receiverMaterialGLSL}
@@ -454,10 +470,13 @@ export const oceanFragment = /* glsl */ `
     #ifdef GEOMETRIC_REFRACTION
     vec3 transmittedRay=refract(-view,normal,1.0/1.333),bedHit;float bedDistance;
     bool hasBed=traceRefractedBed(vWorld,transmittedRay,bedDistance,bedHit);
-    vec3 colour;
-    if(traceReceiver(vWorld,transmittedRay,hasBed?bedDistance:90.,snellHit,geometryNormal,geometryUV,geometryMaterial,colour))geometryKind=2.;
-    else if(hasBed){snellHit=bedHit;geometryNormal=refractedBedNormal(bedHit);geometryUV=bedHit.xz/2.14;geometryMaterial=receiverBedMaterial;colour=vec3(1);geometryKind=1.;}
-    if(geometryKind>.5){opticalPath=length(snellHit-vWorld);snellDistance=opticalPath;snellUsed=1.;geometryRadiance=receiverSurfaceColour(geometryMaterial,geometryUV,colour,snellHit,geometryNormal,-transmittedRay);}
+    vec3 colour,tangent=vec3(0),bitangent=vec3(0);
+    if(traceReceiverDetailed(vWorld,transmittedRay,hasBed?bedDistance:90.,snellHit,geometryNormal,geometryUV,geometryMaterial,colour,tangent,bitangent))geometryKind=2.;
+    else if(hasBed){snellHit=bedHit;geometryNormal=refractedBedNormal(bedHit);geometryUV=bedHit.xz/2.14;geometryMaterial=receiverBedMaterial;colour=vec3(1);tangent=vec3(1,0,0);bitangent=vec3(0,0,1);geometryKind=1.;}
+    vec3 bodyHit,bodyNormal,bodyColour,bodyTangent,bodyBitangent;vec2 bodyUV;int bodyMaterial;
+    float nearest=geometryKind>.5?length(snellHit-vWorld):90.;
+    if(traceSkinnedReceiver(vWorld,transmittedRay,nearest,bodyHit,bodyNormal,bodyUV,bodyMaterial,bodyColour,bodyTangent,bodyBitangent)){snellHit=bodyHit;geometryNormal=bodyNormal;geometryUV=bodyUV;geometryMaterial=receiverExtraMaterialBase+bodyMaterial;colour=bodyColour;tangent=bodyTangent;bitangent=bodyBitangent;geometryKind=3.;}
+    if(geometryKind>.5){opticalPath=length(snellHit-vWorld);snellDistance=opticalPath;snellUsed=1.;geometryRadiance=receiverSurfaceColourDetailed(geometryMaterial,geometryUV,colour,snellHit,geometryNormal,-transmittedRay,tangent,bitangent);}
     #else
     #ifndef CURVED_SURFACE
     if(uSnellRay>.5){

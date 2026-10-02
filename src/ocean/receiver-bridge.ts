@@ -71,6 +71,8 @@ export const packedReceiverGLSL=receiverTraceGLSL
  .replace('uniform sampler2D receiverNodes;\nuniform sampler2D receiverTLAS;\nuniform sampler2D receiverTriangles;\nuniform sampler2D receiverInstances;','uniform sampler2D receiverStatic;\nuniform sampler2D receiverDynamic;\nuniform int receiverTriangleOffset, receiverInstanceOffset;')
  .replaceAll('receiverRead(receiverNodes,','receiverRead(receiverStatic,').replaceAll('receiverRead(receiverTLAS,','receiverRead(receiverDynamic,').replaceAll('receiverRead(receiverTriangles,','receiverRead(receiverStatic,receiverTriangleOffset+').replaceAll('receiverRead(receiverInstances,','receiverRead(receiverDynamic,receiverInstanceOffset+');
 export const receiverMaterialGLSL=`
+uniform vec3 receiverSH[9];uniform float receiverIBLHasProbe,receiverEnvironmentIntensity;
+vec3 receiverIrradiance(vec3 n){float x=n.x,y=n.y,z=n.z;return max(vec3(0),receiverSH[0]*.886227+receiverSH[1]*1.023328*y+receiverSH[2]*1.023328*z+receiverSH[3]*1.023328*x+receiverSH[4]*.858086*x*y+receiverSH[5]*.858086*y*z+receiverSH[6]*(.743125*z*z-.247708)+receiverSH[7]*.858086*x*z+receiverSH[8]*.429043*(x*x-y*y));}
 uniform highp sampler2DArray receiverAlbedo;
 uniform int receiverMaterialOffset,receiverBedMaterial,receiverExtraMaterialBase;
 // Optional linear scene irradiance / environment radiance. Zero/default uses bounded hemispherical approximation.
@@ -95,6 +97,7 @@ vec3 receiverSurfaceColourDetailed(int id,vec2 uv,vec3 vertexColor,vec3 p,vec3 n
  vec3 F0=mix(vec3(.04),albedo,metal),F=F0+(1.-F0)*pow(1.-vh,5.);vec3 diffuse=albedo*(1.-metal)*(1.-F)/3.14159265,specular=D*G*F/max(.001,4.*nL*nV);
  vec3 ground=receiverIBLStrength>0.?receiverIBLGround*receiverIBLStrength:vec3(.045,.04,.035),sky=receiverIBLStrength>0.?receiverIBLSky*receiverIBLStrength:vec3(.12,.14,.17);
  vec3 ambient=mix(ground,sky,clamp(n.y*.5+.5,0.,1.)),reflection=reflect(-eye,n);vec3 env=mix(ground,sky,clamp(reflection.y*.5+.5,0.,1.));
+ if(receiverIBLHasProbe>.5)ambient=receiverIrradiance(n)*receiverEnvironmentIntensity/3.14159265;
  vec3 Fenv=F0+(max(vec3(1.-roughness),F0)-F0)*pow(1.-nV,5.);vec3 ibl=(albedo*(1.-metal)*(1.-Fenv)*ambient+env*Fenv*(1.-.7*roughness))*ao;
  float depth=max(0.,-p.y),lightPath=depth/max(.4,light.y);vec3 spectral=exp(-vec3(.105,.021,.012)*lightPath);float focus=clamp(refractedIrradiance(p),.08,5.);
  return (diffuse+specular)*uSunColor*nL*shadow*spectral*focus+ibl*exp(-vec3(.07,.018,.009)*depth)+emission.rgb*emission.w*receiverMap(id,5,uv,vec4(1),true).rgb;
