@@ -60,6 +60,7 @@ export class Ocean {
   private receiverInitialization:Promise<void>|null=null;
   private geometryRefraction=false;
   private readonly environmentProbes=new Map<PresetName,Promise<THREE.LightProbe>>();
+  private receiverEnvironmentPreset:PresetName|undefined;
   /** Development capture lock only; normal movement never enables it. */
   visualCaptureLocked=false;
   readonly collision=new WorldCollision();
@@ -456,6 +457,7 @@ export class Ocean {
     this.uniforms.uExposure.value=p.exposure;this.uniforms.uStorm.value=p.storm;
     if(this.scene.fog instanceof THREE.FogExp2){this.scene.fog.color.setRGB(...p.horizon);this.scene.fog.density=.000028+.00009*p.storm;}
     this.refreshEnvironment(name);
+    if(this.uniforms.receiverIBLHasProbe){this.uniforms.receiverIBLHasProbe.value=0;this.receiverEnvironmentPreset=undefined;void this.bindReceiverEnvironment();}
   }
   resetView():void{this.adventure.home();}
   place(kind:PlaceableKind):void{
@@ -514,13 +516,13 @@ export class Ocean {
   }
   private async bindReceiverEnvironment(){
     const preset=this.currentPreset,pending=this.environmentProbes.get(preset);if(!pending||!this.uniforms.receiverSH)return;
-    try{const probe=await pending;if(this.disposed||this.currentPreset!==preset||this.environmentProbes.get(preset)!==pending)return;this.uniforms.receiverSH.value=probe.sh.coefficients.map(coefficient=>coefficient.clone());this.uniforms.receiverIBLHasProbe.value=1;this.uniforms.receiverEnvironmentIntensity.value=this.scene.environmentIntensity;}catch{this.uniforms.receiverIBLHasProbe.value=0;}
+    try{const probe=await pending;if(this.disposed||this.currentPreset!==preset||this.environmentProbes.get(preset)!==pending)return;this.uniforms.receiverSH.value=probe.sh.coefficients.map(coefficient=>coefficient.clone());this.uniforms.receiverIBLHasProbe.value=1;this.receiverEnvironmentPreset=preset;this.uniforms.receiverEnvironmentIntensity.value=this.scene.environmentIntensity;}catch{if(this.currentPreset===preset&&this.environmentProbes.get(preset)===pending){this.uniforms.receiverIBLHasProbe.value=0;this.receiverEnvironmentPreset=undefined;}}
   }
   async setGeometryRefraction(enabled:boolean):Promise<boolean>{const previous=this.geometryRefraction;if(enabled){await this.prepareGeometryReceivers();await this.bindReceiverEnvironment();this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge?.sync()||!this.skinnedReceivers?.diagnostics.available)throw new Error(this.receiverBridge?.diagnostics.reason??'Receiver unavailable');}this.setGeometryShader(enabled);return previous;}
   getGeometryRefraction(){return this.geometryRefraction;}
   async inspectGeometryReceivers(){await this.prepareGeometryReceivers();this.scene.updateMatrixWorld(true);if(!this.receiverBridge?.sync())throw new Error('Receiver unavailable');return inspectGeometryRays(this.renderer,this.receiverBridge,this.camera.position);}
   async inspectSkinnedReceivers(){await this.prepareGeometryReceivers();this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge?.sync()||!this.skinnedReceivers?.diagnostics.available)throw new Error('Skinned receiver unavailable');return inspectGeometryRays(this.renderer,this.receiverBridge,this.camera.position,this.skinnedReceivers,{skinnedDataOffset:this.uniforms.skinnedDataOffset,skinnedRoot:this.uniforms.skinnedRoot,skinnedAvailable:this.uniforms.skinnedAvailable,skinnedTriangleOffset:this.uniforms.skinnedTriangleOffset});}
-  probeGeometryReceivers(){return {enabled:this.geometryRefraction,bridge:this.receiverBridge?{...this.receiverBridge.diagnostics}:null,geometry:this.receiverBridge?{...this.receiverBridge.geometry.diagnostics}:null,skinned:this.skinnedReceivers?{...this.skinnedReceivers.diagnostics}:null,irradiance:{measured:this.uniforms.receiverIBLHasProbe?.value===1,intensity:this.uniforms.receiverEnvironmentIntensity?.value??0,coefficients:this.uniforms.receiverSH?.value?.map((v:THREE.Vector3)=>v.toArray())??[],scope:'Nine SH coefficients from the actual rendered solar-removed environment cube; diffuse only, specular hemisphere remains approximate'},maxTextures:this.renderer.capabilities.maxTextures,maxTextureSize:this.renderer.capabilities.maxTextureSize};}
+  probeGeometryReceivers(){return {enabled:this.geometryRefraction,bridge:this.receiverBridge?{...this.receiverBridge.diagnostics}:null,geometry:this.receiverBridge?{...this.receiverBridge.geometry.diagnostics}:null,skinned:this.skinnedReceivers?{...this.skinnedReceivers.diagnostics}:null,irradiance:{measured:this.uniforms.receiverIBLHasProbe?.value===1,preset:this.receiverEnvironmentPreset,intensity:this.uniforms.receiverEnvironmentIntensity?.value??0,coefficients:this.uniforms.receiverSH?.value?.map((v:THREE.Vector3)=>v.toArray())??[],scope:'Nine SH coefficients from the actual rendered solar-removed environment cube; diffuse only, specular hemisphere remains approximate'},maxTextures:this.renderer.capabilities.maxTextures,maxTextureSize:this.renderer.capabilities.maxTextureSize};}
   setSnellRay(enabled:boolean):boolean{const before=this.uniforms.uSnellRay.value>.5;this.uniforms.uSnellRay.value=enabled?1:0;return before;}
   setObservationClock(time:number):void{
     if(!this.visualCaptureLocked||!this.paused||!Number.isFinite(time)||time<0||time>86400)throw new Error('Finite 0..86400 observation clock requires paused, locked QA state');

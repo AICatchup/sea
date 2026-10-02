@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {GeometryReceivers} from './geometry-receivers.ts';
 import {receiverTraceGLSL} from './geometry-receivers-glsl.ts';
+import {SAND_SURFACE} from '../world/sand-material.ts';
 const WIDTH=1024,TILE=512;
 export const RECEIVER_PARAM_TEXELS=23;
 const MAP_KEYS=['map','normalMap','aoMap','roughnessMap','metalnessMap','emissiveMap'] as const;
@@ -77,14 +78,19 @@ uniform highp sampler2DArray receiverAlbedo;
 uniform int receiverMaterialOffset,receiverBedMaterial,receiverExtraMaterialBase;
 // Optional linear scene irradiance / environment radiance. Zero/default uses bounded hemispherical approximation.
 uniform vec3 receiverIBLGround,receiverIBLSky;uniform float receiverIBLStrength;
+// The caller evaluates hit-UV derivatives before any material-dependent branch.
+vec2 receiverUVDx=vec2(0),receiverUVDy=vec2(0);
 vec4 receiverMaterial(int id,int slot){return receiverRead(receiverDynamic,receiverMaterialOffset+id*23+slot);}
 float receiverWrap(float v,float mode){if(mode>.5&&mode<1.5)return clamp(v,0.,1.);if(mode>1.5)return 1.-abs(mod(v,2.)-1.);return fract(v);}
 vec3 receiverLinear(vec3 c){return mix(c/12.92,pow((c+.055)/1.055,vec3(2.4)),step(vec3(.04045),c));}
-vec4 receiverMap(int id,int map,vec2 uv,vec4 fallback,bool colour){int s=4+map*3;vec4 f=receiverMaterial(id,s),u=receiverMaterial(id,s+1),v=receiverMaterial(id,s+2);if(f.x<0.)return fallback;vec2 q=vec2(dot(u.xyz,vec3(uv,1)),dot(v.xyz,vec3(uv,1)));q=vec2(receiverWrap(q.x,u.w),receiverWrap(q.y,v.w));if(f.z>.5)q.y=1.-q.y;vec4 value=textureLod(receiverAlbedo,vec3(q,f.x),0.);if(colour&&f.y>.5)value.rgb=receiverLinear(value.rgb);return value;}
+vec4 receiverMap(int id,int map,vec2 uv,vec4 fallback,bool colour){int s=4+map*3;vec4 f=receiverMaterial(id,s),u=receiverMaterial(id,s+1),v=receiverMaterial(id,s+2);if(f.x<0.)return fallback;vec2 q=vec2(dot(u.xyz,vec3(uv,1)),dot(v.xyz,vec3(uv,1)));vec2 gx=vec2(dot(u.xy,receiverUVDx),dot(v.xy,receiverUVDx)),gy=vec2(dot(u.xy,receiverUVDy),dot(v.xy,receiverUVDy));q=vec2(receiverWrap(q.x,u.w),receiverWrap(q.y,v.w));if(f.z>.5){q.y=1.-q.y;gx.y=-gx.y;gy.y=-gy.y;}vec4 value=textureGrad(receiverAlbedo,vec3(q,f.x),gx,gy);if(colour&&f.y>.5)value.rgb=receiverLinear(value.rgb);return value;}
 vec3 receiverSurfaceColourDetailed(int id,vec2 uv,vec3 vertexColor,vec3 p,vec3 n,vec3 eye,vec3 tangent,vec3 bitangent){
  vec4 base=receiverMaterial(id,0),flags=receiverMaterial(id,1),emission=receiverMaterial(id,2),scale=receiverMaterial(id,3);
  vec3 albedo=receiverMap(id,0,uv,vec4(1),true).rgb*base.rgb*mix(vec3(1),vertexColor,flags.y);
  float roughness=clamp(base.w*receiverMap(id,3,uv,vec4(1),false).g,.04,1.),metal=clamp(flags.x*receiverMap(id,4,uv,vec4(1),false).b,0.,1.),ao=clamp(1.+flags.z*(receiverMap(id,2,uv,vec4(1),false).r-1.),0.,1.);
+ // The barycentric bed uses the same photographed sand response as the coast,
+ // including damp albedo and normal strength, rather than an unrelated raw map.
+ if(id==receiverBedMaterial){float dry=smoothstep(-.18,.83,p.y);float luma=dot(albedo,vec3(.2126,.7152,.0722));albedo=mix(albedo,vec3(luma)*vec3(1.055,1.025,.94),.7)*2.25*mix(${SAND_SURFACE.wetAlbedoMultiplier},1.,dry);roughness=mix(mix(.27,.48,receiverMap(id,3,uv,vec4(1),false).g),mix(.78,.96,receiverMap(id,3,uv,vec4(1),false).g),dry);ao=mix(.86,1.,receiverMap(id,2,uv,vec4(1),false).r);scale.xy=vec2(mix(${SAND_SURFACE.wetNormalStrength},${SAND_SURFACE.dryNormalStrength},dry));}
  vec4 normalFlags=receiverMaterial(id,7);if(normalFlags.x>=0.&&flags.w<.5&&length(tangent)>.5&&length(bitangent)>.5){
   vec3 mapN=receiverMap(id,1,uv,vec4(.5,.5,1,1),false).xyz*2.-1.;mapN.xy*=scale.xy;
   // Transform UV0 triangle basis to normal-map UV axes (including mirrored wrapping and upload flip).

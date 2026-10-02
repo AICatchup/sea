@@ -259,8 +259,39 @@ try {
           const intervals=[];let last=await new Promise<number>(resolve=>requestAnimationFrame(resolve));for(let i=0;i<24;i++){const now=await new Promise<number>(resolve=>requestAnimationFrame(resolve));intervals.push(now-last);last=now;}
           const png=await capturePNG();if(!png)throw new Error('No geometry PNG');variants.push({png,metadata:{enabled,state:captureHost.readState(),time:ocean.diagnostics.time,probe:ocean.probeWaterContact(points),receiver:ocean.probeGeometryReceivers(),frameIntervalsMs:intervals}});
         }
-        return {variants,scope:'Frozen actual camera/FFT/instance poses/light; legacy screen receiver vs actual opaque triangle BVH + barycentric bed. Diffuse atlas and macro PBR lighting, not full normal-map/IBL/material parity or Human/travel proof'};
+        return {variants,scope:'Frozen actual camera/FFT/instance poses/light; legacy screen receiver vs opaque and posed-body triangle BVH + barycentric bed. Filtered photographed maps, sand wet response and measured diffuse SH; custom-material/specular-IBL parity and Human/travel proof remain unmet'};
       }finally{try{await ocean.setGeometryRefraction(previous);}finally{captureHost.restoreState(before);}}
+    },
+    async observeGeometryMotion(){
+      await ocean.ready;const before=captureHost.readState(),previous=ocean.getGeometryRefraction();
+      const variants=[],environments=[];
+      try{
+        await ocean.setGeometryRefraction(true);
+        for(const name of Object.keys(presets) as PresetName[]){
+          ocean.setPreset(name);
+          for(let i=0;i<8;i++)await captureHost.nextFrame();
+          environments.push({requested:name,receiver:ocean.probeGeometryReceivers().irradiance});
+        }
+        ocean.setPreset('day');
+        for(const enabled of [false,true]){
+          captureHost.restoreState(before);captureHost.viewpoint(-42,9,-.56,-1.1,'walk');
+          captureHost.visualLock(false);captureHost.setPaused(false);captureHost.setQuality('high');captureHost.setPreset('day');
+          await ocean.setGeometryRefraction(enabled);
+          for(let i=0;i<8;i++)await captureHost.nextFrame();
+          const samples=[];let last=performance.now();const started=last;
+          ocean.adventure.setMove(0,1);
+          while(performance.now()-started<12000){
+            await new Promise(resolve=>requestAnimationFrame(resolve));
+            const now=performance.now();samples.push({elapsedMs:now-started,frameMs:now-last,position:ocean.adventure.state.position.toArray(),camera:ocean.camera.position.toArray(),adventure:JSON.parse(JSON.stringify(ocean.diagnostics.adventure)),skin:ocean.probeGeometryReceivers().skinned});last=now;
+          }
+          ocean.adventure.setMove(0,0);const png=await capturePNG();
+          variants.push({enabled,samples,png,receiver:ocean.probeGeometryReceivers()});
+        }
+        return {environments,variants,shaderWarmupFrames:8,scope:'Two controller-input movement observations from one shared QA start per variant after shader warmup; moving-pose CPU/GPU frame workload, not native input, complete travel, or Human acceptance'};
+      }finally{
+        ocean.adventure.setMove(0,0);ocean.adventure.setVertical(0);
+        try{await ocean.setGeometryRefraction(previous);}finally{captureHost.restoreState(before);}
+      }
     },
     captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>{
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
@@ -368,7 +399,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureGeometryComparison','inspectBodyComparison']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureGeometryComparison','observeGeometryMotion','inspectBodyComparison']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }
