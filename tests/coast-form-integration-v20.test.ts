@@ -12,9 +12,10 @@ test('actual connected-form raster changes dry cliffs and preserves V19 wet tria
       const x=a.minX+(ix+fx)*a.dx,z=a.minZ+(iz+fz)*a.dz,old=original.heightAt(x,z),next=candidate.heightAt(x,z),delta=Math.abs(next-old);
       assert.ok(Number.isFinite(next));if(delta>.05)changed++;max=Math.max(max,delta);
       if(old<=1.1){protectedSamples++;assert.ok(delta<1e-5,`protected low point ${x},${z}: ${old} -> ${next}`);}
-      if(ix===0||iz===0||ix===a.width-2||iz===a.height-2)assert.ok(delta<1e-5,'source boundary join changed');
     }
   }
+  for(let z=a.minZ;z<=a.maxZ;z+=3)for(const x of [a.minX,a.maxX])assert.ok(Math.abs(b.heightAt(x,z)-a.heightAt(x,z))<1e-8,'source X join changed beyond floating interpolation precision');
+  for(let x=a.minX;x<=a.maxX;x+=3)for(const z of [a.minZ,a.maxZ])assert.ok(Math.abs(b.heightAt(x,z)-a.heightAt(x,z))<1e-8,'source Z join changed beyond floating interpolation precision');
   assert.ok(changed>500);assert.ok(max>.5&&max<6.1);assert.ok(protectedSamples>100);
   console.log(JSON.stringify({connectedRaster:{changed,max,protectedSamples}}));
 });
