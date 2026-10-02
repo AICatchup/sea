@@ -166,6 +166,24 @@ try {
     inspectBodyHands:()=>inspectBodyHands(ocean),
     inspectGeometryReceivers:()=>ocean.inspectGeometryReceivers(),
     inspectSkinnedReceivers:()=>ocean.inspectSkinnedReceivers(),
+    async captureGateFinish(){
+      await ocean.ready;const before=captureHost.readState(),variants=[];
+      let previous=true;
+      try{
+        captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        // Two perspectives of the same physically walkable landmark, not travel.
+        for(const pose of [{x:5855,z:-4503.84,yaw:Math.PI/2,pitch:.18},{x:5856,z:-4516,yaw:1.95,pitch:.32}]){
+          captureHost.viewpoint(pose.x,pose.z,pose.yaw,pose.pitch,'walk');
+          for(const enabled of [false,true,false]){
+            const old=ocean.world.habushiGate.setPhotographicFinish(enabled);
+            if(!variants.length)previous=old;
+            for(let i=0;i<8;i++)await captureHost.nextFrame();
+            variants.push({pose,enabled,png:await capturePNG(),metadata:{camera:captureHost.readState().camera,gate:ocean.world.habushiGate.diagnostics}});
+          }
+        }
+        return {variants,scope:'Generic CC0 photographed plaster finish, two frozen actual 3D perspectives. Original site paint and precise dimensions are not measured; not travel or Human proof'};
+      }finally{ocean.world.habushiGate.setPhotographicFinish(previous);captureHost.restoreState(before);}
+    },
     async inspectBodyComparison(){
       await ocean.ready;const before=captureHost.readState();const {FirstPersonBody:OriginalBody}=await import('./qa/legacy-body.ts');const original=new OriginalBody();
       try{
@@ -399,7 +417,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureGeometryComparison','observeGeometryMotion','inspectBodyComparison']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

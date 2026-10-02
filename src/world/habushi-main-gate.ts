@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { geoToWorld, type GroundSampler } from './contracts.ts';
+import {loadPlasterTextures} from './plaster-material.ts';
 
 export const HABUSHI_GATE_SPEC = {
   lat: 34.3764393, lon: 139.2755897, towerHeight: 10.8, towerWidth: 4.4,
@@ -26,11 +27,17 @@ export class HabushiMainGate {
   /** Register this group with WorldCollision after updateMatrixWorld(true). */
   readonly solidsGroup = new THREE.Group();
   readonly bounds = new THREE.Box3();
+  readonly ready:Promise<void>;
   readonly grading: { center: { x: number; z: number }; level: number; halfWidth: number; halfDepth: number; feather: number; rotation: number };
   readonly diagnostics: { groundMin: number; groundMax: number; baseHeight: number; relief: number; triangles: number; drawCalls: number; windowCount: number; maxStep: number; borrowedResources: number; disposed: boolean };
   private readonly geometries = new Set<THREE.BufferGeometry>();
   private readonly materials = new Set<THREE.Material>();
   private readonly textures = new Set<THREE.Texture>();
+  private finishEnabled=true;
+  private finishLoaded=false;
+  private readonly finishMaterial:THREE.MeshStandardMaterial;
+  private readonly plaster:ReturnType<typeof loadPlasterTextures>;
+  private readonly grainTexture:THREE.Texture;
 
   constructor(ground: GroundSampler) {
     const s = HABUSHI_GATE_SPEC, p = geoToWorld(s.lat, s.lon);
@@ -46,7 +53,24 @@ export class HabushiMainGate {
     this.solidsGroup.name = 'Habushi opaque walkable solids'; this.group.add(this.solidsGroup);
     this.grading = { center: p, level: base, halfWidth: 20, halfDepth: 11, feather: 5, rotation: s.orientation };
     const texture = grain(); this.textures.add(texture);
+    this.grainTexture=texture;
     const white = this.material({ color: 0xf5f3ea, roughness: .83, bumpMap: texture, bumpScale: .025 });
+    this.finishMaterial=white;this.plaster=loadPlasterTextures();
+    for(const map of this.plaster.textures)this.textures.add(map);
+    white.onBeforeCompile=shader=>{
+      shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
+        #ifdef USE_MAP
+          // Retain photographed irregularity while using a bounded white-paint
+          // reflectance; the generic plaster's colour is not the site's paint.
+          float plasterLuma=dot(sampledDiffuseColor.rgb,vec3(.2126,.7152,.0722));
+          diffuseColor.rgb=diffuse*clamp(.88+(plasterLuma-.3)*.22,.78,.95);
+        #endif`);
+    };
+    white.customProgramCacheKey=()=>this.finishEnabled?'habushi-white-plaster-v1':'habushi-authored-grain-v1';
+    this.ready=this.plaster.ready.then(()=>{
+      if(this.diagnostics.disposed||typeof document==='undefined')return;
+      this.finishLoaded=true;this.setPhotographicFinish(this.finishEnabled);
+    }).catch(error=>console.warn('Gate photographic finish unavailable; authored grain retained',error));
     const tread = this.material({ color: 0xb8b7a4, roughness: .93, bumpMap: texture, bumpScale: .008 });
     const joint = this.material({ color: 0x888876, roughness: .98 });
     const metal = this.material({ color: 0xa58a50, metalness: .68, roughness: .43 });
@@ -104,6 +128,16 @@ export class HabushiMainGate {
 
   private material(parameters: THREE.MeshStandardMaterialParameters): THREE.MeshStandardMaterial {
     const m = new THREE.MeshStandardMaterial(parameters); this.materials.add(m); return m;
+  }
+  setPhotographicFinish(enabled:boolean):boolean{
+    const previous=this.finishEnabled;this.finishEnabled=enabled;
+    if(!this.finishLoaded||this.diagnostics.disposed)return previous;
+    const m=this.finishMaterial;
+    m.map=enabled?this.plaster.albedo:null;m.normalMap=enabled?this.plaster.normal:null;
+    m.roughnessMap=m.aoMap=enabled?this.plaster.arm:null;
+    m.normalScale.set(.18,.18);m.roughness=enabled?.95:.83;
+    m.bumpMap=enabled?null:this.grainTexture;m.bumpScale=.025;m.needsUpdate=true;
+    return previous;
   }
   /** One draw per finish, retaining separate opaque collision and decorative groups. */
   private batch(parent: THREE.Group): void {
