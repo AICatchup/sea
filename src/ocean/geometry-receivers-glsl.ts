@@ -16,7 +16,8 @@ bool receiverBox(vec3 o, vec3 d, vec3 lo, vec3 hi, float limit) {
   }
   return farT>=nearT;
 }
-bool traceReceiver(vec3 origin, vec3 unitWorldRay, float maxDistance, out vec3 hitWorld, out vec3 normalWorld, out vec2 uv, out int materialId, out vec3 vertexColor) {
+bool traceReceiverDetailed(vec3 origin, vec3 unitWorldRay, float maxDistance, out vec3 hitWorld, out vec3 normalWorld, out vec2 uv, out int materialId, out vec3 vertexColor, out vec3 tangentWorld, out vec3 bitangentWorld) {
+  tangentWorld=vec3(0.0); bitangentWorld=vec3(0.0);
   hitWorld=vec3(0.0); normalWorld=vec3(0.0); uv=vec2(0.0); materialId=-1; vertexColor=vec3(1.0);
   if(receiverAvailable==0 || receiverRoot<0 || maxDistance<=0.0) return false;
   float closest=maxDistance; bool found=false;
@@ -48,11 +49,23 @@ bool traceReceiver(vec3 origin, vec3 unitWorldRay, float maxDistance, out vec3 h
           normalWorld=normalize(normalMatrix*(receiverRead(receiverTriangles,address+3).xyz*w+receiverRead(receiverTriangles,address+4).xyz*u+receiverRead(receiverTriangles,address+5).xyz*v));
           if(dot(normalWorld,unitWorldRay)>0.0) normalWorld=-normalWorld;
           uv=receiverRead(receiverTriangles,address+6).xy*w+receiverRead(receiverTriangles,address+7).xy*u+receiverRead(receiverTriangles,address+8).xy*v;
+          vec2 ta=receiverRead(receiverTriangles,address+6).xy,tb=receiverRead(receiverTriangles,address+7).xy,tc=receiverRead(receiverTriangles,address+8).xy;
+          vec2 du=tb-ta,dv=tc-ta; float uvDet=du.x*dv.y-du.y*dv.x;
+          mat3 worldMatrix=inverse(mat3(inverseWorld));
+          if(abs(uvDet)>1e-10){
+            vec3 t=worldMatrix*((e1*dv.y-e2*du.y)/uvDet),bt=worldMatrix*((e2*du.x-e1*dv.x)/uvDet);
+            tangentWorld=normalize(t-normalWorld*dot(t,normalWorld));
+            bitangentWorld=normalize(cross(normalWorld,tangentWorld))*sign(dot(cross(normalWorld,tangentWorld),bt));
+          }else{tangentWorld=vec3(0.0);bitangentWorld=vec3(0.0);}
           vertexColor=receiverRead(receiverTriangles,address+9).xyz*w+receiverRead(receiverTriangles,address+10).xyz*u+receiverRead(receiverTriangles,address+11).xyz*v;
         }
       }
     }
   }
   return found;
+}
+bool traceReceiver(vec3 origin, vec3 unitWorldRay, float maxDistance, out vec3 hitWorld, out vec3 normalWorld, out vec2 uv, out int materialId, out vec3 vertexColor) {
+  vec3 tangentWorld,bitangentWorld;
+  return traceReceiverDetailed(origin,unitWorldRay,maxDistance,hitWorld,normalWorld,uv,materialId,vertexColor,tangentWorld,bitangentWorld);
 }
 `;
