@@ -162,7 +162,7 @@ export class TomariCoastSurface {
 
   private readonly referenceGround?:Float32Array;
   constructor(field: ElevationField, baseHeightAt: (x: number, z: number) => number,
-    options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean;dryToe?:boolean;referenceBase?:(x:number,z:number)=>number} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
+    options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean;dryToe?:boolean;connectedForm?:boolean;referenceBase?:(x:number,z:number)=>number} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
     this.subdivision = options.subdivision;
     this.sourceMinX = options.minX; this.sourceMaxX = options.maxX;
     this.sourceMinZ = options.minZ; this.sourceMaxZ = options.maxZ;
@@ -188,9 +188,9 @@ export class TomariCoastSurface {
       const rockFoot=options.dryToe?smoothstep(.65,1.15,sourceSlope)*smoothstep(1.1,2.8,y)*(1-smoothstep(7,10,y)):0;
       const beach=sandAt(x,z)*(1-smoothstep(3,7,Math.abs(y)))*join*(1-rockFoot);
       // The nested 0.5m strand interpolates this surface, rather than applying the scarp twice.
-      const rock = options.subdivision <= 4 ? structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z)*(1-rockFoot),options.coherentRock??false,options.dryToe??false) : y;
+      const rock = options.subdivision <= 4 ? structuralCoastHeight(x,z,y,baseHeightAt,sandAt(x,z)*(1-rockFoot),options.coherentRock??false,options.dryToe??false,options.connectedForm??false) : y;
       this.ground[iz * this.width + ix] = y + (field.smoothHeightAt(x, z) - y) * beach + (rock-y)*(1-beach)*join;
-      if(legacyToe){const oldRock=options.subdivision<=4?structuralCoastHeight(x,z,referenceY,baseHeightAt,sandAt(x,z),options.coherentRock??false,false):referenceY;legacyToe[iz*this.width+ix]=referenceY+(field.smoothHeightAt(x,z)-referenceY)*originalBeach+(oldRock-referenceY)*(1-originalBeach)*join;}
+      if(legacyToe){const oldRock=options.subdivision<=4?structuralCoastHeight(x,z,referenceY,baseHeightAt,sandAt(x,z),options.coherentRock??false,false,options.connectedForm??false):referenceY;legacyToe[iz*this.width+ix]=referenceY+(field.smoothHeightAt(x,z)-referenceY)*originalBeach+(oldRock-referenceY)*(1-originalBeach)*join;}
     }
     if(legacyToe)for(let iz=0;iz<this.height;iz++)for(let ix=0;ix<this.width;ix++){
       let lowest=Infinity;
@@ -199,6 +199,22 @@ export class TomariCoastSurface {
       for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){const x=ix+dx,z=iz+dz;if(x>=0&&x<this.width&&z>=0&&z<this.height)lowest=Math.min(lowest,legacyToe[z*this.width+x]);}
       const i=iz*this.width+ix,old=legacyToe[i],delta=Math.max(-1.1,Math.min(1.1,this.ground[i]-old))*smoothstep(1.1,1.3,lowest);
       this.ground[i]=old<=1.1?old:Math.max(1.1,old+delta);
+    }
+    if(options.connectedForm){
+      // Protect whole old low triangles, including low interpolated points whose
+      // individual source DEM vertices were above the strand. Scalar source-height
+      // gating alone moved those points when the new scarp profile changed.
+      const legacy=new TomariCoastSurface(field,baseHeightAt,{...options,connectedForm:false});
+      for(const [current,original] of [[this.ground,legacy.ground],[this.referenceGround,legacy.referenceGround]]){
+        if(!current||!original)continue;
+        for(let iz=0;iz<this.height;iz++)for(let ix=0;ix<this.width;ix++){
+          let lowest=Infinity;
+          for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){
+            const x=ix+dx,z=iz+dz;if(x>=0&&x<this.width&&z>=0&&z<this.height)lowest=Math.min(lowest,original[z*this.width+x]);
+          }
+          const i=iz*this.width+ix;current[i]=original[i]+(current[i]-original[i])*smoothstep(1.1,2.8,lowest);
+        }
+      }
     }
   }
 
@@ -224,11 +240,13 @@ export class IslandElevation {
   readonly beach:TomariCoastSurface|undefined;
   readonly coherentRock:boolean;
   readonly dryToe:boolean;
-  constructor(coherentRock=false,dryToe=false){
+  readonly connectedForm:boolean;
+  constructor(coherentRock=false,dryToe=false,connectedForm=false){
     this.coherentRock=coherentRock;
     this.dryToe=coherentRock&&dryToe;
+    this.connectedForm=coherentRock&&connectedForm;
     this.coast=this.tomari?new TomariCoastSurface(this.tomari,(x,z)=>this.baseHeightAt(x,z),
-      {subdivision:4,minX:40,maxX:190,minZ:50,maxZ:168,coherentRock,dryToe:this.dryToe}):undefined;
+      {subdivision:4,minX:40,maxX:190,minZ:50,maxZ:168,coherentRock,dryToe:this.dryToe,connectedForm:this.connectedForm}):undefined;
     this.beach=this.tomari&&this.coast?new TomariCoastSurface(this.tomari,(x,z)=>this.coast!.heightAt(x,z),
       {subdivision:8,minX:80,maxX:139,minZ:95,maxZ:143,dryToe:this.dryToe,referenceBase:this.dryToe?(x,z)=>this.coast!.referenceHeightAt(x,z):undefined}):undefined;
   }

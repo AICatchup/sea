@@ -138,14 +138,14 @@ export class Ocean {
     const experience=experienceOptions(location.search);
     this.shoreSolver=experience.surf?new ShoreSolver(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
-    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy');
+    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1');
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);
     this.breaker=new URLSearchParams(location.search).get('breaker')==='1'?new ShoreBreaker():null;
     if(this.breaker)this.waterScene.add(this.breaker.group);
-    this.assets=new AssetWorld(this.world);
+    this.assets=new AssetWorld(this.world,{canopyContinuity:new URLSearchParams(location.search).get('canopy')==='1'});
     this.marine=new MarineLife(this.world);
     const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),
       bodySegmentBlocked:(from:Parameters<IslandWorld['bodySegmentBlocked']>[0],to:Parameters<IslandWorld['bodySegmentBlocked']>[1],radius?:number,height?:number)=>
@@ -603,7 +603,7 @@ export class Ocean {
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
-      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe},
+      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,canopyContinuity:this.assets.group.userData.canopyContinuity===true},
       geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},

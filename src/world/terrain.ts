@@ -81,8 +81,8 @@ export class IslandWorld {
   private readonly materials: THREE.Material[] = [];
   private readonly geometries: THREE.BufferGeometry[] = [];
 
-  constructor(coherentRock=false,dryToe=false) {
-    this.elevation=new IslandElevation(coherentRock,dryToe);
+  constructor(coherentRock=false,dryToe=false,connectedForm=false) {
+    this.elevation=new IslandElevation(coherentRock,dryToe,connectedForm);
     this.group.name = '式根島・泊 / GSI land DEM with inferred seabed';
     const grain = detailTexture(); this.textures.push(grain);
     let atlas=new THREE.Texture();let atlasReady=Promise.resolve();
@@ -107,7 +107,7 @@ export class IslandWorld {
     if (this.elevation.tomari && this.elevation.coast) {
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true);
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true, true);
-      const geometry = cliffOutcrops(this, this.elevation.coast,coherentRock);
+      const geometry = cliffOutcrops(this, this.elevation.coast,coherentRock,this.elevation.connectedForm);
       this.cliffCollisionProxies.push(...geometry.userData.collisionProxies as CliffCollisionProxy[]);
       const outcrops = new THREE.Mesh(geometry, terrainMaterial);
       outcrops.name = 'Tomari jointed rhyolite ledges and fissures'; outcrops.castShadow = outcrops.receiveShadow = true;
