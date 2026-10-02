@@ -437,14 +437,14 @@ export class FirstPersonBody {
         fingerRing(basePoint.clone().add(v(0, .009, 0)), spec.radius * .93, mix(h, a, .35)),
         fingerRing(basePoint.clone().add(v(0, .001, 0)), spec.radius, mix(h, a, .9)),
         fingerRing(basePoint.clone().lerp(joint1, .45), spec.radius * .88, rigid(a)),
-        fingerRing(joint1.clone().add(v(0, .006, 0)), spec.radius * .97, mix(a, b, .2)),
-        fingerRing(joint1.clone().add(v(0, .0018, 0)), spec.radius * .98, mix(a, b, .43)),
-        fingerRing(joint1, spec.radius * .96, mix(a, b, .5)),
-        fingerRing(joint1.clone().add(v(0, -.0018, 0)), spec.radius * .96, mix(a, b, .57)),
+        fingerRing(joint1.clone().add(v(0, .006, 0)), spec.radius * .91, mix(a, b, .2)),
+        fingerRing(joint1.clone().add(v(0, .0018, 0)), spec.radius * .90, mix(a, b, .43)),
+        fingerRing(joint1, spec.radius * .90, mix(a, b, .5)),
+        fingerRing(joint1.clone().add(v(0, -.0018, 0)), spec.radius * .89, mix(a, b, .57)),
         fingerRing(joint1.clone().lerp(joint2, .45), spec.radius * .78, rigid(b)),
-        fingerRing(joint2.clone().add(v(0, .0015, 0)), spec.radius * .83, mix(b, c, .42)),
-        fingerRing(joint2, spec.radius * .80, mix(b, c, .5)),
-        fingerRing(joint2.clone().add(v(0, -.0015, 0)), spec.radius * .82, mix(b, c, .58)),
+        fingerRing(joint2.clone().add(v(0, .0015, 0)), spec.radius * .79, mix(b, c, .42)),
+        fingerRing(joint2, spec.radius * .785, mix(b, c, .5)),
+        fingerRing(joint2.clone().add(v(0, -.0015, 0)), spec.radius * .78, mix(b, c, .58)),
         fingerRing(joint2.clone().lerp(tipPoint, .5), spec.radius * .78, rigid(c)),
         fingerRing(tipPoint.clone().add(v(0, .003, 0)), spec.radius * .61, rigid(c)),
         fingerRing(tipPoint, spec.radius * .23, rigid(c)),
@@ -455,7 +455,17 @@ export class FirstPersonBody {
       for (let j = 0; j < fingerSections.length - 1; j++) {
         const from = fingerSections[j], to = fingerSections[j + 1];
         for (let k = 0; k < 3; k++) {
-          const t = k / 3, eased = t * t * (3 - 2 * t);
+          const t = k / 3;
+          const radius=(key:'a'|'b')=>{
+            const slope=(index:number)=>{
+              if(index===0)return (fingerSections[1][key]-fingerSections[0][key])/(fingerSections[1].p.y-fingerSections[0].p.y);
+              if(index===fingerSections.length-1)return (fingerSections[index][key]-fingerSections[index-1][key])/(fingerSections[index].p.y-fingerSections[index-1].p.y);
+              const left=(fingerSections[index][key]-fingerSections[index-1][key])/(fingerSections[index].p.y-fingerSections[index-1].p.y),right=(fingerSections[index+1][key]-fingerSections[index][key])/(fingerSections[index+1].p.y-fingerSections[index].p.y);
+              return left*right<=0?0:2*left*right/(left+right);
+            };
+            const dy=to.p.y-from.p.y,t2=t*t,t3=t2*t;
+            return clamp((2*t3-3*t2+1)*from[key]+(t3-2*t2+t)*dy*slope(j)+(-2*t3+3*t2)*to[key]+(t3-t2)*dy*slope(j+1),Math.min(from[key],to[key]),Math.max(from[key],to[key]));
+          };
           const contributions = new Map<number, number>();
           for (const [ring, factor] of [[from, 1 - t], [to, t]] as const) {
             contributions.set(ring.weights[0], (contributions.get(ring.weights[0]) ?? 0) + ring.weights[2] * factor);
@@ -464,7 +474,7 @@ export class FirstPersonBody {
           const sorted = [...contributions].sort((a, b) => b[1] - a[1]);
           const first = sorted[0], second = sorted[1] ?? [first[0], 0], total = first[1] + second[1];
           fingerRings.push({ p: from.p.clone().lerp(to.p, t),
-            a: THREE.MathUtils.lerp(from.a, to.a, eased), b: THREE.MathUtils.lerp(from.b, to.b, eased),
+            a:radius('a'),b:radius('b'),
             weights: [first[0], second[0], first[1] / total, second[1] / total] });
         }
       }
