@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FOREST_GROUND_SURFACE, loadForestGroundTextures } from './forest-ground.ts';
 import { SAND_SURFACE, type SandTextureSet } from './sand-material.ts';
 
 /** Standard lit material. Only texture projection and grain are extended; the renderer owns grading. */
@@ -95,7 +96,7 @@ export const COAST_ROCK_TEXTURE_URLS = Object.freeze({
 });
 
 /** World-anchored scanned rock; caller-owned sand, grain and atlas stay caller-owned. */
-function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet): THREE.MeshStandardMaterial {
+function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, forestGround = false): THREE.MeshStandardMaterial {
   const baselineGain=typeof location!=='undefined'&&new URLSearchParams(location.search).get('coast')==='v4-white';
   const albedoGain=baselineGain?2.2:COAST_ROCK_SURFACE.albedoGain;
   const material = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.94, metalness: 0 });
@@ -119,10 +120,11 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
     return image;
   };
   const albedo = load('albedo'), normalGL = load('normalGL'), arm = load('arm'), height = load('height');
-  const ownedTextures = [albedo, normalGL, arm, height];
+  const ground = forestGround ? loadForestGroundTextures() : undefined;
+  const ownedTextures = [albedo, normalGL, arm, height, ...(ground?.textures ?? [])];
   const rockPromise = Promise.all(pending).then(() => { rockReady.value = loader ? 1 : 0; });
   const sandPromise = sand.ready.then(() => { sandReady.value = loader ? 1 : 0; });
-  const ready = Promise.all([rockPromise, sandPromise]).then(() => {});
+  const ready = Promise.all([rockPromise, sandPromise, ...(ground ? [ground.promise] : [])]).then(() => {});
   // Keep the rejection visible to the readiness owner without an unhandled rejection during construction.
   void ready.catch(error => console.warn('Coastal PBR image load failed', error));
   const waterLevel = { value: 0 }, splashHeight = { value: 0.65 };
@@ -130,6 +132,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
   material.userData.coastRockTextures = ownedTextures;
   material.userData.coastWetness = { waterLevel, splashHeight };
   material.userData.coastSurface = COAST_ROCK_SURFACE;
+  if (ground) { material.userData.forestGroundTextures = ground.textures; material.userData.forestGroundSurface = FOREST_GROUND_SURFACE; }
   let disposed = false;
   material.addEventListener('dispose', () => {
     if (disposed) return;
@@ -144,6 +147,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
       uSandNormal: { value: sand.normalGL }, uSandARM: { value: sand.arm }, uSandReady: sandReady,
       uCoastWaterLevel: waterLevel, uCoastSplashHeight: splashHeight,
     });
+    if (ground) Object.assign(shader.uniforms, { uForestAlbedo: { value: ground.albedo }, uForestNormal: { value: ground.normalGL }, uForestARM: { value: ground.arm }, uForestReady: ground.ready });
     shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>
       varying vec3 vCoastPoint;
       varying vec3 vCoastAxis;`);
@@ -162,7 +166,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       uniform sampler2D uCoastRockAlbedo, uCoastRockNormal, uCoastRockARM, uCoastRockHeight;
       uniform sampler2D uCoastAtlas, uSandAlbedo, uSandNormal, uSandARM;
-      uniform float uCoastRockReady, uSandReady, uCoastWaterLevel, uCoastSplashHeight;
+      uniform float uCoastRockReady, uSandReady, uCoastWaterLevel, uCoastSplashHeight;${ground ? '\n      uniform sampler2D uForestAlbedo, uForestNormal, uForestARM;\n      uniform float uForestReady;' : ''}
       varying vec3 vCoastPoint;
       varying vec3 vCoastAxis;
 
@@ -279,7 +283,13 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
       vec3 sandColor = mix(sandPhoto, vec3(sandLuma) * vec3(1.055, 1.025, .94), .7) * 2.25;
       sandColor *= mix(${SAND_SURFACE.wetAlbedoMultiplier}, 1.0, sandDry);
       sandColor = mix(vec3(.46, .43, .37) * mix(.62, 1.0, sandDry), sandColor, uSandReady);
-      vec3 greenColor = coastCover(vCoastPoint.xz * .18) * .58;
+      ${ground ? `// Physical ground replaces the canopy photograph only in the existing green domain.
+      vec2 forestUV = vec2(vCoastPoint.x, -vCoastPoint.z) / ${FOREST_GROUND_SURFACE.tileSpanMeters};
+      vec2 forestDx = dFdx(forestUV), forestDy = dFdy(forestUV);
+      vec3 forestPhoto = textureGrad(uForestAlbedo, forestUV, forestDx, forestDy).rgb;
+      vec3 forestTangent = textureGrad(uForestNormal, forestUV, forestDx, forestDy).xyz * 2.0 - 1.0;
+      vec3 forestARM = textureGrad(uForestARM, forestUV, forestDx, forestDy).rgb;
+      vec3 greenColor = mix(vec3(.16, .13, .085), forestPhoto, uForestReady);` : 'vec3 greenColor = coastCover(vCoastPoint.xz * .18) * .58;'}
       diffuseColor.rgb = mix(mix(stoneColor, greenColor, greenMix), sandColor, sandMix);`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
       vec3 coastBaseNormal = normal;
@@ -292,32 +302,34 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet):
       vec3 sandViewNormal = coastProjectedNormal(sandTangentNormal, sandUV, coastBaseNormal,
         mix(${SAND_SURFACE.wetNormalStrength}, ${SAND_SURFACE.dryNormalStrength}, sandDry));
       normal = normalize(mix(coastBaseNormal, rockViewNormal, (1.0 - greenMix) * uCoastRockReady));
-      normal = normalize(mix(normal, sandViewNormal, sandMix * uSandReady));`);
+      ${ground ? `vec3 forestViewNormal = coastProjectedNormal(forestTangent, forestUV, coastBaseNormal, ${FOREST_GROUND_SURFACE.normalStrength});
+      normal = normalize(mix(normal, forestViewNormal, greenMix * uForestReady));
+      ` : ''}normal = normalize(mix(normal, sandViewNormal, sandMix * uSandReady));`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
       vec3 sandARM = texture2D(uSandARM, sandUV).rgb;
       float dryStoneRough = mix(.70, .96, rockRough);
       float wetStoneRough = mix(.27, .53, rockRough);
       float stoneRough = mix(dryStoneRough, wetStoneRough, rockWetness);
       float sandRough = mix(mix(.27, .48, sandARM.g), mix(.78, .96, sandARM.g), sandDry);
-      roughnessFactor = mix(mix(stoneRough, .94, greenMix), sandRough, sandMix);`);
+      roughnessFactor = mix(mix(stoneRough, ${ground ? 'mix(.94, clamp(forestARM.g, .65, 1.0), uForestReady)' : '.94'}, greenMix), sandRough, sandMix);`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <aomap_fragment>', `#include <aomap_fragment>
       float coastOcclusion = mix(mix(1.0, mix(.60, 1.0, rockAO), uCoastRockReady) , 1.0, greenMix);
-      coastOcclusion = mix(coastOcclusion, mix(.86, 1.0, sandARM.r), sandMix * uSandReady);
+      ${ground ? 'coastOcclusion *= mix(1.0, forestARM.r, greenMix * uForestReady);\n      ' : ''}coastOcclusion = mix(coastOcclusion, mix(.86, 1.0, sandARM.r), sandMix * uSandReady);
       reflectedLight.indirectDiffuse *= coastOcclusion;
       #if defined(USE_ENVMAP) && defined(STANDARD)
         reflectedLight.indirectSpecular *= computeSpecularOcclusion(saturate(dot(geometryNormal, geometryViewDir)), coastOcclusion, material.roughness);
       #endif`);
   };
-  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}`;
+  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-r147" : ""}`;
   return material;
 }
 
-export function makeTerrainMaterial(texture: THREE.DataTexture, atlas: THREE.Texture, sand: SandTextureSet): THREE.MeshStandardMaterial {
+export function makeTerrainMaterial(texture: THREE.DataTexture, atlas: THREE.Texture, sand: SandTextureSet, forestGround = false): THREE.MeshStandardMaterial {
   const legacy = typeof location !== 'undefined' && new URLSearchParams(location.search).get('material') === 'legacy';
   if (legacy) {
     const material = makeLegacyTerrainMaterial(texture, atlas, sand);
     material.userData.ready = sand.ready;
     return material;
   }
-  return makeScannedTerrainMaterial(atlas, sand);
+  return makeScannedTerrainMaterial(atlas, sand, forestGround);
 }
