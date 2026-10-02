@@ -54,3 +54,28 @@ Disk exhaustion interrupted PNG writes. Root compressed existing task HTML and
 archival task GLBs in place without deletion. Six stored release HTML hashes were
 checked unchanged; free space recovered to about0.9GB. Old releases/dirty work
 remain preserved. This storage recovery does not imply game-quality acceptance.
+
+## Retained source and review
+
+At `8c40827d6e333faac30a144a9f96af24f14af3d8`, root reduced finger-radius
+peaks and replaced per-ring zero-slope interpolation with slope-preserving cubic
+interpolation after the reviewer observed circumferential bands. Two anatomy
+regressions and TypeScript passed, then the complete253 tests/Vite/embedded build
+and seven normal captures were repeated on this exact source. Revised16 paired
+studio images preserve all eight camera/target pairs. Finger shoulders improve;
+palm bands, thumb/nail/skin molded appearance and full photo quality remain unmet.
+
+R137's first turn failed at router completion. Its initial written packet was
+provisional; the same6.1Sol reviewer completed a bounded continuation on exact8c,
+small source delta and revised16 images. No supported new normalP1/P2 remained;
+photoFAIL and rejection of normal geometry adoption were explicit. Earlier419
+normal7/test253 evidence was kept separate. The post-review root normal7 and full
+rerun are not retroactively independent image acceptance. R135/R136/R137 completed
+turns, model6.1Sol low, parent edges and writable effective sandbox were checked.
+
+Actual native logo click after same-controller movement retained exactX/Z/height;
+it recentered the view and did not teleport. Root's original statement was corrected.
+GPU/CPU selected triangle targets preserve point, normal, UV and material IDs;
+this does not prove all-world receiver/body/material fidelity. Normal geometry
+remains off, with macro materials/skins/visibility and lifecycle gaps documented.
+Final documentation-only commit changes no rendering.
