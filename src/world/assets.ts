@@ -7,6 +7,8 @@ import { FoliageLodField } from './foliage-lod.ts';
 import type { TrunkProxy } from './foliage-lod.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
+export interface AssetWorldOptions { canopyContinuity?: boolean; }
+
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
 interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; variant?: number; }
 interface FloatingMarker { object: THREE.Object3D; phase: number; }
@@ -39,7 +41,7 @@ export class AssetWorld {
   private readonly yAxis = new THREE.Vector3(0, 1, 0);
   private static readonly capacity = 96;
 
-  constructor(private readonly ground: GroundSampler) {
+  constructor(private readonly ground: GroundSampler, private readonly options: AssetWorldOptions = {}) {
     this.group.name = 'Tomari authored coast assets';
     this.group.userData.provenance = 'Reference-inspired authored pines/stone, with fictional adventure furniture and vessel.';
     this.group.userData.solidObstacles = [];
@@ -101,6 +103,13 @@ export class AssetWorld {
       if (height > 3.1 && height < 68 && isHeadland && slope < 1.75 && random() < (.67 + cluster * .3)) {
         const low = random() < .43, size = .88 + random() * .46;
         const matrix = this.transform(x, height - .015, z, size, yaw, low ? 3.35 : 2.32, low ? .27 + random() * .12 : .69 + random() * .35, low ? 2.85 : 1.98);
+        if (low && this.options.canopyContinuity) {
+          // Keep the same soil pockets and random sequence, but restore understory
+          // thickness. The old 3.35/.27 ratio buried most leaves into the slope.
+          const scale = new THREE.Vector3().setFromMatrixScale(matrix);
+          scale.x *= 2.4 / 3.35; scale.z *= 2.2 / 2.85; scale.y *= 2.25;
+          matrix.compose(new THREE.Vector3(x, height - .015, z), new THREE.Quaternion().setFromAxisAngle(this.yAxis, yaw), scale);
+        }
         if (low) {
           // Low native leaf clusters follow soil support instead of cutting a horizontal
           // plane through slopes. Limit lean to 35 degrees; woody shrubs remain upright.
@@ -109,7 +118,18 @@ export class AssetWorld {
           const orientation = new THREE.Quaternion().setFromUnitVectors(this.yAxis, support)
             .multiply(new THREE.Quaternion().setFromAxisAngle(this.yAxis, yaw));
           const scale = new THREE.Vector3().setFromMatrixScale(matrix);
-          matrix.compose(new THREE.Vector3(x, height - .015, z), orientation, scale);
+          let supportY = height - .015;
+          if (this.options.canopyContinuity) {
+            // A bounded support correction closes burial where the 35-degree lean
+            // cannot follow steeper soil. Never place foliage atop the lower cliff.
+            let residual = 0;
+            for (const [dx, dz] of [[1.2, 0], [-1.2, 0], [0, 1.2], [0, -1.2]]) {
+              const sample = this.ground.heightAt(x + dx, z + dz);
+              if (Number.isFinite(sample)) residual = Math.max(residual, sample - height - (gradientX * dx + gradientZ * dz) * lean);
+            }
+            supportY += Math.min(.35, residual);
+          }
+          matrix.compose(new THREE.Vector3(x, supportY, z), orientation, scale);
         }
         shrubs[variant].push(matrix);
         shrubCount++; if (low) groundCoverCount++;
@@ -119,10 +139,13 @@ export class AssetWorld {
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, trees,
       { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000 });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
-      { nearDistance: 26, midDistance: 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000 });
+      { nearDistance: 26, midDistance: this.options.canopyContinuity ? 210 : 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000 });
+    this.group.userData.canopyContinuity = this.options.canopyContinuity === true;
     this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount, groundCover: groundCoverCount,
       strata: 'low wide nonuniform coastal crowns / overlapping shrubs / low true-3D leaf cover; lower steep rock faces exposed',
-      canopyScale: { horizontal: [1.35, 1.65], vertical: [.9, 1.08] }, groundCoverScale: { horizontal: [2.85, 3.35], vertical: [.27, .39] } };
+      canopyScale: { horizontal: [1.35, 1.65], vertical: [.9, 1.08] }, groundCoverScale: this.options.canopyContinuity
+        ? { horizontal: [2.2, 2.4], vertical: [.6075, .8775] }
+        : { horizontal: [2.85, 3.35], vertical: [.27, .39] } };
   }
 
   /** Small strand debris is clustered and varied, rather than an evenly tiled gravel carpet. */
