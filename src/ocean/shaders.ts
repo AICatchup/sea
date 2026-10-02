@@ -264,10 +264,24 @@ export const oceanFragment = /* glsl */ `
   ${shoreWaveSampling}
   ${shoreSolverSampling}
 
+  #ifdef GEOMETRIC_REFRACTION
+  vec4 receiverGround(vec2 uv){
+    vec2 node=clamp(uv,vec2(0),vec2(1))*(uBathyResolution-1.);vec4 filtered=textureLod(uBathymetry,(node+.5)/uBathyResolution,0.);
+    if(uBathyTriangulated<.5||abs(filtered.r)>3.)return filtered;
+    vec2 base=min(floor(node),max(vec2(0),uBathyResolution-2.)),f=node-base;
+    vec4 a=textureLod(uBathymetry,(base+.5)/uBathyResolution,0.),b=textureLod(uBathymetry,(base+vec2(1.5,.5))/uBathyResolution,0.),c=textureLod(uBathymetry,(base+vec2(.5,1.5))/uBathyResolution,0.),d=textureLod(uBathymetry,(base+1.5)/uBathyResolution,0.);
+    return f.x+f.y<=1.?a+(b-a)*f.x+(c-a)*f.y:d+(c-d)*(1.-f.x)+(b-d)*(1.-f.y);
+  }
+  #endif
+
   vec3 coastAt(vec2 p){
     vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
     if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return vec3(-110.0,1.0,0.0);
+    #ifdef GEOMETRIC_REFRACTION
+    return receiverGround(uv).rgb;
+    #else
     return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rgb;
+    #endif
   }
   float shoalAt(vec2 p){return shoreWaveScale(coastAt(p).rg,uSwell,uWind);}
   vec3 longDisplacement(vec2 p) { return texture2D(uLongWaves,p/384.0).xyz*shoalAt(p); }
