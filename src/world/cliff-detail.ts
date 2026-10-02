@@ -26,7 +26,8 @@ export function cliffBodySegmentBlocked(
 }
 
 /** Structural joint groups replace the dense decorative all-over rock scatter. */
-export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number},candidate=false):THREE.BufferGeometry {
+export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number},candidate=false,connectedForm=false):THREE.BufferGeometry {
+  if(connectedForm)return connectedCliffSkin(ground,bounds);
   const positions:number[]=[],colors:number[]=[],uvs:number[]=[],proxies:CliffCollisionProxy[]=[];
   const familyCounts={plates:0,columns:0,buttresses:0},regions={west:0,centre:0,east:0};
   const stride=4.7,triangleLimit=80000;
@@ -183,3 +184,71 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
   return geometry;
 }
 
+
+/** One indexed terrain-attached shell per connected steep region. Adjacent faces
+ * share vertices; edges close into embedded backs, not detached shelf prisms. */
+function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number}):THREE.BufferGeometry {
+  const step=2.4,positions:number[]=[],uvs:number[]=[],colors:number[]=[],indices:number[]=[];
+  const proxies:CliffCollisionProxy[]=[];
+  const vertices=new Map<string,number>();
+  const edges=new Map<string,{a:number;b:number;count:number}>();
+  let cells=0,minY=Infinity;
+  const point=(ix:number,iz:number):number=>{
+    const key=`${ix}:${iz}`,known=vertices.get(key);if(known!==undefined)return known;
+    const x=bounds.minX+14+ix*step,z=bounds.minZ+14+iz*step,y=ground.heightAt(x,z);
+    // Shared, faceted metre-scale relief follows the parent DEM. The major
+    // buttress and cleft shape comes from structuralCoastHeight's same flag.
+    const phase=z*.96+x*.28+y*.11;
+    const relief=.16+.55*Math.abs(((phase/13)%1+1)%1-.5)*2;
+    const index=positions.length/3;
+    positions.push(x,y+relief,z,x,y-1.4,z);
+    uvs.push(x*.2,(y+relief)*.2,x*.2,(y-1.4)*.2);
+    colors.push(.97,.965,.985,.87,.865,.885);
+    vertices.set(key,index);minY=Math.min(minY,y+relief);return index;
+  };
+  const edge=(a:number,b:number)=>{
+    const key=a<b?`${a}:${b}`:`${b}:${a}`,old=edges.get(key);
+    if(old)old.count++;else edges.set(key,{a,b,count:1});
+  };
+  for(let iz=0;bounds.minZ+14+(iz+1)*step<bounds.maxZ-14;iz++){
+    for(let ix=0;bounds.minX+14+(ix+1)*step<bounds.maxX-14;ix++){
+      // Reserve four walls per cell before emitting: strict worst-case 80k cap.
+      if((cells+1)*12>80000)break;
+      const corners=[[ix,iz],[ix,iz+1],[ix+1,iz+1],[ix+1,iz]];
+      const samples=corners.map(([i,j])=>{const x=bounds.minX+14+i*step,z=bounds.minZ+14+j*step;
+        const y=ground.heightAt(x,z),gx=(ground.heightAt(x+2,z)-ground.heightAt(x-2,z))/4,
+          gz=(ground.heightAt(x,z+2)-ground.heightAt(x,z-2))/4;
+        return {x,z,y,gx,gz,slope:Math.hypot(gx,gz)};});
+      // Entire footprint must be dry steep land. Low sand and crown gaps are
+      // intentionally left bare, so this shell cannot cross a beach/boat route.
+      if(samples.some(p=>!Number.isFinite(p.y)||p.y<3.5||p.y>52||p.slope<1.05||
+        (p.y<10&&sandAt(p.x,p.z)>.3)))continue;
+      if(samples.some(p=>ground.heightAt(p.x+p.gx/p.slope*7,p.z+p.gz/p.slope*7)<p.y+3))continue;
+      const ids=corners.map(([i,j])=>point(i,j));const [a,b,c,d]=ids;
+      indices.push(a,b,c,a,c,d,a+1,c+1,b+1,a+1,d+1,c+1);
+      for(let i=0;i<4;i++)edge(ids[i],ids[(i+1)%4]);
+      const proxy:CliffCollisionProxy={minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity,minZ:Infinity,maxZ:-Infinity};
+      for(const id of ids)for(const k of [id,id+1]){
+        proxy.minX=Math.min(proxy.minX,positions[k*3]);proxy.maxX=Math.max(proxy.maxX,positions[k*3]);
+        proxy.minY=Math.min(proxy.minY,positions[k*3+1]);proxy.maxY=Math.max(proxy.maxY,positions[k*3+1]);
+        proxy.minZ=Math.min(proxy.minZ,positions[k*3+2]);proxy.maxZ=Math.max(proxy.maxZ,positions[k*3+2]);
+      }
+      proxies.push(proxy);cells++;
+    }
+  }
+  let boundaryEdges=0;
+  for(const {a,b,count} of edges.values())if(count===1){
+    indices.push(a,a+1,b+1,a,b+1,b);boundaryEdges++;
+  }
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+  geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.setIndex(indices);
+  geometry.computeVertexNormals();geometry.computeBoundingSphere();
+  geometry.userData={connectedFormCandidate:true,coherentCandidate:true,triangleCount:indices.length/3,triangleLimit:80000,
+    outcropCount:cells,rockPieces:0,connectedCells:cells,boundaryEdges,closedVolumes:true,
+    maxNormalProtrusionM:.71,maxFaceWidthM:step,minExposedVertexHeightM:Number.isFinite(minY)?minY:null,
+    collisionProxies:proxies,collision:'Terrain-attached indexed shell with full per-cell volume AABBs',
+    provenance:'Authored connected angular skin and DEM-bound buttress/cleft field; inferred geology, not measured scan'};
+  return geometry;
+}

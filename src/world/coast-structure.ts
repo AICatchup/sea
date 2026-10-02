@@ -31,8 +31,9 @@ function panelRelief(u: number, v: number): number {
 /** Sharpen only an already steep source face; crown, sandy ground and seabed stay tied to the source. */
 export function structuralCoastHeight(
   x: number, z: number, y: number, baseHeightAt: (x:number,z:number)=>number, sand: number,
-  candidate = false, dryToe = false,
+  candidate = false, dryToe = false, connectedForm = false,
 ): number {
+  if(connectedForm)return connectedCliffHeight(x,z,y,baseHeightAt,sand);
   if(candidate)return coherentCoastHeight(x,z,y,baseHeightAt,sand,dryToe);
   const strand=sand*(1-ease(5,10,y));
   if(y<3.5 || y>62 || strand>.62)return y;
@@ -100,4 +101,41 @@ function coherentCoastHeight(x:number,z:number,y:number,base:(x:number,z:number)
   // Keep a dry source point above the shoreline anchor even at maximal erosion.
   const erosion=clamp(shelf-groove*.95,-Math.min(1.1,y-1.1),.35);
   return y+legacy+erosion*toeWeight*strength;
+}
+
+/** R144: connected buttress/cleft field. Source footprint and elevations are anchors,
+ * not a photogrammetric reconstruction. Linear facets deliberately replace round ramps. */
+function connectedCliffHeight(x:number,z:number,y:number,base:(x:number,z:number)=>number,sand:number):number {
+  if(!Number.isFinite(y) || y<=1.1 || y>=62)return y;
+  const strand=sand*(1-ease(5,10,y));
+  if(strand>=.3)return y;
+  const gx=(base(x+5,z)-base(x-5,z))/10,gz=(base(x,z+5)-base(x,z-5))/10;
+  const gradient=Math.hypot(gx,gz);
+  const strength=ease(.65,1.15,gradient)*ease(1.1,4,y)*(1-ease(52,62,y))*(1-ease(.1,.3,strand));
+  if(!Number.isFinite(strength) || strength===0)return y;
+  const nx=gx/gradient,nz=gz/gradient;
+  const foot=base(x-nx*12,z-nz*12),top=base(x+nx*12,z+nz*12),span=top-foot;
+  let profile=y;
+  if(span>9){
+    const t=clamp((y-foot)/span,0,1);
+    // Piecewise planar toe, near-vertical middle and narrow crown; no steps.
+    const f=t<.23?t*.42:t<.78?.0966+(t-.23)*1.51:.9271+(t-.78)*(.0729/.22);
+    profile=foot+f*span;
+  }
+  // Unequal global joint spacings, continuous through all elevations. A small
+  // oblique drift produces leaning clefts rather than horizontal plate rows.
+  const u=z*.96+x*.28+y*.11;
+  const cell=Math.floor(u/18);
+  let closest=Infinity,second=Infinity;
+  for(let i=cell-2;i<=cell+2;i++){
+    const centre=(i+.2+jointRandom(i,0,211)*.6)*18;
+    const d=Math.abs(u-centre);
+    if(d<closest){second=closest;closest=d;}else if(d<second)second=d;
+  }
+  const jointDistance=(second-closest)*.5;
+  const cleft=Math.max(0,1-jointDistance/1.65);
+  const buttress=Math.min(1,jointDistance/5.5);
+  const relief=buttress*1.6-cleft*3.8;
+  const delta=clamp((profile-y)*.68+relief,-6,4.2)*strength;
+  return Math.max(1.1,y+delta);
 }
