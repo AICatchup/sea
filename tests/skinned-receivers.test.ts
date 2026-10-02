@@ -64,3 +64,16 @@ test('actual FirstPersonBody seven actions, three poses each agree with independ
   assert.ok(hits>=21);assert.equal(r.packed.data,data);assert.equal(r.diagnostics.rebuilds,1);assert.equal(r.diagnostics.refits,22);
   console.log(JSON.stringify({skinnedBody:r.diagnostics,maxRefitMs:maxMs,oracleHits:hits}));r.dispose();body.dispose();
 });
+
+test('decoded normalized/interleaved inputs agree with Three and in-place version changes require rebuild',()=>{
+ const {mesh,g}=fixture(),p=g.getAttribute('position');
+ const interleaved=new THREE.InterleavedBuffer(new Float32Array(p.count*4),4);
+ for(let i=0;i<p.count;i++){interleaved.array[i*4]=p.getX(i);interleaved.array[i*4+1]=p.getY(i);interleaved.array[i*4+2]=p.getZ(i);}
+ g.setAttribute('position',new THREE.InterleavedBufferAttribute(interleaved,3,0));
+ const bytes=new Uint8Array(p.count*4);for(let i=0;i<p.count;i++)bytes[i*4]=255;
+ g.setAttribute('skinWeight',new THREE.Uint8BufferAttribute(bytes,4,true));
+ const r=new SkinnedReceivers(mesh),origin=new THREE.Vector3(),dir=new THREE.Vector3(0,0,-1);
+ assert.ok(r.diagnostics.available,r.diagnostics.reason);assert.ok(Math.abs(r.traceCPU(origin,dir,100)!.distance-oracle(mesh,origin,dir)!)<1e-5);
+ interleaved.array[0]+=1;interleaved.needsUpdate=true;r.update();assert.equal(r.diagnostics.available,false);assert.match(r.diagnostics.reason,/changes require rebuild/);
+ for(const name of ['skinWeight','skinIndex','normal','uv'] as const){const {mesh:other,g:geo}=fixture(),receiver=new SkinnedReceivers(other);geo.getAttribute(name).needsUpdate=true;receiver.update();assert.equal(receiver.diagnostics.available,false,name);}
+});

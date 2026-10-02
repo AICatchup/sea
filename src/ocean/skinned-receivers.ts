@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export interface SkinnedReceiverOptions { maxTriangles?: number; maxDepth?: number; leafSize?: number; }
 export interface SkinnedReceiverHit { distance: number; point: THREE.Vector3; normal: THREE.Vector3; uv: THREE.Vector2; materialId: number; vertexColor: THREE.Color; tangent: THREE.Vector3; bitangent: THREE.Vector3; }
-type Surface = { mesh: THREE.SkinnedMesh; vertices: Float32Array; normals: Float32Array; boneSkin: Float64Array; signature: string; attributes: object[] };
+type Surface = { mesh: THREE.SkinnedMesh; vertices: Float32Array; normals: Float32Array; boneSkin: Float64Array; source?: Float64Array; signature: string; attributes: object[] };
 type Triangle = { surface: number; indices: number[]; material: number };
 type Node = { left: number; right: number; start: number; count: number };
 const finite = (values: ArrayLike<number>) => { for(let i=0;i<values.length;i++)if(!Number.isFinite(values[i]))return false;return true; };
@@ -22,6 +22,7 @@ export class SkinnedReceivers {
   private nodes: Node[] = [];
   private disposed = false;
   private poseKey='';
+  private staticPacked=false;
   private maxDepth: number;
   private leafSize: number;
   constructor(root: THREE.Object3D, options: SkinnedReceiverOptions = {}) {
@@ -63,7 +64,7 @@ export class SkinnedReceivers {
       this.packed.data = new Float32Array(this.packed.texels * 4);
       this.packed.root = ids.length ? 0 : -1;
       this.diagnostics.triangles = this.triangles.length; this.diagnostics.nodes = this.nodes.length;
-      this.diagnostics.bytes = this.packed.data.byteLength + this.surfaces.reduce((sum, s) => sum + s.vertices.byteLength + s.normals.byteLength + s.boneSkin.byteLength, 0);
+      this.diagnostics.bytes = this.packed.data.byteLength + this.surfaces.reduce((sum, s) => sum + s.vertices.byteLength + s.normals.byteLength + s.boneSkin.byteLength + (s.source?.byteLength ?? 0), 0);
       this.diagnostics.rebuilds = 1;
       this.update();
     } catch (error) { this.fail(error); }
@@ -88,20 +89,32 @@ export class SkinnedReceivers {
         bone.premultiply(m.bindMatrixInverse).multiply(m.bindMatrix).toArray(s.boneSkin,bi*16);
       }
       normalMatrix.getNormalMatrix(m.matrixWorld);
+      // Decode via Three getters once, retaining normalized/interleaved attribute semantics.
+      if(!s.source){const source=new Float64Array(positions.count*14);
+        for(let i=0;i<positions.count;i++){const o=i*14;
+          for(let c=0;c<3;c++){source[o+c]=positions.getComponent(i,c);source[o+3+c]=normals?.getComponent(i,c)??0;}
+          for(let j=0;j<4;j++){const w=weights.getComponent(i,j),bi=indices.getComponent(i,j);
+            if(!Number.isFinite(w)||!Number.isInteger(bi)||bi<0||bi>=m.skeleton.bones.length)throw new Error('invalid skin weights/index');
+            source[o+6+j]=bi*16;source[o+10+j]=w;}}
+        s.source=source;}
+      const source=s.source;
       for (let i = 0; i < positions.count; i++) {
-        skin.elements.fill(0);
+        const o=i*14;
+        const e=skin.elements;e.fill(0);
         for (let j = 0; j < 4; j++) {
-          const w = weights.getComponent(i, j), bi = indices.getComponent(i, j);
-          if (!Number.isFinite(w) || !Number.isInteger(bi) || bi < 0 || bi >= m.skeleton.bones.length) throw new Error('invalid skin weights/index');
+          const w = source[o+10+j];
           if (!w) continue;
-          for (let k = 0; k < 16; k++) skin.elements[k] += s.boneSkin[bi*16+k] * w;
+          const b=source[o+6+j], palette=s.boneSkin;
+          e[0]+=palette[b]*w;e[1]+=palette[b+1]*w;e[2]+=palette[b+2]*w;
+          e[4]+=palette[b+4]*w;e[5]+=palette[b+5]*w;e[6]+=palette[b+6]*w;
+          e[8]+=palette[b+8]*w;e[9]+=palette[b+9]*w;e[10]+=palette[b+10]*w;
+          e[12]+=palette[b+12]*w;e[13]+=palette[b+13]*w;e[14]+=palette[b+14]*w;
         }
         // Skinning GLSL uses xyz of the homogeneous result, without a projective divide.
-        p.fromBufferAttribute(positions, i);
-        const e = skin.elements, x = p.x, y = p.y, z = p.z;
+        const x = source[o], y = source[o+1], z = source[o+2];
         p.set(e[0]*x+e[4]*y+e[8]*z+e[12], e[1]*x+e[5]*y+e[9]*z+e[13], e[2]*x+e[6]*y+e[10]*z+e[14]).applyMatrix4(m.matrixWorld);
         n.set(0, 0, 0);
-        if (normals) { n.fromBufferAttribute(normals, i); const nx=n.x, ny=n.y, nz=n.z; n.set(e[0]*nx+e[4]*ny+e[8]*nz, e[1]*nx+e[5]*ny+e[9]*nz, e[2]*nx+e[6]*ny+e[10]*nz).applyMatrix3(normalMatrix).normalize(); }
+        if (normals) { const nx=source[o+3], ny=source[o+4], nz=source[o+5]; n.set(e[0]*nx+e[4]*ny+e[8]*nz, e[1]*nx+e[5]*ny+e[9]*nz, e[2]*nx+e[6]*ny+e[10]*nz).applyMatrix3(normalMatrix).normalize(); }
         if (!Number.isFinite(p.x)||!Number.isFinite(p.y)||!Number.isFinite(p.z)||!Number.isFinite(n.x)||!Number.isFinite(n.y)||!Number.isFinite(n.z)) throw new Error('nonfinite posed vertex');
         p.toArray(s.vertices, i * 3); n.toArray(s.normals, i * 3);
       }
@@ -128,28 +141,34 @@ export class SkinnedReceivers {
       const key=this.surfaces.map(s=>[this.signature(s.mesh),visible(s.mesh),...s.mesh.matrixWorld.elements,...s.mesh.bindMatrix.elements,...s.mesh.bindMatrixInverse.elements,...(s.mesh.skeleton.boneMatrices??[]),this.materials.map(m=>supported(m)).join(',')].join(',')).join('|');
       if(this.diagnostics.available&&key===this.poseKey){this.diagnostics.skipped++;this.diagnostics.timeMs=performance.now()-start;return;}
       this.pose(); const data=this.packed.data;
+      const surfaceVisible=this.surfaces.map(s=>visible(s.mesh)),materialSupported=this.materials.map(supported);
       for (let ti=0; ti<this.triangles.length; ti++) {
         const t=this.triangles[ti], s=this.surfaces[t.surface], g=s.mesh.geometry, uv=g.getAttribute('uv'), color=g.getAttribute('color');
         const base=(this.packed.triangleOffset+ti*12)*4;
         for (let k=0;k<3;k++) {
           const vi=t.indices[k];
-          for (let c=0;c<3;c++) { data[base+k*4+c]=s.vertices[vi*3+c]; data[base+(k+3)*4+c]=s.normals[vi*3+c]; data[base+(k+9)*4+c]=color ? color.getComponent(vi,c) : 1; }
-          data[base+(k+6)*4]=uv?.getX(vi) ?? 0; data[base+(k+6)*4+1]=uv?.getY(vi) ?? 0;
+          for (let c=0;c<3;c++) { data[base+k*4+c]=s.vertices[vi*3+c]; data[base+(k+3)*4+c]=s.normals[vi*3+c]; }
+          if(!this.staticPacked){for(let c=0;c<3;c++)data[base+(k+9)*4+c]=color ? color.getComponent(vi,c) : 1;
+          data[base+(k+6)*4]=uv?.getX(vi) ?? 0; data[base+(k+6)*4+1]=uv?.getY(vi) ?? 0;}
         }
-        data[base+3]=visible(s.mesh) && supported(this.materials[t.material]) ? t.material : -1;
+        data[base+3]=surfaceVisible[t.surface] && materialSupported[t.material] ? t.material : -1;
       }
       // Children are allocated after parents. Reverse order refits every node once, without sort/rebuild.
       for (let ni=this.nodes.length-1;ni>=0;ni--) {
         const node=this.nodes[ni], base=ni*12;
-        for(let axis=0;axis<3;axis++) {
-          let lo=Infinity, hi=-Infinity;
-          if (node.count) for(let j=node.start;j<node.start+node.count;j++) for(let k=0;k<3;k++) { const v=data[(this.packed.triangleOffset+j*12+k)*4+axis];lo=Math.min(lo,v);hi=Math.max(hi,v); }
-          else { lo=Math.min(data[node.left*12+axis],data[node.right*12+axis]); hi=Math.max(data[node.left*12+4+axis],data[node.right*12+4+axis]); }
-          data[base+axis]=lo;data[base+4+axis]=hi;
-        }
-        data[base+3]=node.left;data[base+7]=node.right;data[base+8]=node.start;data[base+9]=node.count;
+        let lx=Infinity,ly=Infinity,lz=Infinity,hx=-Infinity,hy=-Infinity,hz=-Infinity;
+        if(node.count){for(let j=node.start;j<node.start+node.count;j++)for(let k=0;k<3;k++){
+          const offset=(this.packed.triangleOffset+j*12+k)*4,x=data[offset],y=data[offset+1],z=data[offset+2];
+          if(x<lx)lx=x;if(x>hx)hx=x;if(y<ly)ly=y;if(y>hy)hy=y;if(z<lz)lz=z;if(z>hz)hz=z;
+        }}else{const l=node.left*12,r=node.right*12;
+          lx=Math.min(data[l],data[r]);ly=Math.min(data[l+1],data[r+1]);lz=Math.min(data[l+2],data[r+2]);
+          hx=Math.max(data[l+4],data[r+4]);hy=Math.max(data[l+5],data[r+5]);hz=Math.max(data[l+6],data[r+6]);}
+        data[base]=lx;data[base+1]=ly;data[base+2]=lz;data[base+4]=hx;data[base+5]=hy;data[base+6]=hz;        data[base+3]=node.left;data[base+7]=node.right;data[base+8]=node.start;data[base+9]=node.count;
       }
-      if (!finite(data)) throw new Error('nonfinite packed data');
+      // Dynamic coordinates/normals are checked in pose; bounds only select those finite values.
+      // Attribute versions and identities are checked before reusing static UV/color texels.
+      if (!this.staticPacked && !finite(data)) throw new Error('nonfinite packed data');
+      this.staticPacked=true;
       this.diagnostics.available=true;this.diagnostics.reason='';this.diagnostics.refits++;this.poseKey=key;
     } catch(error) { this.fail(error); }
     this.diagnostics.timeMs=performance.now()-start;
@@ -186,3 +205,4 @@ export class SkinnedReceivers {
   trace(origin: THREE.Vector3, unitRay: THREE.Vector3, maxDistance: number) { return this.traceCPU(origin,unitRay,maxDistance); }
   dispose() { if(this.disposed)return;this.disposed=true;this.packed.data=new Float32Array(0);this.fail('disposed'); }
 }
+
