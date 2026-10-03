@@ -20,7 +20,7 @@ export interface FoliageGeometry { bark: THREE.BufferGeometry; needles: THREE.Bu
 export interface FoliagePart { geometry: THREE.BufferGeometry; material: THREE.MeshStandardMaterial; }
 export interface FoliageVariant { parts: readonly FoliagePart[]; triangles: number; }
 export interface FoliageLevels { near: FoliageVariant[]; mid: FoliageVariant[]; far: FoliageVariant[]; }
-export interface LeafVolumeRefinement { pineTriangles?: number; shrubTriangles?: number; }
+export interface LeafVolumeRefinement { pineTriangles?: number; shrubTriangles?: number; alphaAware?: boolean; preserveMidCoverage?: boolean; }
 
 /** All ready distance bands use the same original CC0 branch/needle/leaf topology. */
 export class CoastalFoliage {
@@ -133,7 +133,7 @@ export class CoastalFoliage {
           }
           this.resources.material(material);
           const geometry = this.resources.geometry(child.geometry);
-          if (!leafVolumeRefinement && source.kind === 'pine' && level !== 'near' && leafy) {
+          if ((!leafVolumeRefinement || (level==='mid' && refinementTargets.preserveMidCoverage===true)) && source.kind === 'pine' && level !== 'near' && leafy) {
             const points = new Float32Array(geometry.getAttribute('position').array);
             geometry.userData.coverage = preserveLeafCoverage(points, new Uint32Array(geometry.index!.array), level === 'far' ? .18 : .025);
             geometry.setAttribute('position', new THREE.BufferAttribute(points, 3));
@@ -145,7 +145,7 @@ export class CoastalFoliage {
       }
       const levels = source.kind === 'pine' ? this.pineLevels : this.shrubLevels;
       if (source.kind === 'shrub') {
-        variants.far = await Promise.all((leafVolumeRefinement?variants.near:variants.mid).map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed,shrubTriangles,!!leafVolumeRefinement)));
+        variants.far = await Promise.all((leafVolumeRefinement?variants.near:variants.mid).map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed,shrubTriangles,!!leafVolumeRefinement,720,refinementTargets.alphaAware??false)));
         // The 96-triangle shrub reduction otherwise drops fine leaf silhouettes on ledges.
         // Expand each retained disconnected leaf component by at most 8cm, preserving
         // its original UVs, normals, gaps and all-angle topology. No extra draws/triangles.
@@ -159,7 +159,7 @@ export class CoastalFoliage {
       }
       if(source.kind==='pine' && leafVolumeRefinement) {
         // Keep the native far woody hierarchy; replace only leaves with intact near-source leaves.
-        variants.far=await Promise.all(variants.near.map((variant,index)=>coarseFoliage({parts:variant.parts.map(part=>part.material.userData.foliageRole==='leaves'?part:variants.far[index].parts.find(p=>p.material.userData.foliageRole===part.material.userData.foliageRole)??part),triangles:variant.triangles},this.resources,'pine',()=>this.disposed,96,true,pineTriangles)));
+        variants.far=await Promise.all(variants.near.map((variant,index)=>coarseFoliage({parts:variant.parts.map(part=>part.material.userData.foliageRole==='leaves'?part:variants.far[index].parts.find(p=>p.material.userData.foliageRole===part.material.userData.foliageRole)??part),triangles:variant.triangles},this.resources,'pine',()=>this.disposed,96,true,pineTriangles,refinementTargets.alphaAware??false)));
       }
       for (const level of ['near', 'mid', 'far'] as const) variants[level].forEach((variant, index) => { levels[level][source.variant + index] = variant; });
       if (this.disposed) return;

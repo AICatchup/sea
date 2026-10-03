@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { MeshoptSimplifier } from 'three/addons/libs/meshopt_simplifier.module.js';
 import type { FoliagePart, FoliageVariant } from './foliage.ts';
 import type { ModelResources } from './models/procedural.ts';
-import { representativeLeaves } from './foliage-coverage.ts';
+import { representativeLeaves, type LeafAlphaSampling, type LeafAlphaLayer } from './foliage-coverage.ts';
 
 /** Preserve subpixel needle coverage after decimation, without filling crown gaps or adding blobs. */
 export function preserveLeafCoverage(positions: Float32Array, indices: Uint32Array, displacement = .15): { components: number; maxDisplacement: number } {
@@ -36,8 +36,30 @@ export function preserveLeafCoverage(positions: Float32Array, indices: Uint32Arr
   return { components: groups.size, maxDisplacement };
 }
 
+const alphaPixels = new WeakMap<THREE.Texture, {width:number;height:number;data:ArrayLike<number>}>();
+function alphaSampling(g: THREE.BufferGeometry, material: THREE.MeshStandardMaterial): LeafAlphaSampling {
+  const layers: LeafAlphaLayer[]=[];
+  for(const [texture,component] of [[material.map,3],[material.alphaMap,1]] as const) {
+    if(!texture)continue;
+    let pixels=alphaPixels.get(texture);
+    if(!pixels){
+      const image=texture.image as {width:number;height:number;data?:ArrayLike<number>};
+      if(image.data)pixels={width:image.width,height:image.height,data:image.data};
+      else {const canvas=document.createElement('canvas');canvas.width=image.width;canvas.height=image.height;
+        const context=canvas.getContext('2d',{willReadFrequently:true});if(!context)throw new Error('Alpha coverage canvas unavailable');
+        context.drawImage(texture.image as CanvasImageSource,0,0);pixels={width:image.width,height:image.height,data:context.getImageData(0,0,image.width,image.height).data};}
+      alphaPixels.set(texture,pixels);
+    }
+    const uv=g.getAttribute(texture.channel===0?'uv':`uv${texture.channel}`);
+    if(!uv)throw new Error(`Alpha coverage missing UV channel ${texture.channel}`);
+    if(texture.matrixAutoUpdate)texture.updateMatrix();
+    layers.push({...pixels,uvs:new Float32Array(uv.array),component,matrix:texture.matrix.elements.slice(),flipY:texture.flipY,wrapS:texture.wrapS,wrapT:texture.wrapT});
+  }
+  return {layers,threshold:material.alphaTest,opacity:material.opacity};
+}
+
 /** Reduce the original all-angle model, retaining original UVs and a connected woody hierarchy. */
-export async function coarseFoliage(source: FoliageVariant, resources: ModelResources, kind: 'pine' | 'shrub', cancelled = () => false, shrubTriangles=96, refinement=false, pineLeafTriangles=720): Promise<FoliageVariant> {
+export async function coarseFoliage(source: FoliageVariant, resources: ModelResources, kind: 'pine' | 'shrub', cancelled = () => false, shrubTriangles=96, refinement=false, pineLeafTriangles=720, alphaAware=false): Promise<FoliageVariant> {
   await MeshoptSimplifier.ready;
   if (cancelled()) return { parts: [], triangles: 0 };
   const parts: FoliagePart[] = [];
@@ -47,10 +69,10 @@ export async function coarseFoliage(source: FoliageVariant, resources: ModelReso
     const positions = new Float32Array(p.array), normals = new Float32Array(n.array), uvs = new Float32Array(uv.array);
     const indices = g.index ? new Uint32Array(g.index.array) : Uint32Array.from({ length: p.count }, (_, i) => i);
     if(refinement && (kind==='shrub'||part.material.userData.foliageRole==='leaves')) {
-      const selection=representativeLeaves(positions,indices,kind==='shrub'?shrubTriangles:pineLeafTriangles);
+      const selection=representativeLeaves(positions,indices,kind==='shrub'?shrubTriangles:pineLeafTriangles,128,alphaAware?alphaSampling(g,part.material):undefined);
       if(selection.unsupported) throw new Error(`Unsupported connected foliage topology: ${selection.components} components cannot fit native leaf budget`);
       const geometry=g.clone();geometry.setIndex(new THREE.BufferAttribute(selection.indices,1));
-      geometry.userData={...g.userData,derivation:'intact native components selected by three-axis marginal coverage',coverage:selection};
+      geometry.userData={...g.userData,derivation:alphaAware?'intact native components selected by three-axis base-level photographic alpha coverage':'intact native components selected by three-axis marginal coverage',coverage:selection};
       geometry.computeBoundingBox();geometry.computeBoundingSphere();resources.geometry(geometry);parts.push({geometry,material:part.material});continue;
     }
     if(refinement && kind==='pine') {const geometry=g.clone();resources.geometry(geometry);parts.push({geometry,material:part.material});continue;}
