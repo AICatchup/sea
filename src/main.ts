@@ -251,14 +251,17 @@ try {
         return {variants,scope:'One frozen camera, FFT, caustic state and light; straight screen ray vs Snell ray to visible scene-depth receiver. Missing/offscreen/hidden receivers retain legacy; bounded screen-space approximation, not full geometry ray tracing or movement/Human proof'};
       }finally{ocean.setSnellRay(previous);captureHost.restoreState(before);}
     },
-    async captureTerrainPose(name:string,eyeY:number,time=34){
+    async captureTerrainPose(name:string,eyeY:number,time=34,look?:{yaw:number;pitch:number}){
       await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile||!Number.isFinite(eyeY))throw new Error('Known terrain view and actual finite eye height required');
+      if(look&&(!Number.isFinite(look.yaw)||!Number.isFinite(look.pitch)||Math.abs(look.pitch)>1.35))throw new Error('Finite bounded comparison look required');
       const before=captureHost.readState(),clock=ocean.diagnostics.time;
       try{
         captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
-        const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth,eyeY);ocean.setObservationClock(time);
+        const p=profile.pose;captureHost.viewpoint(p.x,p.z,look?.yaw??p.yaw,look?.pitch??p.pitch,p.mode,p.depth,eyeY);ocean.setObservationClock(time);
         for(let i=0;i<20;i++)await captureHost.nextFrame();const png=await capturePNG();if(!png)throw new Error('No terrain PNG');
-        return {png,metadata:{name,state:captureHost.readState(),time:ocean.diagnostics.time,topography:ocean.diagnostics.topography,scope:'Separate fully initialized terrain instances, aligned actual camera and FFT time; static terrain/foliage comparison only, no identical fish/solver histories or movement/Human proof'}};
+        const state=captureHost.readState();if(state.width!==1280||state.height!==720)throw new Error(`Comparison dimensions ${state.width}x${state.height}; expected 1280x720`);
+        const diagnostic=ocean.diagnostics;
+        return {png,metadata:{name,state,time:diagnostic.time,topography:diagnostic.topography,foliage:diagnostic.foliage,draws:diagnostic.draws,triangles:diagnostic.triangles,scope:'Separate fully initialized terrain instances, aligned actual camera and FFT time; current-pose render counters before restoration; static terrain/foliage comparison only, no identical fish/solver histories or movement/Human proof'}};
       }finally{try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
     },
     async captureGeometryComparison(name:string,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},probePoints?:readonly{x:number;y:number}[]){

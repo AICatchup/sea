@@ -67,7 +67,7 @@ export class AssetWorld {
     const supported = crownSupportedPlacements(this.ground, this.foliage.pineLevels.near, this.foliage.shrubLevels.near);
     this.pineField.dispose(); this.shrubField.dispose();
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, supported.trees,
-      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000, viewAware: true,...(this.options.originalCanopy?{nearPixels:48,midPixels:24}:{}) });
+      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000, viewAware: true,...(this.options.originalCanopy?{nearPixels:48,midPixels:24,farPixels:12}:{}) });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, supported.shrubs,
       { nearDistance: 26, midDistance: 210, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000, viewAware: true });
     this.lastPineSignature = '!native-rebuild'; this.rebuildPlacements(0);
@@ -151,7 +151,7 @@ export class AssetWorld {
     }
     // Same deterministic transforms, now partitioned into mutually exclusive distance bands.
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, trees,
-      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000,viewAware:this.options.canopyContinuity===true,...(this.options.originalCanopy?{nearPixels:48,midPixels:24}:{}) });
+      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000,viewAware:this.options.canopyContinuity===true,...(this.options.originalCanopy?{nearPixels:48,midPixels:24,farPixels:12}:{}) });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
       { nearDistance: 26, midDistance: this.options.canopyContinuity ? 210 : 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000,viewAware:this.options.canopyContinuity===true });
     this.group.userData.canopyContinuity = this.options.canopyContinuity === true;

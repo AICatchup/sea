@@ -6,11 +6,11 @@
     "indexBounds": true,
     "normalsMaximumDeviation": 4.896974503676432e-8,
     "groundAnchorY": 0,
-    "geometryBytes": 11667180,
+    "geometryBytes": 11806012,
     "embeddedTextureImages": 9,
     "uniqueTextures": 9,
     "materials": 3,
-    "meshPrimitives": 9,
+    "meshPrimitives": 12,
     "imageChecks": [
       {
         "image": 0,
@@ -554,6 +554,65 @@
           ]
         }
       ]
+    },
+    {
+      "resolution": 16,
+      "offset": 30,
+      "levels": [
+        {
+          "level": "distant",
+          "directions": [
+            {
+              "azimuth": 30,
+              "elevation": 18,
+              "sourcePixels": 34,
+              "outputPixels": 30,
+              "retention": 0.5882352941176471,
+              "iou": 0.45454545454545453
+            },
+            {
+              "azimuth": 90,
+              "elevation": 18,
+              "sourcePixels": 32,
+              "outputPixels": 28,
+              "retention": 0.59375,
+              "iou": 0.4634146341463415
+            },
+            {
+              "azimuth": 150,
+              "elevation": 18,
+              "sourcePixels": 33,
+              "outputPixels": 23,
+              "retention": 0.5454545454545454,
+              "iou": 0.47368421052631576
+            },
+            {
+              "azimuth": 210,
+              "elevation": 18,
+              "sourcePixels": 35,
+              "outputPixels": 23,
+              "retention": 0.5142857142857142,
+              "iou": 0.45
+            },
+            {
+              "azimuth": 270,
+              "elevation": 18,
+              "sourcePixels": 27,
+              "outputPixels": 26,
+              "retention": 0.6296296296296297,
+              "iou": 0.4722222222222222
+            },
+            {
+              "azimuth": 330,
+              "elevation": 18,
+              "sourcePixels": 30,
+              "outputPixels": 25,
+              "retention": 0.5333333333333333,
+              "iou": 0.41025641025641024
+            }
+          ]
+        }
+      ]
     }
   ],
   "sourceManifest": {
@@ -650,8 +709,8 @@
   },
   "output": {
     "file": "original-canopy-lod-1k.glb",
-    "bytes": 17297540,
-    "sha256": "df339168ff22a3364e924270c61412bc8a8ca2c267bf445132d1889006f6d21b",
+    "bytes": 17439104,
+    "sha256": "19ce8153bdbecbe173b555d6094609a527b5da395f9b5ca9c6d95de654469f3c",
     "alphaSha256": "f4341f147988dbe6b58d9ca841a8f0e4bcff25bc40d05f9877da82006d489c39"
   },
   "recipe": {
@@ -666,6 +725,8 @@
     "leafSimplificationMeanError": 0.08091251001020415,
     "midLeafSizeCompensation": 4.25,
     "farLeafSizeCompensation": 7,
+    "distantLeafSizeCompensation": 12,
+    "distantSelectedComponents": 180,
     "midSelectedComponents": 2900,
     "farSelectedComponents": 950,
     "projectionResolution": 64,
@@ -926,6 +987,82 @@
           "iou": 0.4845360824742268
         }
       ]
+    },
+    {
+      "name": "canopy_original_distant",
+      "projectionResolution": 16,
+      "triangles": [
+        670,
+        712,
+        846
+      ],
+      "vertices": [
+        760,
+        1061,
+        1682
+      ],
+      "bounds": {
+        "min": [
+          -3.044020891189575,
+          0,
+          -3.0652289390563965
+        ],
+        "max": [
+          2.941128730773926,
+          4.815374374389648,
+          2.925814151763916
+        ]
+      },
+      "coverage": [
+        {
+          "azimuth": 30,
+          "elevation": 18,
+          "sourcePixels": 34,
+          "outputPixels": 30,
+          "retention": 0.5882352941176471,
+          "iou": 0.45454545454545453
+        },
+        {
+          "azimuth": 90,
+          "elevation": 18,
+          "sourcePixels": 32,
+          "outputPixels": 28,
+          "retention": 0.59375,
+          "iou": 0.4634146341463415
+        },
+        {
+          "azimuth": 150,
+          "elevation": 18,
+          "sourcePixels": 33,
+          "outputPixels": 23,
+          "retention": 0.5454545454545454,
+          "iou": 0.47368421052631576
+        },
+        {
+          "azimuth": 210,
+          "elevation": 18,
+          "sourcePixels": 35,
+          "outputPixels": 23,
+          "retention": 0.5142857142857142,
+          "iou": 0.45
+        },
+        {
+          "azimuth": 270,
+          "elevation": 18,
+          "sourcePixels": 27,
+          "outputPixels": 26,
+          "retention": 0.6296296296296297,
+          "iou": 0.4722222222222222
+        },
+        {
+          "azimuth": 330,
+          "elevation": 18,
+          "sourcePixels": 30,
+          "outputPixels": 25,
+          "retention": 0.5333333333333333,
+          "iou": 0.41025641025641024
+        }
+      ]
     }
   ],
   "budget": {
@@ -942,7 +1079,7 @@
     "Full original near prototype remains local verified source.gltf + source bin; runtime GLB includes component-preserving near"
   ],
   "build": {
-    "seconds": 8.3952209,
-    "peakRSSBytes": 839979008
+    "seconds": 10.8657262,
+    "peakRSSBytes": 897167360
   }
 }
