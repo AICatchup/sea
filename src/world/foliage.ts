@@ -47,8 +47,11 @@ export class CoastalFoliage {
     this.shrubs = [19, 53, 83].map(seed => this.shrub(seed));
     const variants = (sources: FoliageGeometry[]) => sources.map(g => ({ parts: [{ geometry: g.bark, material: this.bark }, { geometry: g.needles, material: this.leaves }], triangles: this.triangles(g.bark) + this.triangles(g.needles) }));
     const pines = variants(this.pines), shrubs = variants(this.shrubs);
-    this.pineLevels = { near: pines, mid: pines, far: pines };
-    this.shrubLevels = { near: shrubs, mid: shrubs, far: shrubs };
+    // The initial proxy objects can be shared; the mutable LOD slots cannot.
+    // Native loads replace slots per band. Aliased arrays silently replaced
+    // every near/mid source with the final far reduction.
+    this.pineLevels = { near: [...pines], mid: [...pines], far: [...pines] };
+    this.shrubLevels = { near: [...shrubs], mid: [...shrubs], far: [...shrubs] };
   }
 
   private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }

@@ -164,7 +164,7 @@ export class FoliageLodField {
       triangles += count * batch.triangles;
     }
     this.group.userData[this.name] = { status: 'ready', placements: this.plants.length, originalPlacements: this.fixedCount,
-      rendered,culled:this.plants.length-rendered,viewAware,instances: counts,byVariant,oversized,thresholds: this.settings, draws, triangles,nearTriangles: selectedNear.reduce((sum, entry) => sum + this.levels.near[entry.plant.variant].triangles, 0),
+      rendered,culled:this.plants.length-rendered,viewAware,instances: counts,byVariant,oversized,levelTriangles:{near:this.levels.near.map(v=>v.triangles),mid:this.levels.mid.map(v=>v.triangles),far:this.levels.far.map(v=>v.triangles),distant:this.levels.distant?.map(v=>v.triangles)},thresholds: this.settings, draws, triangles,nearTriangles: selectedNear.reduce((sum, entry) => sum + this.levels.near[entry.plant.variant].triangles, 0),
       exclusiveLod: true, selection: 'actual transformed crown angular span within distance / triangle caps', source: 'CC0 all-angle branch/needle/leaf models in every ready band' };
   }
 
