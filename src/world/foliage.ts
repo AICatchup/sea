@@ -51,7 +51,7 @@ export class CoastalFoliage {
   private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }
 
   /** AssetWorld alone owns and loads the original photographic maps and 3D LODs. */
-  async loadDetailed(fullerUnderstory=false): Promise<void> {
+  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement=false): Promise<void> {
     if (typeof document === 'undefined') return;
     for (const source of sourceAssets) {
       const gltf = await new GLTFLoader().loadAsync(source.url);
@@ -129,7 +129,7 @@ export class CoastalFoliage {
           }
           this.resources.material(material);
           const geometry = this.resources.geometry(child.geometry);
-          if (source.kind === 'pine' && level !== 'near' && leafy) {
+          if (!leafVolumeRefinement && source.kind === 'pine' && level !== 'near' && leafy) {
             const points = new Float32Array(geometry.getAttribute('position').array);
             geometry.userData.coverage = preserveLeafCoverage(points, new Uint32Array(geometry.index!.array), level === 'far' ? .18 : .025);
             geometry.setAttribute('position', new THREE.BufferAttribute(points, 3));
@@ -141,17 +141,21 @@ export class CoastalFoliage {
       }
       const levels = source.kind === 'pine' ? this.pineLevels : this.shrubLevels;
       if (source.kind === 'shrub') {
-        variants.far = await Promise.all(variants.mid.map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed,fullerUnderstory?160:96)));
+        variants.far = await Promise.all((leafVolumeRefinement?variants.near:variants.mid).map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed,fullerUnderstory?160:96,leafVolumeRefinement)));
         // The 96-triangle shrub reduction otherwise drops fine leaf silhouettes on ledges.
         // Expand each retained disconnected leaf component by at most 8cm, preserving
         // its original UVs, normals, gaps and all-angle topology. No extra draws/triangles.
-        for (const variant of variants.far) for (const part of variant.parts) {
+        if(!leafVolumeRefinement) for (const variant of variants.far) for (const part of variant.parts) {
           const geometry = part.geometry;
           const points = new Float32Array(geometry.getAttribute('position').array);
           geometry.userData.coverage = preserveLeafCoverage(points, new Uint32Array(geometry.index!.array), .08);
           geometry.setAttribute('position', new THREE.BufferAttribute(points, 3));
           geometry.computeBoundingBox(); geometry.computeBoundingSphere();
         }
+      }
+      if(source.kind==='pine' && leafVolumeRefinement) {
+        // Keep the native far woody hierarchy; replace only leaves with intact near-source leaves.
+        variants.far=await Promise.all(variants.near.map((variant,index)=>coarseFoliage({parts:variant.parts.map(part=>part.material.userData.foliageRole==='leaves'?part:variants.far[index].parts.find(p=>p.material.userData.foliageRole===part.material.userData.foliageRole)??part),triangles:variant.triangles},this.resources,'pine',()=>this.disposed,96,true)));
       }
       for (const level of ['near', 'mid', 'far'] as const) variants[level].forEach((variant, index) => { levels[level][source.variant + index] = variant; });
       if (this.disposed) return;
