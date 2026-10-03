@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { crownSupportedPlacements } from './crown-support.ts';
 import type { GroundSampler, PlaceableKind } from './contracts';
 import { CoastalModels } from './models/props';
 import { makeInstances, ModelBatch, randomSeed, rockGeometry, standard, updateInstanceBounds } from './models/procedural';
@@ -7,7 +8,7 @@ import { FoliageLodField } from './foliage-lod.ts';
 import type { TrunkProxy } from './foliage-lod.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
-export interface AssetWorldOptions { canopyContinuity?: boolean; }
+export interface AssetWorldOptions { canopyContinuity?: boolean; crownSupport?: boolean; }
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
 interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; variant?: number; }
@@ -55,10 +56,23 @@ export class AssetWorld {
     this.group.userData.foliage = { status: typeof document === 'undefined' ? 'cpu-proxies' : 'loading', source: 'Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified', photoPass: false };
     this.ready = this.foliage.loadDetailed(this.options.canopyContinuity===true).then(() => {
       if (this.disposed || typeof document === 'undefined') return;
-      this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels);
+      if (this.options.crownSupport) this.rebuildCrownSupport();
+      else { this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels); }
       this.pineField.update(this.foliagePosition, true); this.shrubField.update(this.foliagePosition, true);
       this.group.userData.foliage.status = 'ready';
     }).catch((error: unknown) => { if (!this.disposed) this.group.userData.foliage.status = `proxy fallback: ${error instanceof Error ? error.message : String(error)}`; });
+  }
+
+  private rebuildCrownSupport(): void {
+    const supported = crownSupportedPlacements(this.ground, this.foliage.pineLevels.near, this.foliage.shrubLevels.near);
+    this.pineField.dispose(); this.shrubField.dispose();
+    this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, supported.trees,
+      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000, viewAware: true });
+    this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, supported.shrubs,
+      { nearDistance: 26, midDistance: 210, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000, viewAware: true });
+    this.lastPineSignature = '!native-rebuild'; this.rebuildPlacements(0);
+    this.group.userData.crownSupport = { ...supported.diagnostics, trees: supported.trees.flat().length, shrubs: supported.shrubs.flat().length,
+      coverageMeaning: 'sum of crown footprint areas; overlaps included, not measured canopy coverage', photoPass: false };
   }
 
   get placedCount(): number { return this.placements.length; }
