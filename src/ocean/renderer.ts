@@ -145,7 +145,7 @@ export class Ocean {
     this.waterScene.add(this.spray.group);
     this.breaker=new URLSearchParams(location.search).get('breaker')==='1'?new ShoreBreaker():null;
     if(this.breaker)this.waterScene.add(this.breaker.group);
-    this.assets=new AssetWorld(this.world,{canopyContinuity:new URLSearchParams(location.search).get('canopy')==='1',crownSupport:new URLSearchParams(location.search).get('crown')==='1',originalCanopy:new URLSearchParams(location.search).get('originaltree')==='1',leafVolumeRefinement:new URLSearchParams(location.search).get('leafvolume')==='1'?{pineTriangles:1440,shrubTriangles:320}:false});
+    this.assets=new AssetWorld(this.world,{canopyContinuity:new URLSearchParams(location.search).get('canopy')!=='0',crownSupport:new URLSearchParams(location.search).get('crown')==='1',originalCanopy:new URLSearchParams(location.search).get('originaltree')==='1',leafVolumeRefinement:new URLSearchParams(location.search).get('leafvolume')==='1'?{pineTriangles:1440,shrubTriangles:320}:false});
     this.marine=new MarineLife(this.world);
     const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),
       bodySegmentBlocked:(from:Parameters<IslandWorld['bodySegmentBlocked']>[0],to:Parameters<IslandWorld['bodySegmentBlocked']>[1],radius?:number,height?:number)=>
