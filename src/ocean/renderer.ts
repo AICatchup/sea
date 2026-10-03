@@ -145,7 +145,7 @@ export class Ocean {
     this.waterScene.add(this.spray.group);
     this.breaker=new URLSearchParams(location.search).get('breaker')==='1'?new ShoreBreaker():null;
     if(this.breaker)this.waterScene.add(this.breaker.group);
-    this.assets=new AssetWorld(this.world,{canopyContinuity:new URLSearchParams(location.search).get('canopy')==='1',crownSupport:new URLSearchParams(location.search).get('crown')==='1',leafVolumeRefinement:new URLSearchParams(location.search).get('leafvolume')==='1'?{pineTriangles:1440,shrubTriangles:320}:false});
+    this.assets=new AssetWorld(this.world,{canopyContinuity:new URLSearchParams(location.search).get('canopy')==='1',crownSupport:new URLSearchParams(location.search).get('crown')==='1',originalCanopy:new URLSearchParams(location.search).get('originaltree')==='1',leafVolumeRefinement:new URLSearchParams(location.search).get('leafvolume')==='1'?{pineTriangles:1440,shrubTriangles:320}:false});
     this.marine=new MarineLife(this.world);
     const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),
       bodySegmentBlocked:(from:Parameters<IslandWorld['bodySegmentBlocked']>[0],to:Parameters<IslandWorld['bodySegmentBlocked']>[1],radius?:number,height?:number)=>
@@ -360,7 +360,7 @@ export class Ocean {
     this.body.update(state,this.camera,delta,this.time);
     const underwater=cameraSubmersion(this.camera.position.y,this.waterHeights.sample(this.camera.position.x,this.camera.position.z));
     this.uniforms.uUnderwater.value=underwater;
-    this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()));
+    this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()),this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));
     this.marine.update(this.time,this.camera.position,underwater>.5);
     if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge.sync()||!this.skinnedReceivers?.diagnostics.available)this.setGeometryShader(false);}
     const waterMap=this.world.waterMapFor(this.camera.position.x,this.camera.position.z);

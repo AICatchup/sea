@@ -4,7 +4,7 @@ import { makeInstances, updateInstanceBounds } from './models/procedural.ts';
 
 interface Plant { matrix: THREE.Matrix4; position: THREE.Vector3; variant: number; level: 'near' | 'mid' | 'far'; height: number; visible?:boolean; }
 interface Batch { mesh: THREE.InstancedMesh; variant: number; triangles: number; }
-export interface FoliageLodSettings { nearDistance: number; midDistance: number; nearCapacity: number; midCapacity: number; triangleBudget?: number; viewAware?:boolean; }
+export interface FoliageLodSettings { nearDistance: number; midDistance: number; nearCapacity: number; midCapacity: number; triangleBudget?: number; viewAware?:boolean; nearPixels?:number;midPixels?:number; }
 export interface TrunkProxy { readonly x: number; readonly y: number; readonly z: number; readonly radius: number; readonly height: number; }
 
 /** Exclusive LOD partitions reuse the original placement matrices. No duplicated coverage. */
@@ -16,6 +16,7 @@ export class FoliageLodField {
   private batches: Record<'near' | 'mid' | 'far', Batch[]> = { near: [], mid: [], far: [] };
   private lastPosition = new THREE.Vector3(Infinity, Infinity, Infinity);
   private lastDirection=new THREE.Vector3(0,0,-1);
+  private lastProjectionScale=0;
   private levels: FoliageLevels;
   private disposed = false;
   private fixedCount = 0;
@@ -100,13 +101,15 @@ export class FoliageLodField {
     create('far', this.levels.far, this.fixedCount + 96);
   }
 
-  update(position: THREE.Vector3, force = false,forward?:THREE.Vector3): void {
+  update(position: THREE.Vector3, force = false,forward?:THREE.Vector3,projectionScale=0): void {
     const viewAware=this.settings.viewAware===true;
     const direction=viewAware&&forward?new THREE.Vector3(forward.x,0,forward.z).normalize():this.lastDirection;
     const turned=viewAware&&direction.dot(this.lastDirection)<.9986;
-    if (this.disposed || (!force&&!turned && this.lastPosition.distanceToSquared(position) < 3.24)) return;
+    const resized=Math.abs(projectionScale-this.lastProjectionScale)>.5;
+    if (this.disposed || (!force&&!turned&&!resized && this.lastPosition.distanceToSquared(position) < 3.24)) return;
     this.lastPosition.copy(position);
     if(viewAware)this.lastDirection.copy(direction);
+    this.lastProjectionScale=projectionScale;
     const near: { plant: Plant; distance: number; score: number }[] = [], mid: typeof near = [];
     const near2 = this.settings.nearDistance ** 2, mid2 = this.settings.midDistance ** 2;
     for (const plant of this.plants) {
@@ -120,7 +123,9 @@ export class FoliageLodField {
       plant.level = 'far';
       if(!plant.visible)continue;
       const score = plant.height * plant.height / Math.max(1, distance);
-      if (distance < near2) near.push({ plant, distance, score }); else if (distance < mid2) mid.push({ plant, distance, score });
+      const pixels=plant.height*projectionScale/Math.sqrt(Math.max(1,distance));
+      if (distance < near2||(this.settings.nearPixels!==undefined&&pixels>this.settings.nearPixels)) near.push({ plant, distance, score });
+      else if (distance < mid2||(this.settings.midPixels!==undefined&&pixels>this.settings.midPixels)) mid.push({ plant, distance, score });
     }
     // Angular height gives large visible silhouettes priority rather than allocating all detail
     // to small near seedlings. Far remains the same original model with connected bark.

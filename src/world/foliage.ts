@@ -21,6 +21,8 @@ export interface FoliagePart { geometry: THREE.BufferGeometry; material: THREE.M
 export interface FoliageVariant { parts: readonly FoliagePart[]; triangles: number; }
 export interface FoliageLevels { near: FoliageVariant[]; mid: FoliageVariant[]; far: FoliageVariant[]; }
 export interface LeafVolumeRefinement { pineTriangles?: number; shrubTriangles?: number; alphaAware?: boolean; preserveMidCoverage?: boolean; }
+const originalCanopyURL=new URL('../assets/foliage/cc0/original-lod/original-canopy-lod-1k.glb',import.meta.url).href;
+const originalAlphaURL=new URL('../assets/foliage/cc0/original-lod/original-lod-leaf-alpha-1k.png',import.meta.url).href;
 
 /** All ready distance bands use the same original CC0 branch/needle/leaf topology. */
 export class CoastalFoliage {
@@ -52,13 +54,14 @@ export class CoastalFoliage {
   private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }
 
   /** AssetWorld alone owns and loads the original photographic maps and 3D LODs. */
-  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement: boolean | LeafVolumeRefinement=false): Promise<void> {
+  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement: boolean | LeafVolumeRefinement=false,originalCanopy=false): Promise<void> {
     if (typeof document === 'undefined') return;
     const refinementTargets=typeof leafVolumeRefinement==='object'?leafVolumeRefinement:{};
     const pineTriangles=refinementTargets.pineTriangles??720,shrubTriangles=refinementTargets.shrubTriangles??(fullerUnderstory?160:96);
     if(leafVolumeRefinement&&(!Number.isInteger(pineTriangles)||pineTriangles<1||pineTriangles>2880||!Number.isInteger(shrubTriangles)||shrubTriangles<1||shrubTriangles>640))throw new Error('Leaf refinement targets must be integer pine 1..2880 and shrub 1..640');
     for (const source of sourceAssets) {
-      const gltf = await new GLTFLoader().loadAsync(source.url);
+      const restored=originalCanopy&&source.kind==='pine'&&source.variant===0;
+      const gltf = await new GLTFLoader().loadAsync(restored?originalCanopyURL:source.url);
       if (this.disposed) {
         const abandoned = new ModelResources();
         gltf.scene.traverse(child => { if (child instanceof THREE.Mesh) {
@@ -68,7 +71,7 @@ export class CoastalFoliage {
           }
         } }); abandoned.dispose(); return;
       }
-      const nativeAlpha = source.kind === 'pine' ? await new THREE.TextureLoader().loadAsync(canopyAlpha[source.variant]) : null;
+      const nativeAlpha = source.kind === 'pine' ? await new THREE.TextureLoader().loadAsync(restored?originalAlphaURL:canopyAlpha[source.variant]) : null;
       if (this.disposed) {
         nativeAlpha?.dispose(); const abandoned = new ModelResources();
         gltf.scene.traverse(child => { if (child instanceof THREE.Mesh) {
@@ -84,7 +87,7 @@ export class CoastalFoliage {
       const variants: Record<'near' | 'mid' | 'far', FoliageVariant[]> = { near: [], mid: [], far: [] };
       const loadLevels: ('near' | 'mid' | 'far')[] = source.kind === 'pine' ? ['near', 'mid', 'far'] : ['near', 'mid'];
       for (const level of loadLevels) for (let variant = 0; variant < source.count; variant++) {
-        const object = gltf.scene.getObjectByName(`${source.prefix}_${level}_${variant}`);
+        const object = gltf.scene.getObjectByName(restored?`canopy_original_${level}`:`${source.prefix}_${level}_${variant}`);
         if (!object) throw new Error(`Missing ${source.kind} ${level} ${variant}`);
         const parts: FoliagePart[] = [];
         object.traverse(child => {
@@ -133,7 +136,7 @@ export class CoastalFoliage {
           }
           this.resources.material(material);
           const geometry = this.resources.geometry(child.geometry);
-          if ((!leafVolumeRefinement || (level==='mid' && refinementTargets.preserveMidCoverage===true)) && source.kind === 'pine' && level !== 'near' && leafy) {
+          if (!restored&&(!leafVolumeRefinement || (level==='mid' && refinementTargets.preserveMidCoverage===true)) && source.kind === 'pine' && level !== 'near' && leafy) {
             const points = new Float32Array(geometry.getAttribute('position').array);
             geometry.userData.coverage = preserveLeafCoverage(points, new Uint32Array(geometry.index!.array), level === 'far' ? .18 : .025);
             geometry.setAttribute('position', new THREE.BufferAttribute(points, 3));
@@ -157,7 +160,7 @@ export class CoastalFoliage {
           geometry.computeBoundingBox(); geometry.computeBoundingSphere();
         }
       }
-      if(source.kind==='pine' && leafVolumeRefinement) {
+      if(source.kind==='pine' && leafVolumeRefinement&&!restored) {
         // Keep the native far woody hierarchy; replace only leaves with intact near-source leaves.
         variants.far=await Promise.all(variants.near.map((variant,index)=>coarseFoliage({parts:variant.parts.map(part=>part.material.userData.foliageRole==='leaves'?part:variants.far[index].parts.find(p=>p.material.userData.foliageRole===part.material.userData.foliageRole)??part),triangles:variant.triangles},this.resources,'pine',()=>this.disposed,96,true,pineTriangles,refinementTargets.alphaAware??false)));
       }

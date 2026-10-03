@@ -8,7 +8,7 @@ import { FoliageLodField } from './foliage-lod.ts';
 import type { TrunkProxy } from './foliage-lod.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
-export interface AssetWorldOptions { canopyContinuity?: boolean; crownSupport?: boolean; leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
+export interface AssetWorldOptions { canopyContinuity?: boolean; crownSupport?: boolean; originalCanopy?:boolean; leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
 interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; variant?: number; }
@@ -54,7 +54,7 @@ export class AssetWorld {
     this.populateStrand();
     this.preparePlacementBatches();
     this.group.userData.foliage = { status: typeof document === 'undefined' ? 'cpu-proxies' : 'loading', source: 'Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified', photoPass: false };
-    this.ready = this.foliage.loadDetailed(this.options.canopyContinuity===true,this.options.leafVolumeRefinement??false).then(() => {
+    this.ready = this.foliage.loadDetailed(this.options.canopyContinuity===true,this.options.leafVolumeRefinement??false,this.options.originalCanopy??false).then(() => {
       if (this.disposed || typeof document === 'undefined') return;
       if (this.options.crownSupport) this.rebuildCrownSupport();
       else { this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels); }
@@ -67,7 +67,7 @@ export class AssetWorld {
     const supported = crownSupportedPlacements(this.ground, this.foliage.pineLevels.near, this.foliage.shrubLevels.near);
     this.pineField.dispose(); this.shrubField.dispose();
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, supported.trees,
-      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000, viewAware: true });
+      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000, viewAware: true,...(this.options.originalCanopy?{nearPixels:48,midPixels:24}:{}) });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, supported.shrubs,
       { nearDistance: 26, midDistance: 210, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000, viewAware: true });
     this.lastPineSignature = '!native-rebuild'; this.rebuildPlacements(0);
@@ -151,7 +151,7 @@ export class AssetWorld {
     }
     // Same deterministic transforms, now partitioned into mutually exclusive distance bands.
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, trees,
-      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000,viewAware:this.options.canopyContinuity===true });
+      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000,viewAware:this.options.canopyContinuity===true,...(this.options.originalCanopy?{nearPixels:48,midPixels:24}:{}) });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
       { nearDistance: 26, midDistance: this.options.canopyContinuity ? 210 : 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000,viewAware:this.options.canopyContinuity===true });
     this.group.userData.canopyContinuity = this.options.canopyContinuity === true;
@@ -324,10 +324,10 @@ export class AssetWorld {
     if (updatePines) { this.lastPineSignature = pineSignature; this.pineField.setDynamic(placedPines); this.pineField.update(this.foliagePosition, true); }
   }
 
-  update(time: number, position: THREE.Vector3, underwater: boolean,forward?:THREE.Vector3): void {
+  update(time: number, position: THREE.Vector3, underwater: boolean,forward?:THREE.Vector3,projectionScale=0): void {
     if (this.disposed) return;
     this.foliagePosition.copy(position);
-    this.pineField.update(position,false,forward); this.shrubField.update(position,false,forward);
+    this.pineField.update(position,false,forward,projectionScale); this.shrubField.update(position,false,forward,projectionScale);
     for (const marker of this.floatingMarkers) {
       marker.object.position.y = this.waterAt(marker.object.position.x,marker.object.position.z)+0.06+Math.sin(time*1.55+marker.phase)*0.052;
       marker.object.rotation.z = Math.sin(time * 1.05 + marker.phase) * 0.04;
