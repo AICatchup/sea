@@ -37,7 +37,7 @@ export function preserveLeafCoverage(positions: Float32Array, indices: Uint32Arr
 }
 
 /** Reduce the original all-angle model, retaining original UVs and a connected woody hierarchy. */
-export async function coarseFoliage(source: FoliageVariant, resources: ModelResources, kind: 'pine' | 'shrub', cancelled = () => false, shrubTriangles=96, refinement=false): Promise<FoliageVariant> {
+export async function coarseFoliage(source: FoliageVariant, resources: ModelResources, kind: 'pine' | 'shrub', cancelled = () => false, shrubTriangles=96, refinement=false, pineLeafTriangles=720): Promise<FoliageVariant> {
   await MeshoptSimplifier.ready;
   if (cancelled()) return { parts: [], triangles: 0 };
   const parts: FoliagePart[] = [];
@@ -47,7 +47,7 @@ export async function coarseFoliage(source: FoliageVariant, resources: ModelReso
     const positions = new Float32Array(p.array), normals = new Float32Array(n.array), uvs = new Float32Array(uv.array);
     const indices = g.index ? new Uint32Array(g.index.array) : Uint32Array.from({ length: p.count }, (_, i) => i);
     if(refinement && (kind==='shrub'||part.material.userData.foliageRole==='leaves')) {
-      const selection=representativeLeaves(positions,indices,kind==='shrub'?shrubTriangles:720);
+      const selection=representativeLeaves(positions,indices,kind==='shrub'?shrubTriangles:pineLeafTriangles);
       if(selection.unsupported) throw new Error(`Unsupported connected foliage topology: ${selection.components} components cannot fit native leaf budget`);
       const geometry=g.clone();geometry.setIndex(new THREE.BufferAttribute(selection.indices,1));
       geometry.userData={...g.userData,derivation:'intact native components selected by three-axis marginal coverage',coverage:selection};

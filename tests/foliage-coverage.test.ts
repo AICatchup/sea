@@ -16,11 +16,11 @@ function source(file:string,nodeName:string){
 }
 test('native source component selection is bounded, deterministic and reports three-axis geometric coverage',()=>{
  for(const [file,node,budget] of [['canopy/canopy0-lod-1k.glb','canopy0_near_0',720],['canopy/canopy1-lod-1k.glb','canopy1_near_0',720],['canopy/canopy2-lod-1k.glb','canopy2_near_0',720],...Array.from({length:3},(_,i)=>['shrub-lod-1k.glb',`shrub_near_${i}`,160])] as [string,string,number][]){
-  const s=source(file,node),before=Array.from(s.positions),r=representativeLeaves(s.positions,s.indices,budget,128);
-  assert.equal(r.unsupported,false);assert.ok(r.indices.length/3<=budget);assert.deepEqual(Array.from(s.positions),before);
-  assert.deepEqual(r.indices,representativeLeaves(s.positions,s.indices,budget,128).indices);
+  const s=source(file,node),before=Array.from(s.positions); for(const target of [budget,budget*2,budget*4]) { const r=representativeLeaves(s.positions,s.indices,target,128);
+  assert.equal(r.unsupported,false);assert.ok(r.indices.length/3<=target);assert.deepEqual(Array.from(s.positions),before);
+  assert.deepEqual(r.indices,representativeLeaves(s.positions,s.indices,target,128).indices);
   assert.ok(r.candidatePixels.every((p,i)=>p>0&&p<=r.originalPixels[i]));
-  console.log(JSON.stringify({node,sourceTriangles:s.indices.length/3,candidateTriangles:r.indices.length/3,components:r.components,originalPixels:r.originalPixels,candidatePixels:r.candidatePixels,ratios:r.candidatePixels.map((p,i)=>+(p/r.originalPixels[i]).toFixed(3))}));
+  console.log(JSON.stringify({node,budget:target,sourceTriangles:s.indices.length/3,candidateTriangles:r.indices.length/3,components:r.components,originalPixels:r.originalPixels,candidatePixels:r.candidatePixels,ratios:r.candidatePixels.map((p,i)=>+(p/r.originalPixels[i]).toFixed(3))})); }
  }
 });
 test('unsupported large connected topology is explicit',()=>{const r=representativeLeaves(new Float32Array([0,0,0,1,0,0,0,1,0]),new Uint32Array([0,1,2]),0);assert.equal(r.unsupported,true);});

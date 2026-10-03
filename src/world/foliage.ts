@@ -20,6 +20,7 @@ export interface FoliageGeometry { bark: THREE.BufferGeometry; needles: THREE.Bu
 export interface FoliagePart { geometry: THREE.BufferGeometry; material: THREE.MeshStandardMaterial; }
 export interface FoliageVariant { parts: readonly FoliagePart[]; triangles: number; }
 export interface FoliageLevels { near: FoliageVariant[]; mid: FoliageVariant[]; far: FoliageVariant[]; }
+export interface LeafVolumeRefinement { pineTriangles?: number; shrubTriangles?: number; }
 
 /** All ready distance bands use the same original CC0 branch/needle/leaf topology. */
 export class CoastalFoliage {
@@ -51,8 +52,11 @@ export class CoastalFoliage {
   private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }
 
   /** AssetWorld alone owns and loads the original photographic maps and 3D LODs. */
-  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement=false): Promise<void> {
+  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement: boolean | LeafVolumeRefinement=false): Promise<void> {
     if (typeof document === 'undefined') return;
+    const refinementTargets=typeof leafVolumeRefinement==='object'?leafVolumeRefinement:{};
+    const pineTriangles=refinementTargets.pineTriangles??720,shrubTriangles=refinementTargets.shrubTriangles??(fullerUnderstory?160:96);
+    if(leafVolumeRefinement&&(!Number.isInteger(pineTriangles)||pineTriangles<1||pineTriangles>2880||!Number.isInteger(shrubTriangles)||shrubTriangles<1||shrubTriangles>640))throw new Error('Leaf refinement targets must be integer pine 1..2880 and shrub 1..640');
     for (const source of sourceAssets) {
       const gltf = await new GLTFLoader().loadAsync(source.url);
       if (this.disposed) {
@@ -141,7 +145,7 @@ export class CoastalFoliage {
       }
       const levels = source.kind === 'pine' ? this.pineLevels : this.shrubLevels;
       if (source.kind === 'shrub') {
-        variants.far = await Promise.all((leafVolumeRefinement?variants.near:variants.mid).map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed,fullerUnderstory?160:96,leafVolumeRefinement)));
+        variants.far = await Promise.all((leafVolumeRefinement?variants.near:variants.mid).map(variant => coarseFoliage(variant, this.resources, source.kind, () => this.disposed,shrubTriangles,!!leafVolumeRefinement)));
         // The 96-triangle shrub reduction otherwise drops fine leaf silhouettes on ledges.
         // Expand each retained disconnected leaf component by at most 8cm, preserving
         // its original UVs, normals, gaps and all-angle topology. No extra draws/triangles.
@@ -155,7 +159,7 @@ export class CoastalFoliage {
       }
       if(source.kind==='pine' && leafVolumeRefinement) {
         // Keep the native far woody hierarchy; replace only leaves with intact near-source leaves.
-        variants.far=await Promise.all(variants.near.map((variant,index)=>coarseFoliage({parts:variant.parts.map(part=>part.material.userData.foliageRole==='leaves'?part:variants.far[index].parts.find(p=>p.material.userData.foliageRole===part.material.userData.foliageRole)??part),triangles:variant.triangles},this.resources,'pine',()=>this.disposed,96,true)));
+        variants.far=await Promise.all(variants.near.map((variant,index)=>coarseFoliage({parts:variant.parts.map(part=>part.material.userData.foliageRole==='leaves'?part:variants.far[index].parts.find(p=>p.material.userData.foliageRole===part.material.userData.foliageRole)??part),triangles:variant.triangles},this.resources,'pine',()=>this.disposed,96,true,pineTriangles)));
       }
       for (const level of ['near', 'mid', 'far'] as const) variants[level].forEach((variant, index) => { levels[level][source.variant + index] = variant; });
       if (this.disposed) return;
