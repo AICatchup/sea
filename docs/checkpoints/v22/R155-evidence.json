@@ -1,0 +1,549 @@
+{
+  "limits": [
+    "No browser or GPU compile log",
+    "No performance causal claim",
+    "No movement/native body/voyage test",
+    "No fresh site photo/botany or protected pixels audit",
+    "No Niijima review",
+    "No independent raster delta rerun",
+    "Root tests/build not rerun"
+  ],
+  "metadata": [
+    {
+      "sha256": "eeb47f10fdc9a8d8c4db3ab9d63556fae9c6931be3347d3b795c17df381328cc",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -86,
+        1.5154619036711725,
+        -22,
+        0.03482082255847939,
+        0.7164595825818137,
+        -0.035852861494419526,
+        0.6958360073794011
+      ],
+      "height": 720,
+      "label": "cliff",
+      "width": 1280,
+      "path": "source-731d0b7/cliff-cliff.json",
+      "time": 34
+    },
+    {
+      "sha256": "6ca8b2a67540d0e2a437b3df3bc8a75377a5f45ee81b0aeb8cdced1efe5b13a9",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.12048441287007682,
+        0.2550747238774246,
+        0.0320514492656817,
+        0.9588498819388662
+      ],
+      "height": 720,
+      "label": "lookout",
+      "width": 1280,
+      "path": "source-731d0b7/cliff-lookout.json",
+      "time": 34
+    },
+    {
+      "sha256": "6963d950e7c52fc6bf5a613a869ce945f0c5695536093ec11bc8172950159bfb",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        0.012848672419212394,
+        0.9651822423049573,
+        0.04829936829867315,
+        -0.25675926814467187
+      ],
+      "height": 720,
+      "label": "rear",
+      "width": 1280,
+      "path": "source-731d0b7/cliff-rear.json",
+      "time": 34
+    },
+    {
+      "sha256": "e2e493a494546038c545d9d5b558abb81ac99bc2671d4d7e30c8d9b9b00f4299",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -42,
+        1.3518743337820132,
+        9,
+        -0.11505006784720222,
+        0.2743682744614488,
+        0.03308314468637099,
+        0.9541441386892557
+      ],
+      "height": 720,
+      "label": "shore",
+      "width": 1280,
+      "path": "source-731d0b7/cliff-shore.json",
+      "time": 34
+    },
+    {
+      "sha256": "465fca2a46b3a13d5c5260eec52c8414f90823b23b70ed5b1db6c2ae9902e128",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.06483846964190296,
+        -0.4998040037531329,
+        -0.03755574372149954,
+        0.8628913586311775
+      ],
+      "height": 720,
+      "label": "side",
+      "width": 1280,
+      "path": "source-731d0b7/cliff-side.json",
+      "time": 34
+    },
+    {
+      "sha256": "eeb47f10fdc9a8d8c4db3ab9d63556fae9c6931be3347d3b795c17df381328cc",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -86,
+        1.5154619036711725,
+        -22,
+        0.03482082255847939,
+        0.7164595825818137,
+        -0.035852861494419526,
+        0.6958360073794011
+      ],
+      "height": 720,
+      "label": "cliff",
+      "width": 1280,
+      "path": "source-731d0b7/combined-cliff.json",
+      "time": 34
+    },
+    {
+      "sha256": "6ca8b2a67540d0e2a437b3df3bc8a75377a5f45ee81b0aeb8cdced1efe5b13a9",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.12048441287007682,
+        0.2550747238774246,
+        0.0320514492656817,
+        0.9588498819388662
+      ],
+      "height": 720,
+      "label": "lookout",
+      "width": 1280,
+      "path": "source-731d0b7/combined-lookout.json",
+      "time": 34
+    },
+    {
+      "sha256": "52a73ea9ebd265e9825083c44104365da92be031d755e3b0bb4fff14056df2e5",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        0.012848672419212394,
+        0.9651822423049573,
+        0.04829936829867315,
+        -0.25675926814467187
+      ],
+      "height": 720,
+      "label": "rear",
+      "width": 1280,
+      "path": "source-731d0b7/combined-rear.json",
+      "time": 34
+    },
+    {
+      "sha256": "c8d0e2c47e707cab921a8827a5e01f70842ff93847e5505765b66b22b5602c06",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -42,
+        1.3518743337820132,
+        9,
+        -0.11505006784720222,
+        0.2743682744614488,
+        0.03308314468637099,
+        0.9541441386892557
+      ],
+      "height": 720,
+      "label": "shore",
+      "width": 1280,
+      "path": "source-731d0b7/combined-shore.json",
+      "time": 34
+    },
+    {
+      "sha256": "465fca2a46b3a13d5c5260eec52c8414f90823b23b70ed5b1db6c2ae9902e128",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.06483846964190296,
+        -0.4998040037531329,
+        -0.03755574372149954,
+        0.8628913586311775
+      ],
+      "height": 720,
+      "label": "side",
+      "width": 1280,
+      "path": "source-731d0b7/combined-side.json",
+      "time": 34
+    },
+    {
+      "sha256": "a7c21526ab584cf4ab6e21b20f82c7ff5c829fe66fae399088a14afc99067add",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -86,
+        1.5154619036711725,
+        -22,
+        0.03482082255847939,
+        0.7164595825818137,
+        -0.035852861494419526,
+        0.6958360073794011
+      ],
+      "height": 720,
+      "label": "cliff",
+      "width": 1280,
+      "path": "source-731d0b7/control-cliff.json",
+      "time": 34
+    },
+    {
+      "sha256": "675317520ded042e7ad194a2ba30f653b8b86feb720e8542881cc7bbc6921a96",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.12048441287007682,
+        0.2550747238774246,
+        0.0320514492656817,
+        0.9588498819388662
+      ],
+      "height": 720,
+      "label": "lookout",
+      "width": 1280,
+      "path": "source-731d0b7/control-lookout.json",
+      "time": 34
+    },
+    {
+      "sha256": "9dd8fb611d1a73e4ba2584d3d25fd93ec46977446670559337eb77e7a6b791c8",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        0.012848672419212394,
+        0.9651822423049573,
+        0.04829936829867315,
+        -0.25675926814467187
+      ],
+      "height": 720,
+      "label": "rear",
+      "width": 1280,
+      "path": "source-731d0b7/control-rear.json",
+      "time": 34
+    },
+    {
+      "sha256": "d56be96dbbae95030d22ee906e2dd75a9cb310b2178cf2a52707a610166403fb",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -42,
+        1.3518743337820132,
+        9,
+        -0.11505006784720222,
+        0.2743682744614488,
+        0.03308314468637099,
+        0.9541441386892557
+      ],
+      "height": 720,
+      "label": "shore",
+      "width": 1280,
+      "path": "source-731d0b7/control-shore.json",
+      "time": 34
+    },
+    {
+      "sha256": "1b519226aa4cc383595522e9870eafeeb43aa5fa966990f6e75d0d004bbc6ce5",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.06483846964190296,
+        -0.4998040037531329,
+        -0.03755574372149954,
+        0.8628913586311775
+      ],
+      "height": 720,
+      "label": "side",
+      "width": 1280,
+      "path": "source-731d0b7/control-side.json",
+      "time": 34
+    },
+    {
+      "sha256": "a7c21526ab584cf4ab6e21b20f82c7ff5c829fe66fae399088a14afc99067add",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -86,
+        1.5154619036711725,
+        -22,
+        0.03482082255847939,
+        0.7164595825818137,
+        -0.035852861494419526,
+        0.6958360073794011
+      ],
+      "height": 720,
+      "label": "cliff",
+      "width": 1280,
+      "path": "source-731d0b7/ground-cliff.json",
+      "time": 34
+    },
+    {
+      "sha256": "675317520ded042e7ad194a2ba30f653b8b86feb720e8542881cc7bbc6921a96",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.12048441287007682,
+        0.2550747238774246,
+        0.0320514492656817,
+        0.9588498819388662
+      ],
+      "height": 720,
+      "label": "lookout",
+      "width": 1280,
+      "path": "source-731d0b7/ground-lookout.json",
+      "time": 34
+    },
+    {
+      "sha256": "9dd8fb611d1a73e4ba2584d3d25fd93ec46977446670559337eb77e7a6b791c8",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        0.012848672419212394,
+        0.9651822423049573,
+        0.04829936829867315,
+        -0.25675926814467187
+      ],
+      "height": 720,
+      "label": "rear",
+      "width": 1280,
+      "path": "source-731d0b7/ground-rear.json",
+      "time": 34
+    },
+    {
+      "sha256": "d56be96dbbae95030d22ee906e2dd75a9cb310b2178cf2a52707a610166403fb",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -42,
+        1.3518743337820132,
+        9,
+        -0.11505006784720222,
+        0.2743682744614488,
+        0.03308314468637099,
+        0.9541441386892557
+      ],
+      "height": 720,
+      "label": "shore",
+      "width": 1280,
+      "path": "source-731d0b7/ground-shore.json",
+      "time": 34
+    },
+    {
+      "sha256": "1b519226aa4cc383595522e9870eafeeb43aa5fa966990f6e75d0d004bbc6ce5",
+      "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.06483846964190296,
+        -0.4998040037531329,
+        -0.03755574372149954,
+        0.8628913586311775
+      ],
+      "height": 720,
+      "label": "side",
+      "width": 1280,
+      "path": "source-731d0b7/ground-side.json",
+      "time": 34
+    }
+  ],
+  "groundNormalAdoption": "NEEDSFIX",
+  "imageHashes": [
+    {
+      "visuallyInspected": true,
+      "bytes": 1625371,
+      "path": "source-731d0b7/cliff-cliff.png",
+      "sha256": "0c853a361d3abbe23a41aefcf035722b2c0bbb5f83489dfb47683ba3c57a8b30"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1490653,
+      "path": "source-731d0b7/cliff-lookout.png",
+      "sha256": "3cd1606284ce0fc98b8fb7e1d089b726d30392212090d5d49fa81dc55b982de6"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1722980,
+      "path": "source-731d0b7/cliff-rear.png",
+      "sha256": "a5404460b6fbfd319cfee09102874d9e8b5e98d14c5b3959cce7593434ba7f17"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1466204,
+      "path": "source-731d0b7/cliff-shore.png",
+      "sha256": "3781d895422e135bc84873229950b5d82b6b7b26d3d100912bf141a51e4e1690"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1747536,
+      "path": "source-731d0b7/cliff-side.png",
+      "sha256": "3bf36679218f6802dc99dcb39253582460b667c891809838eb00df4c36a4b19b"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1625848,
+      "path": "source-731d0b7/combined-cliff.png",
+      "sha256": "97d4d0e6c338a85ddb0bbc61555fb26263901f540f33b44932bdbddee5dfa0fc"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1563634,
+      "path": "source-731d0b7/combined-lookout.png",
+      "sha256": "69a596d2a50817741ac3d1776a11659029ee98a4330aaeb62188b4fa5b37f22e"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1877735,
+      "path": "source-731d0b7/combined-rear.png",
+      "sha256": "18a81734d8d91a8f1d6d680dce6ef7eb2d5c7bc30e2b364dc1c70fc891168960"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1466203,
+      "path": "source-731d0b7/combined-shore.png",
+      "sha256": "38f410eeacb752304bb97ba8c23cc8734e9e90914f07beed4487538cab45bf06"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1860417,
+      "path": "source-731d0b7/combined-side.png",
+      "sha256": "66b1a9e57f5df83cecacac270d672a7e3ecd733e772c965febc933c000a4e51c"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1621914,
+      "path": "source-731d0b7/control-cliff.png",
+      "sha256": "ed6d7a6e3ce2dbed5214982a62c01e37327398171b28d20af7a0036a8e1cf18e"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1435265,
+      "path": "source-731d0b7/control-lookout.png",
+      "sha256": "f41aa124e3810e76a54badb520a626e08105a5a0b22dbc7c1ebde31754b52bc2"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1823487,
+      "path": "source-731d0b7/control-rear.png",
+      "sha256": "0d63c72d8d104397b16500fc6d1deab3dd5700784696a0342a0158e8c9f6deae"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1475331,
+      "path": "source-731d0b7/control-shore.png",
+      "sha256": "aca9d299496d3782e525116552a12541f02b07e89becf1478c07ae7d5d06494a"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1676725,
+      "path": "source-731d0b7/control-side.png",
+      "sha256": "a69d43a1468539903689189c208868b2f405d9703c56a736e6f3e934f73e09fa"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1623420,
+      "path": "source-731d0b7/ground-cliff.png",
+      "sha256": "b58d9acfede2ed4704cad60c82e2643dee3d0c97b4c04074b29cdb34f7795806"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1429939,
+      "path": "source-731d0b7/ground-lookout.png",
+      "sha256": "f1481dd036d8286351936e0e4df7f537086ae28e09ce643e10bd846998546ec5"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1978401,
+      "path": "source-731d0b7/ground-rear.png",
+      "sha256": "aa703c9c53faacedb140023df467ad2c2d4ad04cafb58c94e1c5df5c12543a45"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1475229,
+      "path": "source-731d0b7/ground-shore.png",
+      "sha256": "325dcdc8e5f5b00e96a01c24ceb3106f0d64d5ddd89e52b0acfbe8f87569cd34"
+    },
+    {
+      "visuallyInspected": true,
+      "bytes": 1773723,
+      "path": "source-731d0b7/ground-side.png",
+      "sha256": "5b754184cc53fa61af982cdeb09e78c62fbbb085620c2ebd3fac3db3bef260bb"
+    }
+  ],
+  "ceiling": "LOCAL_BOUNDED_STATIC",
+  "geometry": {
+    "nonManifoldIndexEdges": 30,
+    "minExposedVertexHeightM": 4.348244195038088,
+    "minVerticalReliefM": 0.10261815901106275,
+    "cells": 1065,
+    "triangles": 11364,
+    "proxies": 1065,
+    "vertices": 5792,
+    "repeatedIndexDegenerateTriangles": 0,
+    "closedBoundaryEdges": 1422,
+    "openIndexEdges": 0,
+    "maxVerticalReliefM": 1.9999994527521896,
+    "nonFinitePositionOrNormal": 0
+  },
+  "commit": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+  "cliffNormalAdoption": "REJECT",
+  "sourceHashes": [
+    {
+      "bytes": 25135,
+      "path": "src\\world\\coast-material.ts",
+      "sha256": "c66b9e47819fe65f74ddd80077902c00687a28e701a30a893780f3a1c99e65fc"
+    },
+    {
+      "bytes": 19169,
+      "path": "src\\world\\cliff-detail.ts",
+      "sha256": "e9f866ecf3ca997606f48c80bbf60c76a1e620f3d31664ec7eeeecb4deccbb7e"
+    },
+    {
+      "bytes": 2090,
+      "path": "src\\world\\forest-ground.ts",
+      "sha256": "d328f6ba41f36f7a49a1c85c52b3178eff1a1fae6cd51185d9954a8285441ee0"
+    },
+    {
+      "bytes": 1920,
+      "path": "tests\\cliff-fracture-v22.test.ts",
+      "sha256": "e5a544f9f6f680059e9d2f7693097c73154c95d54732157218be6a53f145dd21"
+    },
+    {
+      "bytes": 2213,
+      "path": "tests\\V22-cliff-producer.md",
+      "sha256": "f018651f5a8638817ee56d0c6cd3c8824555ccdd5a93ed03108ec71e724ea941"
+    }
+  ],
+  "fullGoal": "UNMET",
+  "review": "R155",
+  "nextFix": [
+    "Underlying ground colour and cover consistency over detail LOD",
+    "Isolate base coastform and connected skin silhouette",
+    "Repair natural cleft and boundary transitions",
+    "Split corner-touch topology or qualify closed-volume metadata"
+  ],
+  "negativePath": "Ground-only cliff/shore land silhouette and sand domain retained; water histories not comparable"
+}

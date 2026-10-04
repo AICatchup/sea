@@ -1,0 +1,246 @@
+{
+  "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+  "purpose": "Historical intermediate static comparisons, NOT post-8f988af frames",
+  "files": [
+    {
+      "file": "source-731d0b7/cliff-cliff.json",
+      "sha256": "eeb47f10fdc9a8d8c4db3ab9d63556fae9c6931be3347d3b795c17df381328cc",
+      "bytes": 4651,
+      "originalSha256": "eeb47f10fdc9a8d8c4db3ab9d63556fae9c6931be3347d3b795c17df381328cc"
+    },
+    {
+      "file": "source-731d0b7/cliff-cliff.png",
+      "sha256": "0c853a361d3abbe23a41aefcf035722b2c0bbb5f83489dfb47683ba3c57a8b30",
+      "bytes": 1625371,
+      "originalSha256": "0c853a361d3abbe23a41aefcf035722b2c0bbb5f83489dfb47683ba3c57a8b30"
+    },
+    {
+      "file": "source-731d0b7/cliff-lookout.json",
+      "sha256": "6ca8b2a67540d0e2a437b3df3bc8a75377a5f45ee81b0aeb8cdced1efe5b13a9",
+      "bytes": 4663,
+      "originalSha256": "6ca8b2a67540d0e2a437b3df3bc8a75377a5f45ee81b0aeb8cdced1efe5b13a9"
+    },
+    {
+      "file": "source-731d0b7/cliff-lookout.png",
+      "sha256": "3cd1606284ce0fc98b8fb7e1d089b726d30392212090d5d49fa81dc55b982de6",
+      "bytes": 1490653,
+      "originalSha256": "3cd1606284ce0fc98b8fb7e1d089b726d30392212090d5d49fa81dc55b982de6"
+    },
+    {
+      "file": "source-731d0b7/cliff-rear.json",
+      "sha256": "6963d950e7c52fc6bf5a613a869ce945f0c5695536093ec11bc8172950159bfb",
+      "bytes": 4670,
+      "originalSha256": "6963d950e7c52fc6bf5a613a869ce945f0c5695536093ec11bc8172950159bfb"
+    },
+    {
+      "file": "source-731d0b7/cliff-rear.png",
+      "sha256": "a5404460b6fbfd319cfee09102874d9e8b5e98d14c5b3959cce7593434ba7f17",
+      "bytes": 1722980,
+      "originalSha256": "a5404460b6fbfd319cfee09102874d9e8b5e98d14c5b3959cce7593434ba7f17"
+    },
+    {
+      "file": "source-731d0b7/cliff-shore.json",
+      "sha256": "e2e493a494546038c545d9d5b558abb81ac99bc2671d4d7e30c8d9b9b00f4299",
+      "bytes": 4648,
+      "originalSha256": "e2e493a494546038c545d9d5b558abb81ac99bc2671d4d7e30c8d9b9b00f4299"
+    },
+    {
+      "file": "source-731d0b7/cliff-shore.png",
+      "sha256": "3781d895422e135bc84873229950b5d82b6b7b26d3d100912bf141a51e4e1690",
+      "bytes": 1466204,
+      "originalSha256": "3781d895422e135bc84873229950b5d82b6b7b26d3d100912bf141a51e4e1690"
+    },
+    {
+      "file": "source-731d0b7/cliff-side.json",
+      "sha256": "465fca2a46b3a13d5c5260eec52c8414f90823b23b70ed5b1db6c2ae9902e128",
+      "bytes": 4664,
+      "originalSha256": "465fca2a46b3a13d5c5260eec52c8414f90823b23b70ed5b1db6c2ae9902e128"
+    },
+    {
+      "file": "source-731d0b7/cliff-side.png",
+      "sha256": "3bf36679218f6802dc99dcb39253582460b667c891809838eb00df4c36a4b19b",
+      "bytes": 1747536,
+      "originalSha256": "3bf36679218f6802dc99dcb39253582460b667c891809838eb00df4c36a4b19b"
+    },
+    {
+      "file": "source-731d0b7/combined-cliff.json",
+      "sha256": "eeb47f10fdc9a8d8c4db3ab9d63556fae9c6931be3347d3b795c17df381328cc",
+      "bytes": 4651,
+      "originalSha256": "eeb47f10fdc9a8d8c4db3ab9d63556fae9c6931be3347d3b795c17df381328cc"
+    },
+    {
+      "file": "source-731d0b7/combined-cliff.png",
+      "sha256": "97d4d0e6c338a85ddb0bbc61555fb26263901f540f33b44932bdbddee5dfa0fc",
+      "bytes": 1625848,
+      "originalSha256": "97d4d0e6c338a85ddb0bbc61555fb26263901f540f33b44932bdbddee5dfa0fc"
+    },
+    {
+      "file": "source-731d0b7/combined-lookout.json",
+      "sha256": "6ca8b2a67540d0e2a437b3df3bc8a75377a5f45ee81b0aeb8cdced1efe5b13a9",
+      "bytes": 4663,
+      "originalSha256": "6ca8b2a67540d0e2a437b3df3bc8a75377a5f45ee81b0aeb8cdced1efe5b13a9"
+    },
+    {
+      "file": "source-731d0b7/combined-lookout.png",
+      "sha256": "69a596d2a50817741ac3d1776a11659029ee98a4330aaeb62188b4fa5b37f22e",
+      "bytes": 1563634,
+      "originalSha256": "69a596d2a50817741ac3d1776a11659029ee98a4330aaeb62188b4fa5b37f22e"
+    },
+    {
+      "file": "source-731d0b7/combined-rear.json",
+      "sha256": "52a73ea9ebd265e9825083c44104365da92be031d755e3b0bb4fff14056df2e5",
+      "bytes": 4672,
+      "originalSha256": "52a73ea9ebd265e9825083c44104365da92be031d755e3b0bb4fff14056df2e5"
+    },
+    {
+      "file": "source-731d0b7/combined-rear.png",
+      "sha256": "18a81734d8d91a8f1d6d680dce6ef7eb2d5c7bc30e2b364dc1c70fc891168960",
+      "bytes": 1877735,
+      "originalSha256": "18a81734d8d91a8f1d6d680dce6ef7eb2d5c7bc30e2b364dc1c70fc891168960"
+    },
+    {
+      "file": "source-731d0b7/combined-shore.json",
+      "sha256": "c8d0e2c47e707cab921a8827a5e01f70842ff93847e5505765b66b22b5602c06",
+      "bytes": 4647,
+      "originalSha256": "c8d0e2c47e707cab921a8827a5e01f70842ff93847e5505765b66b22b5602c06"
+    },
+    {
+      "file": "source-731d0b7/combined-shore.png",
+      "sha256": "38f410eeacb752304bb97ba8c23cc8734e9e90914f07beed4487538cab45bf06",
+      "bytes": 1466203,
+      "originalSha256": "38f410eeacb752304bb97ba8c23cc8734e9e90914f07beed4487538cab45bf06"
+    },
+    {
+      "file": "source-731d0b7/combined-side.json",
+      "sha256": "465fca2a46b3a13d5c5260eec52c8414f90823b23b70ed5b1db6c2ae9902e128",
+      "bytes": 4664,
+      "originalSha256": "465fca2a46b3a13d5c5260eec52c8414f90823b23b70ed5b1db6c2ae9902e128"
+    },
+    {
+      "file": "source-731d0b7/combined-side.png",
+      "sha256": "66b1a9e57f5df83cecacac270d672a7e3ecd733e772c965febc933c000a4e51c",
+      "bytes": 1860417,
+      "originalSha256": "66b1a9e57f5df83cecacac270d672a7e3ecd733e772c965febc933c000a4e51c"
+    },
+    {
+      "file": "source-731d0b7/control-cliff.json",
+      "sha256": "a7c21526ab584cf4ab6e21b20f82c7ff5c829fe66fae399088a14afc99067add",
+      "bytes": 4655,
+      "originalSha256": "a7c21526ab584cf4ab6e21b20f82c7ff5c829fe66fae399088a14afc99067add"
+    },
+    {
+      "file": "source-731d0b7/control-cliff.png",
+      "sha256": "ed6d7a6e3ce2dbed5214982a62c01e37327398171b28d20af7a0036a8e1cf18e",
+      "bytes": 1621914,
+      "originalSha256": "ed6d7a6e3ce2dbed5214982a62c01e37327398171b28d20af7a0036a8e1cf18e"
+    },
+    {
+      "file": "source-731d0b7/control-lookout.json",
+      "sha256": "675317520ded042e7ad194a2ba30f653b8b86feb720e8542881cc7bbc6921a96",
+      "bytes": 4664,
+      "originalSha256": "675317520ded042e7ad194a2ba30f653b8b86feb720e8542881cc7bbc6921a96"
+    },
+    {
+      "file": "source-731d0b7/control-lookout.png",
+      "sha256": "f41aa124e3810e76a54badb520a626e08105a5a0b22dbc7c1ebde31754b52bc2",
+      "bytes": 1435265,
+      "originalSha256": "f41aa124e3810e76a54badb520a626e08105a5a0b22dbc7c1ebde31754b52bc2"
+    },
+    {
+      "file": "source-731d0b7/control-rear.json",
+      "sha256": "9dd8fb611d1a73e4ba2584d3d25fd93ec46977446670559337eb77e7a6b791c8",
+      "bytes": 4672,
+      "originalSha256": "9dd8fb611d1a73e4ba2584d3d25fd93ec46977446670559337eb77e7a6b791c8"
+    },
+    {
+      "file": "source-731d0b7/control-rear.png",
+      "sha256": "0d63c72d8d104397b16500fc6d1deab3dd5700784696a0342a0158e8c9f6deae",
+      "bytes": 1823487,
+      "originalSha256": "0d63c72d8d104397b16500fc6d1deab3dd5700784696a0342a0158e8c9f6deae"
+    },
+    {
+      "file": "source-731d0b7/control-shore.json",
+      "sha256": "d56be96dbbae95030d22ee906e2dd75a9cb310b2178cf2a52707a610166403fb",
+      "bytes": 4650,
+      "originalSha256": "d56be96dbbae95030d22ee906e2dd75a9cb310b2178cf2a52707a610166403fb"
+    },
+    {
+      "file": "source-731d0b7/control-shore.png",
+      "sha256": "aca9d299496d3782e525116552a12541f02b07e89becf1478c07ae7d5d06494a",
+      "bytes": 1475331,
+      "originalSha256": "aca9d299496d3782e525116552a12541f02b07e89becf1478c07ae7d5d06494a"
+    },
+    {
+      "file": "source-731d0b7/control-side.json",
+      "sha256": "1b519226aa4cc383595522e9870eafeeb43aa5fa966990f6e75d0d004bbc6ce5",
+      "bytes": 4664,
+      "originalSha256": "1b519226aa4cc383595522e9870eafeeb43aa5fa966990f6e75d0d004bbc6ce5"
+    },
+    {
+      "file": "source-731d0b7/control-side.png",
+      "sha256": "a69d43a1468539903689189c208868b2f405d9703c56a736e6f3e934f73e09fa",
+      "bytes": 1676725,
+      "originalSha256": "a69d43a1468539903689189c208868b2f405d9703c56a736e6f3e934f73e09fa"
+    },
+    {
+      "file": "source-731d0b7/ground-cliff.json",
+      "sha256": "a7c21526ab584cf4ab6e21b20f82c7ff5c829fe66fae399088a14afc99067add",
+      "bytes": 4655,
+      "originalSha256": "a7c21526ab584cf4ab6e21b20f82c7ff5c829fe66fae399088a14afc99067add"
+    },
+    {
+      "file": "source-731d0b7/ground-cliff.png",
+      "sha256": "b58d9acfede2ed4704cad60c82e2643dee3d0c97b4c04074b29cdb34f7795806",
+      "bytes": 1623420,
+      "originalSha256": "b58d9acfede2ed4704cad60c82e2643dee3d0c97b4c04074b29cdb34f7795806"
+    },
+    {
+      "file": "source-731d0b7/ground-lookout.json",
+      "sha256": "675317520ded042e7ad194a2ba30f653b8b86feb720e8542881cc7bbc6921a96",
+      "bytes": 4664,
+      "originalSha256": "675317520ded042e7ad194a2ba30f653b8b86feb720e8542881cc7bbc6921a96"
+    },
+    {
+      "file": "source-731d0b7/ground-lookout.png",
+      "sha256": "f1481dd036d8286351936e0e4df7f537086ae28e09ce643e10bd846998546ec5",
+      "bytes": 1429939,
+      "originalSha256": "f1481dd036d8286351936e0e4df7f537086ae28e09ce643e10bd846998546ec5"
+    },
+    {
+      "file": "source-731d0b7/ground-rear.json",
+      "sha256": "9dd8fb611d1a73e4ba2584d3d25fd93ec46977446670559337eb77e7a6b791c8",
+      "bytes": 4672,
+      "originalSha256": "9dd8fb611d1a73e4ba2584d3d25fd93ec46977446670559337eb77e7a6b791c8"
+    },
+    {
+      "file": "source-731d0b7/ground-rear.png",
+      "sha256": "aa703c9c53faacedb140023df467ad2c2d4ad04cafb58c94e1c5df5c12543a45",
+      "bytes": 1978401,
+      "originalSha256": "aa703c9c53faacedb140023df467ad2c2d4ad04cafb58c94e1c5df5c12543a45"
+    },
+    {
+      "file": "source-731d0b7/ground-shore.json",
+      "sha256": "d56be96dbbae95030d22ee906e2dd75a9cb310b2178cf2a52707a610166403fb",
+      "bytes": 4650,
+      "originalSha256": "d56be96dbbae95030d22ee906e2dd75a9cb310b2178cf2a52707a610166403fb"
+    },
+    {
+      "file": "source-731d0b7/ground-shore.png",
+      "sha256": "325dcdc8e5f5b00e96a01c24ceb3106f0d64d5ddd89e52b0acfbe8f87569cd34",
+      "bytes": 1475229,
+      "originalSha256": "325dcdc8e5f5b00e96a01c24ceb3106f0d64d5ddd89e52b0acfbe8f87569cd34"
+    },
+    {
+      "file": "source-731d0b7/ground-side.json",
+      "sha256": "1b519226aa4cc383595522e9870eafeeb43aa5fa966990f6e75d0d004bbc6ce5",
+      "bytes": 4664,
+      "originalSha256": "1b519226aa4cc383595522e9870eafeeb43aa5fa966990f6e75d0d004bbc6ce5"
+    },
+    {
+      "file": "source-731d0b7/ground-side.png",
+      "sha256": "5b754184cc53fa61af982cdeb09e78c62fbbb085620c2ebd3fac3db3bef260bb",
+      "bytes": 1773723,
+      "originalSha256": "5b754184cc53fa61af982cdeb09e78c62fbbb085620c2ebd3fac3db3bef260bb"
+    }
+  ]
+}

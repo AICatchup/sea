@@ -1,0 +1,195 @@
+{
+  "metadata": {
+    "name": "lookout",
+    "state": {
+      "pose": {
+        "x": -25,
+        "z": 36,
+        "yaw": 2.62159265359,
+        "pitch": -0.1,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        0.012848672419212394,
+        0.9651822423049573,
+        0.04829936829867315,
+        -0.25675926814467187
+      ],
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 8.5,
+      "swell": 1,
+      "eyeY": 13.50407012014893,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle"
+    },
+    "time": 34,
+    "topography": {
+      "coherentRock": true,
+      "dryToe": true,
+      "connectedForm": false,
+      "canopyContinuity": true
+    },
+    "foliage": {
+      "status": "ready",
+      "source": "Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified",
+      "photoPass": false,
+      "pines": {
+        "status": "ready",
+        "placements": 3098,
+        "originalPlacements": 3098,
+        "rendered": 2115,
+        "culled": 983,
+        "viewAware": true,
+        "instances": {
+          "near": 24,
+          "mid": 180,
+          "far": 1911,
+          "distant": 0
+        },
+        "byVariant": [
+          {
+            "near": 10,
+            "mid": 71,
+            "far": 620,
+            "distant": 0
+          },
+          {
+            "near": 5,
+            "mid": 56,
+            "far": 656,
+            "distant": 0
+          },
+          {
+            "near": 9,
+            "mid": 53,
+            "far": 635,
+            "distant": 0
+          }
+        ],
+        "oversized": {
+          "mid": 0,
+          "far": 0,
+          "distant": 0
+        },
+        "levelTriangles": {
+          "near": [
+            21663,
+            21467,
+            21614
+          ],
+          "mid": [
+            3895,
+            3862,
+            3887
+          ],
+          "far": [
+            915,
+            915,
+            905
+          ]
+        },
+        "thresholds": {
+          "nearDistance": 35,
+          "midDistance": 210,
+          "nearCapacity": 24,
+          "midCapacity": 180,
+          "triangleBudget": 3600000,
+          "viewAware": true
+        },
+        "draws": 27,
+        "triangles": 2959534,
+        "nearTriangles": 518491,
+        "exclusiveLod": true,
+        "selection": "actual transformed crown angular span within distance / triangle caps",
+        "source": "CC0 all-angle branch/needle/leaf models in every ready band"
+      },
+      "shrubs": {
+        "status": "ready",
+        "placements": 10834,
+        "originalPlacements": 10834,
+        "rendered": 6928,
+        "culled": 3906,
+        "viewAware": true,
+        "instances": {
+          "near": 48,
+          "mid": 180,
+          "far": 6700,
+          "distant": 0
+        },
+        "byVariant": [
+          {
+            "near": 15,
+            "mid": 50,
+            "far": 2230,
+            "distant": 0
+          },
+          {
+            "near": 10,
+            "mid": 50,
+            "far": 2267,
+            "distant": 0
+          },
+          {
+            "near": 23,
+            "mid": 80,
+            "far": 2203,
+            "distant": 0
+          }
+        ],
+        "oversized": {
+          "mid": 0,
+          "far": 0,
+          "distant": 0
+        },
+        "levelTriangles": {
+          "near": [
+            2299,
+            2297,
+            2293
+          ],
+          "mid": [
+            420,
+            416,
+            434
+          ],
+          "far": [
+            160,
+            160,
+            160
+          ]
+        },
+        "thresholds": {
+          "nearDistance": 26,
+          "midDistance": 210,
+          "nearCapacity": 48,
+          "midCapacity": 180,
+          "triangleBudget": 1350000,
+          "viewAware": true
+        },
+        "draws": 9,
+        "triangles": 1258714,
+        "nearTriangles": 110194,
+        "exclusiveLod": true,
+        "selection": "actual transformed crown angular span within distance / triangle caps",
+        "source": "CC0 all-angle branch/needle/leaf models in every ready band"
+      }
+    },
+    "draws": 147,
+    "triangles": 17945990,
+    "scope": "Separate fully initialized terrain instances, aligned actual camera and FFT time; current-pose render counters before restoration; static terrain/foliage comparison only, no identical fish/solver histories or movement/Human proof"
+  },
+  "label": "rear",
+  "sourceRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb"
+}

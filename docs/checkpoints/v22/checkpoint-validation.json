@@ -1,0 +1,26 @@
+{
+  "sourceRevision": "8f988af8b39c840af0b7c2054e63bdbefc8c7b9c",
+  "tests": {
+    "command": "node --experimental-strip-types --test --test-concurrency=2 tests/*.test.ts",
+    "passed": 287,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "viteBuild": "PASS",
+  "embeddedBuild": "PASS",
+  "visualReview": {
+    "reviewedRevision": "731d0b73758c13e9f7f10c55462e88c2291f31cb",
+    "review": "R155 one pass",
+    "ground": "NEEDSFIX",
+    "cliff": "REJECT",
+    "frames": 20
+  },
+  "subsequentCorrections": "8f988af removes camera-distance surface identity change; separates diagonal-only cliff corners with a physical gap; actual edge regression passes",
+  "correctedVisualReview": "NOT PERFORMED",
+  "normalGround": false,
+  "normalCoastform": false,
+  "fullPhotoGoal": "UNMET",
+  "fullNativeIslandVoyage": "UNVERIFIED",
+  "humanAcceptance": "UNMET",
+  "standaloneBrowserStartup": "UNVERIFIED; successful build is not browser startup proof"
+}
