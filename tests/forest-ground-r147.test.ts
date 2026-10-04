@@ -31,10 +31,10 @@ test('default terrain remains the explicit false shader path; ground replaces on
   assert.equal(a.vertexShader, b.vertexShader);
   assert.equal(baseline.customProgramCacheKey(), off.customProgramCacheKey());
   assert.match(a.fragmentShader, /coastCover\(vCoastPoint.xz \* .18\) \* .58/);
-  assert.doesNotMatch(c.fragmentShader, /coastCover\(vCoastPoint.xz \* .18\) \* .58/);
+  assert.match(c.fragmentShader, /canopyColor = coastCover/);
   assert.match(c.fragmentShader, /forestUV = vec2\(vCoastPoint.x, -vCoastPoint.z\) \/ 2.14/);
   assert.match(c.fragmentShader, /textureGrad\(uForestNormal, forestUV, forestDx, forestDy\)/);
-  assert.match(c.fragmentShader, /greenMix \* uForestReady/);
+  assert.match(c.fragmentShader, /greenMix \* forestMix \* uForestReady/);
   assert.match(c.fragmentShader, /sandMix \* uSandReady/);
   assert.equal(c.vertexShader, a.vertexShader);
   // 11 material samplers leaves 5 for renderer lighting/environment under WebGL minimum 16.

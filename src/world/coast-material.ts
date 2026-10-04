@@ -283,13 +283,42 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
       vec3 sandColor = mix(sandPhoto, vec3(sandLuma) * vec3(1.055, 1.025, .94), .7) * 2.25;
       sandColor *= mix(${SAND_SURFACE.wetAlbedoMultiplier}, 1.0, sandDry);
       sandColor = mix(vec3(.46, .43, .37) * mix(.62, 1.0, sandDry), sandColor, uSandReady);
-      ${ground ? `// Physical ground replaces the canopy photograph only in the existing green domain.
+      ${ground ? `// Ground detail belongs to visible nearby soil, not the distant canopy proxy.
+      // Distance is view-space and evaluated before any texture work branches.
+      float forestNear = 1.0 - smoothstep(18.0, 65.0, length(vViewPosition));
+      float forestSlope = smoothstep(.62, .86, abs(coastAxis.y));
+      float forestMix = forestNear * forestSlope;
+      vec3 canopyColor = coastCover(vCoastPoint.xz * .18) * .58;
       vec2 forestUV = vec2(vCoastPoint.x, -vCoastPoint.z) / ${FOREST_GROUND_SURFACE.tileSpanMeters};
       vec2 forestDx = dFdx(forestUV), forestDy = dFdy(forestUV);
-      vec3 forestPhoto = textureGrad(uForestAlbedo, forestUV, forestDx, forestDy).rgb;
-      vec3 forestTangent = textureGrad(uForestNormal, forestUV, forestDx, forestDy).xyz * 2.0 - 1.0;
-      vec3 forestARM = textureGrad(uForestARM, forestUV, forestDx, forestDy).rgb;
-      vec3 greenColor = mix(vec3(.16, .13, .085), forestPhoto, uForestReady);` : 'vec3 greenColor = coastCover(vCoastPoint.xz * .18) * .58;'}
+      vec3 forestPhoto = vec3(.12, .13, .075), forestAltPhoto = forestPhoto;
+      vec3 forestTangent = vec3(0, 0, 1), forestAltNormal = forestTangent;
+      vec3 forestARM = vec3(1, .94, 0), forestAltARM = forestARM;
+      // A second rigid projection breaks obvious repeats without resizing the scan.
+      vec2 forestAltUV = vec2(-forestUV.y, forestUV.x) + vec2(13.37, 7.91);
+      vec2 forestAltDx = vec2(-forestDx.y, forestDx.x), forestAltDy = vec2(-forestDy.y, forestDy.x);
+      if (greenMix * forestMix > .002 && uForestReady > .5) {
+      forestPhoto = textureGrad(uForestAlbedo, forestUV, forestDx, forestDy).rgb;
+      forestTangent = textureGrad(uForestNormal, forestUV, forestDx, forestDy).xyz * 2.0 - 1.0;
+      forestARM = textureGrad(uForestARM, forestUV, forestDx, forestDy).rgb;
+      forestAltPhoto = textureGrad(uForestAlbedo, forestAltUV, forestAltDx, forestAltDy).rgb;
+      forestAltNormal = textureGrad(uForestNormal, forestAltUV, forestAltDx, forestAltDy).xyz * 2.0 - 1.0;
+      forestAltNormal.xy = vec2(forestAltNormal.y, -forestAltNormal.x);
+      forestAltARM = textureGrad(uForestARM, forestAltUV, forestAltDx, forestAltDy).rgb;
+      }
+      // Smooth world-anchored variation: no hash discontinuities in mip gradients.
+      float forestPatch = .5 + .25 * sin(vCoastPoint.x * .19 + sin(vCoastPoint.z * .13))
+        + .25 * sin(vCoastPoint.z * .27 + vCoastPoint.x * .07);
+      float forestBlend = smoothstep(.15, .85, forestPatch);
+      forestPhoto = mix(forestPhoto, forestAltPhoto, forestBlend);
+      forestTangent = normalize(mix(forestTangent, forestAltNormal, forestBlend));
+      forestARM = mix(forestARM, forestAltARM, forestBlend);
+      float floorLuma = dot(forestPhoto, vec3(.2126, .7152, .0722));
+      // Soil/moss coverage is an authored heuristic, not a claim about local botany.
+      vec3 forestSoil = vec3(floorLuma) * mix(vec3(.58, .57, .43), vec3(.60, .69, .44), forestPatch);
+      vec3 forestFloor = mix(forestSoil, forestPhoto, mix(.48, .92, forestBlend));
+      forestFloor *= mix(.85, 1.04, forestPatch);
+      vec3 greenColor = mix(canopyColor, mix(vec3(.12, .13, .075), forestFloor, uForestReady), forestMix);` : 'vec3 greenColor = coastCover(vCoastPoint.xz * .18) * .58;'}
       diffuseColor.rgb = mix(mix(stoneColor, greenColor, greenMix), sandColor, sandMix);`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
       vec3 coastBaseNormal = normal;
@@ -303,7 +332,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
         mix(${SAND_SURFACE.wetNormalStrength}, ${SAND_SURFACE.dryNormalStrength}, sandDry));
       normal = normalize(mix(coastBaseNormal, rockViewNormal, (1.0 - greenMix) * uCoastRockReady));
       ${ground ? `vec3 forestViewNormal = coastProjectedNormal(forestTangent, forestUV, coastBaseNormal, ${FOREST_GROUND_SURFACE.normalStrength});
-      normal = normalize(mix(normal, forestViewNormal, greenMix * uForestReady));
+      normal = normalize(mix(normal, forestViewNormal, greenMix * forestMix * uForestReady));
       ` : ''}normal = normalize(mix(normal, sandViewNormal, sandMix * uSandReady));`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
       vec3 sandARM = texture2D(uSandARM, sandUV).rgb;
@@ -311,16 +340,16 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
       float wetStoneRough = mix(.27, .53, rockRough);
       float stoneRough = mix(dryStoneRough, wetStoneRough, rockWetness);
       float sandRough = mix(mix(.27, .48, sandARM.g), mix(.78, .96, sandARM.g), sandDry);
-      roughnessFactor = mix(mix(stoneRough, ${ground ? 'mix(.94, clamp(forestARM.g, .65, 1.0), uForestReady)' : '.94'}, greenMix), sandRough, sandMix);`);
+      roughnessFactor = mix(mix(stoneRough, ${ground ? 'mix(.94, clamp(forestARM.g, .72, 1.0), forestMix * uForestReady)' : '.94'}, greenMix), sandRough, sandMix);`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <aomap_fragment>', `#include <aomap_fragment>
       float coastOcclusion = mix(mix(1.0, mix(.60, 1.0, rockAO), uCoastRockReady) , 1.0, greenMix);
-      ${ground ? 'coastOcclusion *= mix(1.0, forestARM.r, greenMix * uForestReady);\n      ' : ''}coastOcclusion = mix(coastOcclusion, mix(.86, 1.0, sandARM.r), sandMix * uSandReady);
+      ${ground ? 'coastOcclusion *= mix(1.0, mix(.70, 1.0, forestARM.r), greenMix * forestMix * uForestReady);\n      ' : ''}coastOcclusion = mix(coastOcclusion, mix(.86, 1.0, sandARM.r), sandMix * uSandReady);
       reflectedLight.indirectDiffuse *= coastOcclusion;
       #if defined(USE_ENVMAP) && defined(STANDARD)
         reflectedLight.indirectSpecular *= computeSpecularOcclusion(saturate(dot(geometryNormal, geometryViewDir)), coastOcclusion, material.roughness);
       #endif`);
   };
-  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-r147" : ""}`;
+  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-r153" : ""}`;
   return material;
 }
 
