@@ -192,18 +192,40 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
   const proxies:CliffCollisionProxy[]=[];
   const vertices=new Map<string,number>();
   const edges=new Map<string,{a:number;b:number;count:number}>();
-  let cells=0,minY=Infinity;
+  let cells=0,minY=Infinity,maxRelief=0,minRelief=Infinity;
+  // Two oblique, unequal joint families in world-space, warped by a broader
+  // weathering field. Nearest-cell boundaries produce clefts, not strata;
+  // the second family breaks the first family's long continuous grooves.
+  const fractureRelief=(x:number,y:number,z:number)=>{
+    const warp=Math.sin(x*.047+z*.061)*.43+Math.sin(y*.093-z*.038)*.27;
+    const joint=(u:number,v:number,seed:number)=>{
+      const iu=Math.floor(u),iv=Math.floor(v);let first=Infinity,second=Infinity;
+      for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){
+        const a=iu+i,b=iv+j,du=u-a-.18-jointRandom(a,b,seed)*.64,
+          dv=v-b-.18-jointRandom(a,b,seed+7)*.64,d=du*du+dv*dv;
+        if(d<first){second=first;first=d;}else second=Math.min(second,d);
+      }
+      // A narrow angular trough with sloping shoulders, rather than separate
+      // plates or a painted black line. Relief remains supported by the DEM.
+      return Math.min(1,Math.max(0,(Math.sqrt(second)-Math.sqrt(first))/.26));
+    };
+    const main=joint(x*.23+z*.16+warp,y*.115+z*.052-x*.031,211);
+    const cross=joint(z*.31-x*.09+warp*.36,y*.22+x*.071,251);
+    const weather=.76+.24*Math.sin(x*.081-z*.057+y*.12);
+    return .09+weather*(1.38*main+.53*cross);
+  };
   const point=(ix:number,iz:number):number=>{
     const key=`${ix}:${iz}`,known=vertices.get(key);if(known!==undefined)return known;
     const x=bounds.minX+14+ix*step,z=bounds.minZ+14+iz*step,y=ground.heightAt(x,z);
     // Shared, faceted metre-scale relief follows the parent DEM. The major
     // buttress and cleft shape comes from structuralCoastHeight's same flag.
-    const phase=z*.96+x*.28+y*.11;
-    const relief=.16+.55*Math.abs(((phase/13)%1+1)%1-.5)*2;
+    const relief=fractureRelief(x,y,z);
+    maxRelief=Math.max(maxRelief,relief);minRelief=Math.min(minRelief,relief);
     const index=positions.length/3;
     positions.push(x,y+relief,z,x,y-1.4,z);
     uvs.push(x*.2,(y+relief)*.2,x*.2,(y-1.4)*.2);
-    colors.push(.97,.965,.985,.87,.865,.885);
+    const shade=.94+.045*Math.sin(x*.071+z*.039+y*.11);
+    colors.push(shade,shade*.995,shade*1.015,.87,.865,.885);
     vertices.set(key,index);minY=Math.min(minY,y+relief);return index;
   };
   const edge=(a:number,b:number)=>{
@@ -212,10 +234,10 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
   };
   for(let iz=0;bounds.minZ+14+(iz+1)*step<bounds.maxZ-14;iz++){
     for(let ix=0;bounds.minX+14+(ix+1)*step<bounds.maxX-14;ix++){
-      // Reserve four walls per cell before emitting: strict worst-case 80k cap.
-      if((cells+1)*12>80000)break;
+      // Four front and back facets plus four walls: strict worst-case cap.
+      if((cells+1)*16>80000)break;
       const corners=[[ix,iz],[ix,iz+1],[ix+1,iz+1],[ix+1,iz]];
-      const samples=corners.map(([i,j])=>{const x=bounds.minX+14+i*step,z=bounds.minZ+14+j*step;
+      const samples=[...corners,[ix+.5,iz+.5]].map(([i,j])=>{const x=bounds.minX+14+i*step,z=bounds.minZ+14+j*step;
         const y=ground.heightAt(x,z),gx=(ground.heightAt(x+2,z)-ground.heightAt(x-2,z))/4,
           gz=(ground.heightAt(x,z+2)-ground.heightAt(x,z-2))/4;
         return {x,z,y,gx,gz,slope:Math.hypot(gx,gz)};});
@@ -224,11 +246,17 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
       if(samples.some(p=>!Number.isFinite(p.y)||p.y<3.5||p.y>52||p.slope<1.05||
         (p.y<10&&sandAt(p.x,p.z)>.3)))continue;
       if(samples.some(p=>ground.heightAt(p.x+p.gx/p.slope*7,p.z+p.gz/p.slope*7)<p.y+3))continue;
-      const ids=corners.map(([i,j])=>point(i,j));const [a,b,c,d]=ids;
-      indices.push(a,b,c,a,c,d,a+1,c+1,b+1,a+1,d+1,c+1);
+      const ids=corners.map(([i,j])=>point(i,j));
+      // A shared center samples the joint field between corners. This creates
+      // genuine transverse normal changes without tessellating the whole DEM.
+      const centre=point(ix+.5,iz+.5);
+      for(let i=0;i<4;i++){
+        const next=ids[(i+1)%4];
+        indices.push(ids[i],next,centre,ids[i]+1,centre+1,next+1);
+      }
       for(let i=0;i<4;i++)edge(ids[i],ids[(i+1)%4]);
       const proxy:CliffCollisionProxy={minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity,minZ:Infinity,maxZ:-Infinity};
-      for(const id of ids)for(const k of [id,id+1]){
+      for(const id of [...ids,centre])for(const k of [id,id+1]){
         proxy.minX=Math.min(proxy.minX,positions[k*3]);proxy.maxX=Math.max(proxy.maxX,positions[k*3]);
         proxy.minY=Math.min(proxy.minY,positions[k*3+1]);proxy.maxY=Math.max(proxy.maxY,positions[k*3+1]);
         proxy.minZ=Math.min(proxy.minZ,positions[k*3+2]);proxy.maxZ=Math.max(proxy.maxZ,positions[k*3+2]);
@@ -247,7 +275,11 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
   geometry.computeVertexNormals();geometry.computeBoundingSphere();
   geometry.userData={connectedFormCandidate:true,coherentCandidate:true,triangleCount:indices.length/3,triangleLimit:80000,
     outcropCount:cells,rockPieces:0,connectedCells:cells,boundaryEdges,closedVolumes:true,
-    maxNormalProtrusionM:.71,maxFaceWidthM:step,minExposedVertexHeightM:Number.isFinite(minY)?minY:null,
+    // Vertical relief bounds are measured; surface-normal distance depends on
+    // the local source slope and must not be advertised as this vertical value.
+    maxVerticalReliefM:maxRelief,minVerticalReliefM:Number.isFinite(minRelief)?minRelief:null,
+    fractureFamilies:2,fractureGeometry:'Oblique warped cellular clefts with four center-sampled facets per cell',
+    maxFaceWidthM:step,minExposedVertexHeightM:Number.isFinite(minY)?minY:null,
     collisionProxies:proxies,collision:'Terrain-attached indexed shell with full per-cell volume AABBs',
     provenance:'Authored connected angular skin and DEM-bound buttress/cleft field; inferred geology, not measured scan'};
   return geometry;

@@ -1,0 +1,11 @@
+# V22 Tomari cliff fracture producer
+
+Scope: opt-in connected cliff shell only. Ground, wet triangles, terrain joins, legacy outcrops, materials, renderer and Niijima unchanged. Authored qualitative geometry, not measured geology or photogrammetry.
+
+Two oblique warped cellular joint families replace the repeating triangular horizontal band. Relief has physical angled shoulders and troughs; four center-sampled front facets share the surrounding grid and close against paired embedded backs. Centers receive the same dry/steep/crown eligibility checks as corners. Per-cell collision bounds include centers and backs. All extrusion remains vertical at original X/Z, so no separate floating plates or horizontally unsupported overhangs are introduced. The conservative AABB collision method is retained.
+
+Actual IslandElevation(true,true,true) candidate: 5,792 vertices; 11,364 triangles; 1,065 cells; 1,422 boundary edges closed against backs. Vertical relief 0.102618159 to 1.999999453 m; minimum exposed height 4.348244195 m. 80,000 triangle cap retained. Two oblique tangent normal ranges are regression checked on a sloping fixture. Broad source shape remains root's V20 field; eligibility holes and smooth low/crown regions remain intentional, and surface-normal relief is smaller than vertical relief on steep slopes. Vertex normals are shared/smoothed, so actual visual sharpness remains unverified.
+
+Validation: cliff-form-r144 (4 tests), coast-form-integration-v20 (2 tests), cliff-fracture-v22 (2 tests), TypeScript noEmit passed. Protected raster samples: 566,960 unchanged within 1e-5 m; source joins within 1e-8 m. Raster delta maximum remains 7.226193666 m from pre-existing V20, not this shell edit. No GPU or human/photo completion claimed.
+
+Root acceptance views: compare normal vs connected-form V22 using identical shore, cliff, lookout, side and rear cameras. Check coherent visible clefts rather than regular triangulated spikes; directional geometry/occlusion, silhouette at oblique angles, seam transitions to bare low cliff/crown, and absence of floating thin shelves. Adopt only after actual images and existing FPS body/water-route checks. This is one bounded producer pass.
