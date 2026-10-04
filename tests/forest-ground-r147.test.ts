@@ -31,7 +31,7 @@ test('default terrain remains the explicit false shader path; ground replaces on
   assert.equal(a.vertexShader, b.vertexShader);
   assert.equal(baseline.customProgramCacheKey(), off.customProgramCacheKey());
   assert.match(a.fragmentShader, /coastCover\(vCoastPoint.xz \* .18\) \* .58/);
-  assert.match(c.fragmentShader, /canopyColor = coastCover/);
+  assert.doesNotMatch(c.fragmentShader, /forestNear|length\(vViewPosition\)|canopyColor = coastCover/);
   assert.match(c.fragmentShader, /forestUV = vec2\(vCoastPoint.x, -vCoastPoint.z\) \/ 2.14/);
   assert.match(c.fragmentShader, /textureGrad\(uForestNormal, forestUV, forestDx, forestDy\)/);
   assert.match(c.fragmentShader, /greenMix \* forestMix \* uForestReady/);

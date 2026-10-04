@@ -192,6 +192,8 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
   const proxies:CliffCollisionProxy[]=[];
   const vertices=new Map<string,number>();
   const edges=new Map<string,{a:number;b:number;count:number}>();
+  const selectedCells:{ix:number;iz:number}[]=[],selected=new Set<string>();
+  let splitCorners=0;
   let cells=0,minY=Infinity,maxRelief=0,minRelief=Infinity;
   // Two oblique, unequal joint families in world-space, warped by a broader
   // weathering field. Nearest-cell boundaries produce clefts, not strata;
@@ -214,9 +216,14 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
     const weather=.76+.24*Math.sin(x*.081-z*.057+y*.12);
     return .09+weather*(1.38*main+.53*cross);
   };
-  const point=(ix:number,iz:number):number=>{
-    const key=`${ix}:${iz}`,known=vertices.get(key);if(known!==undefined)return known;
-    const x=bounds.minX+14+ix*step,z=bounds.minZ+14+iz*step,y=ground.heightAt(x,z);
+  const point=(ix:number,iz:number,cellX?:number,cellZ?:number):number=>{
+    const mask=Number.isInteger(ix)&&Number.isInteger(iz)?[[ix-1,iz-1],[ix,iz-1],[ix,iz],[ix-1,iz]].reduce((m,[x,z],i)=>m|(selected.has(`${x}:${z}`)?1<<i:0),0):0;
+    const split=(mask===5||mask===10)&&cellX!==undefined&&cellZ!==undefined;
+    const key=`${ix}:${iz}:${split?`${cellX}:${cellZ}`:''}`,known=vertices.get(key);if(known!==undefined)return known;
+    // Diagonal-only patches need separate vertices AND a small physical gap.
+    // Welding their corner made one vertical edge incident to four walls.
+    const x=bounds.minX+14+ix*step+(split?(cellX===ix?.025:-.025):0),z=bounds.minZ+14+iz*step+(split?(cellZ===iz?.025:-.025):0),y=ground.heightAt(x,z);
+    if(split)splitCorners++;
     // Shared, faceted metre-scale relief follows the parent DEM. The major
     // buttress and cleft shape comes from structuralCoastHeight's same flag.
     const relief=fractureRelief(x,y,z);
@@ -235,7 +242,7 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
   for(let iz=0;bounds.minZ+14+(iz+1)*step<bounds.maxZ-14;iz++){
     for(let ix=0;bounds.minX+14+(ix+1)*step<bounds.maxX-14;ix++){
       // Four front and back facets plus four walls: strict worst-case cap.
-      if((cells+1)*16>80000)break;
+      if((selectedCells.length+1)*16>80000)break;
       const corners=[[ix,iz],[ix,iz+1],[ix+1,iz+1],[ix+1,iz]];
       const samples=[...corners,[ix+.5,iz+.5]].map(([i,j])=>{const x=bounds.minX+14+i*step,z=bounds.minZ+14+j*step;
         const y=ground.heightAt(x,z),gx=(ground.heightAt(x+2,z)-ground.heightAt(x-2,z))/4,
@@ -246,7 +253,12 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
       if(samples.some(p=>!Number.isFinite(p.y)||p.y<3.5||p.y>52||p.slope<1.05||
         (p.y<10&&sandAt(p.x,p.z)>.3)))continue;
       if(samples.some(p=>ground.heightAt(p.x+p.gx/p.slope*7,p.z+p.gz/p.slope*7)<p.y+3))continue;
-      const ids=corners.map(([i,j])=>point(i,j));
+      selectedCells.push({ix,iz});selected.add(`${ix}:${iz}`);
+    }
+  }
+  for(const {ix,iz} of selectedCells){
+      const corners=[[ix,iz],[ix,iz+1],[ix+1,iz+1],[ix+1,iz]];
+      const ids=corners.map(([i,j])=>point(i,j,ix,iz));
       // A shared center samples the joint field between corners. This creates
       // genuine transverse normal changes without tessellating the whole DEM.
       const centre=point(ix+.5,iz+.5);
@@ -262,7 +274,6 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
         proxy.minZ=Math.min(proxy.minZ,positions[k*3+2]);proxy.maxZ=Math.max(proxy.maxZ,positions[k*3+2]);
       }
       proxies.push(proxy);cells++;
-    }
   }
   let boundaryEdges=0;
   for(const {a,b,count} of edges.values())if(count===1){
@@ -275,6 +286,7 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
   geometry.computeVertexNormals();geometry.computeBoundingSphere();
   geometry.userData={connectedFormCandidate:true,coherentCandidate:true,triangleCount:indices.length/3,triangleLimit:80000,
     outcropCount:cells,rockPieces:0,connectedCells:cells,boundaryEdges,closedVolumes:true,
+    splitCorners,cornerSeparationM:.025,
     // Vertical relief bounds are measured; surface-normal distance depends on
     // the local source slope and must not be advertised as this vertical value.
     maxVerticalReliefM:maxRelief,minVerticalReliefM:Number.isFinite(minRelief)?minRelief:null,

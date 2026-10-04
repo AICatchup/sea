@@ -26,6 +26,10 @@ test('V22 actual Tomari shell records measured bounds without claiming normal re
   assert.ok(mesh.userData.triangleCount<=80000);
   assert.ok(mesh.userData.maxVerticalReliefM<=2);
   assert.equal(mesh.userData.maxNormalProtrusionM,undefined);
+  const edges=new Map<string,number>(),index=mesh.index!;
+  for(let i=0;i<index.count;i+=3)for(const [a,b] of [[index.getX(i),index.getX(i+1)],[index.getX(i+1),index.getX(i+2)],[index.getX(i+2),index.getX(i)]]){const key=a<b?`${a}:${b}`:`${b}:${a}`;edges.set(key,(edges.get(key)??0)+1);}
+  assert.ok([...edges.values()].every(count=>count===2),'every shell edge has exactly two incident triangles, including diagonal-only patches');
+  assert.ok(mesh.userData.splitCorners>0,'actual corner-touch patches exercise the regression');
   console.log(JSON.stringify({v22Cliff:{vertices:mesh.getAttribute('position').count,...Object.fromEntries(
     ['triangleCount','connectedCells','boundaryEdges','minVerticalReliefM','maxVerticalReliefM','minExposedVertexHeightM'].map(k=>[k,mesh.userData[k]]))}}));
 });

@@ -283,12 +283,10 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
       vec3 sandColor = mix(sandPhoto, vec3(sandLuma) * vec3(1.055, 1.025, .94), .7) * 2.25;
       sandColor *= mix(${SAND_SURFACE.wetAlbedoMultiplier}, 1.0, sandDry);
       sandColor = mix(vec3(.46, .43, .37) * mix(.62, 1.0, sandDry), sandColor, uSandReady);
-      ${ground ? `// Ground detail belongs to visible nearby soil, not the distant canopy proxy.
-      // Distance is view-space and evaluated before any texture work branches.
-      float forestNear = 1.0 - smoothstep(18.0, 65.0, length(vViewPosition));
+      ${ground ? `// Fixed world surface: camera distance cannot change soil into canopy.
       float forestSlope = smoothstep(.62, .86, abs(coastAxis.y));
-      float forestMix = forestNear * forestSlope;
-      vec3 canopyColor = coastCover(vCoastPoint.xz * .18) * .58;
+      float forestMix = forestSlope;
+      vec3 canopyColor = vec3(.12, .155, .095);
       vec2 forestUV = vec2(vCoastPoint.x, -vCoastPoint.z) / ${FOREST_GROUND_SURFACE.tileSpanMeters};
       vec2 forestDx = dFdx(forestUV), forestDy = dFdy(forestUV);
       vec3 forestPhoto = vec3(.12, .13, .075), forestAltPhoto = forestPhoto;
@@ -315,8 +313,8 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
       forestARM = mix(forestARM, forestAltARM, forestBlend);
       float floorLuma = dot(forestPhoto, vec3(.2126, .7152, .0722));
       // Soil/moss coverage is an authored heuristic, not a claim about local botany.
-      vec3 forestSoil = vec3(floorLuma) * mix(vec3(.58, .57, .43), vec3(.60, .69, .44), forestPatch);
-      vec3 forestFloor = mix(forestSoil, forestPhoto, mix(.48, .92, forestBlend));
+      vec3 forestSoil = vec3(floorLuma) * mix(vec3(.46, .56, .36), vec3(.46, .64, .38), forestPatch);
+      vec3 forestFloor = mix(forestSoil, forestPhoto, mix(.16, .40, forestBlend));
       forestFloor *= mix(.85, 1.04, forestPatch);
       vec3 greenColor = mix(canopyColor, mix(vec3(.12, .13, .075), forestFloor, uForestReady), forestMix);` : 'vec3 greenColor = coastCover(vCoastPoint.xz * .18) * .58;'}
       diffuseColor.rgb = mix(mix(stoneColor, greenColor, greenMix), sandColor, sandMix);`);
@@ -349,7 +347,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
         reflectedLight.indirectSpecular *= computeSpecularOcclusion(saturate(dot(geometryNormal, geometryViewDir)), coastOcclusion, material.roughness);
       #endif`);
   };
-  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-r153" : ""}`;
+  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-fixed-world-v22" : ""}`;
   return material;
 }
 
