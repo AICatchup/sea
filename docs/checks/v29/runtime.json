@@ -1,0 +1,184 @@
+{
+  "sourceRevision": "a8ab50fffe119e95599d80e20dc1c5ff0f9ed626",
+  "baselineRevision": "90d15136345e241b259e1fc723c8f71f036958a0",
+  "tests": {
+    "passed": 307,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "scope": "Filtered shading slope only; no change to simulated waves, geometry, collision or navigation",
+  "samePixelOffOnOffProbes": "PASS; off repetitions numerically identical",
+  "roi": [
+    1145,
+    339,
+    1265,
+    348
+  ],
+  "roiScope": "Fixed actual water rectangle beside the Habushi gate in the 1280x720 capture",
+  "imageMetrics": [
+    {
+      "variant": 0,
+      "enabled": false,
+      "darkPixelFractionBelow90": 0.019444444444444445,
+      "mean": 156.26635802469136
+    },
+    {
+      "variant": 1,
+      "enabled": true,
+      "darkPixelFractionBelow90": 0.0,
+      "mean": 175.1608024691358
+    },
+    {
+      "variant": 2,
+      "enabled": false,
+      "darkPixelFractionBelow90": 0.019444444444444445,
+      "mean": 156.26635802469136
+    }
+  ],
+  "independentReview": "Limited adoption; no blocking issue. Finite difference is not an exact footprint integral; underwater TIR shares the shading normal. Root also checked underwater up-look A/B.",
+  "fullGoal": "UNMET",
+  "finalShowcaseVideo": "PENDING AFTER COMPLETION",
+  "files": [
+    {
+      "path": "browser-log.json",
+      "sha256": "c4854cc7554c5989fa92470cdae65a9db37c7b6412bf58e886e78e59f7c4ddae",
+      "bytes": 785
+    },
+    {
+      "path": "filtered-lookout.json",
+      "sha256": "73be7076f76bfc543860ccd865ce88c5677b3a66d6e496a9612201f7d890bcf7",
+      "bytes": 4463
+    },
+    {
+      "path": "filtered-lookout.png",
+      "sha256": "55895b3e7273267aa121810330870fa02c57448d5e737593d6b3fd567bd6ed99",
+      "bytes": 1425787
+    },
+    {
+      "path": "filtered-reef.json",
+      "sha256": "72c123023cff526207ff3c4a15e7fa4e040eaaa6ec3cfc98c640fa32d3f4fb75",
+      "bytes": 4440
+    },
+    {
+      "path": "filtered-reef.png",
+      "sha256": "d613829392393a1812037248c4f71063c7f7328b5b5cc7b5618f07850b3e49d9",
+      "bytes": 1309229
+    },
+    {
+      "path": "filtered-secret.json",
+      "sha256": "9e7cd8e4ec6e63bf2a7dbd09cc3fb35686e5a758e3263afa3e8b3f3f612c9f22",
+      "bytes": 4527
+    },
+    {
+      "path": "filtered-secret.png",
+      "sha256": "0dcb520824327ff59b6ec08f8fb3331d4d6f46617ffd8e73359495820e3677c7",
+      "bytes": 1244920
+    },
+    {
+      "path": "filtered-shore.json",
+      "sha256": "16e9c370637cfbf3c49a75670e0d42c07bd6708a7b63032be202a6e044d1d4db",
+      "bytes": 4451
+    },
+    {
+      "path": "filtered-shore.png",
+      "sha256": "c6ebadd721c729162c5b86fd58a7101e9416b9e782e933bfb3cdf3ad029ce35a",
+      "bytes": 1478995
+    },
+    {
+      "path": "interface-0.json",
+      "sha256": "5a4291fcbe9a876497a28c8870a99bdb968f6dfd4f86fc67a9a77dfc5925df1d",
+      "bytes": 4287
+    },
+    {
+      "path": "interface-0.png",
+      "sha256": "b2ede6f492f3135833ffa6c2b48b765b8f7c21ee79bf6fda85a5ae7e6f56b284",
+      "bytes": 1054590
+    },
+    {
+      "path": "interface-1.json",
+      "sha256": "af3df8d033dfde0ddbc5f528ece8f2e0090ef228c7767bc6e4356b724dfde70d",
+      "bytes": 4300
+    },
+    {
+      "path": "interface-1.png",
+      "sha256": "b2ede6f492f3135833ffa6c2b48b765b8f7c21ee79bf6fda85a5ae7e6f56b284",
+      "bytes": 1054590
+    },
+    {
+      "path": "legacy-lookout.json",
+      "sha256": "643f3de5913d74b17b9498f6fa8c4c76133530794a869f11a705fad6df2a4eb6",
+      "bytes": 4464
+    },
+    {
+      "path": "legacy-lookout.png",
+      "sha256": "c1e5d6aaec05d5747afdaab59b42c57a0977081d3c1cbcd292a9282d989ea2d2",
+      "bytes": 1426993
+    },
+    {
+      "path": "legacy-reef.json",
+      "sha256": "8d836f80fcb1d24708d0bba2b67081c4e143e41df05216e31e81c6494405d3a4",
+      "bytes": 4427
+    },
+    {
+      "path": "legacy-reef.png",
+      "sha256": "3e1e717b9259464164714da63aacc876ee1b183d28fb40d7251014bd19ed8511",
+      "bytes": 1306314
+    },
+    {
+      "path": "legacy-secret.json",
+      "sha256": "bd3e16c264ad56bd2ffb82c505e1f355a9627ef69bc91ef3bf508f55a30f9d9a",
+      "bytes": 4528
+    },
+    {
+      "path": "legacy-secret.png",
+      "sha256": "474bafba86bb7655a879002f7215f6c55cc3aa46fb57770ab6b5a64e120a90f1",
+      "bytes": 1245980
+    },
+    {
+      "path": "legacy-shore.json",
+      "sha256": "3a38d7591287b820c7f6c6b50ca723831d26c2d108cb9fa5142e2fac619c8263",
+      "bytes": 4453
+    },
+    {
+      "path": "legacy-shore.png",
+      "sha256": "88aad6687114cc822b43d982ba991c44dc73d93e2024a1f2f02737029519d185",
+      "bytes": 1478841
+    },
+    {
+      "path": "stencil-0.json",
+      "sha256": "17e66e73bb675a4fc49929a2ba711ae280dd16278d2701bc226ba1f03fb8a306",
+      "bytes": 4301
+    },
+    {
+      "path": "stencil-0.png",
+      "sha256": "4593fc31175ef1f2bb5aa34577428300558d7c317b38ccb18b1924e1fb365808",
+      "bytes": 1176736
+    },
+    {
+      "path": "stencil-1.json",
+      "sha256": "838dfbe9c8e00253bb153e931c3cb1ef22176740c2e3f04b16e26c04fedc7392",
+      "bytes": 4300
+    },
+    {
+      "path": "stencil-1.png",
+      "sha256": "7daa60b367ff2fe3de01cd48c025f3bc2a3d55dc2666ed2659cb6bd530d0f45d",
+      "bytes": 1170944
+    },
+    {
+      "path": "stencil-2.json",
+      "sha256": "6eb8b9f9d1ac8df17f40a155eda116562cda93d72809e9cd948ca3718960c4a8",
+      "bytes": 4301
+    },
+    {
+      "path": "stencil-2.png",
+      "sha256": "4593fc31175ef1f2bb5aa34577428300558d7c317b38ccb18b1924e1fb365808",
+      "bytes": 1176736
+    },
+    {
+      "path": "stencil-probes.json",
+      "sha256": "5c8cfa629da5f18418e1ea16f301fd5cb4b9be742a915f86e3c2fdbb2dd08d10",
+      "bytes": 46002
+    }
+  ]
+}

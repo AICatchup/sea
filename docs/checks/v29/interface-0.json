@@ -1,0 +1,193 @@
+{
+  "enabled": false,
+  "draws": 162,
+  "foliage": {
+    "branchClusters": true,
+    "photoPass": false,
+    "pines": {
+      "byVariant": [
+        {
+          "distant": 0,
+          "far": 15,
+          "mid": 70,
+          "near": 0
+        },
+        {
+          "distant": 0,
+          "far": 22,
+          "mid": 59,
+          "near": 0
+        },
+        {
+          "distant": 0,
+          "far": 53,
+          "mid": 51,
+          "near": 0
+        }
+      ],
+      "culled": 2828,
+      "draws": 24,
+      "exclusiveLod": true,
+      "instances": {
+        "distant": 0,
+        "far": 90,
+        "mid": 180,
+        "near": 0
+      },
+      "levelTriangles": {
+        "far": [
+          1083,
+          1083,
+          1073
+        ],
+        "mid": [
+          4567,
+          4534,
+          4559
+        ],
+        "near": [
+          21663,
+          21467,
+          21614
+        ]
+      },
+      "nearTriangles": 0,
+      "originalPlacements": 3098,
+      "oversized": {
+        "distant": 0,
+        "far": 0,
+        "mid": 0
+      },
+      "placements": 3098,
+      "rendered": 270,
+      "selection": "actual transformed crown angular span within distance / triangle caps",
+      "source": "Native CC0 wood and leaves retained, with authored supplementary distant branch patches",
+      "status": "ready",
+      "thresholds": {
+        "midCapacity": 180,
+        "midDistance": 210,
+        "nearCapacity": 24,
+        "nearDistance": 35,
+        "triangleBudget": 3600000,
+        "viewAware": true
+      },
+      "triangles": 916645,
+      "viewAware": true
+    },
+    "shrubs": {
+      "byVariant": [
+        {
+          "distant": 0,
+          "far": 303,
+          "mid": 30,
+          "near": 0
+        },
+        {
+          "distant": 0,
+          "far": 276,
+          "mid": 45,
+          "near": 0
+        },
+        {
+          "distant": 0,
+          "far": 246,
+          "mid": 105,
+          "near": 0
+        }
+      ],
+      "culled": 9829,
+      "draws": 6,
+      "exclusiveLod": true,
+      "instances": {
+        "distant": 0,
+        "far": 825,
+        "mid": 180,
+        "near": 0
+      },
+      "levelTriangles": {
+        "far": [
+          160,
+          160,
+          160
+        ],
+        "mid": [
+          420,
+          416,
+          434
+        ],
+        "near": [
+          2299,
+          2297,
+          2293
+        ]
+      },
+      "nearTriangles": 0,
+      "originalPlacements": 10834,
+      "oversized": {
+        "distant": 0,
+        "far": 0,
+        "mid": 0
+      },
+      "placements": 10834,
+      "rendered": 1005,
+      "selection": "actual transformed crown angular span within distance / triangle caps",
+      "source": "CC0 all-angle branch/needle/leaf models in every ready band",
+      "status": "ready",
+      "thresholds": {
+        "midCapacity": 180,
+        "midDistance": 210,
+        "nearCapacity": 48,
+        "nearDistance": 26,
+        "triangleBudget": 1350000,
+        "viewAware": true
+      },
+      "triangles": 208890,
+      "viewAware": true
+    },
+    "source": "Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified; authored distance-faded branch atlas supplements distant pine crowns",
+    "status": "ready"
+  },
+  "name": "reef",
+  "scope": "Separate fully initialized terrain instances, aligned actual camera and FFT time; current-pose render counters before restoration; static terrain/foliage comparison only, no identical fish/solver histories or movement/Human proof",
+  "state": {
+    "action": "dive",
+    "camera": [
+      -145,
+      -5,
+      -113,
+      0.33223794502093057,
+      0.232404528374112,
+      -0.0848342751841767,
+      0.91016989009385
+    ],
+    "disposed": false,
+    "eyeY": -5,
+    "height": 720,
+    "hidden": false,
+    "locked": true,
+    "oxygen": 1,
+    "paused": true,
+    "pose": {
+      "depth": 5,
+      "mode": "dive",
+      "pitch": 0.7,
+      "x": -145,
+      "yaw": -0.5,
+      "z": -113
+    },
+    "preset": "day",
+    "quality": "high",
+    "stamina": 1,
+    "swell": 1,
+    "width": 1280,
+    "wind": 8.5
+  },
+  "time": 34.016666666666666,
+  "topography": {
+    "canopyContinuity": true,
+    "coherentRock": true,
+    "connectedForm": false,
+    "dryToe": true
+  },
+  "triangles": 12797848
+}
