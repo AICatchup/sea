@@ -119,6 +119,7 @@ try {
   };
   type SavedCapture=CaptureState&{wind:number;swell:number;eyeY:number;oxygen:number;stamina:number;action:typeof ocean.adventure.state.avatarAction};
   const captureHost:SceneCaptureHost={
+    readDiagnostics:()=>{const d=ocean.diagnostics;return JSON.parse(JSON.stringify({time:d.time,frames:d.frames,draws:d.draws,triangles:d.triangles,foliage:d.foliage,worldSolids:d.worldSolids}));},
     ready:ocean.ready,
     readState(){
       const d=ocean.diagnostics,s=ocean.adventure.state;

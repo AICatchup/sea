@@ -25,6 +25,12 @@ test('two frames precede capture; metadata contains actual dimensions and origin
   assert.equal(result.metadata.width, 1280); assert.equal(result.metadata.movementVerified, false);
   assert.deepEqual(f.host.readState(), f.original);
 });
+test('render diagnostics are sampled at the photographed pose before the player state is restored',async()=>{
+ const f=fake();f.host.readDiagnostics=()=>({pose:structuredClone(f.host.readState().pose),locked:f.host.readState().locked});
+ const result=await captureNamed(f.host,CAPTURE_PROFILES[3],options);
+ assert.deepEqual((result.metadata.runtime as {pose:unknown}).pose,{...CAPTURE_PROFILES[3].pose,depth:undefined});
+ assert.equal((result.metadata.runtime as {locked:boolean}).locked,true);assert.deepEqual(f.host.readState(),f.original);
+});
 
 test('reference eye height reaches the host while exact previous capture state restores',async()=>{
   const f=fake();let received:number|undefined;

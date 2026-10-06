@@ -4,6 +4,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { cylinderBetween, ModelResources, randomSeed, surfaceTexture } from './models/procedural.ts';
 import { coarseFoliage, preserveLeafCoverage } from './foliage-coarse.ts';
 import { leafColourMips } from './foliage-texture.ts';
+import {branchCanopyLevels} from './branch-foliage.ts';
 
 const sourceAssets = [
   { kind: 'pine', id: 'island_tree_01', prefix: 'canopy0', variant: 0, count: 1, url: new URL('../assets/foliage/cc0/canopy/canopy0-lod-1k.glb', import.meta.url).href },
@@ -23,6 +24,7 @@ export interface FoliageLevels { near: FoliageVariant[]; mid: FoliageVariant[]; 
 export interface LeafVolumeRefinement { pineTriangles?: number; shrubTriangles?: number; alphaAware?: boolean; preserveMidCoverage?: boolean; }
 const originalCanopyURL=new URL('../assets/foliage/cc0/original-lod/original-canopy-lod-1k.glb',import.meta.url).href;
 const originalAlphaURL=new URL('../assets/foliage/cc0/original-lod/original-lod-leaf-alpha-1k.png',import.meta.url).href;
+const branchAtlasURL=new URL('../assets/foliage/tomari-black-pine-v1.png',import.meta.url).href;
 
 /** All ready distance bands use the same original CC0 branch/needle/leaf topology. */
 export class CoastalFoliage {
@@ -57,8 +59,43 @@ export class CoastalFoliage {
   private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }
 
   /** AssetWorld alone owns and loads the original photographic maps and 3D LODs. */
-  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement: boolean | LeafVolumeRefinement=false,originalCanopy=false): Promise<void> {
+  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement: boolean | LeafVolumeRefinement=false,originalCanopy=false,branchCanopy=false): Promise<void> {
     if (typeof document === 'undefined') return;
+    let branchMaterial:THREE.MeshStandardMaterial|undefined;
+    if(branchCanopy){
+      const atlas=await new THREE.TextureLoader().loadAsync(branchAtlasURL);
+      if(this.disposed){atlas.dispose();return;}
+      this.resources.texture(atlas);
+      const image=atlas.image as HTMLImageElement,canvas=document.createElement('canvas');canvas.width=image.width;canvas.height=image.height;
+      const context=canvas.getContext('2d',{willReadFrequently:true});if(!context)throw new Error('Branch atlas canvas unavailable');
+      context.drawImage(image,0,0);const pixels=context.getImageData(0,0,image.width,image.height).data,alpha=new Uint8Array(pixels.length);
+      for(let i=0;i<pixels.length;i+=4)alpha[i+1]=pixels[i+3];
+      const mips=leafColourMips(pixels,alpha,image.width,image.height,true),map=this.resources.texture(new THREE.DataTexture(mips[0].data,image.width,image.height));
+      map.flipY=true;map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=8;map.mipmaps=mips;map.generateMipmaps=false;map.minFilter=THREE.LinearMipmapLinearFilter;map.magFilter=THREE.LinearFilter;map.needsUpdate=true;
+      branchMaterial=this.resources.material(new THREE.MeshStandardMaterial({map,roughness:.92,metalness:0,side:THREE.DoubleSide,shadowSide:THREE.DoubleSide,alphaTest:.28,alphaToCoverage:true,vertexColors:true,dithering:true}));
+      branchMaterial.name='Authored coastal branch clusters';branchMaterial.userData={foliageRole:'leaves',branchClusters:true,source:'Project authored transparent black-pine / evergreen atlas; not a surveyed species or tree photograph',license:'Generated for this project'};
+      branchMaterial.onBeforeCompile=shader=>{
+        shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying float vBranchCameraDistance;');
+        shader.vertexShader=shader.vertexShader.replace('#include <project_vertex>',`#include <project_vertex>
+          vBranchCameraDistance=length(mvPosition.xyz);`);
+        shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying float vBranchCameraDistance;');
+        shader.fragmentShader=shader.fragmentShader.replace('#include <alphatest_fragment>',`
+          diffuseColor.a*=smoothstep(45.0,72.0,vBranchCameraDistance);
+          #include <alphatest_fragment>`);
+        shader.fragmentShader=shader.fragmentShader.replace('#include <shadowmap_pars_fragment>','#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>');
+        shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_end>',`
+          #if NUM_DIR_LIGHTS > 0
+            float branchBacklight=pow(clamp(.5-.5*dot(geometryNormal,directionalLights[0].direction),0.0,1.0),1.5);
+            reflectedLight.directDiffuse+=diffuseColor.rgb*directionalLights[0].color*branchBacklight*.14*(.3+.7*getShadowMask());
+          #endif
+          #ifdef USE_ENVMAP
+            vec3 branchSkyNormal=normalize(mat3(viewMatrix)*vec3(0.0,1.0,0.0));
+            reflectedLight.indirectDiffuse+=diffuseColor.rgb*getIBLIrradiance(branchSkyNormal)*RECIPROCAL_PI*.25;
+          #endif
+          #include <lights_fragment_end>`);
+      };
+      branchMaterial.customProgramCacheKey=()=> 'coastal-branch-thinleaf-v2-distance';
+    }
     const distantVariants:FoliageVariant[]=[];
     const refinementTargets=typeof leafVolumeRefinement==='object'?leafVolumeRefinement:{};
     const pineTriangles=refinementTargets.pineTriangles??720,shrubTriangles=refinementTargets.shrubTriangles??(fullerUnderstory?160:96);
@@ -167,6 +204,10 @@ export class CoastalFoliage {
       if(source.kind==='pine' && leafVolumeRefinement&&!restored) {
         // Keep the native far woody hierarchy; replace only leaves with intact near-source leaves.
         variants.far=await Promise.all(variants.near.map((variant,index)=>coarseFoliage({parts:variant.parts.map(part=>part.material.userData.foliageRole==='leaves'?part:variants.far[index].parts.find(p=>p.material.userData.foliageRole===part.material.userData.foliageRole)??part),triangles:variant.triangles},this.resources,'pine',()=>this.disposed,96,true,pineTriangles,refinementTargets.alphaAware??false)));
+      }
+      if(branchMaterial&&source.kind==='pine')for(let i=0;i<variants.near.length;i++){
+        const branchLevels=branchCanopyLevels(variants.near[i],{near:variants.near[i],mid:variants.mid[i],far:variants.far[i]},branchMaterial,this.resources,source.kind,817+source.variant*127+i*37);
+        (['near','mid','far'] as const).forEach((level,index)=>{variants[level][i]=branchLevels[index];});
       }
       for (const level of ['near', 'mid', 'far'] as const) variants[level].forEach((variant, index) => { levels[level][source.variant + index] = variant; });
       if(source.kind==='pine'&&originalCanopy)distantVariants[source.variant]=restored?variants.distant[0]:variants.far[0];

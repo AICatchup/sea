@@ -92,7 +92,9 @@ export class FoliageLodField {
       variants.forEach((variant, index) => variant.parts.forEach((part, partIndex) => {
         const mesh = makeInstances(part.geometry, part.material, capacity, `${this.name} ${level} ${index} part ${partIndex}`);
         mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.count = 0;
-        mesh.castShadow = level === 'near'||(this.settings.viewAware===true&&level==='mid'); mesh.receiveShadow = true;
+        // Native wood and leaves own the shadow. The supplementary far crown fades
+        // with eye distance and must not cast an invisible near-camera silhouette.
+        mesh.castShadow = part.material.userData.branchClusters!==true&&(level === 'near'||(this.settings.viewAware===true&&level==='mid')); mesh.receiveShadow = true;
         mesh.userData.foliageLod = level; mesh.userData.source = part.material.userData.source ?? 'Authored distant volume proxy';
         this.group.add(mesh); this.batches[level].push({ mesh, variant: index, triangles: (part.geometry.index?.count ?? part.geometry.getAttribute('position').count) / 3 });
       }));
@@ -165,7 +167,7 @@ export class FoliageLodField {
     }
     this.group.userData[this.name] = { status: 'ready', placements: this.plants.length, originalPlacements: this.fixedCount,
       rendered,culled:this.plants.length-rendered,viewAware,instances: counts,byVariant,oversized,levelTriangles:{near:this.levels.near.map(v=>v.triangles),mid:this.levels.mid.map(v=>v.triangles),far:this.levels.far.map(v=>v.triangles),distant:this.levels.distant?.map(v=>v.triangles)},thresholds: this.settings, draws, triangles,nearTriangles: selectedNear.reduce((sum, entry) => sum + this.levels.near[entry.plant.variant].triangles, 0),
-      exclusiveLod: true, selection: 'actual transformed crown angular span within distance / triangle caps', source: 'CC0 all-angle branch/needle/leaf models in every ready band' };
+      exclusiveLod: true, selection: 'actual transformed crown angular span within distance / triangle caps', source: this.levels.far.some(v=>v.parts.some(p=>p.material.userData.branchClusters===true))?'Native CC0 wood and leaves retained, with authored supplementary distant branch patches':'CC0 all-angle branch/needle/leaf models in every ready band' };
   }
 
   private releaseBatches(): void {

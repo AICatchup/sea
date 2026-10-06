@@ -8,7 +8,7 @@ import { FoliageLodField } from './foliage-lod.ts';
 import type { TrunkProxy } from './foliage-lod.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
-export interface AssetWorldOptions { canopyContinuity?: boolean; crownSupport?: boolean; originalCanopy?:boolean; leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
+export interface AssetWorldOptions { canopyContinuity?: boolean; crownSupport?: boolean; originalCanopy?:boolean; branchCanopy?:boolean; leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
 interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; variant?: number; }
@@ -54,12 +54,14 @@ export class AssetWorld {
     this.populateStrand();
     this.preparePlacementBatches();
     this.group.userData.foliage = { status: typeof document === 'undefined' ? 'cpu-proxies' : 'loading', source: 'Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified', photoPass: false };
-    this.ready = this.foliage.loadDetailed(this.options.canopyContinuity===true,this.options.leafVolumeRefinement??false,this.options.originalCanopy??false).then(() => {
+    this.ready = this.foliage.loadDetailed(this.options.canopyContinuity===true,this.options.leafVolumeRefinement??false,this.options.originalCanopy??false,this.options.branchCanopy??false).then(() => {
       if (this.disposed || typeof document === 'undefined') return;
       if (this.options.crownSupport) this.rebuildCrownSupport();
       else { this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels); }
       this.pineField.update(this.foliagePosition, true); this.shrubField.update(this.foliagePosition, true);
       this.group.userData.foliage.status = 'ready';
+      this.group.userData.foliage.branchClusters=this.options.branchCanopy===true;
+      if(this.options.branchCanopy)this.group.userData.foliage.source+='; authored distance-faded branch atlas supplements distant pine crowns';
     }).catch((error: unknown) => { if (!this.disposed) this.group.userData.foliage.status = `proxy fallback: ${error instanceof Error ? error.message : String(error)}`; });
   }
 
