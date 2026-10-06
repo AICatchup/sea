@@ -1,0 +1,317 @@
+{
+  "sourceRevision": "db7195e59e7e6cc4ff8d889466d66e5b421e83a3",
+  "baselineRevision": "07f93afd38d7ff5f30fbfb2a3f202e2c8683c047",
+  "tests": {
+    "passed": 302,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "browserErrors": [],
+  "comparisons": [
+    {
+      "view": "spawn",
+      "pineTrianglesBefore": 1949202,
+      "pineTrianglesAfter": 2209098,
+      "nearPinesUnchanged": true,
+      "shrubsUnchanged": true,
+      "collisionCountsUnchanged": true
+    },
+    {
+      "view": "cliff",
+      "pineTrianglesBefore": 1730242,
+      "pineTrianglesAfter": 2009626,
+      "nearPinesUnchanged": true,
+      "shrubsUnchanged": true,
+      "collisionCountsUnchanged": true
+    },
+    {
+      "view": "shore",
+      "pineTrianglesBefore": 1327204,
+      "pineTrianglesAfter": 1560052,
+      "nearPinesUnchanged": true,
+      "shrubsUnchanged": true,
+      "collisionCountsUnchanged": true
+    },
+    {
+      "view": "lookout",
+      "pineTrianglesBefore": 2042214,
+      "pineTrianglesAfter": 2315214,
+      "nearPinesUnchanged": true,
+      "shrubsUnchanged": true,
+      "collisionCountsUnchanged": true
+    },
+    {
+      "view": "rear",
+      "pineTrianglesBefore": 2913954,
+      "pineTrianglesAfter": 3347562,
+      "nearPinesUnchanged": true,
+      "shrubsUnchanged": true,
+      "collisionCountsUnchanged": true
+    }
+  ],
+  "captureScope": "Same camera and frozen day/high/1280x720. Water histories differ. No water improvement claim. Compared geometry/light preceded equivalent default adoption and diagnostic source-label change.",
+  "review": {
+    "initial": "NEEDSFIX: close foliage overdraw and flat patches",
+    "revised": "ADOPT AS LIMITED IMPROVEMENT",
+    "scope": "One independent read-only review with focused correction verification; no Human final approval"
+  },
+  "runtimeScope": "20s continuous controller-input walk, no position writes, paused waves. RAF includes recording overhead; not an isolated GPU benchmark.",
+  "timing": {
+    "samples": 1260,
+    "medianMs": 16.699999999953434,
+    "p95Ms": 16.79999999998836,
+    "maximumMs": 16.900000000023283,
+    "over33_4ms": 0
+  },
+  "video": {
+    "file": "canopy-walk-qa.mp4",
+    "localReleaseOnly": true,
+    "sha256": "8e905f99f0df4b7d91bb7a1edafffea4020103cca7da98121a6cf90a113e64f7",
+    "bytes": 13617892,
+    "duration": 21,
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "frames": 630,
+    "browserPlayback": "Observed end frame 0:21/0:21 after replay",
+    "purpose": "QA walking evidence, NOT the final showcase"
+  },
+  "fullPhotoGoal": "UNMET",
+  "finalShowcase": "NOT STARTED",
+  "standaloneBrowserStartup": "UNVERIFIED",
+  "files": [
+    {
+      "file": "baseline-spawn.png",
+      "bytes": 1389900,
+      "sha256": "90d702ffa223db46c0837549593d4b0b76b16ca7645587d6b55fba12d9a5c49f",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "baseline-spawn.json",
+      "bytes": 4342,
+      "sha256": "b19a35aee5728137965e77feefcaeac1e011997650b4a325f7030daaf9dd45ce"
+    },
+    {
+      "file": "baseline-cliff.png",
+      "bytes": 1637048,
+      "sha256": "a46e7c9a2f1976fc191f524395352b8bf8fbb70a33ba5b370c3d91e0fdbc29cb",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "baseline-cliff.json",
+      "bytes": 4334,
+      "sha256": "91db89a16cd2243fc9b9316a4214185f4082c0d8f043b7b713622444212461e7"
+    },
+    {
+      "file": "baseline-shore.png",
+      "bytes": 1470025,
+      "sha256": "ba78b08940156c3bc3bd3ce46a10f53fb39702db04cafcf39d263f8137f27ad4",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "baseline-shore.json",
+      "bytes": 4331,
+      "sha256": "24c53c34faaaeac88ee7be161322ee0136d2f75658149acc2ac3b66330e1bcc2"
+    },
+    {
+      "file": "baseline-lookout.png",
+      "bytes": 1409379,
+      "sha256": "7c3108c8027ae596348e49bb392f17aac34785fa311cf9416f1665844d8cb24b",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "baseline-lookout.json",
+      "bytes": 4344,
+      "sha256": "d09239b83d699f1759bb837eb09f758e4baf95c31e6e63045c9e020a491cf78e"
+    },
+    {
+      "file": "baseline-rear.png",
+      "bytes": 1889718,
+      "sha256": "4beb1ce4720ff0cd83fa4fdc277e65cb7c5cf5d72f7c7a549be3b39962a7cff3",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "baseline-rear.json",
+      "bytes": 4403,
+      "sha256": "6713c869eecc8091711dcdc7df7fc9c5663f64091d7d965f20cf9db1e5e1b87c"
+    },
+    {
+      "file": "revised-spawn.png",
+      "bytes": 1399792,
+      "sha256": "58917800b246222a3170c376d51865a081c26c86ed329a99841e1d328b68b435",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "revised-spawn.json",
+      "bytes": 4343,
+      "sha256": "5762b2b4e2bfa71e064d2fcdd3bb4be3c849d45eb4c3e2e95480500a6c34b8c5"
+    },
+    {
+      "file": "revised-cliff.png",
+      "bytes": 1636309,
+      "sha256": "e03293036b466b59361ad8e16901494a029f6e9677f29de984382ad5d72f3c45",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "revised-cliff.json",
+      "bytes": 4338,
+      "sha256": "b9b0222fecbc440a21fb91b0c191fdf6ae076bd6eedb9c6c47e37f8127fc3458"
+    },
+    {
+      "file": "revised-shore.png",
+      "bytes": 1478863,
+      "sha256": "cc9be12299efce8cf0690ae896a9e071d3995bd05b07267550b4944285a6debb",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "revised-shore.json",
+      "bytes": 4334,
+      "sha256": "3664325fd42cce48187fe1c1815f1ea31f63c40fc7dd5cbd0f8ce8d1ec6e37c8"
+    },
+    {
+      "file": "revised-lookout.png",
+      "bytes": 1426944,
+      "sha256": "6c43cf46600c6cf2a2dee02bf9ee599f839db319a678affe7689ad833f3cc636",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "revised-lookout.json",
+      "bytes": 4346,
+      "sha256": "e1249556adefe9d958d7fe40fc6e8bc7d4b3eb58741c4b0a75c26abc4f1fb9af"
+    },
+    {
+      "file": "revised-rear.png",
+      "bytes": 1894209,
+      "sha256": "903f143589e2cae7590f34980e32c0b2fdcc0d37cf2dd260c449529eb5acb3a1",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "revised-rear.json",
+      "bytes": 4407,
+      "sha256": "a8e82c97567fe19e8b891122c3a5485e209109e35f8d4a3acf1cff10ee933fe6"
+    },
+    {
+      "file": "default-spawn.png",
+      "bytes": 1401578,
+      "sha256": "cd3e0e72b5b0895e0d4a3a4cd59b5f3a7e94c4b1c93ccbc98abaf3e4658339f3",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "default-spawn.json",
+      "bytes": 4442,
+      "sha256": "2d604b203d74ab849a02de8c5e9e73acd14e15915f806d2f8b928d70af14de37"
+    },
+    {
+      "file": "normal-reef.png",
+      "bytes": 1306307,
+      "sha256": "e11d80f86bcf2c64ab9c21b5e049cfba4a0e0c8b944587ec4f4b1dde273bd3db",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-reef.json",
+      "bytes": 4406,
+      "sha256": "5ed740d480d328aeb46abe647c5403466f0d4bc1aa5fe398175f2d7dc0590a05"
+    },
+    {
+      "file": "normal-habushi-front.png",
+      "bytes": 830051,
+      "sha256": "28d1a22a9fd34edbf62308b466c3efd49a414ec4a7e001c06e8ffff103ec1e8c",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-habushi-front.json",
+      "bytes": 4419,
+      "sha256": "0c4f92397b44dfabcbb8d27640084eb461707b4803477431f2a8c475ee5e0707"
+    },
+    {
+      "file": "normal-secret.png",
+      "bytes": 1245980,
+      "sha256": "474bafba86bb7655a879002f7215f6c55cc3aa46fb57770ab6b5a64e120a90f1",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-secret.json",
+      "bytes": 4509,
+      "sha256": "44c591c54a1b64583c426b6eeea26314ec3eb80d6249cd2a7a8c795f6bca8e82"
+    },
+    {
+      "file": "walk.json",
+      "bytes": 47734,
+      "sha256": "578fe2b36fa1530f899cbf8a7de90ac4adb5c6f85f814fcb7d8b79a89b4624fc"
+    },
+    {
+      "file": "browser-errors.json",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "file": "playback-ended.png",
+      "bytes": 88944,
+      "sha256": "194586c2b0d590d6b66f65718237ba123a709c4526ff8f2df2c8c92d90158cdf",
+      "width": 1280,
+      "height": 719,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "walk-01.png",
+      "bytes": 657175,
+      "sha256": "3d375653e7b4ef6d31fdd9e722eeca0d4f24aa161ab9646e20c46cff705e5df1",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "walk-02.png",
+      "bytes": 645612,
+      "sha256": "a889e1849adac579678e1eb7024694dde89f1760aa73eb521e83ae179cf45071",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "walk-03.png",
+      "bytes": 666379,
+      "sha256": "55746acb34f80aed7e774b4b6c41fa9c9abafbd74daa962d9f4834e41c1a0801",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "walk-04.png",
+      "bytes": 655437,
+      "sha256": "99045054fa5d55091b9678005978a4124cd1c1a9dc81278d838c42a643c4e4c7",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    }
+  ]
+}
