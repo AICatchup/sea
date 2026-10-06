@@ -1,0 +1,175 @@
+{
+  "done": true,
+  "rows": [
+    {
+      "cache": {
+        "failed": false,
+        "interval": 0.2,
+        "readbackBytes": 1024,
+        "ready": true,
+        "requestCapacity": 128,
+        "requestedPoints": 12,
+        "samples": 256
+      },
+      "camera": {
+        "height": 2.6657931124258365,
+        "pitch": -0.04,
+        "x": 5925.827749143411,
+        "yaw": 1.5707963267948966,
+        "z": -4503.84021999997
+      },
+      "name": "habushi",
+      "solver": {
+        "bounds": {
+          "w": 192,
+          "x": 5829,
+          "y": -4600.5,
+          "z": 192
+        },
+        "droppedSeconds": 0.001077054565494423,
+        "order": 2,
+        "precision": "float32",
+        "ready": 1,
+        "simulationElapsed": 1340.4613229460454,
+        "stableDelta": 0.0061153681793131975,
+        "substeps": 3
+      }
+    },
+    {
+      "cache": {
+        "failed": false,
+        "interval": 0.2,
+        "readbackBytes": 1024,
+        "ready": true,
+        "requestCapacity": 128,
+        "requestedPoints": 12,
+        "samples": 256
+      },
+      "camera": {
+        "height": 3.119820126211253,
+        "pitch": -0.04,
+        "x": -36,
+        "yaw": -0.6,
+        "z": 27
+      },
+      "name": "tomari",
+      "solver": {
+        "bounds": {
+          "w": 192,
+          "x": 5829,
+          "y": -4600.5,
+          "z": 192
+        },
+        "droppedSeconds": 0.001077054565494423,
+        "order": 2,
+        "precision": "float32",
+        "ready": 0,
+        "simulationElapsed": 1340.4613229460454,
+        "stableDelta": 0.0061153681793131975,
+        "substeps": 3
+      }
+    },
+    {
+      "cache": {
+        "failed": false,
+        "interval": 0.2,
+        "readbackBytes": 1024,
+        "ready": true,
+        "requestCapacity": 128,
+        "requestedPoints": 13,
+        "samples": 256
+      },
+      "camera": {
+        "height": 2.107078066180053,
+        "pitch": -0.04,
+        "x": 5898,
+        "yaw": 3.141592653589793,
+        "z": -923.918
+      },
+      "name": "secret",
+      "solver": {
+        "bounds": {
+          "w": 192,
+          "x": 5802,
+          "y": -1020,
+          "z": 192
+        },
+        "droppedSeconds": 0.002154109130988846,
+        "order": 2,
+        "precision": "float32",
+        "ready": 1,
+        "simulationElapsed": 1340.65024589148,
+        "stableDelta": 0.0061153681793131975,
+        "substeps": 3
+      }
+    },
+    {
+      "cache": {
+        "failed": false,
+        "interval": 0.2,
+        "readbackBytes": 1024,
+        "ready": true,
+        "requestCapacity": 128,
+        "requestedPoints": 13,
+        "samples": 256
+      },
+      "camera": {
+        "height": -0.4896850890867093,
+        "pitch": -0.04,
+        "x": 10000,
+        "yaw": 0,
+        "z": -5000
+      },
+      "name": "open-sea",
+      "solver": {
+        "bounds": {
+          "w": 192,
+          "x": 5802,
+          "y": -1020,
+          "z": 192
+        },
+        "droppedSeconds": 0.002154109130988846,
+        "order": 2,
+        "precision": "float32",
+        "ready": 0,
+        "simulationElapsed": 1340.65024589148,
+        "stableDelta": 0.0061153681793131975,
+        "substeps": 3
+      }
+    },
+    {
+      "cache": {
+        "failed": false,
+        "interval": 0.2,
+        "readbackBytes": 1024,
+        "ready": true,
+        "requestCapacity": 128,
+        "requestedPoints": 12,
+        "samples": 256
+      },
+      "camera": {
+        "height": 3.119820126211253,
+        "pitch": -0.04,
+        "x": -36,
+        "yaw": -0.6,
+        "z": 27
+      },
+      "name": "tomari-return",
+      "solver": {
+        "bounds": {
+          "w": 192,
+          "x": 5802,
+          "y": -1020,
+          "z": 192
+        },
+        "droppedSeconds": 0.002154109130988846,
+        "order": 2,
+        "precision": "float32",
+        "ready": 0,
+        "simulationElapsed": 1340.65024589148,
+        "stableDelta": 0.0061153681793131975,
+        "substeps": 3
+      }
+    }
+  ]
+}

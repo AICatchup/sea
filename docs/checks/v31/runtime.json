@@ -1,0 +1,218 @@
+{
+  "sourceRevision": "d3d3bed02233b2027a2c64e3d9f29045d7e0c4e3",
+  "waveRevision": "d6bd1c2f4f02a32ffd59f80f4ef54199c084b3f4",
+  "baselineRevision": "be514ddc57712445204e1623205c46c51a34cf28",
+  "tests": {
+    "passed": 315,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "defaultFeatureOptions": {
+    "surf": true,
+    "order": 2,
+    "precision": "float32",
+    "foamFilm": true,
+    "volumeWhitewater": false,
+    "rollingBreaker": false,
+    "photoCoast": false
+  },
+  "gpuTransport": {
+    "cases": 6,
+    "errors": 0,
+    "nonfinite": 0,
+    "scope": "Periodic flat bed with friction, foam and forcing removed; same transport shader. Mass field is sum of depth, not kilograms."
+  },
+  "motion": {
+    "seconds": 30,
+    "modes": [
+      "dive",
+      "swim",
+      "walk"
+    ],
+    "medianFrameMs": 17.60000000000582,
+    "p95FrameMs": 18.10000000000582,
+    "discardedInitialFrames": 180,
+    "initialPose": "QA shore start; subsequent movement used actual touch controller",
+    "nonfinite": 0,
+    "droppedSimulationSeconds": 0
+  },
+  "lifecycle": {
+    "readySequence": [
+      1,
+      0,
+      1,
+      0,
+      0
+    ],
+    "scope": "QA position sequence validates domain state only; not a traveled route"
+  },
+  "reviews": {
+    "numerical": "No clear RK2/flux/alias blocker; requested actual GPU precision comparison, now completed",
+    "foam": "Limited visual improvement; remaining white-film/pattern appearance noted. Root subsequently varied pore sizes and spacing and checked actual recorded frames."
+  },
+  "qaVideo": {
+    "durationSeconds": 7.944,
+    "frames": 239,
+    "size": [
+      1280,
+      720
+    ],
+    "audio": false,
+    "scope": "Actual fixed-eye canvas after warmup; material verification, not final showcase"
+  },
+  "fullPhotoGoal": "UNMET",
+  "finalShowcaseVideo": "PENDING AFTER COMPLETION",
+  "files": [
+    {
+      "path": "browser-log-final.json",
+      "bytes": 263,
+      "sha256": "9d5dda22379d1963c078eb84a65bb2614e904135ad8bbb5923822aaff892f1e1"
+    },
+    {
+      "path": "default-habushi.json",
+      "bytes": 2901,
+      "sha256": "c975e0eee168ed55ba1677eb8f60f0b10af99b9fbadca49c57667f2bf58a77be"
+    },
+    {
+      "path": "default-habushi.png",
+      "bytes": 1231241,
+      "sha256": "67d85713ae46e466d56730341e73533e987cfbe8cdeaec71c779447fc3e71c1b"
+    },
+    {
+      "path": "default-reef.json",
+      "bytes": 4403,
+      "sha256": "056100d3d2de992a3d3c3d7649e6a11e1b17f47020769cb4106d80efcc8f48a1"
+    },
+    {
+      "path": "default-reef.png",
+      "bytes": 1306400,
+      "sha256": "1603ede89de2d40e61f9541fe44e0fea3b5a899145650c8531a815a2893a8bf1"
+    },
+    {
+      "path": "default-secret.json",
+      "bytes": 2856,
+      "sha256": "0f5a765879f45c2675cfdf02914bf2d12b8a6d9408415a6fd127916e2f70771c"
+    },
+    {
+      "path": "default-secret.png",
+      "bytes": 1228811,
+      "sha256": "3101f44ab10d9cd8c143edc4935c2ca103d909e53e175294b8a46489e2a91a00"
+    },
+    {
+      "path": "default-shore.json",
+      "bytes": 4431,
+      "sha256": "81853e6743082abbb984d97c244b35e9705d4307ee46aaa64b476e8f1ce30c5b"
+    },
+    {
+      "path": "default-shore.png",
+      "bytes": 1478958,
+      "sha256": "611e6655adb15ae42235c996bc9bfe385cc10588fbf5892447d7c73cd0174950"
+    },
+    {
+      "path": "default-spawn.json",
+      "bytes": 4440,
+      "sha256": "7cedae6adcca974bd53bf03886b4629c11d07cedc3220c27b83e52e60b686805"
+    },
+    {
+      "path": "default-spawn.png",
+      "bytes": 1399656,
+      "sha256": "e0f75caee1f1f62bce6d431646cac188816fe4fd2caa87a290d75c1645d4af23"
+    },
+    {
+      "path": "domain-lifecycle.json",
+      "bytes": 3970,
+      "sha256": "c23891c01ff7f63a67545bca5683363a0ca65d24f294bbf082b1dedcdce681fb"
+    },
+    {
+      "path": "film-before.png",
+      "bytes": 1016295,
+      "sha256": "cd5a24a00eb60cecdc37f8bf9a61ae1c1949e9fa3c8d0d8976158e2f30bee1c1"
+    },
+    {
+      "path": "film-candidate.png",
+      "bytes": 1254998,
+      "sha256": "d412f68bedc5ba350977124060dc13a93cbcb1d7863f9fed2beee2c019698b0c"
+    },
+    {
+      "path": "film-comparison.json",
+      "bytes": 2402,
+      "sha256": "155205d60f06685f2e6df3a38a1f7ad5d14972ddf62b9a2f9dfa4254cf0c4788"
+    },
+    {
+      "path": "final-video-ended.jpg",
+      "bytes": 66084,
+      "sha256": "4b898cb97ca5d8e0411782aa8b8976fe35ae6c1da5359d8e48fc05b402e8f4c7"
+    },
+    {
+      "path": "foam-all.png",
+      "bytes": 1048249,
+      "sha256": "bd63d326a6fdf953ca74897b15a59c68af5270f489e69505e898141522fa9ce7"
+    },
+    {
+      "path": "foam-final-qa.json",
+      "bytes": 2556,
+      "sha256": "33a09fbbf11c8982918001fbe170bdc343160ee00ce731b6b28579e055d4f0c2"
+    },
+    {
+      "path": "foam-final-qa.mp4",
+      "bytes": 2951333,
+      "sha256": "a81de2772f3b78498b9d497f98828190ed0cadec0c8dfba90092deb75dd041c9"
+    },
+    {
+      "path": "foam-no-foam.png",
+      "bytes": 1270378,
+      "sha256": "4724887c46d744c7727a7d1a1e25456afb01c269c5edddf68b0e011e66aafe14"
+    },
+    {
+      "path": "foam-no-pool.png",
+      "bytes": 1018892,
+      "sha256": "b94a3f0a542e168ef7cf8c9d18e2ab1c098a02554d2ae339d4fca984716e093c"
+    },
+    {
+      "path": "foam-varied-surface.png",
+      "bytes": 1198412,
+      "sha256": "94c9df495eaa7dd036e42cb6cfb0d6f2061cf2d22a37d2fb6ed4ca1f47804298"
+    },
+    {
+      "path": "foam-varied.json",
+      "bytes": 2387,
+      "sha256": "daaa951838c59b67aace4af915fb47b7cbe1cdf5a76ef642f3d285f23f189bdb"
+    },
+    {
+      "path": "habushi-fft.png",
+      "bytes": 1280605,
+      "sha256": "0b82a03761d741850ae2e021a30403de9ae9af11acf2b884c9695d03e7c41b05"
+    },
+    {
+      "path": "habushi-solver.png",
+      "bytes": 1199973,
+      "sha256": "75201c1266b84e985546cd6d61ea0ba4fac1d88924b3aa18324a111bc5f6bac4"
+    },
+    {
+      "path": "transport-gpu-complete.json",
+      "bytes": 5043,
+      "sha256": "0064e8a55a5286f28ad2359374ad36f00eed04e5db2008c39aea8dade0d11ba3"
+    },
+    {
+      "path": "video-readback.json",
+      "bytes": 245,
+      "sha256": "777ef3b4dac15f6181770de9c293f52f46fabb6d98d9e22e977bdb5bb8776f29"
+    },
+    {
+      "path": "walk-dive.png",
+      "bytes": 1171942,
+      "sha256": "55d50d34cfa8992adad17197f5edf086b27349faf4cb8d629fc61dfe7ab71abc"
+    },
+    {
+      "path": "walk-motion.json",
+      "bytes": 115950,
+      "sha256": "df2a83a7c61d62c3bdcbbcbddd76a7759e8bbfc87ff719036d99c7f7f32953aa"
+    },
+    {
+      "path": "walk-surface.png",
+      "bytes": 1014343,
+      "sha256": "364aeaf8762dfccff519f2d886c312280466cd27a4ce8c223fa73dd992403993"
+    }
+  ]
+}

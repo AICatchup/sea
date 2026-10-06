@@ -1,0 +1,180 @@
+{
+  "amplitude": 0.025,
+  "available": true,
+  "depth": 4,
+  "initialGlError": 0,
+  "periods": 4,
+  "results": [
+    {
+      "energyRetention": 0.05693037249642882,
+      "final": {
+        "energyAmplitude": 0.0014165259310662138,
+        "fluxAmplitude": 0.00005423647719721672,
+        "glError": 0,
+        "heightAmplitude": 0.002002535850192761,
+        "mass": 45564,
+        "nonfinite": 0
+      },
+      "initial": {
+        "energyAmplitude": 0.02488172602691245,
+        "fluxAmplitude": 0.024990547876111168,
+        "glError": 0,
+        "heightAmplitude": 0.024772426142961063,
+        "mass": 65516,
+        "nonfinite": 0
+      },
+      "m": 8,
+      "massChange": -19952,
+      "n": 0,
+      "order": 1,
+      "precision": "half",
+      "seconds": 15.32522056353842,
+      "steps": 1254,
+      "wallMilliseconds": 243.70000000298023,
+      "wavelength": 24
+    },
+    {
+      "energyRetention": 0.00962184592190502,
+      "final": {
+        "energyAmplitude": 0.00024054607975340647,
+        "fluxAmplitude": 0.0002409768995525998,
+        "glError": 0,
+        "heightAmplitude": 0.00024011448696711457,
+        "mass": 65536.0234375,
+        "nonfinite": 0
+      },
+      "initial": {
+        "energyAmplitude": 0.02499999290217079,
+        "fluxAmplitude": 0.02499999957477985,
+        "glError": 0,
+        "heightAmplitude": 0.02499998622955996,
+        "mass": 65535.9990234375,
+        "nonfinite": 0
+      },
+      "m": 8,
+      "massChange": 0.0244140625,
+      "n": 0,
+      "order": 1,
+      "precision": "float",
+      "seconds": 15.32522056353842,
+      "steps": 1254,
+      "wallMilliseconds": 230.3999999910593,
+      "wavelength": 24
+    },
+    {
+      "energyRetention": 0.01642841591898684,
+      "final": {
+        "energyAmplitude": 0.0004087673439523977,
+        "fluxAmplitude": 0.0000015265500146915243,
+        "glError": 0,
+        "heightAmplitude": 0.0005780823060852566,
+        "mass": 28774,
+        "nonfinite": 0
+      },
+      "initial": {
+        "energyAmplitude": 0.02488172602691245,
+        "fluxAmplitude": 0.024990547876111168,
+        "glError": 0,
+        "heightAmplitude": 0.024772426142961063,
+        "mass": 65516,
+        "nonfinite": 0
+      },
+      "m": 8,
+      "massChange": -36742,
+      "n": 0,
+      "order": 2,
+      "precision": "half",
+      "seconds": 15.32522056353842,
+      "steps": 2507,
+      "wallMilliseconds": 478.29999999701977,
+      "wavelength": 24
+    },
+    {
+      "energyRetention": 0.5814122610939351,
+      "final": {
+        "energyAmplitude": 0.014535302400583448,
+        "fluxAmplitude": 0.014537288753217208,
+        "glError": 0,
+        "heightAmplitude": 0.014533315776463348,
+        "mass": 65536.0595703125,
+        "nonfinite": 0
+      },
+      "initial": {
+        "energyAmplitude": 0.02499999290217079,
+        "fluxAmplitude": 0.02499999957477985,
+        "glError": 0,
+        "heightAmplitude": 0.02499998622955996,
+        "mass": 65535.9990234375,
+        "nonfinite": 0
+      },
+      "m": 8,
+      "massChange": 0.060546875,
+      "n": 0,
+      "order": 2,
+      "precision": "float",
+      "seconds": 15.32522056353842,
+      "steps": 2507,
+      "wallMilliseconds": 455.5,
+      "wavelength": 24
+    },
+    {
+      "energyRetention": 0.0033221919398862217,
+      "final": {
+        "energyAmplitude": 0.0000822157310928081,
+        "fluxAmplitude": 0.000024126554282350777,
+        "glError": 0,
+        "heightAmplitude": 0.0001137398885910772,
+        "mass": 20467.25,
+        "nonfinite": 0
+      },
+      "initial": {
+        "energyAmplitude": 0.02474743560290012,
+        "fluxAmplitude": 0.02499271841025808,
+        "glError": 0,
+        "heightAmplitude": 0.024499697228841908,
+        "mass": 65513.5,
+        "nonfinite": 0
+      },
+      "m": 6,
+      "massChange": -45046.25,
+      "n": 6,
+      "order": 2,
+      "precision": "half",
+      "seconds": 14.448756511543388,
+      "steps": 2363,
+      "wallMilliseconds": 422.29999999701977,
+      "wavelength": 22.62741699796952
+    },
+    {
+      "energyRetention": 0.7622418221993287,
+      "final": {
+        "energyAmplitude": 0.019056044001462037,
+        "fluxAmplitude": 0.019056999259251996,
+        "glError": 0,
+        "heightAmplitude": 0.019055088695783696,
+        "mass": 65535.987243652344,
+        "nonfinite": 0
+      },
+      "initial": {
+        "energyAmplitude": 0.024999997961905086,
+        "fluxAmplitude": 0.02499999998014485,
+        "glError": 0,
+        "heightAmplitude": 0.024999995943665167,
+        "mass": 65535.99951171875,
+        "nonfinite": 0
+      },
+      "m": 6,
+      "massChange": -0.01226806640625,
+      "n": 6,
+      "order": 2,
+      "precision": "float",
+      "seconds": 14.448756511543388,
+      "steps": 2363,
+      "wallMilliseconds": 426.1000000089407,
+      "wavelength": 22.62741699796952
+    }
+  ],
+  "scope": "Actual transport shader on periodic flat bed; foam, friction and boundary forcing disabled; renderer wall time includes yields and is not normal-scene GPU timing",
+  "size": 128,
+  "span": 192
+}
