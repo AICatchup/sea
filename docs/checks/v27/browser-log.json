@@ -1,0 +1,8 @@
+[
+  {
+    "level": "warn",
+    "message": "THREE.WebGLProgram: Program Info Log: (296,1): warning X4000: use of potentially uninitialized variable (f_skyRadiance)",
+    "timestamp": "2026-10-06T14:54:12.894Z",
+    "url": "http://127.0.0.1:5198/@vite/client"
+  }
+]

@@ -1,0 +1,169 @@
+{
+  "done": true,
+  "samples": [
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06665638708197252,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 14.814579421596587,
+        "pitch": -0.04,
+        "x": 5846.194569999995,
+        "yaw": 1.5707963267948966,
+        "z": -4503.839979912886
+      },
+      "ground": {
+        "borrowedResources": 0,
+        "dimensionStatus": "photo-informed layout; absolute pavement dimensions unmeasured",
+        "disposed": false,
+        "drawCalls": 6,
+        "groundTop": 0.02,
+        "maxStep": 0.14,
+        "photographicPavement": true,
+        "sidewalkTop": 0.14,
+        "triangles": 2040
+      }
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06665638714579808,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 14.814579421596587,
+        "pitch": -0.04,
+        "x": 5855.5260592999775,
+        "yaw": 1.5707963267948966,
+        "z": -4503.839979912886
+      },
+      "ground": {
+        "borrowedResources": 0,
+        "dimensionStatus": "photo-informed layout; absolute pavement dimensions unmeasured",
+        "disposed": false,
+        "drawCalls": 6,
+        "groundTop": 0.02,
+        "maxStep": 0.14,
+        "photographicPavement": true,
+        "sidewalkTop": 0.14,
+        "triangles": 2040
+      }
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06665638714579808,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 14.794579162597657,
+        "pitch": -0.04,
+        "x": 5864.8501697899555,
+        "yaw": 1.5707963267948966,
+        "z": -4503.839979912886
+      },
+      "ground": {
+        "borrowedResources": 0,
+        "dimensionStatus": "photo-informed layout; absolute pavement dimensions unmeasured",
+        "disposed": false,
+        "drawCalls": 6,
+        "groundTop": 0.02,
+        "maxStep": 0.14,
+        "photographicPavement": true,
+        "sidewalkTop": 0.14,
+        "triangles": 2040
+      }
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0666563871457981,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 14.794579162597657,
+        "pitch": -0.04,
+        "x": 5874.197021429942,
+        "yaw": 1.5707963267948966,
+        "z": -4503.839979912886
+      },
+      "ground": {
+        "borrowedResources": 0,
+        "dimensionStatus": "photo-informed layout; absolute pavement dimensions unmeasured",
+        "disposed": false,
+        "drawCalls": 6,
+        "groundTop": 0.02,
+        "maxStep": 0.14,
+        "photographicPavement": true,
+        "sidewalkTop": 0.14,
+        "triangles": 2040
+      }
+    }
+  ]
+}

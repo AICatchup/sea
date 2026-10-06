@@ -1,0 +1,194 @@
+{
+  "camera": [
+    -42,
+    1.3518743337820132,
+    9,
+    -0.11505006784720222,
+    0.2743682744614488,
+    0.03308314468637099,
+    0.9541441386892556
+  ],
+  "evidence": "visual-only",
+  "height": 720,
+  "humanAccepted": false,
+  "locked": true,
+  "movementVerified": false,
+  "name": "shore",
+  "paused": true,
+  "pose": {
+    "depth": 0,
+    "mode": "walk",
+    "pitch": -0.24,
+    "x": -42,
+    "yaw": -0.56,
+    "z": 9
+  },
+  "preset": "day",
+  "provenance": "QA bookmark",
+  "quality": "high",
+  "runtime": {
+    "draws": 137,
+    "foliage": {
+      "branchClusters": true,
+      "photoPass": false,
+      "pines": {
+        "byVariant": [
+          {
+            "distant": 0,
+            "far": 192,
+            "mid": 80,
+            "near": 0
+          },
+          {
+            "distant": 0,
+            "far": 209,
+            "mid": 58,
+            "near": 0
+          },
+          {
+            "distant": 0,
+            "far": 265,
+            "mid": 42,
+            "near": 1
+          }
+        ],
+        "culled": 2251,
+        "draws": 27,
+        "exclusiveLod": true,
+        "instances": {
+          "distant": 0,
+          "far": 666,
+          "mid": 180,
+          "near": 1
+        },
+        "levelTriangles": {
+          "far": [
+            1083,
+            1083,
+            1073
+          ],
+          "mid": [
+            4567,
+            4534,
+            4559
+          ],
+          "near": [
+            21663,
+            21467,
+            21614
+          ]
+        },
+        "nearTriangles": 21614,
+        "originalPlacements": 3098,
+        "oversized": {
+          "distant": 0,
+          "far": 0,
+          "mid": 0
+        },
+        "placements": 3098,
+        "rendered": 847,
+        "selection": "actual transformed crown angular span within distance / triangle caps",
+        "source": "Native CC0 wood and leaves retained, with authored supplementary distant branch patches",
+        "status": "ready",
+        "thresholds": {
+          "midCapacity": 180,
+          "midDistance": 210,
+          "nearCapacity": 24,
+          "nearDistance": 35,
+          "triangleBudget": 3600000,
+          "viewAware": true
+        },
+        "triangles": 1560052,
+        "viewAware": true
+      },
+      "shrubs": {
+        "byVariant": [
+          {
+            "distant": 0,
+            "far": 1067,
+            "mid": 37,
+            "near": 0
+          },
+          {
+            "distant": 0,
+            "far": 1006,
+            "mid": 44,
+            "near": 0
+          },
+          {
+            "distant": 0,
+            "far": 1064,
+            "mid": 99,
+            "near": 2
+          }
+        ],
+        "culled": 7515,
+        "draws": 7,
+        "exclusiveLod": true,
+        "instances": {
+          "distant": 0,
+          "far": 3137,
+          "mid": 180,
+          "near": 2
+        },
+        "levelTriangles": {
+          "far": [
+            160,
+            160,
+            160
+          ],
+          "mid": [
+            420,
+            416,
+            434
+          ],
+          "near": [
+            2299,
+            2297,
+            2293
+          ]
+        },
+        "nearTriangles": 4586,
+        "originalPlacements": 10834,
+        "oversized": {
+          "distant": 0,
+          "far": 0,
+          "mid": 0
+        },
+        "placements": 10834,
+        "rendered": 3319,
+        "selection": "actual transformed crown angular span within distance / triangle caps",
+        "source": "CC0 all-angle branch/needle/leaf models in every ready band",
+        "status": "ready",
+        "thresholds": {
+          "midCapacity": 180,
+          "midDistance": 210,
+          "nearCapacity": 48,
+          "nearDistance": 26,
+          "triangleBudget": 1350000,
+          "viewAware": true
+        },
+        "triangles": 583316,
+        "viewAware": true
+      },
+      "source": "Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified; authored distance-faded branch atlas supplements distant pine crowns",
+      "status": "ready"
+    },
+    "frames": 192,
+    "time": 34.016666666666666,
+    "triangles": 7275720,
+    "worldSolids": {
+      "added": 3240,
+      "colliders": 3240,
+      "instances": 120,
+      "meshes": 22,
+      "removed": 0,
+      "replaced": 0,
+      "syncMs": 2976.89999999851,
+      "triangles": 2646008,
+      "trunks": 3098,
+      "unchanged": 0
+    }
+  },
+  "width": 1280
+}

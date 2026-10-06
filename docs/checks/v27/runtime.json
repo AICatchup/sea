@@ -1,0 +1,474 @@
+{
+  "sourceRevision": "27cca3a1f1d51540f305f9e88d20d4812a0fc95e",
+  "pavementRevision": "8d475b7133eaaabc90297a345bdf4f3228c74218",
+  "baselineRevision": "e384d932907ea8eba1e74f078164d75d7411ad1b",
+  "tests": {
+    "passed": 307,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "regression": "Old resize forwarder failed537!=538; atomic resize passed3 tests",
+  "rootCause": "Colour resized before DepthTexture.image; water sampler can initialize old-size depth between 3-frame planar-reflection updates",
+  "before": {
+    "status": 36057,
+    "glError": 1286,
+    "interpretation": "Framebuffer dimensions incomplete; black reflection samples"
+  },
+  "replays": [
+    {
+      "file": "resize-after-0.json",
+      "reflectionEnabled": true,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "resize-after-1.json",
+      "reflectionEnabled": false,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "resize-after-2.json",
+      "reflectionEnabled": true,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "fresh-lookout-0.json",
+      "reflectionEnabled": true,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "fresh-lookout-1.json",
+      "reflectionEnabled": false,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "fresh-lookout-2.json",
+      "reflectionEnabled": true,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "fresh-reef-0.json",
+      "reflectionEnabled": true,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "fresh-reef-1.json",
+      "reflectionEnabled": false,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "fresh-reef-2.json",
+      "reflectionEnabled": true,
+      "canvas": [
+        1280,
+        720
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "small-0.json",
+      "reflectionEnabled": true,
+      "canvas": [
+        961,
+        540
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "small-1.json",
+      "reflectionEnabled": false,
+      "canvas": [
+        961,
+        540
+      ],
+      "status": 36053,
+      "errors": 0
+    },
+    {
+      "file": "small-2.json",
+      "reflectionEnabled": true,
+      "canvas": [
+        961,
+        540
+      ],
+      "status": 36053,
+      "errors": 0
+    }
+  ],
+  "metadataCaveat": "Old before/resize-after image dimension objects were references changed by later restore; status/error are values. fresh-* and small-* copy dimensions.",
+  "pavement": {
+    "change": "CC0 photographic road maps; bounded authored weathering; analytic filtered18mm seams",
+    "support": "Road/curb/paint support preserved;20s controller-input walk from authored Habushi start through portal",
+    "review": "One independent A/B review accepted limited improvement; parent fixed dotted seams and verified walk"
+  },
+  "reflectionReview": "Independent read-only review accepted lifecycle/reference/disposal fix; pending-update setter guard incorporated",
+  "fullPhotoGoal": "UNMET",
+  "fullIslandPlaythrough": "UNVERIFIED",
+  "finalShowcase": "NOT STARTED",
+  "standaloneBrowserStartup": "UNVERIFIED",
+  "files": [
+    {
+      "file": "resize-before-0.json",
+      "bytes": 9594,
+      "sha256": "660561ed237da2043a53b867fcf0e2ec7c07daeeeccfd775e0ee7627a582dc4b"
+    },
+    {
+      "file": "resize-before-0.png",
+      "bytes": 1418317,
+      "sha256": "0aa0b4643ba88ffdfd1dd13dbf45e19ecb9ae12997f7a1918118307f55248f6c",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "resize-before-1.json",
+      "bytes": 9596,
+      "sha256": "6936e284ceb09d5994d527530a6cad2a8aab734eb5069cc974e7311ba4e004fe"
+    },
+    {
+      "file": "resize-before-2.json",
+      "bytes": 9595,
+      "sha256": "9125954f35d3b25686082c1ccfa29e63823ed5f260f0eeace58cca8d3522cebb"
+    },
+    {
+      "file": "resize-after-0.json",
+      "bytes": 10372,
+      "sha256": "29f71a93a2019a5dfafe3af6dc38cfd4c068415e9c3e7cee9cdd85417be00fc7"
+    },
+    {
+      "file": "resize-after-0.png",
+      "bytes": 1427094,
+      "sha256": "41c3be9a0cc6016ef276e314a37b7e048ffa0ff46a2065ec567607b78a5956a6",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "resize-after-1.json",
+      "bytes": 10373,
+      "sha256": "1751ad25b47e588c8ea11e3d33f8161b6b4b1af36c929821fa9c233de9fe3ed4"
+    },
+    {
+      "file": "resize-after-2.json",
+      "bytes": 10372,
+      "sha256": "87348cdc92fce755d14515c0d506323c6d827d6c5a91a80b4836f5ca2da2f157"
+    },
+    {
+      "file": "fresh-lookout-0.json",
+      "bytes": 10335,
+      "sha256": "725c3d01cf57584e4ab4fbe28629cb3be1a9d67a6c12699f16412d99291d22ef"
+    },
+    {
+      "file": "fresh-lookout-0.png",
+      "bytes": 1427032,
+      "sha256": "b40d2c5be07a49ff8c5397978ecdd89a3ba3c6975c70aadaee37da3db666511b",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "fresh-lookout-1.json",
+      "bytes": 10336,
+      "sha256": "40ba9bbbe0927d4157fe54318f0ef707eeb71825bf8bc14a5057b33db59fcd0e"
+    },
+    {
+      "file": "fresh-lookout-2.json",
+      "bytes": 10335,
+      "sha256": "272a4d7d5d9598be0ecc18d394b5e8aeea458255812ef95a109e3f26e804e023"
+    },
+    {
+      "file": "fresh-reef-0.json",
+      "bytes": 3508,
+      "sha256": "7b059da57ac330be27b71666376f28e9b6c028d55241ddd282ef0861f6db4be7"
+    },
+    {
+      "file": "fresh-reef-0.png",
+      "bytes": 1306296,
+      "sha256": "93f98e390b6e3889c76068d64f53461d4d9406da1ee7b92356c12b201cc806b7",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "fresh-reef-1.json",
+      "bytes": 3509,
+      "sha256": "a3cd8394be3cf2ffadf1ca448a1fc02cb600be34a0a43320a49d577b6c49108e"
+    },
+    {
+      "file": "fresh-reef-2.json",
+      "bytes": 3508,
+      "sha256": "b98079bbcdc5595696cf38416fd0c4b9ea667e7427bad3b8a13232edec2a6de7"
+    },
+    {
+      "file": "small-0.json",
+      "bytes": 10306,
+      "sha256": "a9ae6745512491bde740ceaff63289e2441c5d6067b29801fcb4768afc2a1682"
+    },
+    {
+      "file": "small-0.png",
+      "bytes": 815967,
+      "sha256": "86e1d0c456a3f07dcfd8f2415e6989740627dbf4939006b032d21704eeea3d84",
+      "width": 961,
+      "height": 540,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "small-1.json",
+      "bytes": 10307,
+      "sha256": "ab7041311e38338e2a97aa643dfc2dcf99152ca123c019eaaa050df12b14ccda"
+    },
+    {
+      "file": "small-2.json",
+      "bytes": 10306,
+      "sha256": "e774813c870ed312e45b2c3381445e67eff983031b6946ae6b8658b01ca2a826"
+    },
+    {
+      "file": "normal-spawn.png",
+      "bytes": 1399778,
+      "sha256": "6d1b84191bfc563f176cc14d3f10ae92436577e339e3c4fb5b530f1695d87832",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-spawn.json",
+      "bytes": 4440,
+      "sha256": "62743c834cfd4a05e6fd4b8dd4585597da28fc789a75eaab6a4eac5316ed2be7"
+    },
+    {
+      "file": "normal-shore.png",
+      "bytes": 1478858,
+      "sha256": "49d35fa6afe0d08793c2c89315190046d6cb3c48ab83682d91868dec371baa0c",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-shore.json",
+      "bytes": 4429,
+      "sha256": "645e2cd4098eace3b0214858cde8e46388a4aed2c364b2b17fd1efe617d32cb5"
+    },
+    {
+      "file": "normal-cliff.png",
+      "bytes": 1636309,
+      "sha256": "e03293036b466b59361ad8e16901494a029f6e9677f29de984382ad5d72f3c45",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-cliff.json",
+      "bytes": 4432,
+      "sha256": "cc443b356b5f74943fece491a06f9f631aa90fdc653d89f62eb5ff5ef52224fb"
+    },
+    {
+      "file": "normal-lookout.png",
+      "bytes": 1427157,
+      "sha256": "603d94dc3544543655b1ce3b14124994edfabc3acb28994c07abc810c87ecb10",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-lookout.json",
+      "bytes": 4442,
+      "sha256": "7e146d55ba65e8ff4d49e99b25af20cc68269af8c1016741747a1e8644bca212"
+    },
+    {
+      "file": "normal-reef.png",
+      "bytes": 1306317,
+      "sha256": "57ff884333a49355c678afd6ad09f165501788ebafd1cf7157571a96300d1f15",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-reef.json",
+      "bytes": 4402,
+      "sha256": "33a6c5bb1a14e1f74217f22a75d7a72f040150a9ecaab834d9ba3bbbf61eab77"
+    },
+    {
+      "file": "normal-habushi-front.png",
+      "bytes": 1176409,
+      "sha256": "84ff672fa2d39e46cb64c63e9d8b7b39f5be81c1fb0e5b1e3dd7c06d932f30c3",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-habushi-front.json",
+      "bytes": 4415,
+      "sha256": "6acab91e0f618b7127dfa9bad9a44d8620db0d6fb5e1613011985bfff965fd88"
+    },
+    {
+      "file": "normal-secret.png",
+      "bytes": 1245980,
+      "sha256": "474bafba86bb7655a879002f7215f6c55cc3aa46fb57770ab6b5a64e120a90f1",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-secret.json",
+      "bytes": 4505,
+      "sha256": "48b90e3f7b2af700b18fe1571a279599b889bf2581fe2677d6bde89418dc1814"
+    },
+    {
+      "file": "normal-pavement-oblique.png",
+      "bytes": 1224212,
+      "sha256": "fbfd12457ebba9be5d4871dcd023869bbe31f81feb887e2bbc7817271ec68db3",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-pavement-oblique.json",
+      "bytes": 4458,
+      "sha256": "f587857b0caada5d7aac2d7f2edf977d92a042fd5ccb55f07013a48da6cae444"
+    },
+    {
+      "file": "normal-pavement-close.png",
+      "bytes": 1421084,
+      "sha256": "1c98d3ffc405fb9de0d95dba7e54841ff9c3b37b38da77ffb9ea85934a224460",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "normal-pavement-close.json",
+      "bytes": 4461,
+      "sha256": "d65539cd35fa943da09cecba62bb97e1e2ba2d851020c3adf8a9cc5d05176029"
+    },
+    {
+      "file": "pavement-before-habushi-front.png",
+      "bytes": 835979,
+      "sha256": "62e50cdc6ce0404366702caf6d5bfbe1bc3a5212c9535f8dac2ff44fb54225e6",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "pavement-before-habushi-front.json",
+      "bytes": 4415,
+      "sha256": "dc69c7d2258337922d5da97fcf32562ef585cc466a8174bb60158767e2b3a1be"
+    },
+    {
+      "file": "pavement-before-oblique.png",
+      "bytes": 848974,
+      "sha256": "48a645b03dc8a124e471f92b8c4c8e04291abed29a364e67568dcea8755f8981",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "pavement-before-oblique.json",
+      "bytes": 4449,
+      "sha256": "512809b1a7a021829d775e0d06828a50b812b2283bb2fcc2d3a9af36ae22943b"
+    },
+    {
+      "file": "pavement-before-ground-close.png",
+      "bytes": 573280,
+      "sha256": "d4d4f8a28a8d095ab0fdb8ba0f232989f2713568cb4d20af833f77781d95005c",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "pavement-before-ground-close.json",
+      "bytes": 4459,
+      "sha256": "3e044b3a6b6bc5145e3c50904bb48f009d752b2a4c7beceb8fe9c9afea9d0ab4"
+    },
+    {
+      "file": "pavement-filtered-front.png",
+      "bytes": 1182399,
+      "sha256": "116032caa82d060c718564abbd7d89e1eefe327959c9072a4985ca80743ecb89",
+      "width": 1280,
+      "height": 720,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "pavement-walk-1.png",
+      "bytes": 1185305,
+      "sha256": "024ec79339c7c8a282ff3d84f9cea7b1ee8c503f6254e175b7bbf65ee89e425e",
+      "width": 1279,
+      "height": 719,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "pavement-walk-2.png",
+      "bytes": 983577,
+      "sha256": "12802529c73afdb5a0d1b3b8e5658a4902caecf2d65d8dbb175ce456c1942e33",
+      "width": 1279,
+      "height": 719,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "pavement-walk-3.png",
+      "bytes": 1062776,
+      "sha256": "045634f1a1a4256f40b7dbdc516e9db76a4345e85aee9a94097df1f45dc5a9b9",
+      "width": 1279,
+      "height": 719,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "pavement-walk-4.png",
+      "bytes": 1084396,
+      "sha256": "44f6a5a044c2e80f46bc30444efab527bb2082617e564f0b3e36518d3016d552",
+      "width": 1279,
+      "height": 719,
+      "encodedFormat": "PNG"
+    },
+    {
+      "file": "pavement-walk.json",
+      "bytes": 4578,
+      "sha256": "36e13c90c033e37865ead8f71f1c59e412dbc493120b0f28ecad523074a0665e"
+    },
+    {
+      "file": "browser-log.json",
+      "bytes": 263,
+      "sha256": "2c6c725c090600345795e70683fa2a1df9b8fbeb673d56df607e1b7cf4050932"
+    }
+  ]
+}
