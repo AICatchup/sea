@@ -1,0 +1,2489 @@
+{
+  "done": true,
+  "completed": true,
+  "rows": [
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.023890275082117066,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "船に乗る",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.20571427673087256,
+        "pitch": -0.006999999999999673,
+        "x": -118.82018065580633,
+        "yaw": 8.817474405115583,
+        "z": -92.50975480619302
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.2247797258182143,
+      "wall": 1038455,
+      "waypoint": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.07810843628353303,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "船に乗る",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.0999513693228886,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.29722352456085227,
+        "pitch": -0.006999999999999673,
+        "x": -119.54030117329232,
+        "yaw": 8.81800988620696,
+        "z": -93.18868514392162
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 1.2358088946099144,
+      "wall": 1039139.5,
+      "waypoint": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.09723704796102613,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "船に乗る",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.09995194609916,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3211731033925081,
+        "pitch": -0.006999999999999673,
+        "x": -119.87559311551269,
+        "yaw": 8.818009886685823,
+        "z": -93.47351221053052
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.7958689619147737,
+      "wall": 1039348.099999994,
+      "waypoint": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.09723704796102613,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "船に乗る",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.09995194609916,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3211731033925081,
+        "pitch": -0.006999999999999673,
+        "x": -119.87559311551269,
+        "yaw": 8.818009886685823,
+        "z": -93.47351221053052
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 1.9831384614779968,
+      "wall": 1039348.099999994,
+      "waypoint": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.1001553457397326,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7919689990363328,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.38658166438556135,
+        "pitch": -0.006999999999999673,
+        "x": -120.8499104928377,
+        "yaw": 8.818009886693186,
+        "z": -93.71653480629892
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 1.5116385286367682,
+      "wall": 1039923.200000003,
+      "waypoint": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.07907825481915852,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.8214013498683377,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.4383926856230947,
+        "pitch": -0.006999999999999673,
+        "x": -121.2727728801829,
+        "yaw": 8.818009886693186,
+        "z": -93.35217758419242
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 1.0218701263643937,
+      "wall": 1040264.599999994,
+      "waypoint": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.07907825481915852,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.8214013498683377,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.4383926856230947,
+        "pitch": -0.006999999999999673,
+        "x": -121.2727728801829,
+        "yaw": 8.818009886693186,
+        "z": -93.35217758419242
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.951488387376631,
+      "wall": 1040264.700000003,
+      "waypoint": 2
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.0482575288657888,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.09997752946317,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.44372526751105096,
+        "pitch": -0.006999999999999673,
+        "x": -121.81397530443871,
+        "yaw": 8.818009886693186,
+        "z": -91.28879553052856
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.8191151030194578,
+      "wall": 1041302.599999994,
+      "waypoint": 2
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.0482575288657888,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.09997752946317,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.44372526751105096,
+        "pitch": -0.006999999999999673,
+        "x": -121.81397530443871,
+        "yaw": 8.818009886693186,
+        "z": -91.28879553052856
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.7254934611165083,
+      "wall": 1041302.599999994,
+      "waypoint": 3
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.04834608110103035,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099965482428156,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.31232673152632934,
+        "pitch": -0.006999999999999673,
+        "x": -121.85609060592104,
+        "yaw": 8.818009886693186,
+        "z": -89.35774374083195
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.7950078292416024,
+      "wall": 1042223.299999997,
+      "waypoint": 3
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.04834608110103035,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099965482428156,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.31232673152632934,
+        "pitch": -0.006999999999999673,
+        "x": -121.85609060592104,
+        "yaw": 8.818009886693186,
+        "z": -89.35774374083195
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.6873300390924064,
+      "wall": 1042223.299999997,
+      "waypoint": 4
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.01349704855969985,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099953314291908,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2921416782942931,
+        "pitch": -0.006999999999999673,
+        "x": -121.34700559879116,
+        "yaw": 8.818009886693186,
+        "z": -87.51628571435904
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.7793559353377706,
+      "wall": 1043135.200000003,
+      "waypoint": 4
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.01349704855969985,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099953314291908,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2921416782942931,
+        "pitch": -0.006999999999999673,
+        "x": -121.34700559879116,
+        "yaw": 8.818009886693186,
+        "z": -87.51628571435904
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.6730689066378037,
+      "wall": 1043135.200000003,
+      "waypoint": 5
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.07766508360857023,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099948564266727,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.25594060620926684,
+        "pitch": -0.006999999999999673,
+        "x": -120.27398428832848,
+        "yaw": 8.818009886693186,
+        "z": -85.93840671924958
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.7671749698641672,
+      "wall": 1044054.900000006,
+      "waypoint": 5
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.07766508360857023,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099948564266727,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.25594060620926684,
+        "pitch": -0.006999999999999673,
+        "x": -120.27398428832848,
+        "yaw": 8.818009886693186,
+        "z": -85.93840671924958
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.6611633655854616,
+      "wall": 1044054.900000006,
+      "waypoint": 6
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.028455327007369097,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099954289001228,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.32810872912899053,
+        "pitch": -0.006999999999999673,
+        "x": -118.79205791004092,
+        "yaw": 8.818009886693186,
+        "z": -84.8179583364329
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.8050904435820017,
+      "wall": 1044943.099999994,
+      "waypoint": 6
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.028455327007369097,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099954289001228,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.32810872912899053,
+        "pitch": -0.006999999999999673,
+        "x": -118.79205791004092,
+        "yaw": 8.818009886693186,
+        "z": -84.8179583364329
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.696008628910982,
+      "wall": 1044943.099999994,
+      "waypoint": 7
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.12891326468379444,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.0999677599699855,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3893930305811097,
+        "pitch": -0.006999999999999673,
+        "x": -116.96471653306784,
+        "yaw": 8.818009886693186,
+        "z": -84.186023946127
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.7648426853942315,
+      "wall": 1045852.700000003,
+      "waypoint": 7
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.12891326468379444,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.0999677599699855,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3893930305811097,
+        "pitch": -0.006999999999999673,
+        "x": -116.96471653306784,
+        "yaw": 8.818009886693186,
+        "z": -84.186023946127
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.6581976502320708,
+      "wall": 1045852.700000003,
+      "waypoint": 8
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.0874038268927017,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.0999843097358637,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3947755764295889,
+        "pitch": -0.006999999999999673,
+        "x": -115.11452550144216,
+        "yaw": 8.818009886693186,
+        "z": -84.1601249474028
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.8117001552124847,
+      "wall": 1046745.799999997,
+      "waypoint": 8
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.0874038268927017,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.0999843097358637,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3947755764295889,
+        "pitch": -0.006999999999999673,
+        "x": -115.11452550144216,
+        "yaw": 8.818009886693186,
+        "z": -84.1601249474028
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 2.7075795224319976,
+      "wall": 1046745.799999997,
+      "waypoint": 9
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.014139568000925352,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.0999965842661292,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2849430534985613,
+        "pitch": -0.006999999999999673,
+        "x": -113.28998057351376,
+        "yaw": 8.818009886693186,
+        "z": -84.75404146861815
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 0.792057456710134,
+      "wall": 1047666,
+      "waypoint": 9
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.014139568000925352,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.0999965842661292,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2849430534985613,
+        "pitch": -0.006999999999999673,
+        "x": -113.28998057351376,
+        "yaw": 8.818009886693186,
+        "z": -84.75404146861815
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 139.23527904571927,
+      "wall": 1047666,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.014963825064558924,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.4312352209627996,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.8327126107229045,
+        "pitch": -0.006999999999999673,
+        "x": -108.55349008373328,
+        "yaw": 8.818009886693186,
+        "z": -79.0513311543907
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 131.8461983830728,
+      "wall": 1052675.200000003,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.04906385757346763,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6957122217106173,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.335266704164057,
+        "pitch": -0.006999999999999673,
+        "x": -104.00732415586673,
+        "yaw": 8.818009886693186,
+        "z": -72.53195799829986
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 123.89825898189554,
+      "wall": 1057765.599999994,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.003756556577070216,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.982298565265894,
+        "pitch": -0.006999999999999673,
+        "x": -98.91793834523686,
+        "yaw": 8.818009886693186,
+        "z": -65.25474663306471
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 115.01796319944845,
+      "wall": 1062769.200000003,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.05822610089279462,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.042364251889687,
+        "pitch": -0.006999999999999673,
+        "x": -93.60490255883823,
+        "yaw": 8.818009886693186,
+        "z": -57.657742623675965
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 105.74742819944863,
+      "wall": 1067779.400000006,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.01753771508571309,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7252392891216062,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4064774511724885,
+        "pitch": -0.006999999999999673,
+        "x": -88.42006717366968,
+        "yaw": 8.818009886693186,
+        "z": -50.24404981362893
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 96.7005857086655,
+      "wall": 1072786.5,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.09291540463090164,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.8091542525247424,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.5639430556792293,
+        "pitch": -0.006999999999999673,
+        "x": -83.42489014124136,
+        "yaw": 8.818009886693186,
+        "z": -43.10154570324596
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 87.9846716113297,
+      "wall": 1077787.299999997,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.09125658892635168,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6897295098747624,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3393270664806884,
+        "pitch": -0.006999999999999673,
+        "x": -78.43523199067936,
+        "yaw": 8.818009886693186,
+        "z": -35.96693293208052
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 79.2783872228005,
+      "wall": 1082788.5,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.06617819830404185,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6171030197700649,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.186465006345766,
+        "pitch": -0.006999999999999673,
+        "x": -73.68088412565224,
+        "yaw": 8.818009886693186,
+        "z": -29.168785649672905
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 70.98268772878592,
+      "wall": 1087801.799999997,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.014274564106747094,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5372941855813824,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.0238389147356883,
+        "pitch": -0.006999999999999673,
+        "x": -69.16874286109605,
+        "yaw": 8.818009886693186,
+        "z": -22.716964759341987
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 63.10960627409355,
+      "wall": 1092805.799999997,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.09705139890932962,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.4018506480321258,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.7956686049234983,
+        "pitch": -0.006999999999999673,
+        "x": -64.92619253635361,
+        "yaw": 8.818009886693186,
+        "z": -16.65062658228468
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 55.706924858795766,
+      "wall": 1097816.299999997,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.0007110188820695425,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.3531219631711529,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.6413797843811604,
+        "pitch": -0.006999999999999673,
+        "x": -61.04768920698366,
+        "yaw": 8.818009886693186,
+        "z": -11.104831950318877
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 48.93945663383346,
+      "wall": 1102824.200000003,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.010706742442482712,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.3949343261735976,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.7623112306920659,
+        "pitch": -0.006999999999999673,
+        "x": -57.14075465477223,
+        "yaw": 8.818009886693186,
+        "z": -5.518384079300722
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 42.122379737474816,
+      "wall": 1107827.299999997,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.01324712889448121,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.502593319110401,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.9697593826623662,
+        "pitch": -0.006999999999999673,
+        "x": -52.98671733548643,
+        "yaw": 8.818009886693186,
+        "z": 0.4213911148648593
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 34.874141647618494,
+      "wall": 1112832.5,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.06926292836431554,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6397018308064772,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.2363010157578835,
+        "pitch": -0.006999999999999673,
+        "x": -48.49515112528888,
+        "yaw": 8.818009886693186,
+        "z": 6.843792144923773
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 27.03696090378655,
+      "wall": 1117835.400000006,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.08238043260464906,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7712784653849123,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4893264637378285,
+        "pitch": -0.006999999999999673,
+        "x": -43.58891147273275,
+        "yaw": 8.818009886693186,
+        "z": 13.859126467894043
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 18.47623060834103,
+      "wall": 1122843.5,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          0.05107706552908064,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.411297267359081,
+        "pitch": -0.006999999999999673,
+        "x": -38.31896064798896,
+        "yaw": 8.818009886693186,
+        "z": 21.39452414907517
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 9.280873088985537,
+      "wall": 1127844.799999997,
+      "waypoint": 10
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.014582865616864211,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "拠点に 1 個届ける",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 3.295916185154537,
+        "pitch": -0.006999999999999673,
+        "x": -34.030129640912286,
+        "yaw": 8.818009886693186,
+        "z": 27.527038151665437
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "groundY": 2.0217960212753994,
+          "id": "camp",
+          "kind": "camp",
+          "name": "泊の調査拠点",
+          "x": -33,
+          "y": 2.741796021275399,
+          "z": 29
+        },
+        "version": 1
+      },
+      "gap": 1.7974380889853334,
+      "wall": 1131890.700000003,
+      "waypoint": 10
+    }
+  ],
+  "imageModes": [
+    "walk"
+  ]
+}

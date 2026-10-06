@@ -1,0 +1,434 @@
+{
+  "scope": "Current real IslandWorld, controller, expedition. One explicit vessel QA start per destination and notebook-only simulated save; subsequent legs only input/mouse/E/map actions. Mean water level, no rendered asset collision registry. CPU simulation, not browser or human-play proof.",
+  "results": [
+    {
+      "id": "nakanoura",
+      "initialBoarded": true,
+      "outbound": {
+        "seconds": 105.94999999999497,
+        "arrived": true,
+        "message": "中の浦海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          -567.9491461316569,
+          0,
+          858.3804635391687
+        ]
+      },
+      "landing": {
+        "complete": true,
+        "seconds": 17.73333333333801,
+        "gap": 1.0065519508766785,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          -575.4947022641726,
+          2.2951042556614514,
+          873.482339048288
+        ],
+        "stalled": 0
+      },
+      "collected": true,
+      "backToBoat": {
+        "complete": true,
+        "seconds": 17.466666666680567,
+        "gap": 0.5292779491766334,
+        "mode": "swim",
+        "grounded": false,
+        "position": [
+          -566.5047983644763,
+          0.34,
+          854.6924435463073
+        ],
+        "stalled": 0
+      },
+      "reboarded": true,
+      "returnVoyage": {
+        "seconds": 106.41666666673416,
+        "arrived": true,
+        "message": "泊海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          -116,
+          0,
+          -90
+        ]
+      },
+      "camp": {
+        "complete": true,
+        "seconds": 95.48333333324649,
+        "gap": 1.0036865369685162,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          -33.5947148173065,
+          3.4114740737683666,
+          28.19148225092584
+        ],
+        "stalled": 0
+      },
+      "banked": [
+        "shore-nakanoura"
+      ],
+      "stamps": [
+        "nakanoura",
+        "tomari"
+      ],
+      "maxFrameTravel": 0.29581374238626523
+    },
+    {
+      "id": "niijima",
+      "initialBoarded": true,
+      "outbound": {
+        "seconds": 377.516666666647,
+        "arrived": true,
+        "message": "新島・前浜の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          2844.8519140151852,
+          0,
+          -3315.4733439998445
+        ]
+      },
+      "landing": {
+        "complete": true,
+        "seconds": 140.61666666653878,
+        "gap": 1.0082631852637227,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          3028.0963273669854,
+          6.675825207689897,
+          -3474.8057487123983
+        ],
+        "stalled": 0
+      },
+      "collected": true,
+      "backToBoat": {
+        "complete": true,
+        "seconds": 140.21666666653914,
+        "gap": 0.6029921201145111,
+        "mode": "swim",
+        "grounded": false,
+        "position": [
+          2841.4978458714068,
+          0.34,
+          -3313.2339738461856
+        ],
+        "stalled": 0
+      },
+      "reboarded": true,
+      "returnVoyage": {
+        "seconds": 377.61666666632334,
+        "arrived": true,
+        "message": "泊海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          -116,
+          0,
+          -90
+        ]
+      },
+      "camp": {
+        "complete": true,
+        "seconds": 96.24999999991246,
+        "gap": 0.9992113021915073,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          -33.587839046704026,
+          3.411589295591237,
+          28.191997226739073
+        ],
+        "stalled": 0
+      },
+      "banked": [
+        "shore-niijima"
+      ],
+      "stamps": [
+        "niijima",
+        "tomari"
+      ],
+      "maxFrameTravel": 0.2374908491956935
+    },
+    {
+      "id": "habushi",
+      "initialBoarded": true,
+      "outbound": {
+        "seconds": 950.7833333327923,
+        "arrived": true,
+        "message": "新島・羽伏浦メインゲートの海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          5969.827749143411,
+          0,
+          -4503.84021999997
+        ]
+      },
+      "landing": {
+        "complete": true,
+        "seconds": 29.04999999997358,
+        "gap": 0.9680106464861413,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          5926.795654673687,
+          2.494616783809199,
+          -4503.825954791527
+        ],
+        "stalled": 0
+      },
+      "backToBoat": {
+        "complete": true,
+        "seconds": 28.583333333307337,
+        "gap": 0.5599190031938852,
+        "mode": "swim",
+        "grounded": false,
+        "position": [
+          5968.847042061932,
+          0.34,
+          -4500.004345405662
+        ],
+        "stalled": 0
+      },
+      "reboarded": true,
+      "returnVoyage": {
+        "seconds": 956.166666665797,
+        "arrived": true,
+        "message": "泊海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          -116,
+          0,
+          -90
+        ]
+      },
+      "camp": {
+        "complete": true,
+        "seconds": 96.25000000038767,
+        "gap": 0.9992113021914907,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          -33.587839046704,
+          3.411589295591237,
+          28.191997226739073
+        ],
+        "stalled": 0
+      },
+      "banked": [],
+      "stamps": [
+        "habushi",
+        "tomari"
+      ],
+      "maxFrameTravel": 0.2782711547443473
+    },
+    {
+      "id": "horikiri",
+      "initialBoarded": true,
+      "outbound": {
+        "seconds": 753.5333333329717,
+        "arrived": true,
+        "message": "新島・堀切入口の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          5993.543586322982,
+          0,
+          -2186.0620847999026
+        ]
+      },
+      "landing": {
+        "complete": true,
+        "seconds": 49.666666666621495,
+        "gap": 0.9499450178020853,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          5906.492469357762,
+          2.1083385932586567,
+          -2182.106990513945
+        ],
+        "stalled": 0
+      },
+      "backToBoat": {
+        "complete": true,
+        "seconds": 49.19999999995525,
+        "gap": 0.5577347367990095,
+        "mode": "swim",
+        "grounded": false,
+        "position": [
+          5992.567619684577,
+          0.34,
+          -2182.2268371599853
+        ],
+        "stalled": 0
+      },
+      "reboarded": true,
+      "returnVoyage": {
+        "seconds": 755.499999999313,
+        "arrived": true,
+        "message": "泊海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          -116,
+          0,
+          -90
+        ]
+      },
+      "camp": {
+        "complete": true,
+        "seconds": 96.24999999991246,
+        "gap": 0.9992113021914877,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          -33.58783904670401,
+          3.4115892955912406,
+          28.191997226739087
+        ],
+        "stalled": 0
+      },
+      "banked": [],
+      "stamps": [
+        "horikiri",
+        "tomari"
+      ],
+      "maxFrameTravel": 0.29516191633572647
+    },
+    {
+      "id": "secret",
+      "initialBoarded": true,
+      "outbound": {
+        "seconds": 648.5166666664005,
+        "arrived": true,
+        "message": "新島・シークレットの海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          5985.647499446662,
+          0,
+          -923.9181511998563
+        ]
+      },
+      "landing": {
+        "complete": true,
+        "seconds": 48.84999999995557,
+        "gap": 0.9522784875032004,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          5898.5887242091285,
+          2.149717123635913,
+          -912.0628241561426
+        ],
+        "stalled": 0
+      },
+      "collected": true,
+      "backToBoat": {
+        "complete": true,
+        "seconds": 48.449999999955935,
+        "gap": 0.6016645722325871,
+        "mode": "swim",
+        "grounded": false,
+        "position": [
+          5983.801391694389,
+          0.34,
+          -920.3480442823832
+        ],
+        "stalled": 0
+      },
+      "reboarded": true,
+      "returnVoyage": {
+        "seconds": 648.84999999941,
+        "arrived": true,
+        "message": "泊海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          -116,
+          0,
+          -90
+        ]
+      },
+      "camp": {
+        "complete": true,
+        "seconds": 96.24999999991246,
+        "gap": 0.9992113021914351,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          -33.58783904670398,
+          3.4115892955912472,
+          28.191997226739126
+        ],
+        "stalled": 0
+      },
+      "banked": [
+        "shore-secret"
+      ],
+      "stamps": [
+        "secret",
+        "tomari"
+      ],
+      "maxFrameTravel": 0.2852741176277914
+    },
+    {
+      "id": "kozushima",
+      "initialBoarded": true,
+      "outbound": {
+        "seconds": 1433.0166666656871,
+        "arrived": true,
+        "message": "神津島・前浜の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          -7280.356158380566,
+          0,
+          14584.78265600036
+        ]
+      },
+      "landing": {
+        "complete": true,
+        "seconds": 31.083333333305063,
+        "gap": 0.992071705412689,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          -7241.18498750903,
+          2.122016527984334,
+          14608.237450952245
+        ],
+        "stalled": 0
+      },
+      "backToBoat": {
+        "complete": true,
+        "seconds": 30.71666666663873,
+        "gap": 0.6068705517528072,
+        "mode": "swim",
+        "grounded": false,
+        "position": [
+          -7282.462668122341,
+          0.34,
+          14581.338907743822
+        ],
+        "stalled": 0
+      },
+      "reboarded": true,
+      "returnVoyage": {
+        "seconds": 1437.200000010978,
+        "arrived": true,
+        "message": "泊海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "position": [
+          -116,
+          0,
+          -90
+        ]
+      },
+      "camp": {
+        "complete": true,
+        "seconds": 94.45000000120262,
+        "gap": 1.003417959064764,
+        "mode": "walk",
+        "grounded": true,
+        "position": [
+          -33.594607806643914,
+          3.411537662514854,
+          28.191736950707377
+        ],
+        "stalled": 0
+      },
+      "banked": [],
+      "stamps": [
+        "kozushima",
+        "tomari"
+      ],
+      "maxFrameTravel": 0.29581374238626523
+    }
+  ]
+}

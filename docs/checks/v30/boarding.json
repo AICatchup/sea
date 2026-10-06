@@ -1,0 +1,684 @@
+[
+  {
+    "adventure": {
+      "avatarAction": "climb",
+      "boarding": 0.04578000000000464,
+      "boat": [
+        -118.5950068345507,
+        -0.00623949294153113,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 1.7857512541255336,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 0.5916218287679609,
+      "pitch": -0.006999999999999952,
+      "x": -117.11298449920328,
+      "yaw": -0.6,
+      "z": -87.60224348501953
+    },
+    "wall": 297563.299999997
+  },
+  {
+    "adventure": {
+      "avatarAction": "climb",
+      "boarding": 0.10578000000000463,
+      "boat": [
+        -118.5950068345507,
+        0.01163115318488728,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 2.2930338693537675,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.1619352799201366,
+      "pitch": -0.006999999999999952,
+      "x": -117.30191527271494,
+      "yaw": -0.6,
+      "z": -87.83789441230763
+    },
+    "wall": 297866.5
+  },
+  {
+    "adventure": {
+      "avatarAction": "climb",
+      "boarding": 0.166420000000007,
+      "boat": [
+        -118.5950068345507,
+        0.044693431652700094,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 1.8397585275607276,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.6992222776161725,
+      "pitch": -0.006999999999999952,
+      "x": -117.52211016798051,
+      "yaw": -0.6,
+      "z": -88.12069636242269
+    },
+    "wall": 298170.700000003
+  },
+  {
+    "adventure": {
+      "avatarAction": "climb",
+      "boarding": 0.22974000000000233,
+      "boat": [
+        -118.5950068345507,
+        0.08360655041397447,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.4280758514906494,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.9607569373538631,
+      "pitch": -0.006999999999999952,
+      "x": -117.68035890830798,
+      "yaw": -0.6,
+      "z": -88.31968106445747
+    },
+    "wall": 298481
+  },
+  {
+    "adventure": {
+      "avatarAction": "walk",
+      "boarding": 0.2899,
+      "boat": [
+        -118.5950068345507,
+        0.1194059319701911,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 1.3548839077461994,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 2.0415170217613396,
+      "pitch": -0.006999999999999952,
+      "x": -117.77470677328223,
+      "yaw": -0.6,
+      "z": -88.45310836145522
+    },
+    "wall": 298782.5
+  },
+  {
+    "adventure": {
+      "avatarAction": "walk",
+      "boarding": 0.3497200000000069,
+      "boat": [
+        -118.5950068345507,
+        0.13924533756110052,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 2.255630781506804,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 2.1901750511142044,
+      "pitch": -0.006999999999999952,
+      "x": -118.07150157641584,
+      "yaw": -0.6,
+      "z": -88.91818290542786
+    },
+    "wall": 299090.09999999404
+  },
+  {
+    "adventure": {
+      "avatarAction": "walk",
+      "boarding": 0.4103,
+      "boat": [
+        -118.5950068345507,
+        0.13317332619315186,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 2.120793462312917,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 2.2649361706420335,
+      "pitch": -0.006999999999999952,
+      "x": -118.4362656694173,
+      "yaw": -0.6,
+      "z": -89.49871245605894
+    },
+    "wall": 299391
+  },
+  {
+    "adventure": {
+      "avatarAction": "walk",
+      "boarding": 0.4736200000000067,
+      "boat": [
+        -118.5950068345507,
+        0.09511477664716785,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.9380702147333876,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 2.225208331309893,
+      "pitch": -0.006999999999999952,
+      "x": -118.70057675232393,
+      "yaw": -0.6,
+      "z": -89.91995650943686
+    },
+    "wall": 299700.5
+  },
+  {
+    "adventure": {
+      "avatarAction": "walk",
+      "boarding": 0.5338200000000064,
+      "boat": [
+        -118.5950068345507,
+        0.02692606578011552,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.540215460476771,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 2.128094071868412,
+      "pitch": -0.006999999999999952,
+      "x": -118.69251556079298,
+      "yaw": -0.6,
+      "z": -89.97739337533629
+    },
+    "wall": 300003.40000000596
+  },
+  {
+    "adventure": {
+      "avatarAction": "walk",
+      "boarding": 0.593480000000004,
+      "boat": [
+        -118.5950068345507,
+        -0.05582347633291448,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.7471304562728167,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 2.041297169263889,
+      "pitch": -0.006999999999999952,
+      "x": -118.54414465073476,
+      "yaw": -0.6,
+      "z": -90.05513464647542
+    },
+    "wall": 300306
+  },
+  {
+    "adventure": {
+      "avatarAction": "walk",
+      "boarding": 0.6568200000000063,
+      "boat": [
+        -118.5950068345507,
+        -0.13647829938353218,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.6895748637865335,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.956486803642973,
+      "pitch": -0.006999999999999952,
+      "x": -118.3550362226484,
+      "yaw": -0.6,
+      "z": -90.1717797321336
+    },
+    "wall": 300622.09999999404
+  },
+  {
+    "adventure": {
+      "avatarAction": "climb",
+      "boarding": 0.7162400000000015,
+      "boat": [
+        -118.5950068345507,
+        -0.19280221341336515,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.32294032407885487,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.8987861914716475,
+      "pitch": -0.006999999999999952,
+      "x": -118.23932621261964,
+      "yaw": -0.6,
+      "z": -90.25205960438534
+    },
+    "wall": 300925.90000000596
+  },
+  {
+    "adventure": {
+      "avatarAction": "climb",
+      "boarding": 0.7790999999999989,
+      "boat": [
+        -118.5950068345507,
+        -0.2071403631021649,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.3862828796412745,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.8638695352496724,
+      "pitch": -0.006999999999999952,
+      "x": -118.21327763971335,
+      "yaw": -0.6,
+      "z": -90.28371250829711
+    },
+    "wall": 301234.09999999404
+  },
+  {
+    "adventure": {
+      "avatarAction": "climb",
+      "boarding": 0.842960000000008,
+      "boat": [
+        -118.5950068345507,
+        -0.17384059226552248,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.852548673263268,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.7243671789007096,
+      "pitch": -0.006999999999999952,
+      "x": -118.09469207284144,
+      "yaw": -0.6,
+      "z": -90.38126381954102
+    },
+    "wall": 301546.59999999404
+  },
+  {
+    "adventure": {
+      "avatarAction": "helm",
+      "boarding": 0.9020999999999988,
+      "boat": [
+        -118.5950068345507,
+        -0.12474269701775342,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.8905395514498955,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.5507488407841288,
+      "pitch": -0.006999999999999952,
+      "x": -117.93302372832166,
+      "yaw": -0.6,
+      "z": -90.50169413853142
+    },
+    "wall": 301853.40000000596
+  },
+  {
+    "adventure": {
+      "avatarAction": "helm",
+      "boarding": 0.965960000000008,
+      "boat": [
+        -118.5950068345507,
+        -0.04155448474127904,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "はしごを移動中",
+      "message": "船尾のはしごを登り、操船席へ移動しています。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0.35024135083574826,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.4491791395782152,
+      "pitch": -0.006999999999999952,
+      "x": -117.80095584310352,
+      "yaw": -0.6,
+      "z": -90.60051967948807
+    },
+    "wall": 302163.09999999404
+  },
+  {
+    "adventure": {
+      "avatarAction": "helm",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        0.03078453541518289,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": true,
+      "interaction": "船から降りる",
+      "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+      "mode": "boat",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.4877131001707284,
+      "pitch": -0.006999999999999952,
+      "x": -117.77516290514252,
+      "yaw": -0.6,
+      "z": -90.61772517176
+    },
+    "wall": 302476.09999999404
+  },
+  {
+    "adventure": {
+      "avatarAction": "helm",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        0.08718470221399352,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": true,
+      "interaction": "船から降りる",
+      "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+      "mode": "boat",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.5398559346510163,
+      "pitch": -0.006999999999999952,
+      "x": -117.77015671025214,
+      "yaw": -0.6,
+      "z": -90.61167398119863
+    },
+    "wall": 302779.799999997
+  },
+  {
+    "adventure": {
+      "avatarAction": "helm",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        0.11949608394052104,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": true,
+      "interaction": "船から降りる",
+      "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+      "mode": "boat",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.5681191628761049,
+      "pitch": -0.006999999999999952,
+      "x": -117.76758060980806,
+      "yaw": -0.6,
+      "z": -90.6010232275013
+    },
+    "wall": 303081.09999999404
+  },
+  {
+    "adventure": {
+      "avatarAction": "helm",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        0.12654813811244472,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": true,
+      "interaction": "船から降りる",
+      "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+      "mode": "boat",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.5735220362767703,
+      "pitch": -0.006999999999999952,
+      "x": -117.76988483086186,
+      "yaw": -0.6,
+      "z": -90.58919366286143
+    },
+    "wall": 303397.40000000596
+  },
+  {
+    "adventure": {
+      "avatarAction": "helm",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        0.10822195281873276,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": true,
+      "interaction": "船から降りる",
+      "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+      "mode": "boat",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.555373234939788,
+      "pitch": -0.006999999999999952,
+      "x": -117.77377412900049,
+      "yaw": -0.6,
+      "z": -90.58129112485396
+    },
+    "wall": 303698.700000003
+  },
+  {
+    "adventure": {
+      "avatarAction": "helm",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        0.07993447645952236,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": true,
+      "interaction": "船から降りる",
+      "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+      "mode": "boat",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 1.5275257000485285,
+      "pitch": -0.006999999999999952,
+      "x": -117.7757127484188,
+      "yaw": -0.6,
+      "z": -90.57876794775612
+    },
+    "wall": 304000.200000003
+  }
+]

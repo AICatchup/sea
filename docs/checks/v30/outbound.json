@@ -1,0 +1,1189 @@
+{
+  "done": true,
+  "rows": [
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -118.79365149775757,
+          -0.06853589187019099,
+          -90.98627218664434
+        ],
+        "boatYaw": -1.1905168558810784,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1254.1264102663122,
+        "speed": 1.2616800000003423,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.3742690430966176,
+        "pitch": -0.006999999999999951,
+        "x": -117.89696731918605,
+        "yaw": -1.0295204773902935,
+        "z": -91.14366152406896
+      },
+      "fps": 56.8,
+      "wall": 339397.09999999404
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -140.969235952609,
+          -0.02142604425517295,
+          -94.15421282305164
+        ],
+        "boatYaw": -1.4288983446191537,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1231.725687202313,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.4246160509638155,
+        "pitch": -0.006999999999999951,
+        "x": -140.14741827213442,
+        "yaw": -1.4288610987789756,
+        "z": -94.5337888482614
+      },
+      "fps": 56.7,
+      "wall": 342404.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -176.85688499681376,
+          0.010379453369729171,
+          -99.28101982936656
+        ],
+        "boatYaw": -1.428899272187383,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1195.4736872023184,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.4599008308039243,
+        "pitch": -0.006999999999999951,
+        "x": -176.0175858412592,
+        "yaw": -1.428899268743727,
+        "z": -99.60500239656218
+      },
+      "fps": 56.6,
+      "wall": 345410.5
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -212.7194068345508,
+          -0.2780838874601198,
+          -102.9578943776148
+        ],
+        "boatYaw": -1.5665087165325524,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1159.3498579359398,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.1713835861788926,
+        "pitch": -0.006999999999999951,
+        "x": -211.91880115214488,
+        "yaw": -1.5579875223314,
+        "z": -103.3684727308702
+      },
+      "fps": 56.7,
+      "wall": 348423.5
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -247.55609397574105,
+          0.07296406671387014,
+          -98.47735080701965
+        ],
+        "boatYaw": -2.0199332122804674,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1123.455457935946,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.4958245709670412,
+        "pitch": -0.006999999999999951,
+        "x": -247.02400727112237,
+        "yaw": -1.991437544861239,
+        "z": -99.25378607425348
+      },
+      "fps": 56.8,
+      "wall": 351424.90000000596
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -279.65780140248114,
+          0.42709194047034105,
+          -82.42649709364963
+        ],
+        "boatYaw": -2.0344438763657604,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1087.5646579359482,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.8582975484407345,
+        "pitch": -0.006999999999999951,
+        "x": -279.1511350503451,
+        "yaw": -2.034439669833479,
+        "z": -83.20459716133196
+      },
+      "fps": 56.9,
+      "wall": 354425.40000000596
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -312.0374968001831,
+          -0.3302105261074442,
+          -66.2366493947983
+        ],
+        "boatYaw": -2.034443935795479,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1051.3630579359535,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.0939192609960282,
+        "pitch": -0.006999999999999951,
+        "x": -311.33699358381904,
+        "yaw": -2.0344439354052133,
+        "z": -66.86246853268742
+      },
+      "fps": 56.6,
+      "wall": 357433.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -344.2615618666512,
+          -0.3708718473570006,
+          -50.124616861564334
+        ],
+        "boatYaw": -2.0344439357956934,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1015.3354579359587,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.1235433243598572,
+        "pitch": -0.006999999999999951,
+        "x": -343.87698002209044,
+        "yaw": -2.0344439357956547,
+        "z": -50.85216074297403
+      },
+      "fps": 56.7,
+      "wall": 360437.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -374.4330868345505,
+          -0.05347782689877692,
+          -31.079334377614924
+        ],
+        "boatYaw": -2.2141054361435417,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 979.5125792859706,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.3648808701797943,
+        "pitch": -0.006999999999999951,
+        "x": -374.3462172152811,
+        "yaw": -2.2129436987384645,
+        "z": -32.02337477699917
+      },
+      "fps": 56.6,
+      "wall": 363439.4000000059
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -403.4298868345507,
+          0.1702010061633283,
+          -9.331734377614852
+        ],
+        "boatYaw": -2.2142974348920994,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 943.2665792859704,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.6498317488169016,
+        "pitch": -0.006999999999999951,
+        "x": -402.9922190060195,
+        "yaw": -2.2142973128210017,
+        "z": -10.05949789501817
+      },
+      "fps": 57,
+      "wall": 366448.700000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -429.3024683201514,
+          0.1989946648080749,
+          15.749567107985364
+        ],
+        "boatYaw": -2.3561923520594297,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 907.1969792859696,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.5648911852641736,
+        "pitch": -0.006999999999999951,
+        "x": -429.0874101815647,
+        "yaw": -2.356149352001529,
+        "z": 14.75027901517451
+      },
+      "fps": 56.8,
+      "wall": 369456.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -454.8618328756335,
+          0.3685381779429828,
+          41.30893166346703
+        ],
+        "boatYaw": -2.3561944901843597,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 871.050579285969,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.8047147562723287,
+        "pitch": -0.006999999999999951,
+        "x": -454.77494718321066,
+        "yaw": -2.3561944860104753,
+        "z": 40.392226851485326
+      },
+      "fps": 56.4,
+      "wall": 372468.700000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -480.1980345309723,
+          0.20452373820748324,
+          66.64513331880596
+        ],
+        "boatYaw": -2.3561944901923484,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 835.2197792859689,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.6017871130990204,
+        "pitch": -0.006999999999999951,
+        "x": -480.2266971663215,
+        "yaw": -2.356194490191928,
+        "z": 65.66669910307067
+      },
+      "fps": 56,
+      "wall": 375471.299999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -505.8583739348077,
+          0.2086546915807378,
+          92.3054727226411
+        ],
+        "boatYaw": -2.3561944901923533,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 798.9305792859683,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.6135970814711422,
+        "pitch": -0.006999999999999951,
+        "x": -505.70081055801086,
+        "yaw": -2.3561944901923515,
+        "z": 91.35058494735992
+      },
+      "fps": 57,
+      "wall": 378482.4000000059
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -531.3888885336142,
+          0.3709945129965858,
+          117.83598732144998
+        ],
+        "boatYaw": -2.356194490192318,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 762.824979285968,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.866200679925861,
+        "pitch": -0.006999999999999951,
+        "x": -530.9944484683632,
+        "yaw": -2.3561944901923213,
+        "z": 117.11537955483804
+      },
+      "fps": 56.5,
+      "wall": 381491.700000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -555.1952162829801,
+          -0.755415966134824,
+          144.70912136976645
+        ],
+        "boatYaw": -2.5900425921956645,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 726.7222263042402,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 0.6640043416888229,
+        "pitch": -0.006999999999999951,
+        "x": -555.1044283004345,
+        "yaw": -2.5711925726564107,
+        "z": 143.7670473111261
+      },
+      "fps": 56.7,
+      "wall": 384497.299999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -573.8146118736006,
+          -0.7123348556746707,
+          175.74144735413284
+        ],
+        "boatYaw": -2.6011731122528867,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 690.5326263042392,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 0.8099608236295806,
+        "pitch": -0.006999999999999951,
+        "x": -573.7924769719441,
+        "yaw": -2.6011703995821707,
+        "z": 174.97162535464187
+      },
+      "fps": 56.9,
+      "wall": 387512.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -586.8900099674883,
+          0.694986245799849,
+          208.25222467400815
+        ],
+        "boatYaw": -3.1046282894527235,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 654.4780035660963,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 2.241821301461452,
+        "pitch": -0.006999999999999951,
+        "x": -587.2559986734609,
+        "yaw": -3.0801921620799444,
+        "z": 207.63266549388345
+      },
+      "fps": 56.8,
+      "wall": 390522.4000000059
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -587.8372083627579,
+          -0.3158643855170423,
+          244.24576369422704
+        ],
+        "boatYaw": -3.115282894468151,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 618.472003566096,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.2562316163409846,
+        "pitch": -0.006999999999999951,
+        "x": -588.0952237094531,
+        "yaw": -3.1152795577290036,
+        "z": 243.63548323262617
+      },
+      "fps": 56.6,
+      "wall": 393524.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -588.7839648057684,
+          0.7747789923823236,
+          280.2225085286017
+        ],
+        "boatYaw": -3.1152829363367096,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 582.4828035660955,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 2.2207530289587885,
+        "pitch": -0.006999999999999951,
+        "x": -589.2100073563029,
+        "yaw": -3.1152829360103,
+        "z": 279.4236675990789
+      },
+      "fps": 56.7,
+      "wall": 396533.299999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -589.7380765970904,
+          0.6592502839067234,
+          316.4787565988268
+        ],
+        "boatYaw": -3.1152829363368735,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 546.2140035660956,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 2.0339156547664947,
+        "pitch": -0.006999999999999951,
+        "x": -590.2057201872402,
+        "yaw": -3.115282936336846,
+        "z": 315.58315367858216
+      },
+      "fps": 56.7,
+      "wall": 399544.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -590.6842648157686,
+          -0.25297035106900273,
+          352.4339089085444
+        ],
+        "boatYaw": -3.115282936336879,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 510.2464035660941,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.174613517172733,
+        "pitch": -0.006999999999999951,
+        "x": -591.0837646640673,
+        "yaw": -3.115282936336877,
+        "z": 351.5895723818293
+      },
+      "fps": 56.4,
+      "wall": 402545.5
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -591.6346831489267,
+          0.39155276546353474,
+          388.5498055684928
+        ],
+        "boatYaw": -3.115282936336886,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 474.1180035660947,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.8056314912162124,
+        "pitch": -0.006999999999999951,
+        "x": -592.1499784667964,
+        "yaw": -3.115282936336884,
+        "z": 387.7464674748142
+      },
+      "fps": 56.5,
+      "wall": 405553.299999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -592.584691097843,
+          -0.28565547161982424,
+          424.6501076273
+        ],
+        "boatYaw": -3.1152829363368904,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 438.00520356609474,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.2123160285402068,
+        "pitch": -0.006999999999999951,
+        "x": -592.9833090257717,
+        "yaw": -3.115282936336889,
+        "z": 423.9375873593482
+      },
+      "fps": 56.5,
+      "wall": 408563
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -593.5351094309991,
+          0.08341588353367985,
+          460.766004287249
+        ],
+        "boatYaw": -3.115282936336892,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 401.8768035660947,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.55044154831713,
+        "pitch": -0.006999999999999951,
+        "x": -593.9517924161242,
+        "yaw": -3.11528293633689,
+        "z": 460.0013403160996
+      },
+      "fps": 56.7,
+      "wall": 411572.700000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -594.4833495708791,
+          -0.13134010028258933,
+          496.7991296026753
+        ],
+        "boatYaw": -3.1152829363369,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 365.8312035660948,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.2670916900613765,
+        "pitch": -0.006999999999999951,
+        "x": -594.9922670375125,
+        "yaw": -3.1152829363368983,
+        "z": 495.9649284639139
+      },
+      "fps": 56.7,
+      "wall": 414575.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -595.4337047679985,
+          0.2026024191266961,
+          532.9126270932176
+        ],
+        "boatYaw": -3.115282936336909,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 329.7052035660947,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.7072160925510222,
+        "pitch": -0.006999999999999951,
+        "x": -595.8403230616722,
+        "yaw": -3.1152829363369072,
+        "z": 532.2188697458731
+      },
+      "fps": 56.8,
+      "wall": 417586.5
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -596.3782830177298,
+          -0.30890143437987266,
+          568.8066005830697
+        ],
+        "boatYaw": -3.1152829363369112,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 293.7988035660949,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.1846842916959563,
+        "pitch": -0.006999999999999951,
+        "x": -596.6969117704418,
+        "yaw": -3.11528293633691,
+        "z": 568.0462208116345
+      },
+      "fps": 56.9,
+      "wall": 420593.0999999941
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -597.3284803747556,
+          -0.3127730012128171,
+          604.914100150096
+        ],
+        "boatYaw": -3.115282936336911,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 257.67880356609476,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 0.9729239683369412,
+        "pitch": -0.006999999999999951,
+        "x": -597.9760993882155,
+        "yaw": -3.11528293633691,
+        "z": 603.9986369253318
+      },
+      "fps": 57.1,
+      "wall": 423596.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -598.2810769011875,
+          0.21634821210099353,
+          641.1127681545668
+        ],
+        "boatYaw": -3.1152829363369072,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 221.467603566095,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.7094715930575557,
+        "pitch": -0.006999999999999951,
+        "x": -598.6048907972422,
+        "yaw": -3.1152829363369094,
+        "z": 640.3536718958732
+      },
+      "fps": 56.5,
+      "wall": 426607.299999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -593.5243190756312,
+          0.18345535749234151,
+          676.7053151640245
+        ],
+        "boatYaw": -3.3526307881205226,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 185.33373615615247,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.635463133303166,
+        "pitch": -0.006999999999999951,
+        "x": -594.1190820184183,
+        "yaw": -3.35210941351852,
+        "z": 676.0356656580349
+      },
+      "fps": 56.6,
+      "wall": 429612.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -585.9453166896959,
+          -0.0439559049456142,
+          712.0739929650676
+        ],
+        "boatYaw": -3.3526859866076153,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 149.16213615615246,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.4656738572012913,
+        "pitch": -0.006999999999999951,
+        "x": -586.4771664232851,
+        "yaw": -3.3526859336400565,
+        "z": 711.4835237938813
+      },
+      "fps": 56.7,
+      "wall": 432628.299999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -578.4155955454257,
+          -0.017728626041781465,
+          747.2126916383194
+        ],
+        "boatYaw": -3.352685986812586,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 113.22573615615237,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.4953712585127232,
+        "pitch": -0.006999999999999951,
+        "x": -578.8889375609913,
+        "yaw": -3.352685986807374,
+        "z": 746.5826312637032
+      },
+      "fps": 57,
+      "wall": 435630.5999999941
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -570.8220099349107,
+          -0.028332957767769743,
+          782.6494244873811
+        ],
+        "boatYaw": -3.352685986812588,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 76.98453615615297,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.3445679550177387,
+        "pitch": -0.006999999999999951,
+        "x": -571.4936404750604,
+        "yaw": -3.352685986812588,
+        "z": 781.8914300934632
+      },
+      "fps": 56.5,
+      "wall": 438642
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -563.2513049008847,
+          0.19157787884535205,
+          817.979381312827
+        ],
+        "boatYaw": -3.3526859868125927,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 40.85253615615314,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.516466474166942,
+        "pitch": -0.006999999999999951,
+        "x": -563.9120033143201,
+        "yaw": -3.352685986812594,
+        "z": 817.1316503316361
+      },
+      "fps": 56.6,
+      "wall": 441653.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -567.2723205297393,
+          -0.5951194325385727,
+          853.6604599738351
+        ],
+        "boatYaw": -2.999172392570451,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 4.768283396838661,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 0.7783918826951475,
+        "pitch": -0.006999999999999951,
+        "x": -567.7859950408648,
+        "yaw": -2.9992590861674424,
+        "z": 852.7886198717838
+      },
+      "fps": 56.8,
+      "wall": 444664.5999999941
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -567.9491461316569,
+          -0.18709548417608143,
+          858.3804635391687
+        ],
+        "boatYaw": -2.999169210021937,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "船から降りる",
+        "message": "中の浦海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.1641253523323691,
+        "pitch": -0.006999999999999951,
+        "x": -568.5293299548256,
+        "yaw": -2.9991912709298867,
+        "z": 857.5155421656792
+      },
+      "fps": 56.5,
+      "wall": 447674.799999997
+    }
+  ]
+}

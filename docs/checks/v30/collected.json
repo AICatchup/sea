@@ -1,0 +1,62 @@
+{
+  "adventure": {
+    "avatarAction": "idle",
+    "boarding": 0,
+    "boat": [
+      -567.9491461316569,
+      0.1344275092372739,
+      858.3804635391687
+    ],
+    "boatYaw": -2.999169210021937,
+    "depth": 0,
+    "grounded": true,
+    "interaction": "",
+    "message": "足が浜に着きました。歩いて海岸を探検できます。",
+    "mode": "walk",
+    "oxygen": 1,
+    "placed": 0,
+    "remaining": 0,
+    "speed": 0,
+    "stamina": 1,
+    "voyage": null
+  },
+  "camera": {
+    "height": 2.403753691357947,
+    "pitch": -1.0569999999999995,
+    "x": -575.6129717453827,
+    "yaw": -2.5847692100219373,
+    "z": 873.8390893749524
+  },
+  "expedition": {
+    "banked": [],
+    "bestRace": null,
+    "capacity": 3,
+    "captain": true,
+    "cargo": [
+      "shore-nakanoura"
+    ],
+    "credits": 4,
+    "gear": [],
+    "notebook": true,
+    "race": null,
+    "rank": "入り江の調査員",
+    "save": "session",
+    "stamps": [
+      "tomari",
+      "nakanoura"
+    ],
+    "target": {
+      "depth": 0,
+      "groundY": -0.43760180859160613,
+      "id": "glass",
+      "kind": "find",
+      "name": "波打ち際のシーグラス",
+      "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+      "value": 1,
+      "x": -47,
+      "y": -0.1876018085916061,
+      "z": 6
+    },
+    "version": 1
+  }
+}

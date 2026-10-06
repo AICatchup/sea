@@ -1,0 +1,584 @@
+{
+  "done": true,
+  "rows": [
+    {
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.01523193564853153,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.275736561243304,
+        "pitch": -0.008747936315650892,
+        "x": -40.731834259147696,
+        "yaw": -0.6,
+        "z": 20.08367327696548
+      },
+      "gap": 132.2816639110403,
+      "wall": 122584.29999999702
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.004809838067854668,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.746416899309314,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.441771631915983,
+        "pitch": -0.006999999999999952,
+        "x": -45.991600572953914,
+        "yaw": -0.6,
+        "z": 12.713675013153775
+      },
+      "gap": 123.22729857139085,
+      "wall": 127594.79999999702
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06056712736399369,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6219711462130455,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.1927673093300266,
+        "pitch": -0.006999999999999952,
+        "x": -50.89394331592756,
+        "yaw": -0.6,
+        "z": 5.807783496721656
+      },
+      "gap": 114.75827843879487,
+      "wall": 132615.40000000596
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.08595864721421417,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.4815170332980665,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.93733545444766,
+        "pitch": -0.006999999999999952,
+        "x": -55.38020573606905,
+        "yaw": -0.6,
+        "z": -0.5119789540268591
+      },
+      "gap": 107.0080559944863,
+      "wall": 137620.29999999702
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06577613577121576,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.3741705249302314,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.7598939111337378,
+        "pitch": -0.006999999999999952,
+        "x": -59.53515291309078,
+        "yaw": -0.6,
+        "z": -6.365020237634304
+      },
+      "gap": 99.83019570666696,
+      "wall": 142628.20000000298
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.08092221042443355,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.342452783413897,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.6906172109248475,
+        "pitch": -0.006999999999999952,
+        "x": -63.51084081897131,
+        "yaw": -0.6,
+        "z": -11.965540401295536
+      },
+      "gap": 92.96201396558432,
+      "wall": 147633
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.10183026166339444,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.4487102038066475,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.9028316060714112,
+        "pitch": -0.006999999999999952,
+        "x": -67.58758307208785,
+        "yaw": -0.6,
+        "z": -17.708415026051227
+      },
+      "gap": 85.91925624193598,
+      "wall": 152636.29999999702
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.05704688917104055,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5792792567775027,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.1276588508109002,
+        "pitch": -0.006999999999999952,
+        "x": -72.00265438763522,
+        "yaw": -0.6,
+        "z": -23.927891129834947
+      },
+      "gap": 78.29201966982771,
+      "wall": 157642.59999999404
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.03643699033194647,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6648861289943324,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.2808238370963432,
+        "pitch": -0.006999999999999952,
+        "x": -76.70180606952121,
+        "yaw": -0.6,
+        "z": -30.547549002772683
+      },
+      "gap": 70.17402133993639,
+      "wall": 162643.79999999702
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.03661954474173093,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7456967942890758,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4423430445340395,
+        "pitch": -0.006999999999999952,
+        "x": -81.62540456049813,
+        "yaw": -0.6,
+        "z": -37.483383323595866
+      },
+      "gap": 61.66828093558245,
+      "wall": 167649.40000000596
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.14494959006400093,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7714932719132286,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4847096786672829,
+        "pitch": -0.006999999999999952,
+        "x": -86.9177718729165,
+        "yaw": -0.6,
+        "z": -44.93869937163357
+      },
+      "gap": 52.525475614146195,
+      "wall": 172654.79999999702
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0795893176771031,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.8500000000000003,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.6847000083576265,
+        "pitch": -0.006999999999999952,
+        "x": -92.04393005527376,
+        "yaw": -0.6,
+        "z": -52.15987793042961
+      },
+      "gap": 43.66980412698251,
+      "wall": 177660
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.10940080937442652,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.4610653665343523,
+        "pitch": -0.006999999999999952,
+        "x": -97.40455877020682,
+        "yaw": -0.6,
+        "z": -59.711353277243504
+      },
+      "gap": 34.409074126982354,
+      "wall": 182665.59999999404
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.03669126318021847,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.8500000000000003,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.6706794067741697,
+        "pitch": -0.006999999999999952,
+        "x": -102.75940471414226,
+        "yaw": -0.6,
+        "z": -67.2546824802094
+      },
+      "gap": 25.15833412698236,
+      "wall": 187674.79999999705
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.04854677986748652,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.62494075574042,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.205176991334382,
+        "pitch": -0.006999999999999952,
+        "x": -107.75762961099012,
+        "yaw": -0.6,
+        "z": -74.29564242978381
+      },
+      "gap": 16.523673211174447,
+      "wall": 192681.29999999705
+    },
+    {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.01190184213582089,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.282886581637902,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.5686763595626005,
+        "pitch": -0.006999999999999952,
+        "x": -112.0157051069959,
+        "yaw": -0.6,
+        "z": -80.29395976211276
+      },
+      "gap": 9.167654060233993,
+      "wall": 197683.70000000295
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.019835474634988103,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099948565651667,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3535905598376937,
+        "pitch": -0.006999999999999952,
+        "x": -115.93255647037655,
+        "yaw": -0.6,
+        "z": -85.78610932781874
+      },
+      "gap": 2.4219437577849217,
+      "wall": 201573
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.05818779859218477,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "船に乗る",
+        "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.099948556702074,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.28490811085422213,
+        "pitch": -0.006999999999999952,
+        "x": -116.8394924435975,
+        "yaw": -0.6,
+        "z": -87.08441171218439
+      },
+      "gap": 0.8382436217586684,
+      "wall": 202337.40000000596
+    }
+  ],
+  "imageModes": [
+    "swim"
+  ]
+}

@@ -1,0 +1,2373 @@
+{
+  "done": true,
+  "rows": [
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -567.9599092096539,
+          0.6918118928176107,
+          858.1867281352229
+        ],
+        "boatYaw": -0.920483869954735,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1259.7010630433017,
+        "speed": 1.240679999999609,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 2.128307542646551,
+        "pitch": -0.006999999999999673,
+        "x": -567.041681997269,
+        "yaw": 4.787713683186216,
+        "z": 858.2486880775933
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.6,
+      "wall": 824714.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -569.2081819672267,
+          -0.6598697305452945,
+          835.7178184988815
+        ],
+        "boatYaw": -0.055501687798314825,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1237.1975058773037,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 0.7038813471532113,
+        "pitch": -0.006999999999999673,
+        "x": -568.6192905419283,
+        "yaw": 6.227554589540136,
+        "z": 836.5567999571308
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 54.9,
+      "wall": 827726.700000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -571.204303905352,
+          -0.2872834537644098,
+          799.7876236125719
+        ],
+        "boatYaw": -0.05549850525830986,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1201.2119058773071,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.1686937361692584,
+        "pitch": -0.006999999999999673,
+        "x": -570.7633962590861,
+        "yaw": 6.2276867891633305,
+        "z": 800.5597834858216
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.3,
+      "wall": 830727.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -573.2068159897382,
+          -1.185128583522908,
+          763.742406093574
+        ],
+        "boatYaw": -0.055498505245775535,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1165.111105877314,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 0.2512760216333143,
+        "pitch": -0.006999999999999673,
+        "x": -572.7400000662307,
+        "yaw": 6.227686801932617,
+        "z": 764.535705976245
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.3,
+      "wall": 833734.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -575.2012072632562,
+          -0.0223238347134206,
+          727.8433631702835
+        ],
+        "boatYaw": -0.05549850524578143,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1129.1567058773155,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.4592254599436394,
+        "pitch": -0.006999999999999673,
+        "x": -574.7591567103357,
+        "yaw": 6.227686801933804,
+        "z": 728.5645448368307
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.8,
+      "wall": 836743.099999994
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -577.2022549391291,
+          -0.900303391318139,
+          691.82450500461
+        ],
+        "boatYaw": -0.05549850524578238,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1093.0823058773217,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 0.5124354858842076,
+        "pitch": -0.006999999999999673,
+        "x": -576.7325467919703,
+        "yaw": 6.227686801933804,
+        "z": 692.6575975092778
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.1,
+      "wall": 839747.099999994
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -579.2011060022253,
+          -0.3731370204521411,
+          655.8451858689219
+        ],
+        "boatYaw": -0.05549850524578198,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1057.047505877326,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.084077783030288,
+        "pitch": -0.006999999999999673,
+        "x": -578.7428989566921,
+        "yaw": 6.227686801933803,
+        "z": 656.6048379734642
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.5,
+      "wall": 842749
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -584.003262594671,
+          0.7536284849812033,
+          620.0828229925906
+        ],
+        "boatYaw": -0.1798042720554495,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1020.898820663491,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 2.2829151773590417,
+        "pitch": -0.006999999999999673,
+        "x": -583.5346101632106,
+        "yaw": 6.103780127254747,
+        "z": 620.6762428363794
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.1,
+      "wall": 845755
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -590.4540861586886,
+          -0.5287238247050002,
+          584.6032933904949
+        ],
+        "boatYaw": -0.1798534996028093,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 984.8376206634904,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.0342970272278469,
+        "pitch": -0.006999999999999673,
+        "x": -590.1179575662999,
+        "yaw": 6.103331849931707,
+        "z": 585.1986784640413
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.9,
+      "wall": 848761.900000006
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -596.9098469608009,
+          -0.4090498265297486,
+          549.0966089788794
+        ],
+        "boatYaw": -0.17985349979246165,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 948.7488206634896,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.0563771649306402,
+        "pitch": -0.006999999999999673,
+        "x": -596.3707913139024,
+        "yaw": 6.103331807391126,
+        "z": 549.7839536829734
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.5,
+      "wall": 851767.099999994
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -603.3810634647731,
+          -0.32527143850380064,
+          513.5049182070317
+        ],
+        "boatYaw": -0.179853499792382,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 912.57362066349,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.0989140813176268,
+        "pitch": -0.006999999999999673,
+        "x": -602.8137951782077,
+        "yaw": 6.103331807387196,
+        "z": 514.2535184315761
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.4,
+      "wall": 854773.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -602.6776708398065,
+          -0.3818577053868629,
+          477.32210595107586
+        ],
+        "boatYaw": 0.03844022828994387,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 876.3151420135085,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.0688660555758216,
+        "pitch": -0.006999999999999673,
+        "x": -602.1179400532509,
+        "yaw": 6.32157371594811,
+        "z": 478.0239620730553
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.9,
+      "wall": 857799.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -601.2896048287504,
+          0.04476445495658619,
+          441.2323896636208
+        ],
+        "boatYaw": 0.0384425900122399,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 840.1987420135076,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.4413495230042546,
+        "pitch": -0.006999999999999673,
+        "x": -600.7127196029306,
+        "yaw": 6.321627892125707,
+        "z": 442.02438308779625
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 57,
+      "wall": 860807.900000006
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -599.9020461349078,
+          -0.132513994885768,
+          405.1558636236728
+        ],
+        "boatYaw": 0.038442590021191055,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 804.095542013507,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.1999313217647287,
+        "pitch": -0.006999999999999673,
+        "x": -599.2446709245432,
+        "yaw": 6.321627897200302,
+        "z": 405.9942831552525
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.7,
+      "wall": 863820.099999994
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -598.5131499684168,
+          -0.013808245139763708,
+          369.0445632948474
+        ],
+        "boatYaw": 0.03844259002120451,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 767.9575420135063,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.3422675802184965,
+        "pitch": -0.006999999999999673,
+        "x": -597.9845526251622,
+        "yaw": 6.3216278972007895,
+        "z": 369.9345875667542
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.1,
+      "wall": 866822.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -597.1246227598959,
+          0.2518066572531021,
+          332.9428558732984
+        ],
+        "boatYaw": 0.03844259002121225,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 731.8291420135065,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.7320808420217648,
+        "pitch": -0.006999999999999673,
+        "x": -596.6645848152585,
+        "yaw": 6.3216278972007975,
+        "z": 333.6553538925246
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.5,
+      "wall": 869832.700000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -595.7435208305659,
+          0.4477306721137764,
+          297.0342057106884
+        ],
+        "boatYaw": 0.03844259002122915,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 695.8939420135065,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.8618608203230584,
+        "pitch": -0.006999999999999673,
+        "x": -595.2278801615887,
+        "yaw": 6.3216278972008135,
+        "z": 297.8372316283413
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.9,
+      "wall": 872833.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -594.3573457291166,
+          0.6491149682559932,
+          260.9936530730259
+        ],
+        "boatYaw": 0.03844259002124505,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 659.8267420135048,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 2.1087698426333814,
+        "pitch": -0.006999999999999673,
+        "x": -593.9766045229305,
+        "yaw": 6.32162789720083,
+        "z": 261.7904866702206
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.3,
+      "wall": 875844.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -592.9677116466767,
+          0.050148712232440315,
+          224.8631669296467
+        ],
+        "boatYaw": 0.03844259002124026,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 623.6695420135042,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.6217392571602596,
+        "pitch": -0.006999999999999673,
+        "x": -592.6462922297842,
+        "yaw": 6.321627897200829,
+        "z": 225.4439360038388
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.2,
+      "wall": 878853.400000006
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -586.1142661316564,
+          0.3294171898745112,
+          190.6006235391684
+        ],
+        "boatYaw": 0.6225163585039154,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 587.4424580633149,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.6490428203843193,
+        "pitch": -0.006999999999999673,
+        "x": -586.1425593065187,
+        "yaw": 6.866107134497853,
+        "z": 191.6814971171403
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.7,
+      "wall": 881868
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -564.4141861316579,
+          0.26312014709259585,
+          161.66718353916946
+        ],
+        "boatYaw": 0.6435010311604031,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 551.2756580633151,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.7188181395228568,
+        "pitch": -0.006999999999999673,
+        "x": -564.319644854891,
+        "yaw": 6.926680836504984,
+        "z": 162.55177683657894
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.1,
+      "wall": 884884
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -542.7112261316572,
+          -0.451786639351277,
+          132.7299035391689
+        ],
+        "boatYaw": 0.6435011087930016,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 515.1040580633141,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.0723576234683456,
+        "pitch": -0.006999999999999673,
+        "x": -542.7893640597582,
+        "yaw": 6.926686415459488,
+        "z": 133.49238549325446
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.2,
+      "wall": 887897
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -521.0269861316576,
+          0.08182587041653334,
+          103.81758353916966
+        ],
+        "boatYaw": 0.6435011087932698,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 478.9636580633148,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.505109415171072,
+        "pitch": -0.006999999999999673,
+        "x": -521.1807729279509,
+        "yaw": 6.92668641597282,
+        "z": 104.7455455925516
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.2,
+      "wall": 890909.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -495.8187029595975,
+          -0.46168819461209826,
+          78.25002036710858
+        ],
+        "boatYaw": 0.7853970955372902,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 443.041658063313,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 0.98273373775704,
+        "pitch": -0.006999999999999673,
+        "x": -496.04433750140674,
+        "yaw": 7.068556536848718,
+        "z": 79.1293578079318
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.5,
+      "wall": 893920.099999994
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -470.17363706223574,
+          0.32467049987254865,
+          52.60495446974719
+        ],
+        "boatYaw": 0.7853981633936303,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 406.7740580633129,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.7600273887522675,
+        "pitch": -0.006999999999999673,
+        "x": -470.3155476981616,
+        "yaw": 7.068583468157404,
+        "z": 53.516059278732776
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.3,
+      "wall": 896930.900000006
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -444.75767376197945,
+          -0.1889991970282269,
+          27.18899116949121
+        ],
+        "boatYaw": 0.7853981633974475,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 370.8304580633141,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.3162437779185276,
+        "pitch": -0.006999999999999673,
+        "x": -445.0522574401774,
+        "yaw": 7.068583470576798,
+        "z": 27.93596107712659
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.3,
+      "wall": 899936
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -419.26110028866714,
+          -1.007841464200122,
+          1.6924176961787825
+        ],
+        "boatYaw": 0.7853981633974514,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 334.77285806331383,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 0.4594726083100753,
+        "pitch": -0.006999999999999673,
+        "x": -419.507488809698,
+        "yaw": 7.068583470577036,
+        "z": 2.527152450048411
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.4,
+      "wall": 902942.400000006
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -392.5245949452205,
+          -0.6739565782525432,
+          -22.569237251788923
+        ],
+        "boatYaw": 0.973767118735934,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 298.538430578541,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 0.6999946208915915,
+        "pitch": -0.006999999999999673,
+        "x": -392.75672780329194,
+        "yaw": 7.241710731709471,
+        "z": -21.58492407064484
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.8,
+      "wall": 905945.5
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -362.4260075978436,
+          -0.31774367321252783,
+          -42.63496215004032
+        ],
+        "boatYaw": 0.982793689848786,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 262.36443057854126,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.142809006314545,
+        "pitch": -0.006999999999999673,
+        "x": -362.6238739498653,
+        "yaw": 7.265976796597857,
+        "z": -41.77581444617101
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.3,
+      "wall": 908959.099999994
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -332.40629861837,
+          -0.27351559763746497,
+          -62.64810146968935
+        ],
+        "boatYaw": 0.9827937232472084,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 226.28523057854147,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.214822297459544,
+        "pitch": -0.006999999999999673,
+        "x": -332.7212284282066,
+        "yaw": 7.265979030215946,
+        "z": -61.87598132042857
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.6,
+      "wall": 911965.900000006
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -298.71679845884626,
+          -1.073008518015791,
+          -75.36365235176805
+        ],
+        "boatYaw": 1.2490394826275917,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 190.11479996740536,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 0.29785554452483987,
+        "pitch": -0.006999999999999673,
+        "x": -299.16941304184894,
+        "yaw": 7.532112875838104,
+        "z": -74.45460242943821
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.2,
+      "wall": 914979.799999997
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -264.3570072967329,
+          0.2369285706238568,
+          -86.81691607247221
+        ],
+        "boatYaw": 1.2490457723753416,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 153.89639996740556,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.7195939520122026,
+        "pitch": -0.006999999999999673,
+        "x": -264.8832669279883,
+        "yaw": 7.532231068813853,
+        "z": -86.15717811893043
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.8,
+      "wall": 917999.099999994
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -230.17139438814164,
+          0.3233490445076258,
+          -98.21212037533616
+        ],
+        "boatYaw": 1.2490457723982318,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 117.86159996740535,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.7682810354875254,
+        "pitch": -0.006999999999999673,
+        "x": -230.66218491826385,
+        "yaw": 7.532231079576793,
+        "z": -97.44936471525538
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.1,
+      "wall": 921000.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -194.710746131657,
+          0.08816240484326048,
+          -101.61953646083134
+        ],
+        "boatYaw": 1.5707441993324798,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 81.84800420134755,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.527828787897433,
+        "pitch": -0.006999999999999673,
+        "x": -195.43610859106457,
+        "yaw": 7.85338364408488,
+        "z": -101.06122650392037
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.4,
+      "wall": 924010.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -158.79234613165636,
+          0.16036293804098803,
+          -101.61953646083134
+        ],
+        "boatYaw": 1.5707963265835054,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 45.92960420134683,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.6153046367432495,
+        "pitch": -0.006999999999999673,
+        "x": -159.54622624513917,
+        "yaw": 7.85398157513535,
+        "z": -101.1448687582514
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.8,
+      "wall": 927012.200000003
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -124.4993697352198,
+          0.048616133241084256,
+          -94.95052449266268
+        ],
+        "boatYaw": 2.092819812109351,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "泊海水浴場へ出航。WASDで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 9.836004201347889,
+        "speed": 12,
+        "stamina": 1,
+        "voyage": "tomari"
+      },
+      "camera": {
+        "height": 1.4963750528887814,
+        "pitch": -0.006999999999999673,
+        "x": -125.4013173849099,
+        "yaw": 8.360070894623293,
+        "z": -94.9191469879975
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.3,
+      "wall": 930019.599999994
+    },
+    {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -116,
+          -0.07612244096215663,
+          -90
+        ],
+        "boatYaw": 2.0980245795136025,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "船から降りる",
+        "message": "泊海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3672576723712226,
+        "pitch": -0.006999999999999673,
+        "x": -116.90922180521686,
+        "yaw": 8.379929021470002,
+        "z": -89.97833072793284
+      },
+      "expedition": {
+        "banked": [],
+        "bestRace": null,
+        "capacity": 3,
+        "captain": true,
+        "cargo": [
+          "shore-nakanoura"
+        ],
+        "credits": 4,
+        "gear": [],
+        "notebook": true,
+        "race": null,
+        "rank": "入り江の調査員",
+        "save": "session",
+        "stamps": [
+          "tomari",
+          "nakanoura"
+        ],
+        "target": {
+          "depth": 0,
+          "groundY": -0.43760180859160613,
+          "id": "glass",
+          "kind": "find",
+          "name": "波打ち際のシーグラス",
+          "note": "角が丸くなるまで、波に磨かれた小さなかけら。",
+          "value": 1,
+          "x": -47,
+          "y": -0.1876018085916061,
+          "z": 6
+        },
+        "version": 1
+      },
+      "fps": 56.6,
+      "wall": 933021.5
+    }
+  ]
+}

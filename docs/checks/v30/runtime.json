@@ -1,0 +1,144 @@
+{
+  "sourceRevision": "b4aab5e47c6a10c219bb0c04d34674d951b57c70",
+  "continuousBrowserPlayRevision": "baf4d05f837360412804ab6814fe42d7848c2746",
+  "tests": {
+    "passed": 310,
+    "failed": 0
+  },
+  "build": "PASS",
+  "typecheck": "PASS",
+  "cpuTrips": {
+    "count": 6,
+    "result": "PASS",
+    "scope": "Current real IslandWorld, controller, expedition. One explicit vessel QA start per destination and notebook-only simulated save; subsequent legs only input/mouse/E/map actions. Mean water level, no rendered asset collision registry. CPU simulation, not browser or human-play proof."
+  },
+  "browserTrip": {
+    "route": "Tomari normal spawn -> notebook -> walk/swim to actual vessel -> board -> Nakanoura -> disembark -> grounded stamp -> collect -> reboard -> Tomari -> return on foot -> bank",
+    "warpUsed": false,
+    "input": "Native browser drag, E, J and map controls; bounded __seaQA.moveFor uses actual touch-controller input, not synthetic held keyboard evidence",
+    "waves": "running",
+    "cargoDelivered": [
+      "shore-nakanoura"
+    ],
+    "creditsBeforeDelivery": 4,
+    "creditsAfterDelivery": 7,
+    "outboundObservedSeconds": 108.27770000000298,
+    "returnObservedSeconds": 108.30670000000298,
+    "visualScope": "Actual GPU/browser execution, not full photoreal or human acceptance"
+  },
+  "guidanceRegression": {
+    "before": "UI continued pointing to glass 1km away at Nakanoura, including after collecting its shore record",
+    "after": "Local record -> return-to-camp instructions; HUD and journal agree",
+    "replay": "Actual earned arrival snapshot in dedicated QA save; a QA pose used only for this isolated UI replay, separate from the uninterrupted browser trip",
+    "priorQaSaveRestored": true
+  },
+  "fullPhotoGoal": "UNMET",
+  "finalShowcaseVideo": "PENDING AFTER COMPLETION",
+  "files": [
+    {
+      "path": "approach.json",
+      "sha256": "a9117ea6591f59c577fdc536486a4dfe0d5772899e3a9a1045af389090438462",
+      "bytes": 15636
+    },
+    {
+      "path": "boarding.json",
+      "sha256": "e9504abf4dfc691c79e7d6b8e7ec040715b1db2280de461aaa01ad979eee3021",
+      "bytes": 16946
+    },
+    {
+      "path": "outbound.json",
+      "sha256": "2af835000f6c64c9e79e96e98df3559305314481c02df9da5f45d89286363821",
+      "bytes": 31711
+    },
+    {
+      "path": "disembarking.json",
+      "sha256": "eacfcc82ef4206b8deac39c384809585fff59fd2c045d5b4458e4d6ed03b0c30",
+      "bytes": 15808
+    },
+    {
+      "path": "landing.json",
+      "sha256": "5ae3947766ae87fa0bf76547333c1009cfebc3cb99a98a3e2b830c77c31b9581",
+      "bytes": 42969
+    },
+    {
+      "path": "collected.json",
+      "sha256": "ee43f6caf8a9fc758e9f686b0b27e265282c3a743114007b55e50370c79c89ca",
+      "bytes": 1344
+    },
+    {
+      "path": "back-to-boat.json",
+      "sha256": "7cfceaa0786b016b948be5a1d9224d9a0b49e11dc3bacff53987ce933c6be2d8",
+      "bytes": 23090
+    },
+    {
+      "path": "return-voyage.json",
+      "sha256": "d914b628c8ef2cb8ccbfb52c6d4c40902fe4835abd3710ab98f48cb148530b16",
+      "bytes": 61565
+    },
+    {
+      "path": "return-to-camp.json",
+      "sha256": "f5c5fa8c34ae4bbf76fdacac5fdc3c58b0ade41b57dbe91eff81f7db9bac8e26",
+      "bytes": 61074
+    },
+    {
+      "path": "delivered.json",
+      "sha256": "765b9399a1037191a1b3eb8475ab8a5455e6647f06b44b2d4977ab6e2c3fee68",
+      "bytes": 1342
+    },
+    {
+      "path": "qa-restoration.json",
+      "sha256": "82dcd3583bf45828dfb82d688f1214773832c11befb1a6ba5cb00f123efeb9f1",
+      "bytes": 156
+    },
+    {
+      "path": "browser-log.json",
+      "sha256": "c4854cc7554c5989fa92470cdae65a9db37c7b6412bf58e886e78e59f7c4ddae",
+      "bytes": 785
+    },
+    {
+      "path": "at-helm.jpg",
+      "sha256": "84799c476cc25281089c7a4471a34bac438436844d01707197ab9ba892338007",
+      "bytes": 100167
+    },
+    {
+      "path": "voyage-mid.jpg",
+      "sha256": "70b6a1553daf0a323cef786fca53a94be4eef7adfdc40d03fd48149f6d59f634",
+      "bytes": 102261
+    },
+    {
+      "path": "collected.jpg",
+      "sha256": "cdb52f3c335e84e55420810d83b98c6608cb95dacb1bd3e78661ffc8d889d43c",
+      "bytes": 142982
+    },
+    {
+      "path": "delivered.jpg",
+      "sha256": "99a566c3d3f2e59eb8ef9041cb1d5508cba443141930dca1cb26dd138b78f5d3",
+      "bytes": 127919
+    },
+    {
+      "path": "guidance-local-fixed.jpg",
+      "sha256": "18d7d4d0d0e38ec3fd4ed1d535a1165dacefc6227443d2c5f0cfe783f442751a",
+      "bytes": 140060
+    },
+    {
+      "path": "guidance-return-fixed.jpg",
+      "sha256": "f13b56e6dd15ae1e4aaef1ffc6f7b735a46bbe6d8aa99309bbcc7c675c9b47ba",
+      "bytes": 140132
+    },
+    {
+      "path": "guidance-journal-fixed.jpg",
+      "sha256": "b39c8c40645ab6dd24d27c906705aa14eba541548cea419460bd028dc37a6b2a",
+      "bytes": 55807
+    },
+    {
+      "path": "approach-0-swim.png",
+      "sha256": "9a7ce8a827f3021243c242c142417028a4e124af9418adf5a39d5112a529a9f1",
+      "bytes": 1280186
+    },
+    {
+      "path": "return-ashore-0-walk.png",
+      "sha256": "01de585e735b0dcfa1a1202cd84ce485ddddaef79ad7551920411bca528f8d4b",
+      "bytes": 1424227
+    }
+  ]
+}
