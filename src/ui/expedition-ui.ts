@@ -60,7 +60,7 @@ export class ExpeditionUI {
  }
  update(state:AdventureState):void{
   if(this.disposed)return;this.state=state;const now=performance.now();if(now-this.lastUpdate<160&&this.lastRevision===this.game.revision)return;this.lastUpdate=now;
-  const target=this.game.target(state),chapter=this.game.chapter,race=this.game.race;
+  const chapter=this.game.objective(state),target=chapter.target,race=this.game.race;
   setText(this.find('[data-chapter]'),race?'入り江の操船チャレンジ':chapter.title);setText(this.find('[data-target]'),target?.name??'海の探検を続けよう');
   setText(this.find('[data-hint]'),race?'黄色いブイの間を順番に通ろう。曲がる手前で減速すると操船しやすくなります。':chapter.detail);
   setText(this.find('[data-cargo]'),`持ち物 ${this.game.cargo.length}/${this.game.capacity}`);setText(this.find('[data-points]'),`${this.game.credits} pt`);
@@ -96,7 +96,8 @@ export class ExpeditionUI {
   };
   const action=(parent:Element,label:string,attribute:string,value='',disabled=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset[attribute]=value;b.disabled=disabled;parent.append(b);return b;};
   if(this.section==='journey'){
-   card(g.chapter.title,g.chapter.detail,'今の目標');
+   const objective=this.state?g.objective(this.state):g.chapter;
+   card(objective.title,objective.detail,'今の目標');
    card('海の記録を、つなごう。','浜に流れ着いた調査ノート。浅瀬の小さな発見から、岩場の記録、そして次の島へ。回収品を泊の拠点へ届けると装備を強化できます。');
    const base=card('泊の調査拠点',`記録済み ${g.banked.length}/${g.map.finds.length-1} · 持ち物 ${g.cargo.length}/${g.capacity}`);
    action(base,'拠点を目印にする','track','camp');action(base,'船を目印にする','track','boat');

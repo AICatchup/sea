@@ -157,13 +157,30 @@ export class Expedition {
   };
   if(this.tracked){const target=select(this.tracked);if(target)return target;this.tracked=null;}
   if(!this.notebook)return select('notebook');
-  if(this.cargo.length>=2||this.cargo.includes('capsule'))return select('camp');
+  if(this.cargo.length>=2||this.cargo.includes('capsule')||this.cargo.some(id=>id.startsWith('shore-')))return select('camp');
+  // Arriving early at another beach is a valid branch of the adventure. Do
+  // not keep pointing kilometres back to Tomari while its local find is here.
+  const local=this.map.finds.filter(f=>f.id.startsWith('shore-')&&!this.found(f.id)&&horizontal(state.position,f)<300)
+   .sort((a,b)=>horizontal(state.position,a)-horizontal(state.position,b))[0];
+  if(local)return select(local.id);
   if(this.banked.length<2)return select(['glass','compass','camera'].find(id=>!this.found(id))??'camp');
   if(!this.found('capsule'))return select(!this.found('camera')?'camera':!this.found('logger')?'logger':'capsule');
   if(!this.saved.captain&&state.mode!=='boat')return select('boat');
   const unexplored=this.map.destinations.find(d=>!this.saved.stamps.includes(d.id)&&d.id!=='tomari');
   if(unexplored)return select(unexplored.id);
   return select(this.map.finds.find(f=>!this.found(f.id))?.id??'camp');
+ }
+ objective(state:AdventureState):{target:GameTarget|null;title:string;detail:string}{
+  const target=this.target(state);
+  if(target?.id.startsWith('shore-'))return {target,title:'島で見つける海の記録',detail:state.mode==='boat'
+   ?'船が停まったらEではしごを降り、浜の目印へ。近づいてEで回収しよう。'
+   :'この浜にも海の記録がある。目印に近づき、見下ろしてEで回収しよう。'};
+  if(target?.id==='camp'&&this.cargo.length)return {target,title:'回収した記録を届けよう',detail:
+   state.mode==='walk'&&distance(state.position,this.map.camp)<3.2?'Eで調査ボックスへ届けよう。記録がポイントに変わる。'
+   :state.mode==='boat'?'地図から泊海水浴場へ帰航し、浜の調査ボックスへ届けよう。'
+   :horizontal(state.position,this.map.camp)>300?'船へ戻って泊海水浴場へ。回収した記録を浜の調査ボックスへ届けよう。'
+   :'泊の浜の調査ボックスへ。近づいてEで回収した記録を届けよう。'};
+  return {target,...this.chapter};
  }
  get chapter(){return !this.notebook?{title:'01 / 浜から始まる物語',detail:'浜の調査ノートを探そう。近づいて見下ろし、Eで読む。'}:this.banked.length<2?{title:'02 / はじめての回収',detail:'浅瀬で2つ見つけたら、泊の調査拠点へ届けよう。'}:!this.banked.includes('capsule')?{title:'03 / 海底の記録',detail:'装備を整え、岩場の記録カプセルを持ち帰ろう。'}:this.stamps.length<this.map.destinations.length?{title:'04 / 島々をつなぐ航海',detail:'船に乗り、地図を開いて次の島へ。浜に上陸するとスタンプが増える。'}:{title:'05 / 海の探検家',detail:'残りの記録を探したり、操船のベストタイムに挑戦しよう。'};}
 }
