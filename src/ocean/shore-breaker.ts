@@ -198,12 +198,12 @@ export class ShoreBreaker {
     const profileMaterial=expanded?new THREE.ShaderMaterial({uniforms:this.material.uniforms,depthTest:false,depthWrite:false,toneMapped:false,vertexShader:material.vertexShader,fragmentShader:profileFragment}):null;
     const profilePixels=expanded?new Float32Array(65*8*3*4):null;
     try{
-      renderer.setRenderTarget(target);renderer.setScissorTest(false);renderer.setViewport(0,0,30,3);renderer.autoClear=true;renderer.setClearColor(0,0);
+      renderer.setRenderTarget(target);renderer.setScissorTest(false);renderer.autoClear=true;renderer.setClearColor(0,0);
       renderer.render(scene,new THREE.Camera());renderer.readRenderTargetPixels(target,0,0,30,3,pixels);
       let profile;
       if(profileTarget&&profileMaterial&&profilePixels){
         (scene.children[0] as THREE.Mesh).material=profileMaterial;
-        renderer.setRenderTarget(profileTarget);renderer.setViewport(0,0,65*8,3);
+        renderer.setRenderTarget(profileTarget);
         renderer.render(scene,new THREE.Camera());renderer.readRenderTargetPixels(profileTarget,0,0,65*8,3,profilePixels);
         // These metric coordinates are independent of water state. A failed
         // program can otherwise silently return zeros and look like calm water.

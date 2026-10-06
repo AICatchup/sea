@@ -2,6 +2,8 @@ import './style.css';
 import { inspectBodyHands } from './qa/body-inspection';
 import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
 import {inspectShoreTransport} from './qa/shore-transport-probe.ts';
+import {inspectGpuSkinOnDevice} from './qa/gpu-skinned-browser-check.ts';
+import {inspectGpuSkinLifecycle} from './qa/gpu-skinned-lifecycle.ts';
 import {createCaptureGate} from './qa/capture-exclusivity.ts';
 import { Ocean, type Quality } from './ocean/renderer';
 import {ExpeditionUI} from './ui/expedition-ui';
@@ -175,6 +177,13 @@ try {
     inspectBodyHands:()=>inspectBodyHands(ocean),
     inspectGeometryReceivers:()=>ocean.inspectGeometryReceivers(),
     inspectSkinnedReceivers:()=>ocean.inspectSkinnedReceivers(),
+    geometryRefraction:(enabled:boolean)=>ocean.setGeometryRefraction(enabled),
+    async inspectGpuSkin(){
+      await ocean.ready;const before=captureHost.readState();
+      try{captureHost.visualLock(true);captureHost.setPaused(true);return inspectGpuSkinOnDevice(ocean.renderer);}
+      finally{captureHost.restoreState(before);}
+    },
+    inspectGpuSkinLifecycle:()=>inspectGpuSkinLifecycle(),
     async captureGateFinish(){
       await ocean.ready;const before=captureHost.readState(),variants=[];
       let previous=true;
@@ -481,7 +490,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

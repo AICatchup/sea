@@ -26,6 +26,7 @@ import {ReceiverBridge} from './receiver-bridge.ts';
 import {loadSandTextures,type SandTextureSet} from '../world/sand-material.ts';
 import {inspectGeometryRays} from '../qa/geometry-inspection.ts';
 import {SkinnedReceivers} from './skinned-receivers.ts';
+import {GPUSkinnedReceivers} from './gpu-skinned-receivers.ts';
 import {LightProbeGenerator} from 'three/addons/lights/LightProbeGenerator.js';
 import {Expedition,createExpeditionMap,type SaveStore} from '../game/expedition.ts';
 import {ExpeditionWorld} from '../game/expedition-world.ts';
@@ -59,6 +60,7 @@ function makeOceanGrid(): THREE.BufferGeometry {
 export class Ocean {
   private receiverBridge:ReceiverBridge|null=null;
   private skinnedReceivers:SkinnedReceivers|null=null;
+  private gpuSkinnedReceivers:GPUSkinnedReceivers|null=null;
   private receiverSand:SandTextureSet|null=null;
   private receiverInitialization:Promise<void>|null=null;
   private geometryRefraction=false;
@@ -387,7 +389,7 @@ export class Ocean {
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()),this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));
     this.marine.update(this.time,this.camera.position,underwater>.5);
     this.expeditionWorld.update(this.time,state,this.waterHeights.sample);
-    if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge.sync()||!this.skinnedReceivers?.diagnostics.available)this.setGeometryShader(false);}
+    if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge.sync()||!this.skinnedReceiverReady())this.setGeometryShader(false);}
     const waterMap=this.world.waterMapFor(this.camera.position.x,this.camera.position.z);
     this.uniforms.uBathymetry.value=waterMap.texture;
     this.uniforms.uBathyBounds.value.set(waterMap.origin.x,waterMap.origin.y,waterMap.size.x,waterMap.size.y);
@@ -527,7 +529,11 @@ export class Ocean {
         return box.min.y<=4;
       };
       this.skinnedReceivers=new SkinnedReceivers(this.body.group);this.updateSkinnedReceivers();
-      const gl=this.renderer.getContext() as WebGL2RenderingContext;this.receiverBridge=new ReceiverBridge(this.scene,include,this.renderer.capabilities.maxTextureSize,gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),this.receiverSand.albedo,{activeMesh,bedNormal:this.receiverSand.normalGL,bedARM:this.receiverSand.arm,extraMaterials:()=>this.skinnedReceivers?.materials??[],extraDynamicData:()=>this.skinnedReceivers?.packed.data??new Float32Array(0)});
+      if(new URLSearchParams(location.search).get('gpuskin')==='1'){
+        try{this.gpuSkinnedReceivers=new GPUSkinnedReceivers(this.renderer,this.skinnedReceivers);this.updateSkinnedReceivers();}
+        catch(error){console.warn('GPU skin candidate unavailable; CPU receiver retained',error);}
+      }
+      const gl=this.renderer.getContext() as WebGL2RenderingContext;this.receiverBridge=new ReceiverBridge(this.scene,include,this.renderer.capabilities.maxTextureSize,gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),this.receiverSand.albedo,{activeMesh,bedNormal:this.receiverSand.normalGL,bedARM:this.receiverSand.arm,extraMaterials:()=>this.skinnedReceivers?.materials??[],extraDynamicData:()=>this.skinnedReceivers?.packed.data??new Float32Array(0),dynamicWriter:()=>this.gpuSkinnedReceivers?.diagnostics.available?this.gpuSkinnedReceivers:undefined});
       if(!this.receiverBridge.diagnostics.available)throw new Error(this.receiverBridge.diagnostics.reason);
       Object.assign(this.uniforms,this.receiverBridge.uniforms);
       this.uniforms.receiverIBLHasProbe={value:0};this.uniforms.receiverSH={value:Array.from({length:9},()=>new THREE.Vector3())};this.uniforms.receiverEnvironmentIntensity={value:this.scene.environmentIntensity};
@@ -542,18 +548,20 @@ export class Ocean {
     this.waterScene.traverse(object=>{if(!(object instanceof THREE.Mesh))return;for(const m of Array.isArray(object.material)?object.material:[object.material])if(m instanceof THREE.ShaderMaterial&&m.fragmentShader===oceanFragment&&!m.defines?.CURVED_SURFACE){m.defines??={};if(enabled)m.defines.GEOMETRIC_REFRACTION=1;else delete m.defines.GEOMETRIC_REFRACTION;m.needsUpdate=true;}});
   }
   private updateSkinnedReceivers(){
-    if(!this.skinnedReceivers)return;this.body.group.traverse(object=>{if(object instanceof THREE.SkinnedMesh)object.skeleton.update();});this.skinnedReceivers.update();
-    if(this.uniforms.skinnedAvailable)this.uniforms.skinnedAvailable.value=this.skinnedReceivers.diagnostics.available?1:0;
+    if(!this.skinnedReceivers)return;this.body.group.traverse(object=>{if(object instanceof THREE.SkinnedMesh)object.skeleton.update();});
+    if(!this.gpuSkinnedReceivers?.update())this.skinnedReceivers.update();
+    if(this.uniforms.skinnedAvailable)this.uniforms.skinnedAvailable.value=this.skinnedReceiverReady()?1:0;
   }
+  private skinnedReceiverReady(){return this.gpuSkinnedReceivers?.diagnostics.available||this.skinnedReceivers?.diagnostics.available||false;}
   private async bindReceiverEnvironment(){
     const preset=this.currentPreset,pending=this.environmentProbes.get(preset);if(!pending||!this.uniforms.receiverSH)return;
     try{const probe=await pending;if(this.disposed||this.currentPreset!==preset||this.environmentProbes.get(preset)!==pending)return;this.uniforms.receiverSH.value=probe.sh.coefficients.map(coefficient=>coefficient.clone());this.uniforms.receiverIBLHasProbe.value=1;this.receiverEnvironmentPreset=preset;this.uniforms.receiverEnvironmentIntensity.value=this.scene.environmentIntensity;}catch{if(this.currentPreset===preset&&this.environmentProbes.get(preset)===pending){this.uniforms.receiverIBLHasProbe.value=0;this.receiverEnvironmentPreset=undefined;}}
   }
-  async setGeometryRefraction(enabled:boolean):Promise<boolean>{const previous=this.geometryRefraction;if(enabled){await this.prepareGeometryReceivers();await this.bindReceiverEnvironment();this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge?.sync()||!this.skinnedReceivers?.diagnostics.available)throw new Error(this.receiverBridge?.diagnostics.reason??'Receiver unavailable');}this.setGeometryShader(enabled);return previous;}
+  async setGeometryRefraction(enabled:boolean):Promise<boolean>{const previous=this.geometryRefraction;if(enabled){await this.prepareGeometryReceivers();await this.bindReceiverEnvironment();this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge?.sync()||!this.skinnedReceiverReady())throw new Error(this.receiverBridge?.diagnostics.reason??'Receiver unavailable');}this.setGeometryShader(enabled);return previous;}
   getGeometryRefraction(){return this.geometryRefraction;}
   async inspectGeometryReceivers(){await this.prepareGeometryReceivers();this.scene.updateMatrixWorld(true);if(!this.receiverBridge?.sync())throw new Error('Receiver unavailable');return inspectGeometryRays(this.renderer,this.receiverBridge,this.camera.position);}
-  async inspectSkinnedReceivers(){await this.prepareGeometryReceivers();this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge?.sync()||!this.skinnedReceivers?.diagnostics.available)throw new Error('Skinned receiver unavailable');return inspectGeometryRays(this.renderer,this.receiverBridge,this.camera.position,this.skinnedReceivers,{skinnedDataOffset:this.uniforms.skinnedDataOffset,skinnedRoot:this.uniforms.skinnedRoot,skinnedAvailable:this.uniforms.skinnedAvailable,skinnedTriangleOffset:this.uniforms.skinnedTriangleOffset});}
-  probeGeometryReceivers(){return {enabled:this.geometryRefraction,bridge:this.receiverBridge?{...this.receiverBridge.diagnostics}:null,geometry:this.receiverBridge?{...this.receiverBridge.geometry.diagnostics}:null,skinned:this.skinnedReceivers?{...this.skinnedReceivers.diagnostics}:null,irradiance:{measured:this.uniforms.receiverIBLHasProbe?.value===1,preset:this.receiverEnvironmentPreset,intensity:this.uniforms.receiverEnvironmentIntensity?.value??0,coefficients:this.uniforms.receiverSH?.value?.map((v:THREE.Vector3)=>v.toArray())??[],scope:'Nine SH coefficients from the actual rendered solar-removed environment cube; diffuse only, specular hemisphere remains approximate'},maxTextures:this.renderer.capabilities.maxTextures,maxTextureSize:this.renderer.capabilities.maxTextureSize};}
+  async inspectSkinnedReceivers(){await this.prepareGeometryReceivers();this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();this.skinnedReceivers?.update();if(!this.receiverBridge?.sync()||!this.skinnedReceivers?.diagnostics.available)throw new Error('Skinned receiver unavailable');return inspectGeometryRays(this.renderer,this.receiverBridge,this.camera.position,this.skinnedReceivers,{skinnedDataOffset:this.uniforms.skinnedDataOffset,skinnedRoot:this.uniforms.skinnedRoot,skinnedAvailable:this.uniforms.skinnedAvailable,skinnedTriangleOffset:this.uniforms.skinnedTriangleOffset});}
+  probeGeometryReceivers(){const gpu=this.gpuSkinnedReceivers;return {enabled:this.geometryRefraction,bridge:this.receiverBridge?{...this.receiverBridge.diagnostics}:null,geometry:this.receiverBridge?{...this.receiverBridge.geometry.diagnostics}:null,skinned:this.skinnedReceivers?{...this.skinnedReceivers.diagnostics,backend:gpu?.diagnostics.available?'gpu':'cpu',timeMs:gpu?.diagnostics.available?gpu.diagnostics.cpuSubmitMs:this.skinnedReceivers.diagnostics.timeMs,gpu:gpu?{...gpu.diagnostics}:null}:null,irradiance:{measured:this.uniforms.receiverIBLHasProbe?.value===1,preset:this.receiverEnvironmentPreset,intensity:this.uniforms.receiverEnvironmentIntensity?.value??0,coefficients:this.uniforms.receiverSH?.value?.map((v:THREE.Vector3)=>v.toArray())??[],scope:'Nine SH coefficients from the actual rendered solar-removed environment cube; diffuse only, specular hemisphere remains approximate'},maxTextures:this.renderer.capabilities.maxTextures,maxTextureSize:this.renderer.capabilities.maxTextureSize};}
   setSnellRay(enabled:boolean):boolean{const before=this.uniforms.uSnellRay.value>.5;this.uniforms.uSnellRay.value=enabled?1:0;return before;}
   setObservationClock(time:number):void{
     if(!this.visualCaptureLocked||!this.paused||!Number.isFinite(time)||time<0||time>86400)throw new Error('Finite 0..86400 observation clock requires paused, locked QA state');
@@ -600,7 +608,7 @@ export class Ocean {
     const saved={target:r.getRenderTarget(),viewport:r.getViewport(new THREE.Vector4()),scissor:r.getScissor(new THREE.Vector4()),scissorTest:r.getScissorTest(),clear:r.getClearColor(new THREE.Color()),alpha:r.getClearAlpha(),auto:r.autoClear,tone:r.toneMapping,color:r.outputColorSpace,debug:this.uniforms.uContactDebug.value};
     const result=points.map(point=>({point,values:[] as number[][]})),pixel=new Float32Array(4);
     try{
-      r.autoClear=true;r.toneMapping=THREE.NoToneMapping;r.outputColorSpace=THREE.LinearSRGBColorSpace;r.setClearColor(0,0);r.setScissorTest(false);r.setRenderTarget(target);r.setViewport(0,0,size.x,size.y);
+      r.autoClear=true;r.toneMapping=THREE.NoToneMapping;r.outputColorSpace=THREE.LinearSRGBColorSpace;r.setClearColor(0,0);r.setScissorTest(false);r.setRenderTarget(target);
       for(let mode=1;mode<=19;mode++){
         this.uniforms.uContactDebug.value=mode;r.render(this.waterScene,this.camera);
         for(const row of result){const x=Math.min(size.x-1,Math.floor(row.point.x*size.x)),y=Math.min(size.y-1,Math.floor((1-row.point.y)*size.y));r.readRenderTargetPixels(target,x,y,1,1,pixel);row.values.push(Array.from(pixel));}
@@ -661,7 +669,7 @@ export class Ocean {
   dispose():void{
     if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.animationFrame);this.abort.abort();
     this.captureNextFrame?.(null);this.captureNextFrame=null;
-    this.skinnedReceivers?.dispose();this.receiverBridge?.dispose();this.receiverSand?.textures.forEach(texture=>texture.dispose());
+    this.gpuSkinnedReceivers?.dispose();this.skinnedReceivers?.dispose();this.receiverBridge?.dispose();this.receiverSand?.textures.forEach(texture=>texture.dispose());
     this.photoCoast?.dispose();this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();

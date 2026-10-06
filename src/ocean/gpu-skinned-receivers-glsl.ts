@@ -1,6 +1,7 @@
 export const gpuSkinnedCommon = `
 precision highp float;
 precision highp int;
+precision highp sampler2D;
 uniform int width;
 vec4 fetch(sampler2D t,int i){return texelFetch(t,ivec2(i%width,i/width),0);}
 int address(){return int(gl_FragCoord.y)*width+int(gl_FragCoord.x);}

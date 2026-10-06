@@ -238,7 +238,7 @@ export class SceneCompositor {
     let pending: Promise<unknown>;
     try {
       renderer.autoClear=false;
-      renderer.setRenderTarget(target);renderer.setViewport(0,0,samples.length,1);
+      renderer.setRenderTarget(target);
       renderer.setScissorTest(false);renderer.render(scene,this.camera);
       pending=renderer.readRenderTargetPixelsAsync(target,0,0,samples.length,1,data);
     } catch(error) {

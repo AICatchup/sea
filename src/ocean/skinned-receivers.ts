@@ -94,7 +94,9 @@ export class SkinnedReceivers {
     for(let si=0;si<this.surfaces.length;si++){const s=this.surfaces[si],m=s.mesh,g=m.geometry,attrs=[g.index!,...Object.values(g.attributes)];
       if(this.signature(m)!==s.signature||attrs.length!==s.attributes.length||attrs.some((a,i)=>a!==s.attributes[i])||m.skeleton.bones.length*16!==s.boneSkin.length)throw new Error('source changes require rebuild');
       for(const matrix of [m.matrixWorld,m.bindMatrix,m.bindMatrixInverse])if(!finite(matrix.elements)||Math.abs(matrix.determinant())<1e-20)throw new Error('singular/nonfinite skin transform');
-      if(!m.skeleton.boneMatrices||!finite(m.skeleton.boneMatrices)||m.skeleton.boneMatrices.length!==s.boneSkin.length)throw new Error('invalid bone palette');
+      // Three pads the palette to a square bone texture after the first render.
+      // Only bones.length matrices are meaningful; trailing texture cells are storage.
+      if(!m.skeleton.boneMatrices||!finite(m.skeleton.boneMatrices)||m.skeleton.boneMatrices.length<s.boneSkin.length)throw new Error('invalid bone palette');
       for(let bi=0;bi<m.skeleton.bones.length;bi++){bone.fromArray(m.skeleton.boneMatrices,bi*16);if(Math.abs(bone.determinant())<1e-20)throw new Error('singular bone transform');bone.premultiply(m.bindMatrixInverse).multiply(m.bindMatrix).toArray(out.bones,offset);offset+=16;}
       m.matrixWorld.toArray(out.worlds,si*16);normal.getNormalMatrix(m.matrixWorld);for(let col=0;col<3;col++)for(let row=0;row<3;row++)out.normals[si*12+col*4+row]=normal.elements[col*3+row];
       for(let mi=0;mi<this.materials.length;mi++)out.visible[si*this.materials.length+mi]=visible(m)&&supported(this.materials[mi])?1:0;
@@ -202,10 +204,11 @@ export class SkinnedReceivers {
   }
   /** Independent brute-force Three Ray oracle (does not traverse the packed BVH). */
   inspectionRays(limit=4){
-    const rays:{origin:THREE.Vector3;direction:THREE.Vector3;maxDistance:number;material:number}[]=[];
-    for(const t of this.triangles){if(rays.length>=Math.min(4,limit))break;const s=this.surfaces[t.surface];if(!visible(s.mesh)||!supported(this.materials[t.material])||rays.some(r=>r.material===t.material))continue;
+    const rays:{origin:THREE.Vector3;direction:THREE.Vector3;maxDistance:number;material:number;triangleIndex:number;sourceArea:number;posedArea:number;worldTriangle:number[][]}[]=[];
+    for(const [triangleIndex,t] of this.triangles.entries()){if(rays.length>=Math.min(4,limit))break;const s=this.surfaces[t.surface];if(!visible(s.mesh)||!supported(this.materials[t.material])||rays.some(r=>r.material===t.material))continue;
       const point=new THREE.Vector3(),normal=new THREE.Vector3();for(const vi of t.indices){point.add(new THREE.Vector3().fromArray(s.vertices,vi*3));normal.add(new THREE.Vector3().fromArray(s.normals,vi*3));}point.multiplyScalar(1/3);normal.normalize();if(normal.lengthSq()<.9)continue;
-      rays.push({origin:point.clone().addScaledVector(normal,.25),direction:normal.negate(),maxDistance:1,material:t.material});
+      const world=t.indices.map(vi=>new THREE.Vector3().fromArray(s.vertices,vi*3)),source=t.indices.map(vi=>new THREE.Vector3().fromBufferAttribute(s.mesh.geometry.getAttribute('position'),vi));
+      rays.push({origin:point.clone().addScaledVector(normal,.25),direction:normal.negate(),maxDistance:1,material:t.material,triangleIndex,sourceArea:new THREE.Triangle(...source as [THREE.Vector3,THREE.Vector3,THREE.Vector3]).getArea(),posedArea:new THREE.Triangle(...world as [THREE.Vector3,THREE.Vector3,THREE.Vector3]).getArea(),worldTriangle:world.map(p=>p.toArray())});
     }return rays;
   }
   traceCPU(origin: THREE.Vector3, unitRay: THREE.Vector3, maxDistance: number): SkinnedReceiverHit | null {

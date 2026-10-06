@@ -6,7 +6,8 @@ const WIDTH=1024,TILE=512;
 export const RECEIVER_PARAM_TEXELS=23;
 const MAP_KEYS=['map','normalMap','aoMap','roughnessMap','metalnessMap','emissiveMap'] as const;
 type Surface=THREE.MeshStandardMaterial;
-export interface ReceiverMaterialOptions {extraMaterials?:()=>readonly THREE.Material[];extraDynamicData?:()=>Float32Array;bedNormal?:THREE.Texture;bedARM?:THREE.Texture;activeMesh?:(mesh:THREE.Mesh)=>boolean;}
+export interface ReceiverDynamicWriter {compose(prefix:Float32Array):{texture:THREE.Texture;extraDataOffset:number;texels:number}|null;}
+export interface ReceiverMaterialOptions {extraMaterials?:()=>readonly THREE.Material[];extraDynamicData?:()=>Float32Array;dynamicWriter?:()=>ReceiverDynamicWriter|undefined;bedNormal?:THREE.Texture;bedARM?:THREE.Texture;activeMesh?:(mesh:THREE.Mesh)=>boolean;}
 const floatTexture=(data:Float32Array)=>{const t=new THREE.DataTexture(data,WIDTH,data.length/(WIDTH*4),THREE.RGBAFormat,THREE.FloatType);t.minFilter=t.magFilter=THREE.NearestFilter;t.generateMipmaps=false;t.needsUpdate=true;return t;};
 export function concatenateReceiverData(parts:readonly Float32Array[]):{data:Float32Array;offsets:number[]}{let length=0;const offsets=parts.map(p=>{const o=length/4;length+=p.length;return o;});const data=new Float32Array(Math.max(WIDTH*4,Math.ceil(length/(WIDTH*4))*WIDTH*4));let at=0;for(const p of parts){data.set(p,at);at+=p.length;}return {data,offsets};}
 /** Each map has independent transform/wrap/flip and a raw linear atlas layer. UV0 is the packed geometry contract. */
@@ -32,7 +33,8 @@ export function packReceiverMaterialParameters(materials:readonly THREE.Material
 /** Owns only its packed textures and its synthetic bed material. Source maps/materials remain borrowed. */
 export class ReceiverBridge {
  readonly geometry:GeometryReceivers;readonly uniforms:Record<string,THREE.IUniform>;
- readonly diagnostics={available:false,reason:'not initialized',materials:0,bytes:0,rebuilds:0,refits:0,atlasRebuilds:0,parameterUpdates:0};
+ readonly diagnostics={available:false,reason:'not initialized',materials:0,bytes:0,rebuilds:0,refits:0,atlasRebuilds:0,parameterUpdates:0,dynamicBackend:'cpu'};
+ private cpuDynamic:THREE.DataTexture;
  private rebuild=-1;private disposed=false;private atlasSignature='';private parameterSignature='';private layers=new Map<THREE.Texture,number>();private readonly bed:Surface;
  private readonly maxTextureSize:number;private readonly maxLayers:number;private readonly options:ReceiverMaterialOptions;
  constructor(scene:THREE.Object3D,include:(mesh:THREE.Mesh)=>boolean,maxTextureSize:number,maxLayers:number,sand:THREE.Texture,options:ReceiverMaterialOptions={}){
@@ -40,10 +42,11 @@ export class ReceiverBridge {
  this.geometry=new GeometryReceivers(scene,{include,active:options.activeMesh,coverage:'Opaque UV0 authored meshes; height-field bed separately.',maxTriangles:1_000_000});
  const atlas=new THREE.DataArrayTexture(new Uint8Array([255,255,255,255]),1,1,1);atlas.needsUpdate=true;
  this.uniforms={receiverStatic:{value:floatTexture(new Float32Array(WIDTH*4))},receiverDynamic:{value:floatTexture(new Float32Array(WIDTH*4))},receiverAlbedo:{value:atlas},receiverTextureWidth:{value:WIDTH},receiverRoot:{value:-1},receiverAvailable:{value:0},receiverTriangleOffset:{value:0},receiverInstanceOffset:{value:0},receiverMaterialOffset:{value:0},receiverBedMaterial:{value:0},receiverExtraMaterialBase:{value:0},receiverExtraDataOffset:{value:0}};
+ this.cpuDynamic=this.uniforms.receiverDynamic.value;
  this.bed=new THREE.MeshStandardMaterial({map:sand,normalMap:options.bedNormal??null,aoMap:options.bedARM??null,roughnessMap:options.bedARM??null,metalnessMap:options.bedARM??null,color:'#ffffff',roughness:.85});this.sync();
  }
  private checkSize(data:Float32Array){if(WIDTH>this.maxTextureSize||data.length/(WIDTH*4)>this.maxTextureSize)throw new Error('Packed receiver texture exceeds GPU maximum size');}
- private updateFloat(name:string,data:Float32Array){const old=this.uniforms[name].value as THREE.DataTexture;const previous=old.image.data;if(previous?.length===data.length){previous.set(data);old.needsUpdate=true;}else{this.uniforms[name].value=floatTexture(data);old.dispose();}}
+ private updateFloat(name:string,data:Float32Array){const old=name==='receiverDynamic'?this.cpuDynamic:this.uniforms[name].value as THREE.DataTexture;const previous=old.image.data;if(previous?.length===data.length){previous.set(data);old.needsUpdate=true;this.uniforms[name].value=old;}else{const next=floatTexture(data);this.uniforms[name].value=next;if(name==='receiverDynamic')this.cpuDynamic=next;old.dispose();}}
  private refreshAtlas(materials:readonly THREE.Material[]){
  const maps=[...new Set(materials.flatMap(m=>MAP_KEYS.map(k=>(m as Surface)[k]).filter((t):t is THREE.Texture=>!!t)))];
  const signature=maps.map(t=>`${t.uuid}:${t.version}:${t.source.uuid}:${t.source.version}`).join('|');if(signature===this.atlasSignature)return;
@@ -63,10 +66,14 @@ export class ReceiverBridge {
  const extras=this.options.extraMaterials?.()??[],materials=[...this.geometry.materials,...extras,this.bed];this.refreshAtlas(materials);
  const params=packReceiverMaterialParameters(materials,this.layers),sig=Array.from(params).join(',');if(sig!==this.parameterSignature){this.parameterSignature=sig;this.diagnostics.parameterUpdates++;}
  const p=this.geometry.packed;if(this.rebuild!==this.geometry.diagnostics.rebuilds){const packed=concatenateReceiverData([p.nodes,p.triangles]);this.checkSize(packed.data);this.updateFloat('receiverStatic',packed.data);this.uniforms.receiverTriangleOffset.value=packed.offsets[1];this.rebuild=this.geometry.diagnostics.rebuilds;this.diagnostics.rebuilds++;}
- const dynamic=concatenateReceiverData([p.tlas,p.instances,params,this.options.extraDynamicData?.()??new Float32Array(0)]);this.checkSize(dynamic.data);this.updateFloat('receiverDynamic',dynamic.data);this.uniforms.receiverInstanceOffset.value=dynamic.offsets[1];this.uniforms.receiverMaterialOffset.value=dynamic.offsets[2];this.uniforms.receiverExtraDataOffset.value=dynamic.offsets[3];this.uniforms.receiverRoot.value=this.geometry.uniforms.receiverRoot.value;
- this.uniforms.receiverExtraMaterialBase.value=this.geometry.materials.length;this.uniforms.receiverBedMaterial.value=materials.length-1;this.uniforms.receiverAvailable.value=1;this.diagnostics.available=true;this.diagnostics.reason='';this.diagnostics.refits++;this.diagnostics.materials=materials.length;this.diagnostics.bytes=(this.uniforms.receiverStatic.value as THREE.DataTexture).image.data!.byteLength+dynamic.data.byteLength+(this.uniforms.receiverAlbedo.value as THREE.DataArrayTexture).image.data!.byteLength;return true;
+ const writer=this.options.dynamicWriter?.(),parts=[p.tlas,p.instances,params];if(!writer)parts.push(this.options.extraDynamicData?.()??new Float32Array(0));
+ const dynamic=concatenateReceiverData(parts);this.checkSize(dynamic.data);let dynamicBytes=dynamic.data.byteLength;
+ if(writer){const frame=writer.compose(dynamic.data);if(!frame||frame.extraDataOffset!==dynamic.data.length/4)throw new Error('GPU receiver composition failed');this.uniforms.receiverDynamic.value=frame.texture;this.uniforms.receiverExtraDataOffset.value=frame.extraDataOffset;dynamicBytes=frame.texels*16;this.diagnostics.dynamicBackend='gpu';}
+ else{this.updateFloat('receiverDynamic',dynamic.data);this.uniforms.receiverExtraDataOffset.value=dynamic.offsets[3];this.diagnostics.dynamicBackend='cpu';}
+ this.uniforms.receiverInstanceOffset.value=dynamic.offsets[1];this.uniforms.receiverMaterialOffset.value=dynamic.offsets[2];this.uniforms.receiverRoot.value=this.geometry.uniforms.receiverRoot.value;
+ this.uniforms.receiverExtraMaterialBase.value=this.geometry.materials.length;this.uniforms.receiverBedMaterial.value=materials.length-1;this.uniforms.receiverAvailable.value=1;this.diagnostics.available=true;this.diagnostics.reason='';this.diagnostics.refits++;this.diagnostics.materials=materials.length;this.diagnostics.bytes=(this.uniforms.receiverStatic.value as THREE.DataTexture).image.data!.byteLength+dynamicBytes+(this.uniforms.receiverAlbedo.value as THREE.DataArrayTexture).image.data!.byteLength;return true;
  }catch(error){this.uniforms.receiverAvailable.value=0;this.diagnostics.available=false;this.diagnostics.reason=error instanceof Error?error.message:String(error);return false;}}
- dispose(){if(this.disposed)return;this.disposed=true;this.geometry.dispose();this.bed.dispose();for(const n of ['receiverStatic','receiverDynamic','receiverAlbedo'])(this.uniforms[n].value as THREE.Texture).dispose();this.uniforms.receiverAvailable.value=0;}
+ dispose(){if(this.disposed)return;this.disposed=true;this.geometry.dispose();this.bed.dispose();this.cpuDynamic.dispose();for(const n of ['receiverStatic','receiverAlbedo'])(this.uniforms[n].value as THREE.Texture).dispose();this.uniforms.receiverAvailable.value=0;}
 }
 export const packedReceiverGLSL=receiverTraceGLSL
  .replace('uniform sampler2D receiverNodes;\nuniform sampler2D receiverTLAS;\nuniform sampler2D receiverTriangles;\nuniform sampler2D receiverInstances;','uniform sampler2D receiverStatic;\nuniform sampler2D receiverDynamic;\nuniform int receiverTriangleOffset, receiverInstanceOffset;')

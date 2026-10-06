@@ -33,7 +33,7 @@ export function inspectBodyHands(ocean: Ocean,source:THREE.Group=ocean.body.grou
   const pixels = new Uint8Array(1024 * 1024 * 4);
   try {
     renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1; renderer.autoClear = true;
-    renderer.setRenderTarget(target); renderer.setViewport(0,0,1024,1024); renderer.setScissorTest(false);
+    renderer.setRenderTarget(target); renderer.setScissorTest(false);
     for (const side of ['left', 'right']) {
       const wrist = observer.getObjectByName(`${side} wrist`);
       if (!wrist) throw new Error(`Missing ${side} wrist`);
