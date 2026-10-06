@@ -199,6 +199,10 @@ try {
     inspectFlatCaustics:()=>inspectFlatCaustics(ocean.renderer),
     fishMotion:()=>({time:ocean.diagnostics.time,fish:ocean.marine.inspectFishMotion()}),
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
+    cliffSkinVisible:(visible:boolean)=>{
+      const skin=ocean.world.group.getObjectByName('Tomari jointed rhyolite ledges and fissures');
+      if(!skin)throw new Error('Cliff skin unavailable');const previous=skin.visible;skin.visible=visible;return previous;
+    },
     breakerEnabled:(enabled:boolean)=>ocean.setBreakerCandidateEnabled(enabled),
     shoreEnabled:(enabled:boolean)=>ocean.setShoreCandidateEnabled(enabled),
     reflectionOverscan:(scale:number)=>ocean.setReflectionOverscan(scale),
@@ -262,6 +266,20 @@ try {
         const state=captureHost.readState();if(state.width!==1280||state.height!==720)throw new Error(`Comparison dimensions ${state.width}x${state.height}; expected 1280x720`);
         const diagnostic=ocean.diagnostics;
         return {png,metadata:{name,state,time:diagnostic.time,topography:diagnostic.topography,foliage:diagnostic.foliage,draws:diagnostic.draws,triangles:diagnostic.triangles,scope:'Separate fully initialized terrain instances, aligned actual camera and FFT time; current-pose render counters before restoration; static terrain/foliage comparison only, no identical fish/solver histories or movement/Human proof'}};
+      }finally{try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
+    },
+    async captureFrozenFrames(name:string,eyeY:number,time=34){
+      await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Known view required');
+      const before=captureHost.readState(),clock=ocean.diagnostics.time,frames=[];
+      try{
+        captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth,eyeY);ocean.setObservationClock(time);
+        for(let i=0;i<12;i++)await captureHost.nextFrame();
+        for(let i=0;i<6;i++){
+          const png=await capturePNG();if(!png)throw new Error('No frozen frame');
+          frames.push({png,metadata:{state:captureHost.readState(),time:ocean.diagnostics.time,frame:ocean.diagnostics.frames}});
+        }
+        return {frames,scope:'One frozen camera and simulation clock over successive actual render frames; diagnostic cadence only, not movement proof'};
       }finally{try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
     },
     async captureGeometryComparison(name:string,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},probePoints?:readonly{x:number;y:number}[]){
@@ -420,7 +438,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

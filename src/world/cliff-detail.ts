@@ -214,7 +214,19 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
     const main=joint(x*.23+z*.16+warp,y*.115+z*.052-x*.031,211);
     const cross=joint(z*.31-x*.09+warp*.36,y*.22+x*.071,251);
     const weather=.76+.24*Math.sin(x*.081-z*.057+y*.12);
-    return .09+weather*(1.38*main+.53*cross);
+    return .08+weather*(.62*main+.28*cross);
+  };
+  // The skin must disappear inside the source face at eligibility boundaries.
+  // Closing a raised front directly to its buried back exposed a triangular
+  // wall at every boundary cell. Compute a metric apron around the whole patch.
+  const boundaryWeight=(ix:number,iz:number)=>{
+    let distance=step;
+    for(let z=Math.floor(iz)-1;z<=Math.floor(iz)+1;z++)for(let x=Math.floor(ix)-1;x<=Math.floor(ix)+1;x++){
+      if(selected.has(`${x}:${z}`))continue;
+      const dx=Math.max(x-ix,0,ix-x-1),dz=Math.max(z-iz,0,iz-z-1);
+      distance=Math.min(distance,Math.hypot(dx,dz)*step);
+    }
+    const t=Math.min(1,distance/step);return t*t*(3-2*t);
   };
   const point=(ix:number,iz:number,cellX?:number,cellZ?:number):number=>{
     const mask=Number.isInteger(ix)&&Number.isInteger(iz)?[[ix-1,iz-1],[ix,iz-1],[ix,iz],[ix-1,iz]].reduce((m,[x,z],i)=>m|(selected.has(`${x}:${z}`)?1<<i:0),0):0;
@@ -226,7 +238,7 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
     if(split)splitCorners++;
     // Shared, faceted metre-scale relief follows the parent DEM. The major
     // buttress and cleft shape comes from structuralCoastHeight's same flag.
-    const relief=fractureRelief(x,y,z);
+    const relief=-.045+(fractureRelief(x,y,z)+.045)*boundaryWeight(ix,iz);
     maxRelief=Math.max(maxRelief,relief);minRelief=Math.min(minRelief,relief);
     const index=positions.length/3;
     positions.push(x,y+relief,z,x,y-1.4,z);
@@ -289,7 +301,7 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
     splitCorners,cornerSeparationM:.025,
     // Vertical relief bounds are measured; surface-normal distance depends on
     // the local source slope and must not be advertised as this vertical value.
-    maxVerticalReliefM:maxRelief,minVerticalReliefM:Number.isFinite(minRelief)?minRelief:null,
+    maxVerticalReliefM:maxRelief,minVerticalReliefM:Number.isFinite(minRelief)?minRelief:null,boundaryApronMeters:step,boundaryEmbedMeters:.045,
     fractureFamilies:2,fractureGeometry:'Oblique warped cellular clefts with four center-sampled facets per cell',
     maxFaceWidthM:step,minExposedVertexHeightM:Number.isFinite(minY)?minY:null,
     collisionProxies:proxies,collision:'Terrain-attached indexed shell with full per-cell volume AABBs',

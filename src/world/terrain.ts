@@ -6,7 +6,7 @@ import { cliffOutcrops, cliffBodySegmentBlocked, type CliffCollisionProxy, type 
 import { CoastalFoliage } from './foliage.ts';
 import { ModelResources } from './models/procedural.ts';
 import { loadSandTextures } from './sand-material.ts';
-import { makeTerrainMaterial } from './coast-material.ts';
+import { makeTerrainMaterial,makeCliffMaterial } from './coast-material.ts';
 import { NiijimaCoast } from './niijima-coast.ts';
 import { HabushiMainGate } from './habushi-main-gate.ts';
 import { HabushiGround } from './habushi-ground.ts';
@@ -81,7 +81,7 @@ export class IslandWorld {
   private readonly materials: THREE.Material[] = [];
   private readonly geometries: THREE.BufferGeometry[] = [];
 
-  constructor(coherentRock=false,dryToe=false,connectedForm=false,forestGround=false) {
+  constructor(coherentRock=false,dryToe=false,connectedForm=false,forestGround=false,joinedCliffSkin=false) {
     this.elevation=new IslandElevation(coherentRock,dryToe,connectedForm);
     this.group.name = '式根島・泊 / GSI land DEM with inferred seabed';
     const grain = detailTexture(); this.textures.push(grain);
@@ -107,9 +107,10 @@ export class IslandWorld {
     if (this.elevation.tomari && this.elevation.coast) {
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true);
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true, true);
-      const geometry = cliffOutcrops(this, this.elevation.coast,coherentRock,this.elevation.connectedForm);
+      const geometry = cliffOutcrops(this, this.elevation.coast,coherentRock,this.elevation.connectedForm||joinedCliffSkin);
       this.cliffCollisionProxies.push(...geometry.userData.collisionProxies as CliffCollisionProxy[]);
-      const outcrops = new THREE.Mesh(geometry, terrainMaterial);
+      const tomariCliffMaterial=makeCliffMaterial(terrainMaterial);this.materials.push(tomariCliffMaterial);
+      const outcrops = new THREE.Mesh(geometry, tomariCliffMaterial);
       outcrops.name = 'Tomari jointed rhyolite ledges and fissures'; outcrops.castShadow = outcrops.receiveShadow = true;
       this.geometries.push(geometry); this.group.add(outcrops);
     }

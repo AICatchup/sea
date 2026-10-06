@@ -95,6 +95,25 @@ export const COAST_ROCK_TEXTURE_URLS = Object.freeze({
   height: new URL('../assets/coast/rock_face_03_disp_2k.jpg', import.meta.url).href,
 });
 
+/** Rock geometry inherits its source PBR maps, never the terrain's slope-based
+ * grass/sand classification. Borrowed maps are owned by the terrain material. */
+export function makeCliffMaterial(terrain:THREE.MeshStandardMaterial):THREE.MeshStandardMaterial {
+  const material=terrain.clone();material.name='Tomari continuous rock skin';
+  const compileTerrain=terrain.onBeforeCompile,programKey=terrain.customProgramCacheKey();
+  material.userData={...terrain.userData,surfaceRole:'rock-only',borrowedTextures:true};
+  material.onBeforeCompile=(shader,renderer)=>{
+    // Snapshot before each material receives its own world/caustic wrapper.
+    compileTerrain.call(terrain,shader,renderer);
+    for(const mask of ['greenMix','sandMix']){
+      const pattern=new RegExp(`float ${mask}\\s*=[^;]*;`);
+      if(!pattern.test(shader.fragmentShader))throw new Error(`Missing terrain ${mask} classification`);
+      shader.fragmentShader=shader.fragmentShader.replace(pattern,`float ${mask} = 0.0;`);
+    }
+  };
+  material.customProgramCacheKey=()=>programKey+'|rock-only-v23';
+  return material;
+}
+
 /** World-anchored scanned rock; caller-owned sand, grain and atlas stay caller-owned. */
 function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, forestGround = false): THREE.MeshStandardMaterial {
   const baselineGain=typeof location!=='undefined'&&new URLSearchParams(location.search).get('coast')==='v4-white';
@@ -313,8 +332,11 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
       forestARM = mix(forestARM, forestAltARM, forestBlend);
       float floorLuma = dot(forestPhoto, vec3(.2126, .7152, .0722));
       // Soil/moss coverage is an authored heuristic, not a claim about local botany.
-      vec3 forestSoil = vec3(floorLuma) * mix(vec3(.46, .56, .36), vec3(.46, .64, .38), forestPatch);
-      vec3 forestFloor = mix(forestSoil, forestPhoto, mix(.16, .40, forestBlend));
+      // Evergreen litter and moss share one world-anchored substrate. Keep
+      // coloured fallen leaves as sparse accents rather than an autumn carpet;
+      // this palette is authored, not measured Shikinejima reflectance.
+      vec3 forestSoil = vec3(floorLuma) * mix(vec3(.24, .25, .15), vec3(.18, .31, .12), forestPatch);
+      vec3 forestFloor = mix(forestSoil, forestPhoto * vec3(.44, .49, .33), mix(.08, .20, forestBlend));
       forestFloor *= mix(.85, 1.04, forestPatch);
       vec3 greenColor = mix(canopyColor, mix(vec3(.12, .13, .075), forestFloor, uForestReady), forestMix);` : 'vec3 greenColor = coastCover(vCoastPoint.xz * .18) * .58;'}
       diffuseColor.rgb = mix(mix(stoneColor, greenColor, greenMix), sandColor, sandMix);`);
@@ -347,7 +369,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
         reflectedLight.indirectSpecular *= computeSpecularOcclusion(saturate(dot(geometryNormal, geometryViewDir)), coastOcclusion, material.roughness);
       #endif`);
   };
-  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-fixed-world-v22" : ""}`;
+  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-evergreen-v23" : ""}`;
   return material;
 }
 
