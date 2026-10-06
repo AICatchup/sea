@@ -287,6 +287,26 @@ try {
         return {frames,scope:'One frozen camera and simulation clock over successive actual render frames; diagnostic cadence only, not movement proof'};
       }finally{try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
     },
+    async captureWaterDiagnostic(name:string,time=34.016666666666666,exerciseResize=false){
+      await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile||!Number.isFinite(time))throw new Error('Known water diagnostic view and finite time required');
+      const before=captureHost.readState(),clock=ocean.diagnostics.time,reflection=ocean.setReflectionSampling(true),variants=[];
+      try{
+        captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);ocean.setObservationClock(time);
+        if(exerciseResize)for(const quality of ['medium','high'] as const){
+          while(ocean.diagnostics.frames%3!==1)await captureHost.nextFrame();
+          captureHost.setQuality(quality);for(let i=0;i<6;i++)await captureHost.nextFrame();
+        }
+        for(const enabled of [true,false,true]){
+          ocean.setReflectionSampling(enabled);for(let i=0;i<36;i++)await captureHost.nextFrame();
+          const png=await capturePNG();if(!png)throw new Error('No water diagnostic image');
+          const state=captureHost.readState(),frame=ocean.diagnostics.frames;
+          const probe=profile.pose.mode==='dive'?{available:false,reason:'Parameter probes apply to the above-water branch only'}:ocean.probeWaterContact([{x:.46,y:.47},{x:.60,y:.50},{x:.75,y:.57},{x:.53,y:.60}]);
+          variants.push({png,metadata:{enabled,state,frame,time:ocean.diagnostics.time,exerciseResize,probe,reflectionTarget:ocean.probeReflectionTarget()}});
+        }
+        return {variants,scope:'One frozen camera and clock; only planar-reflection sampling changes. Normal/Fresnel/path probes isolate water optics; no gameplay or photo-quality claim'};
+      }finally{ocean.setReflectionSampling(reflection);ocean.setObservationClock(clock);captureHost.restoreState(before);}
+    },
     async captureGeometryComparison(name:string,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},probePoints?:readonly{x:number;y:number}[]){
       await ocean.ready;const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Known geometry view required');
       const before=captureHost.readState(),previous=ocean.getGeometryRefraction(),variants=[];
@@ -443,7 +463,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

@@ -595,7 +595,10 @@ export const oceanFragment = /* glsl */ `
       else if(uContactDebug<6.5)gl_FragColor=vec4(straightPath,opticalPath,snellUsed,1.);
       else if(uContactDebug<7.5)gl_FragColor=vec4(snellHit,1.);
       else if(uContactDebug<8.5)gl_FragColor=vec4(geometryNormal,geometryKind);
-      else gl_FragColor=vec4(geometryUV,float(geometryMaterial),geometryKind);
+      else if(uContactDebug<9.5)gl_FragColor=vec4(geometryUV,float(geometryMaterial),geometryKind);
+      else if(uContactDebug<10.5)gl_FragColor=vec4(reflectedUV,reflectionLod,reflectionValid);
+      else if(uContactDebug<11.5)gl_FragColor=vec4(textureLod(uReflection,clamp(reflectedUV,.002,.998),0.).rgb,1.);
+      else gl_FragColor=vec4(reflectedScene,1.);
       return;
     }
     gl_FragColor=vec4(color,1.0);

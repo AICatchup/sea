@@ -29,6 +29,7 @@ import {SkinnedReceivers} from './skinned-receivers.ts';
 import {LightProbeGenerator} from 'three/addons/lights/LightProbeGenerator.js';
 import {Expedition,createExpeditionMap,type SaveStore} from '../game/expedition.ts';
 import {ExpeditionWorld} from '../game/expedition-world.ts';
+import {resizeReflectionTarget} from './reflection-target.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -114,6 +115,8 @@ export class Ocean {
   private animationFrame=0;
   private disposed=false;
   private contextLost=false;
+  private reflectionSamplingEnabled=true;
+  private reflectionNeedsUpdate=true;
   private captureNextFrame:((blob:Blob|null)=>void)|null=null;
   private automaticScale=window.innerWidth<650?.78:1;
   private lastStamp=0;
@@ -417,7 +420,7 @@ export class Ocean {
     this.fill.intensity=.17+.20*this.uniforms.uStorm.value;
     if(this.frames%4===0)this.renderer.shadowMap.needsUpdate=true;
     this.renderer.info.reset();
-    if(this.frames%3===0){
+    if(this.frames%3===0||this.reflectionNeedsUpdate){
       // Both sides of the interface need the scene on their own side: below
       // water, total internal reflection sees the real seabed and organisms.
       this.reflection.rotation.x=underwater>.5?Math.PI/2:-Math.PI/2;this.reflection.updateMatrixWorld(true);
@@ -434,7 +437,8 @@ export class Ocean {
       this.uniforms.uReflectionInverseProjection.value.copy(reflectedCamera.projectionMatrixInverse);
       this.uniforms.uReflectionCameraWorld.value.copy(reflectedCamera.matrixWorld);
       this.reflectionMatrix.copy(this.reflectionBias).multiply(reflectedCamera.projectionMatrix).multiply(reflectedCamera.matrixWorldInverse);
-      this.uniforms.uHasReflection.value=1;
+      this.uniforms.uHasReflection.value=this.reflectionSamplingEnabled?1:0;
+      this.reflectionNeedsUpdate=false;
     }
     this.compositor.render(this.scene,this.waterScene,this.camera);this.frames++;
     if(this.captureNextFrame){this.canvas.toBlob(this.captureNextFrame,'image/png');this.captureNextFrame=null;}
@@ -460,7 +464,9 @@ export class Ocean {
     this.renderer.setPixelRatio(Math.min(ratio,Math.sqrt(budget/(width*height))));
     this.renderer.setSize(width,height,false);this.compositor.resize(this.canvas.width,this.canvas.height);
     const reflectionWidth=Math.max(192,Math.round(this.canvas.width*.42)),reflectionHeight=Math.max(128,Math.round(this.canvas.height*.42));
-    this.reflection.getRenderTarget().setSize(reflectionWidth,reflectionHeight);
+    if(resizeReflectionTarget(this.reflection.getRenderTarget(),reflectionWidth,reflectionHeight)){
+      this.uniforms.uHasReflection.value=0;this.reflectionNeedsUpdate=true;
+    }
     this.uniforms.uReflectionResolution.value.set(reflectionWidth,reflectionHeight);
     this.uniforms.uResolution.value.set(this.canvas.width,this.canvas.height);
     this.camera.aspect=width/height;this.camera.updateProjectionMatrix();
@@ -566,6 +572,17 @@ export class Ocean {
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
+  setReflectionSampling(enabled:boolean):boolean{const before=this.reflectionSamplingEnabled;this.reflectionSamplingEnabled=enabled;this.uniforms.uHasReflection.value=enabled&&!this.reflectionNeedsUpdate?1:0;return before;}
+  probeReflectionTarget(){
+    const target=this.reflection.getRenderTarget(),raw=new Uint16Array(4),samples=[],gl=this.renderer.getContext(),initialError=gl.getError(),previous=this.renderer.getRenderTarget();
+    this.renderer.setRenderTarget(target);const status=gl.checkFramebufferStatus(gl.FRAMEBUFFER);this.renderer.setRenderTarget(previous);
+    for(const [u,v] of [[.5367,.5237],[.423,.4951],[.3067,.4449],[.479,.4286],[.1,.8],[.5,.9],[.9,.8]]){
+      this.renderer.readRenderTargetPixels(target,Math.floor(u*target.width),Math.floor(v*target.height),1,1,raw);
+      samples.push({uv:[u,v],raw:Array.from(raw),rgb:Array.from(raw,n=>THREE.DataUtils.fromHalfFloat(n)),error:gl.getError()});
+    }
+    const normal=new THREE.Vector3(0,0,1).transformDirection(this.reflection.matrixWorld),origin=new THREE.Vector3().setFromMatrixPosition(this.reflection.matrixWorld),eye=new THREE.Vector3().setFromMatrixPosition(this.reflectionViewCamera.matrixWorld),colour=target.texture.image as {width:number;height:number};
+    return {width:target.width,height:target.height,type:target.texture.type,minFilter:target.texture.minFilter,generateMipmaps:target.texture.generateMipmaps,status,depthImage:target.depthTexture?{width:target.depthTexture.image.width,height:target.depthTexture.image.height}:null,depthType:target.depthTexture?.type,colorImage:{width:colour.width,height:colour.height},initialError,framebuffer:!!(this.renderer.properties.get(target) as {__webglFramebuffer?:unknown}).__webglFramebuffer,normal:normal.toArray(),eye:eye.toArray(),facingDot:origin.sub(eye).dot(normal),underwater:this.uniforms.uUnderwater.value,samples};
+  }
   probeShoreState(){return this.shoreSolver?.probeState()??null;}
   probeCrestDriver(expanded=false){return this.breaker?.probeDriver(this.renderer,expanded)??null;}
   setWhitewaterVisible(visible:boolean):boolean{const material=this.spray.whitewater?.material;const before=material?.visible??false;if(material)material.visible=visible;return before;}
@@ -581,11 +598,11 @@ export class Ocean {
     const result=points.map(point=>({point,values:[] as number[][]})),pixel=new Float32Array(4);
     try{
       r.autoClear=true;r.toneMapping=THREE.NoToneMapping;r.outputColorSpace=THREE.LinearSRGBColorSpace;r.setClearColor(0,0);r.setScissorTest(false);r.setRenderTarget(target);r.setViewport(0,0,size.x,size.y);
-      for(let mode=1;mode<=9;mode++){
+      for(let mode=1;mode<=12;mode++){
         this.uniforms.uContactDebug.value=mode;r.render(this.waterScene,this.camera);
         for(const row of result){const x=Math.min(size.x-1,Math.floor(row.point.x*size.x)),y=Math.min(size.y-1,Math.floor((1-row.point.y)*size.y));r.readRenderTargetPixels(target,x,y,1,1,pixel);row.values.push(Array.from(pixel));}
       }
-      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY','straightPath,acceptedPath,snellUsed','snellHitXYZ','receiverNormalXYZ,kind','receiverUV,materialId,kind'],result};
+      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY','straightPath,acceptedPath,snellUsed','snellHitXYZ','receiverNormalXYZ,kind','receiverUV,materialId,kind','reflectionUV,lod,valid','reflectionLod0RGB','reflectionFilteredRGB'],result};
     }finally{
       this.uniforms.uContactDebug.value=saved.debug;r.setRenderTarget(saved.target);r.setViewport(saved.viewport);r.setScissor(saved.scissor);r.setScissorTest(saved.scissorTest);r.setClearColor(saved.clear,saved.alpha);r.autoClear=saved.auto;r.toneMapping=saved.tone;r.outputColorSpace=saved.color;target.dispose();
     }
