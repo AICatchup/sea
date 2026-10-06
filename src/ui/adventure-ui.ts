@@ -317,6 +317,8 @@ export class AdventureUI {
     }
   }
 
+  openMap():void{if(this.voyagePanel.hidden)this.togglePanel('voyage');}
+
   private togglePanel(panel: 'place' | 'voyage'): void {
     const target = panel === 'place' ? this.placePanel : this.voyagePanel;
     const show = target.hidden;
@@ -326,7 +328,8 @@ export class AdventureUI {
     target.hidden = false;
     (panel === 'place' ? this.placeToggle : this.voyageToggle).setAttribute('aria-expanded', 'true');
     this.root.classList.add('has-panel');
-    target.querySelector<HTMLButtonElement>('[data-place], .adventure-destinations button')?.focus({ preventScroll: true });
+    (target.querySelector<HTMLButtonElement>('[data-place]:not(:disabled), .adventure-destinations button:not(:disabled)')
+      ?? target.querySelector<HTMLButtonElement>('[data-close]'))?.focus({ preventScroll: true });
     this.lastUpdate = -Infinity;
     this.lastMapUpdate = -Infinity;
   }

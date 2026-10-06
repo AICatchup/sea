@@ -3,6 +3,7 @@ import { inspectBodyHands } from './qa/body-inspection';
 import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
 import {createCaptureGate} from './qa/capture-exclusivity.ts';
 import { Ocean, type Quality } from './ocean/renderer';
+import {ExpeditionUI} from './ui/expedition-ui';
 import { presets, type PresetName } from './ocean/presets';
 import { SurfAudio } from './audio';
 import { AdventureUI } from './ui/adventure-ui';
@@ -21,6 +22,7 @@ const events = { signal: abort.signal };
 let ocean: Ocean;
 let activePreset: PresetName = 'day';
 let adventureUI: AdventureUI;
+let expeditionUI:ExpeditionUI;
 let uiFrame = 0;
 let windTimer = 0;
 let toastTimer = 0;
@@ -99,9 +101,11 @@ try {
     move: (x, forward) => ocean.adventure.setMove(x, forward),
     vertical: direction => ocean.adventure.setVertical(direction),
   }, ocean.world.destinations, ocean.world.mapOutlines);
+  expeditionUI=new ExpeditionUI(ocean.expedition,{map:()=>adventureUI.openMap(),cue:()=>sound.cue()});
   const updateUI = () => {
     if (disposed) return;
     adventureUI.update(ocean.adventure.state, ocean.assets.placedCount);
+    expeditionUI.update(ocean.adventure.state);
     uiFrame = requestAnimationFrame(updateUI);
   };
   uiFrame = requestAnimationFrame(updateUI);
@@ -561,7 +565,7 @@ try {
     import.meta.hot.dispose(() => {
       disposed = true;
       clearTimeout(windTimer); clearTimeout(toastTimer);
-      cancelAnimationFrame(uiFrame); adventureUI.dispose();
+      cancelAnimationFrame(uiFrame); adventureUI.dispose();expeditionUI.dispose();
       abort.abort(); ocean.dispose(); sound.dispose();
       photoUrls.forEach((timer, url) => { clearTimeout(timer); URL.revokeObjectURL(url); });
       photoUrls.clear();

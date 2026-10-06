@@ -37,6 +37,14 @@ export class SurfAudio {
     }
   }
 
+  /** Discovery feedback respects the existing user-enabled audio switch. */
+  cue():void {
+    const context=this.context;if(!this.enabled||!this.visible||!context||context.state!=='running'||this.disposed)return;
+    const gain=context.createGain();gain.connect(context.destination);const now=context.currentTime;
+    gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(.025,now+.015);gain.gain.exponentialRampToValueAtTime(.0001,now+.42);
+    [660,880].forEach((hz,i)=>{const tone=context.createOscillator();tone.type='sine';tone.frequency.value=hz;tone.connect(gain);tone.start(now+i*.09);tone.stop(now+.44);tone.onended=()=>{tone.disconnect();if(i===1)gain.disconnect();};});
+  }
+
   setVisible(visible: boolean): Promise<void> {
     this.visible = visible;
     return this.synchronize();

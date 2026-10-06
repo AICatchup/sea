@@ -71,6 +71,15 @@ export class ExplorerControls {
   private boarding: Boarding | null = null;
   private waterHeightSampler: (x: number, z: number) => number = () => 0;
   private disposed = false;
+  private contextInteraction:{label:(state:AdventureState)=>string;activate:(state:AdventureState)=>boolean}|null=null;
+  private airCapacity=1;
+  private swimmingPower=1;
+
+  setContextInteraction(hook:{label:(state:AdventureState)=>string;activate:(state:AdventureState)=>boolean}):void{this.contextInteraction=hook;}
+  setEquipment(airCapacity:number,swimmingPower:number):void{
+    this.airCapacity=Number.isFinite(airCapacity)?clamp(airCapacity,1,1.45):1;
+    this.swimmingPower=Number.isFinite(swimmingPower)?clamp(swimmingPower,1,1.18):1;
+  }
 
   constructor(canvas: HTMLCanvasElement, ground: GroundSampler, destinations: WorldDestination[], spawn: THREE.Vector3) {
     this.canvas = canvas; this.ground = ground; this.destinations = destinations; this.spawn = spawn.clone();
@@ -268,6 +277,7 @@ export class ExplorerControls {
   /** E/touch interaction uses the vessel in this world, with a visible climbing interval. */
   interact(): void {
     if (this.disposed || this.boarding) return;
+    if(this.contextInteraction?.activate(this.state)){this.updateInteraction();return;}
     if (this.state.mode === 'boat') {
       if (this.state.voyageTarget || Math.abs(this.boatVelocity) > 0.9) {
         this.state.message = '船を停めてから、舷側のはしごで下船できます。'; return;
@@ -410,7 +420,7 @@ export class ExplorerControls {
   }
   private updateInteraction(): void {
     this.state.interactionLabel = this.boarding ? 'はしごを移動中' : this.state.mode === 'boat'
-      ? this.state.voyageTarget || Math.abs(this.boatVelocity) > .9 ? '' : '船から降りる' : this.canBoard() ? '船に乗る' : '';
+      ? this.state.voyageTarget || Math.abs(this.boatVelocity) > .9 ? '' : '船から降りる' : this.contextInteraction?.label(this.state) || (this.canBoard() ? '船に乗る' : '');
   }
   private updateBoat(dt: number, steer: number, throttle: number): void {
     const boat = this.state.boatPosition;
@@ -465,7 +475,7 @@ export class ExplorerControls {
     const swimming = floorBefore < water - 1.3 && p.y < water + .64;
     const immersion = clamp((water - (p.y - EYE_HEIGHT)) / EYE_HEIGHT, 0, 1);
     const running = input.running && (this.state.stamina ?? 1) > .12 && Math.hypot(input.x, input.forward) > .05;
-    const speed = swimming ? running ? 3.2 : 2.1 : (running ? 4.7 : 1.85) * (1 - immersion * .46);
+    const speed = swimming ? (running ? 3.2 : 2.1)*this.swimmingPower : (running ? 4.7 : 1.85) * (1 - immersion * .46);
     const pitchedForward = input.forward * (swimming ? Math.cos(this.state.pitch) : 1);
     const targetX = (Math.cos(this.state.yaw) * input.x + Math.sin(this.state.yaw) * pitchedForward) * speed;
     const targetZ = (Math.sin(this.state.yaw) * input.x - Math.cos(this.state.yaw) * pitchedForward) * speed;
@@ -532,7 +542,7 @@ export class ExplorerControls {
       if (p.y > maximum) { p.y = maximum; this.velocity.y = Math.min(0, this.velocity.y); }
       this.state.mode = p.y < surface - .28 ? 'dive' : 'swim';
       if (p.y < surface - .28) {
-        this.state.oxygen -= resourceDelta * (this.autoAscent ? .001 : .006 + Math.max(0, surface - p.y) * .00007);
+        this.state.oxygen -= resourceDelta * (this.autoAscent ? .001 : .006 + Math.max(0, surface - p.y) * .00007)/this.airCapacity;
         if (this.autoAscent) this.state.message = '空気が少なくなったため、ゆっくり自動浮上しています。';
       } else {
         this.state.oxygen = Math.min(1, this.state.oxygen + resourceDelta * .085);

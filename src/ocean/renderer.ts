@@ -27,6 +27,8 @@ import {loadSandTextures,type SandTextureSet} from '../world/sand-material.ts';
 import {inspectGeometryRays} from '../qa/geometry-inspection.ts';
 import {SkinnedReceivers} from './skinned-receivers.ts';
 import {LightProbeGenerator} from 'three/addons/lights/LightProbeGenerator.js';
+import {Expedition,createExpeditionMap,type SaveStore} from '../game/expedition.ts';
+import {ExpeditionWorld} from '../game/expedition-world.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -83,6 +85,8 @@ export class Ocean {
   readonly assets:AssetWorld;
   readonly marine:MarineLife;
   readonly adventure:ExplorerControls;
+  readonly expedition:Expedition;
+  private readonly expeditionWorld:ExpeditionWorld;
   readonly body=new FirstPersonBody();
   readonly uniforms:Uniforms;
   readonly ready:Promise<void>;
@@ -154,6 +158,18 @@ export class Ocean {
     (this.adventure as ExplorerControls&{setWaterHeightSampler?:(sample:(x:number,z:number)=>number)=>void})
       .setWaterHeightSampler?.(this.waterHeights.sample);
     this.assets.setWaterHeightSampler(this.waterHeights.sample);
+    let expeditionStore:SaveStore|undefined;
+    try{
+      const query=new URLSearchParams(location.search);
+      if(query.get('capture')!=='1')expeditionStore=window.localStorage;
+      else if(import.meta.env.DEV&&query.get('qaSave')==='1'){
+        const storage=window.localStorage;
+        expeditionStore={getItem:()=>storage.getItem('sea.expedition.qa.v1'),setItem:(_key,value)=>storage.setItem('sea.expedition.qa.v1',value)};
+      }
+    }catch{/* Session play remains available. */}
+    this.expedition=new Expedition(createExpeditionMap(this.world,this.world.destinations),this.world,expeditionStore);
+    this.expeditionWorld=new ExpeditionWorld(this.expedition);
+    this.adventure.setContextInteraction({label:state=>this.expedition.context(state)?.label??'',activate:state=>this.expedition.interact(state)});
     const p=presets.day;
     this.uniforms={
       ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},
@@ -202,7 +218,7 @@ export class Ocean {
     const seaGeometry=makeOceanGrid();
     const sea=new THREE.Mesh(seaGeometry,seaMat);sea.frustumCulled=false;this.waterScene.add(sea);
     this.materials=[skyMat,seaMat];this.meshGeometries=[skyGeometry,seaGeometry];
-    this.scene.add(this.world.group,this.assets.group,this.marine.group,this.body.group,this.sun,this.sun.target,this.fill);
+    this.scene.add(this.world.group,this.assets.group,this.marine.group,this.body.group,this.expeditionWorld.group,this.sun,this.sun.target,this.fill);
     this.scene.add(this.scannedCoast);
     prepareWorldMaterials(this.world.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
@@ -211,6 +227,7 @@ export class Ocean {
     Object.assign(this.sun.shadow.camera,{left:-220,right:220,top:220,bottom:-220,near:1,far:1500});
     this.sun.shadow.bias=-.00012;this.sun.shadow.normalBias=.075;this.sun.shadow.radius=.85;
     prepareWorldMaterials(this.body.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
+    prepareWorldMaterials(this.expeditionWorld.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     this.scene.fog=new THREE.FogExp2(new THREE.Color().setRGB(...p.horizon),.000028);
     this.pmrem=new THREE.PMREMGenerator(this.renderer);
     const reflectionTexture=this.reflection.getRenderTarget().texture;
@@ -349,7 +366,11 @@ export class Ocean {
       this.simulation.advance(this.time,delta,this.swell,this.uniforms.uChoppiness.value);
     }
     // Reduced ambient motion never prevents intentional walking or looking.
-    if(!this.visualCaptureLocked)this.adventure.update(delta,this.time,this.paused);
+    if(!this.visualCaptureLocked){
+      this.adventure.setEquipment(this.expedition.hasGear('air')?1.45:1,this.expedition.hasGear('fins')?1.18:1);
+      this.adventure.update(delta,this.time,this.paused);
+      this.expedition.update(delta,this.adventure.state);
+    }
     const state=this.adventure.state;
     this.camera.position.copy(state.position);
     if(state.viewOffset)this.camera.position.add(state.viewOffset);
@@ -362,6 +383,7 @@ export class Ocean {
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()),this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));
     this.marine.update(this.time,this.camera.position,underwater>.5);
+    this.expeditionWorld.update(this.time,state,this.waterHeights.sample);
     if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge.sync()||!this.skinnedReceivers?.diagnostics.available)this.setGeometryShader(false);}
     const waterMap=this.world.waterMapFor(this.camera.position.x,this.camera.position.z);
     this.uniforms.uBathymetry.value=waterMap.texture;
@@ -469,7 +491,7 @@ export class Ocean {
   }
   undoPlacement():void{this.assets.undoPlacement();this.syncSolids();}
   private syncSolids():void{
-    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup,...(this.world.scarpVolume?[this.world.scarpVolume.group]:[])]);
+    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup,this.expeditionWorld.solids,...(this.world.scarpVolume?[this.world.scarpVolume.group]:[])]);
     this.solidContactReady=true;
   }
   capture():Promise<Blob|null>{
@@ -606,6 +628,7 @@ export class Ocean {
       topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,canopyContinuity:this.assets.group.userData.canopyContinuity===true},
       geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
+      expedition:{...this.expedition.snapshot,credits:this.expedition.credits,capacity:this.expedition.capacity,rank:this.expedition.rank,race:this.expedition.race?{next:this.expedition.race.next,elapsed:this.expedition.race.elapsed}:null,target:this.expedition.target(state),save:this.expedition.saveStatus},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
       spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,habushiGround:this.world.habushiGround.diagnostics,
@@ -623,7 +646,7 @@ export class Ocean {
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();
     this.shoreSolver?.dispose();
-    this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
+    this.expeditionWorld.dispose();this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
     this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();
     this.caustics.dispose();this.reflection.dispose();this.reflection.geometry.dispose();this.photographicSky?.texture.dispose();this.renderer.dispose();

@@ -43,6 +43,27 @@ function key(canvas: TestCanvas, type: string, code: string, target?: object): E
   return event;
 }
 
+test('earned tank and fins improve the actual oxygen and swim controller without changing walking speed',()=>{
+ const a=setup({heightAt:()=>-12}),b=setup({heightAt:()=>-12});
+ try{
+  for(const c of [a.controls,b.controls]){c.viewpoint(0,0,0,0,'dive',3);c.state.boatPosition.set(100,0,0);c.setMove(0,1);}
+  b.controls.setEquipment(1.45,1.18);advance(a.controls,10);advance(b.controls,10);
+  const dropA=1-a.state.oxygen,dropB=1-b.state.oxygen;
+  assert.ok(Math.abs(dropA/dropB-1.45)<.001);assert.ok(Math.abs(b.state.position.z)>Math.abs(a.state.position.z)*1.13);
+ }finally{a.controls.dispose();b.controls.dispose();}
+ const c=setup({heightAt:()=>0}),d=setup({heightAt:()=>0});
+ try{c.controls.setMove(0,1);d.controls.setMove(0,1);d.controls.setEquipment(1.45,1.18);advance(c.controls,3);advance(d.controls,3);assert.ok(c.state.position.distanceTo(d.state.position)<1e-8);}finally{c.controls.dispose();d.controls.dispose();}
+});
+
+test('context interaction shares E and leaves vessel interaction available when no field action consumes it',()=>{
+ const {controls,canvas,state}=setup({heightAt:()=>0});let actions=0;
+ try{
+  controls.setContextInteraction({label:()=> '記録を回収',activate:()=>{actions++;return true;}});
+  advance(controls,.1);assert.equal(state.interactionLabel,'記録を回収');key(canvas,'keydown','KeyE');key(canvas,'keyup','KeyE');assert.equal(actions,1);assert.equal(state.mode,'walk');
+  controls.setContextInteraction({label:()=>'',activate:()=>false});advance(controls,.1);key(canvas,'keydown','KeyE');assert.equal(actions,1);assert.match(state.message,/船/);
+ }finally{controls.dispose();}
+});
+
 test('real swimming and diving controller phases drive both body wrists without synthetic phase updates',()=>{
   const {controls,state}=setup({heightAt:()=>-12});
   const body=new FirstPersonBody(),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera();scene.add(body.group);
