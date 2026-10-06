@@ -19,3 +19,5 @@ Coastal canopy models and native leaf masks **island_tree_01, island_tree_02, is
 The expanded Niijima surface is processed from GSI DEM5A/DEM10B tiles, with source hashes in src/world/niijima-detail.generated.ts and src/world/niijima-north.generated.ts. Beach microrelief, seabed, building foundation grading and small rock placements are authored refinements.
 
 Habushi Main Gate and the avatar are authored 3D geometry. The gate uses the official Niijima tourist gallery as a visual reference only; no gallery pixels are included. Absolute gate dimensions and unobserved faces are inferred. Boat upholstery uses authored geometry and procedural cloth maps, with no photographic fabric redistribution. See docs/habushi-main-gate-provenance.md.
+
+The generic gate finish **White Plaster 02** by Rob Tuytel and pavement **Clean Asphalt** by Dimitrios Savva are Poly Haven CC0-1.0 assets. Original maps, source hashes and attribution are under src/assets/plaster/ and src/assets/pavement/. The brightness calibration and weathering are authored; neither material was photographed at Habushi Main Gate.

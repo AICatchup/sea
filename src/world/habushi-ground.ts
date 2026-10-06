@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import type { HabushiMainGate } from './habushi-main-gate.ts';
+import {loadPavementTextures} from './pavement-material.ts';
 
 /** Photo-informed layout, authored metre scale. Road widths and markings are unmeasured. */
 export class HabushiGround {
@@ -8,13 +9,14 @@ export class HabushiGround {
   readonly solidsGroup = new THREE.Group();
   readonly grading: HabushiMainGate['grading'];
   readonly gradings: readonly HabushiMainGate['grading'][];
+  readonly ready:Promise<void>;
   readonly diagnostics = { triangles: 0, drawCalls: 0, maxStep: .14, borrowedResources: 0, disposed: false,
-    dimensionStatus: 'photo-informed layout; absolute pavement dimensions unmeasured', groundTop: .02, sidewalkTop: .14 };
+    dimensionStatus: 'photo-informed layout; absolute pavement dimensions unmeasured', groundTop: .02, sidewalkTop: .14,photographicPavement:false };
   private readonly geometries = new Set<THREE.BufferGeometry>();
   private readonly materials = new Set<THREE.Material>();
   private readonly textures = new Set<THREE.Texture>();
 
-  constructor(gate: HabushiMainGate) {
+  constructor(gate: HabushiMainGate,photographicPavement=false) {
     const level = gate.grading.level;
     if (!Number.isFinite(level)) throw new Error('Habushi pavement requires finite grading level');
     this.group.name = 'Habushi roadfront pavement / authored photo-informed geometry';
@@ -40,9 +42,38 @@ export class HabushiGround {
     const asphalt = material(0x626661, .004), paving = material(0xb1b1a0, .008), curb = material(0xc0bfab, .006);
     const groove = material(0x555b53), joint = material(0x858779), paint = material(0xe4e4d5, .002);
     asphalt.vertexColors = true;
+    joint.vertexColors = true;
+    if(photographicPavement){
+      // Millimetre-thin markings otherwise compete with the road in grazing views.
+      for(const decal of [joint,paint]){decal.polygonOffset=true;decal.polygonOffsetFactor=-1;decal.polygonOffsetUnits=-1;}
+      asphalt.onBeforeCompile=shader=>{
+        shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying float vPavementLocalX;');
+        shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvPavementLocalX=position.x;');
+        shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying float vPavementLocalX;');
+        shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
+          diffuseColor.rgb=min(diffuseColor.rgb,vec3(.65));
+          // Integrate the 18mm maintenance seam over the pixel footprint.
+          // A subpixel-width polygon cannot do this and flickers as dotted fragments.
+          float seamCentre=mod(vPavementLocalX+4.0,8.0)-4.0;
+          float seamFootprint=max(fwidth(vPavementLocalX),.00001);
+          float seamCoverage=clamp((min(seamCentre+seamFootprint*.5,.009)-max(seamCentre-seamFootprint*.5,-.009))/seamFootprint,0.0,1.0);
+          diffuseColor.rgb*=1.0-.42*seamCoverage;`);
+      };
+      asphalt.customProgramCacheKey=()=> 'habushi-photographic-asphalt-v2-filtered-joints';
+      const maps=loadPavementTextures();for(const texture of maps.textures)this.textures.add(texture);
+      this.ready=maps.ready.then(()=>{
+        if(this.diagnostics.disposed)return;
+        asphalt.map=maps.albedo;asphalt.normalMap=maps.normal;asphalt.normalScale.set(.45,.45);
+        asphalt.roughnessMap=maps.arm;asphalt.aoMap=maps.arm;asphalt.aoMapIntensity=.3;
+        // The scan is fresh dark asphalt; the photographed apron is weathered and pale.
+        // This bounded reflectance calibration is authored, not a site measurement.
+        asphalt.color.setScalar(2.4);asphalt.bumpMap=null;asphalt.needsUpdate=true;this.diagnostics.photographicPavement=true;
+      }).catch(error=>console.warn('Pavement photographic finish unavailable; authored finish retained',error));
+    }else this.ready=Promise.resolve();
     const parts = new Map<THREE.Material, { geometry: THREE.BufferGeometry; solid: boolean; names: string[] }[]>();
     const box = (w: number, h: number, d: number, x: number, top: number, z: number, m: THREE.Material, name: string, solid = true) => {
-      const road = m === asphalt;
+      if(photographicPavement&&name==='road expansion joint')return;
+      const road = m === asphalt, seam = m === joint;
       const geometry = new THREE.BoxGeometry(w, h, d, road ? 30 : 1, 1, road ? 12 : 1);
       geometry.translate(x, top - h / 2, z);
       const position = geometry.attributes.position, normal = geometry.attributes.normal, uv = geometry.attributes.uv;
@@ -60,8 +91,9 @@ export class HabushiGround {
           const value = .91 + weather + apron + edge;
           colors.push(value, value, value * .985);
         }
+        if(seam){const shade=photographicPavement&&name.startsWith('road')?.24:1;colors.push(shade,shade,shade);}
       }
-      if (road) geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      if (road || seam) geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
       if (!parts.has(m)) parts.set(m, []); parts.get(m)!.push({ geometry, solid, names: [name] });
     };
     // A thin opaque foundation supports the road; no tall wall/volume conceals ungraded DEM.

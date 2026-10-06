@@ -1,0 +1,44 @@
+{
+  "asset": "clean_asphalt",
+  "author": "Dimitrios Savva",
+  "license": "CC0-1.0",
+  "source": "https://polyhaven.com/a/clean_asphalt",
+  "sourceLicense": "https://polyhaven.com/license",
+  "apiInfo": "https://api.polyhaven.com/info/clean_asphalt",
+  "apiFiles": "https://api.polyhaven.com/files/clean_asphalt",
+  "spanMeters": 2.1,
+  "resolution": 2048,
+  "scope": "Generic road material, not a photographic scan of Habushi pavement",
+  "files": [
+    {
+      "role": "albedo",
+      "suffix": "diff",
+      "bytes": 3314999,
+      "md5": "d3afa117daf0846a743bbf5b4eb2464d",
+      "colorSpace": "sRGB",
+      "file": "clean_asphalt_diff_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clean_asphalt/clean_asphalt_diff_2k.jpg",
+      "sha256": "9d58f263b695c268e391aa39ea2f6b30ab9f36d279715cc78593a4d43368039c"
+    },
+    {
+      "role": "normalGL",
+      "suffix": "nor_gl",
+      "bytes": 3923727,
+      "md5": "f9d4e1b14ac5b231748b600dcd59f20e",
+      "colorSpace": "linear-data",
+      "file": "clean_asphalt_nor_gl_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clean_asphalt/clean_asphalt_nor_gl_2k.jpg",
+      "sha256": "ee6e217a75851a73ab0ce54501e787b63707e0cf8dfd7293989adf7d3e325162"
+    },
+    {
+      "role": "arm",
+      "suffix": "arm",
+      "bytes": 3461113,
+      "md5": "683b881a2b614cd57fd518102f6ce99a",
+      "colorSpace": "linear-data",
+      "file": "clean_asphalt_arm_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clean_asphalt/clean_asphalt_arm_2k.jpg",
+      "sha256": "88e7f69b2b749559841c46c5f7732c1dc59f15acca7bb8f27c6a8b3a6f22cfac"
+    }
+  ]
+}

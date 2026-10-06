@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { HabushiMainGate } from '../src/world/habushi-main-gate.ts';
 import { HabushiGround } from '../src/world/habushi-ground.ts';
 import { WorldCollision } from '../src/world/world-collision.ts';
+import {PAVEMENT_SPAN} from '../src/world/pavement-material.ts';
 
 test('photo-informed roadfront stays bounded, finite, owns resources and leaves gate axis unpainted', () => {
   const gate = new HabushiMainGate({ heightAt: () => 13.1545794 });
@@ -51,4 +52,33 @@ test('asphalt wear is bounded and metre-scaled while markings remain separate', 
   assert.ok(values.every(v => Number.isFinite(v) && v >= .7 && v <= 1.15));
   assert.equal((road.material as THREE.MeshStandardMaterial).vertexColors, true);
   ground.dispose(); gate.dispose();
+});
+
+test('photographic pavement changes material channels without moving the road, markings or support',async()=>{
+ const gate=new HabushiMainGate({heightAt:()=>13.1545794}),before=new HabushiGround(gate),after=new HabushiGround(gate,true);
+ await after.ready;
+ try{
+  const meshes=(ground:HabushiGround)=>{const rows:THREE.Mesh[]=[];ground.group.traverse(o=>{if(o instanceof THREE.Mesh)rows.push(o)});return rows;};
+  const originals=meshes(before),changed=meshes(after);assert.equal(changed.length,originals.length);
+  changed.filter(m=>m.userData.habushiSolid||m.name.includes('crossing')).forEach(mesh=>{
+   const original=originals.find(m=>m.name===mesh.name)!;
+   assert.deepEqual(mesh.matrixWorld.toArray(),original.matrixWorld.toArray());
+   assert.deepEqual(mesh.geometry.index!.array,original.geometry.index!.array);
+   for(const key of ['position','normal','uv'])assert.deepEqual(mesh.geometry.getAttribute(key).array,original.geometry.getAttribute(key).array);
+  });
+  assert.ok(changed.every(mesh=>!mesh.name.includes('road expansion joint')),'road seams must not leave subpixel polygons over the surface');
+  const road=changed.find(o=>o.name.includes('road foundation'))!,material=road.material as THREE.MeshStandardMaterial;
+  assert.ok(material.map&&material.normalMap&&material.roughnessMap&&material.aoMap);
+  assert.equal(material.map.colorSpace,THREE.SRGBColorSpace);assert.equal(material.normalMap.colorSpace,THREE.NoColorSpace);assert.equal(material.roughnessMap.colorSpace,THREE.NoColorSpace);
+  assert.equal(material.map.repeat.x,.6/PAVEMENT_SPAN);assert.equal(material.roughnessMap,material.aoMap);assert.equal(material.metalness,0);
+  const collision=new WorldCollision();after.solidsGroup.traverse(o=>{if(o instanceof THREE.Mesh)collision.addMesh(o)});
+  const p=after.group.localToWorld(new THREE.Vector3(0,.02,20));assert.ok(Math.abs(collision.supportHeightAt(p.x,p.z,p.y+.03,.32,.01)!-p.y)<1e-5);collision.dispose();
+  const disposed=new Map<THREE.Texture,number>();for(const map of [material.map,material.normalMap,material.roughnessMap]){disposed.set(map,0);map.addEventListener('dispose',()=>disposed.set(map,disposed.get(map)!+1));}
+  after.dispose();after.dispose();assert.deepEqual([...disposed.values()],[1,1,1]);
+ }finally{before.dispose();after.dispose();gate.dispose();}
+});
+
+test('disposing pavement before texture readiness never reattaches a late finish',async()=>{
+ const gate=new HabushiMainGate({heightAt:()=>8}),ground=new HabushiGround(gate,true);ground.dispose();await ground.ready;
+ assert.equal(ground.diagnostics.photographicPavement,false);assert.equal(ground.group.children.length,0);gate.dispose();
 });

@@ -100,8 +100,8 @@ export class IslandWorld {
     if(this.scarpVolume)this.group.add(this.scarpVolume.group);
     this.habushiGate=new HabushiMainGate(this.niijimaCoast);
     this.niijimaCoast.applyGrading(this.habushiGate.grading);this.group.add(this.habushiGate.group);
-    this.habushiGround=new HabushiGround(this.habushiGate);
-    this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve(),this.niijimaCoast.ready,this.habushiGate.ready]).then(()=>{});
+    this.habushiGround=new HabushiGround(this.habushiGate,typeof location!=='undefined'&&new URLSearchParams(location.search).get('pavement')!=='0');
+    this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve(),this.niijimaCoast.ready,this.habushiGate.ready,this.habushiGround.ready]).then(()=>{});
     this.niijimaCoast.applyGrading(this.habushiGround.grading);this.group.add(this.habushiGround.group);
     for (const field of this.elevation.fields) this.buildTerrain(field, terrainMaterial);
     if (this.elevation.tomari && this.elevation.coast) {
