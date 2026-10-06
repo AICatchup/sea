@@ -1,0 +1,126 @@
+{
+  "sourceRevision": "38aa5ec652fd5301142937b1adfd3d21bb8a1b7c",
+  "tests": {
+    "passed": 298,
+    "failed": 0,
+    "concurrency": 2
+  },
+  "typecheck": "PASS",
+  "viteBuild": "PASS",
+  "embeddedBuild": "PASS",
+  "browserErrors": [],
+  "continuousPlay": "Spawn, notebook, shallow finds, camp delivery, air tank purchase, camera/logger/capsule recovery, ascent, physical boat boarding, five-gate manual-controller challenge",
+  "inputScope": "Browser E/J/drag/buttons plus existing touch-controller input. Course inputs calculated by a bounded test driver. No position writes; no native held-key or human timing claim.",
+  "continuousPlayRevisionNote": "Before final prop-grounding, course HUD copy and journal-map focus corrections. Coordinates/progression unchanged. Post-correction startup, notebook interaction, reload persistence and responsive/focus checks performed.",
+  "storage": "DEV-only qaSave adapter, separate sea.expedition.qa.v1 key; normal player data untouched",
+  "standaloneBrowserStartup": "UNVERIFIED",
+  "fullInterIslandCollectionLoop": "UNVERIFIED",
+  "humanFunAcceptance": "UNMET",
+  "fullPhotoGoal": "UNMET",
+  "independentFinalVisualReview": "UNMET",
+  "finalVideo": "NOT STARTED; capture after final quality completion",
+  "files": [
+    {
+      "file": "returned-camp.png",
+      "sha256": "3ba9018f46cdb1a3aed9de479cff4d97b235b514c41a1a513fa397e19a9232ee",
+      "bytes": 109709,
+      "width": 1280,
+      "height": 719,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "tank-equipped.png",
+      "sha256": "1d8d661e2ed8ab279fbf00ccd9a1b1ebdbe92401f60c346ccefd1fe6f4f777df",
+      "bytes": 48015,
+      "width": 1280,
+      "height": 719,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "underwater-recovery.png",
+      "sha256": "32b5065bb00c4ea4c2d61716e8e66d893539d73b43e109ad9271f464125580c6",
+      "bytes": 110857,
+      "width": 1280,
+      "height": 719,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "capsule-recovery.png",
+      "sha256": "21a5f28e2e1dc204503a07a103ab22d2a12a5a1351522d36891d182775cb7457",
+      "bytes": 100819,
+      "width": 1280,
+      "height": 719,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "boat-boarded.png",
+      "sha256": "a8fbd0c500b395f37a74c193eba4e9f2cc46c414ffe8bb6d5893f7421ce7bf3f",
+      "bytes": 95581,
+      "width": 1280,
+      "height": 719,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "race-finished.png",
+      "sha256": "03ad89ae1965e0091ba9b80b69215d2bd001c57227f7385f3b6dc5262a8e0d68",
+      "bytes": 48688,
+      "width": 1280,
+      "height": 719,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "mobile-journal.png",
+      "sha256": "d622ea4060ec6775d370573a1afac7f20516f5e55897511ecd3a6d13b22d28f2",
+      "bytes": 36211,
+      "width": 390,
+      "height": 844,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "mobile-map.png",
+      "sha256": "9742bffa8089e0c26345a25c78c61fbb1d7668afa1223472e9bb14aba22d25fe",
+      "bytes": 30410,
+      "width": 390,
+      "height": 844,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "final-hud.png",
+      "sha256": "88ea2effd83205da348ecfd20d1fa841e976fa59293cc7689e28b13b2e60189a",
+      "bytes": 94302,
+      "width": 1280,
+      "height": 719,
+      "encodedFormat": "JPEG"
+    },
+    {
+      "file": "first-loop.json",
+      "sha256": "7e7d444d8afd8c7654bb01b5c21d3385b484caa0f21e5757e04d32f89b663e2d",
+      "bytes": 8136
+    },
+    {
+      "file": "playthrough.json",
+      "sha256": "04aad51295e181b3ab8e2aa5905a703ad2fb023ca2bf41add8c982e2fb49e71b",
+      "bytes": 59214
+    },
+    {
+      "file": "save-before.json",
+      "sha256": "2d337708779bfb1b2323f71b737960ceaf0ca67f01a56bd9fb5939c04ebed507",
+      "bytes": 576
+    },
+    {
+      "file": "save-after.json",
+      "sha256": "96421d95dfb03830ea9f4dd0fe417ffd3dea9d2e31bc28422042c5ef8f083d70",
+      "bytes": 594
+    },
+    {
+      "file": "map-focus.json",
+      "sha256": "96b23fb8aabe3575ffcfd35ac6c1ff794ad82bfc4ad4b18194eaf6c80852ead6",
+      "bytes": 508
+    },
+    {
+      "file": "final-runtime.json",
+      "sha256": "a5f8cff37ed4e17179ad4eca8bd0e7c1cf2f8237e644d1be513449cc7a18c5b5",
+      "bytes": 538
+    }
+  ]
+}
