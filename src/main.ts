@@ -1,6 +1,7 @@
 import './style.css';
 import { inspectBodyHands } from './qa/body-inspection';
 import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
+import {inspectShoreTransport} from './qa/shore-transport-probe.ts';
 import {createCaptureGate} from './qa/capture-exclusivity.ts';
 import { Ocean, type Quality } from './ocean/renderer';
 import {ExpeditionUI} from './ui/expedition-ui';
@@ -170,6 +171,7 @@ try {
     depthSamples:(points:readonly{x:number;y:number}[])=>ocean.probeDepthSamples(points),
     waterSamples:(points:readonly{x:number;y:number}[])=>ocean.probeWaterContact(points),
     farWaveFilter:(enabled:boolean)=>{const old=ocean.uniforms.uFarWaveFilter.value;ocean.uniforms.uFarWaveFilter.value=enabled?1:0;return old;},
+    foamFilm:(enabled:boolean)=>{const old=ocean.uniforms.uFoamFilm.value;ocean.uniforms.uFoamFilm.value=enabled?1:0;return old;},
     inspectBodyHands:()=>inspectBodyHands(ocean),
     inspectGeometryReceivers:()=>ocean.inspectGeometryReceivers(),
     inspectSkinnedReceivers:()=>ocean.inspectSkinnedReceivers(),
@@ -204,6 +206,11 @@ try {
       }finally{original.dispose();captureHost.restoreState(before);}
     },
     inspectFlatCaustics:()=>inspectFlatCaustics(ocean.renderer),
+    async inspectShoreTransport(){
+      await ocean.ready;const before=captureHost.readState();
+      try{captureHost.visualLock(true);captureHost.setPaused(true);return await inspectShoreTransport(ocean.renderer);}
+      finally{captureHost.restoreState(before);}
+    },
     fishMotion:()=>({time:ocean.diagnostics.time,fish:ocean.marine.inspectFishMotion()}),
     bodyVisible:(visible:boolean)=>{ocean.body.group.visible=visible;},
     cliffSkinVisible:(visible:boolean)=>{
@@ -363,7 +370,7 @@ try {
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
       return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
     },
-    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false,compareContact=false,compareLight=false){
+    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false,compareContact=false,compareLight=false,compareFoam=false){
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');
       const previousLight=ocean.getCausticResolution();
       try{
@@ -377,6 +384,15 @@ try {
         await new Promise(resolve=>setTimeout(resolve,Math.max(2000,Math.min(15000,milliseconds))));
         captureHost.setPaused(true);await captureHost.nextFrame();await captureHost.nextFrame();
         const state=captureHost.readState(),png=await capturePNG();if(!png)throw new Error('No live capture');
+        let pngWithoutWhitewater:string|null=null,pngWithoutSurfaceFoam:string|null=null,pngFoamFilm:string|null=null;
+        if(compareFoam){
+          const visible=ocean.setWhitewaterVisible(false),hidden=ocean.uniforms.uHideSurfaceFoam.value,film=ocean.uniforms.uFoamFilm.value;
+          try{
+            for(let i=0;i<6;i++)await captureHost.nextFrame();pngWithoutWhitewater=await capturePNG();
+            ocean.uniforms.uFoamFilm.value=1;for(let i=0;i<6;i++)await captureHost.nextFrame();pngFoamFilm=await capturePNG();ocean.uniforms.uFoamFilm.value=film;
+            ocean.uniforms.uHideSurfaceFoam.value=1;for(let i=0;i<6;i++)await captureHost.nextFrame();pngWithoutSurfaceFoam=await capturePNG();
+          }finally{ocean.uniforms.uHideSurfaceFoam.value=hidden;ocean.uniforms.uFoamFilm.value=film;ocean.setWhitewaterVisible(visible);}
+        }
         const shoreSolver=ocean.diagnostics.shoreSolver;
         const shoreState=compareShore?ocean.probeShoreState():null;
         const crestProbe=compareBreaker?ocean.probeCrestDriver():null;
@@ -411,7 +427,7 @@ try {
           const image=await capturePNG();if(!image)throw new Error('No frozen light capture');
           lightComparison.push({png:image,metadata:{density,photons:density*density,time:ocean.diagnostics.time,state:captureHost.readState(),optics:ocean.probeOptics(),frameIntervalsMs:intervals,timingScope:'Actual browser RAF wall intervals for whole scene, not isolated GPU timer-query time'}});
         }
-        return {png,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,lightComparison,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null,lightComparison:compareLight?'One frozen camera/FFT/solver/time/environment; legacy256->fine512->legacy256, caustic history reset only':null}};
+        return {png,pngWithoutWhitewater,pngWithoutSurfaceFoam,pngFoamFilm,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,lightComparison,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,foamComparison:compareFoam?'Frozen state: all foam, whitewater pool hidden, both pool and surface-shader foam hidden':null,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null,lightComparison:compareLight?'One frozen camera/FFT/solver/time/environment; legacy256->fine512->legacy256, caustic history reset only':null}};
       }finally{try{ocean.setCausticResolution(previousLight);}finally{captureHost.restoreState(before);}}
     },
     async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number}){
@@ -465,7 +481,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison']){
+    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

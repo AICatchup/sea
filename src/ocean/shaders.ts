@@ -2,6 +2,7 @@ import { photographicSkySampling } from './photographic-sky.ts';
 import { capillarySampling, shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling } from './shore-solver.ts';
 import {surfaceFoamGLSL} from './surface-foam.ts';
+import {foamFilmGLSL} from './foam-film.ts';
 import {refractedSceneGLSL,refractedBedGLSL} from './refracted-path.ts';
 import {packedReceiverGLSL,receiverMaterialGLSL} from './receiver-bridge.ts';
 import {waveCausticsSampling} from './caustics.ts';
@@ -248,6 +249,8 @@ export const oceanFragment = /* glsl */ `
   uniform float uContactDebug;
   uniform float uWetStencil;
   uniform float uFarWaveFilter;
+  uniform float uHideSurfaceFoam;
+  uniform float uFoamFilm;
   uniform float uSnellRay;
   uniform mat4 uWaterProjection;
   uniform vec4 uBathyBounds;
@@ -303,6 +306,7 @@ export const oceanFragment = /* glsl */ `
   }
   ${capillarySampling}
   ${surfaceFoamGLSL}
+  ${foamFilmGLSL}
   #ifdef GEOMETRIC_REFRACTION
   ${packedReceiverGLSL}
   ${skinnedReceiverTraceGLSL}
@@ -570,7 +574,12 @@ export const oceanFragment = /* glsl */ `
     float foam=max(breaking*0.90,memory*0.32);
     foam*=mix(0.22,1.0,pores)*smoothstep(4.0,12.0,uWind);
     foam*=1.0-smoothstep(0.35,3.2,footprint);
-    float foamPattern=.7*noise(vOcean*.23+foamDrift*.1)+.3*foamDetail;
+    float broadFoam=noise(vOcean*.23+foamDrift*.1);
+    float foamPattern=.7*broadFoam+.3*foamDetail;
+    if(uFoamFilm>.5){
+      float lace=mix(.5,noise(vOcean*3.7+foamDrift*.7),exp(-pow(footprint*3.7,2.)));
+      foamPattern=.33*broadFoam+.36*foamDetail+.31*lace;
+    }
     float solvedFoam=shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y;
     foam=max(foam,surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern)));
     #ifdef CURVED_SURFACE
@@ -578,14 +587,19 @@ export const oceanFragment = /* glsl */ `
     foam=max(foam,smoothstep(.88,1.,vLip)*vEnvelope*pores*.35);
     #endif
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
-    color=mix(color,foamColor,clamp(foam,0.0,0.85));
+    if(uFoamFilm>.5&&foam>.001){
+      vec2 film=foamFilm(vOcean+foamDrift*.35,footprint,max(solvedFoam,foam));
+      foam*=film.x;
+      foamColor*=film.y*(.90+.18*nL)*(.80+.20*sunVisibility);
+    }
+    color=mix(color,foamColor,clamp(foam,0.0,0.85)*(1.-uHideSurfaceFoam));
     float shoreDepth=max(0.0,-coast.x);
     float shallowBreaking=(1.0-smoothstep(.6,3.8,shoreDepth))*smoothstep(.10,.38,shoreDepth);
     float crestArrival=smoothstep(.06,.18+shoreDepth*.10,vWorld.y);
     // A shallow positive crest alone is not evidence of breaking. The solved
     // residual foam is already represented above; calm contact has no white rail.
     float shoreFoam=shallowBreaking*crestArrival*coast.y*pores*.48*breaking;
-    color=mix(color,uCloudColor*.55,shoreFoam);
+    color=mix(color,uCloudColor*.55,shoreFoam*(1.-uHideSurfaceFoam));
 
     // Air scattering uses the same atmosphere as the visible sky.
     float fog=1.0-exp(-vDistance*mix(0.000045,0.00042,uStorm));

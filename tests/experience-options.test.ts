@@ -9,7 +9,8 @@ test('individual feature switches override the assembled candidate for isolation
   assert.deepEqual(experienceOptions('?experience=habushi&surf=0&whitewater=0&coast=base&view=secret'),{surf:false,whitewater:false,volume:false,photoCoast:false,view:'secret'});
   assert.equal(experienceOptions('?experience=habushi&whitewater=1').volume,false);
 });
-test('existing default and individual feature URLs preserve their behavior',()=>{
-  assert.deepEqual(experienceOptions(''),{surf:false,whitewater:true,volume:false,photoCoast:false,view:null});
+test('normal travel includes coastal solving while retaining explicit opt-outs and geometry variants',()=>{
+  assert.deepEqual(experienceOptions(''),{surf:true,whitewater:true,volume:false,photoCoast:false,view:null});
+  assert.equal(experienceOptions('?surf=0').surf,false);
   assert.deepEqual(experienceOptions('?surf=1&whitewater=volume&coast=photo&view=shore'),{surf:true,whitewater:true,volume:true,photoCoast:true,view:'shore'});
 });

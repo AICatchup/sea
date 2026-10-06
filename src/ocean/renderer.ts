@@ -143,7 +143,7 @@ export class Ocean {
     this.renderer.info.autoReset=false;
     this.simulation=new OceanSimulation(this.renderer,this.wind);
     const experience=experienceOptions(location.search);
-    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer):null;
+    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2}):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0');
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
@@ -175,7 +175,7 @@ export class Ocean {
     this.adventure.setContextInteraction({label:state=>this.expedition.context(state)?.label??'',activate:state=>this.expedition.interact(state)});
     const p=presets.day;
     this.uniforms={
-      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},uFarWaveFilter:{value:new URLSearchParams(location.search).get('wavefilter')==='0'?0:1},
+      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},uHideSurfaceFoam:{value:0},uFoamFilm:{value:new URLSearchParams(location.search).get('foamfilm')==='0'?0:1},uFarWaveFilter:{value:new URLSearchParams(location.search).get('wavefilter')==='0'?0:1},
       uSnellRay:{value:new URLSearchParams(location.search).get('ray')==='1'?1:0},uWaterProjection:{value:this.camera.projectionMatrix},
       uTime:{value:this.time},uSunDirection:{value:new THREE.Vector3(...p.sun).normalize()},
       uSunColor:{value:new THREE.Vector3(...p.sunColor)},uZenith:{value:new THREE.Vector3(...p.zenith)},
