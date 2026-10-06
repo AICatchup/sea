@@ -1,0 +1,56 @@
+{
+  "sourceRevision": "44587a71a4af49ee521b53c43d65a386c26e1718",
+  "baselineRevision": "18d3cbc62764dcc63993f7e656f876f8ec4f1e72",
+  "tests": {
+    "passed": 315,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "geometryValidation": "PASS: paired edges, finite coordinates, seven samples per back/closure triangle below terrain, five wall sweeps and three clear routes",
+  "default": "cliff volume enabled; cliffvolume=0 is diagnostic comparison",
+  "movement": {
+    "secondsRequested": 35,
+    "input": "actual controller setMove, same path as touch UI",
+    "qaStart": [
+      -86,
+      -22,
+      -1.6,
+      0.2
+    ],
+    "allSampledFramesGrounded": false,
+    "modes": [
+      "walk"
+    ],
+    "positionFinite": true,
+    "timing": {
+      "samples": 2024,
+      "initialFramesExcluded": 180,
+      "medianFrameMs": 17.599999994039536,
+      "p95FrameMs": 19.799999997019768,
+      "scope": "Browser RAF intervals, entire scene and concurrent local verification; not an isolated GPU timer"
+    },
+    "scope": "One QA start then continuous input; not a trip from normal spawn or all-island proof"
+  },
+  "independentReviews": {
+    "visual": "Limited improvement accepted across cliff/shore/lookout/side/holdout after reducing repeated grooves; not photographic equivalence",
+    "code": "No blocking async/dispose/material ownership/collider registration regression found"
+  },
+  "portableGeometry": {
+    "blenderVersion": "5.1.2",
+    "triangles": 124760,
+    "closedReadback": true,
+    "reproduction": "byte-identical GLB from checked-in builder and context",
+    "blenderViews": 5,
+    "automaticAssemblyReview": "INCOMPLETE: three views exceed 0.005 pixel intrinsic measurement tolerance; no framing/visibility budget errors",
+    "maxIntrinsicDifferencePixels": 0.008588367038328215,
+    "material": "GLB grey diagnostic; runtime triplanar PBR adapter required"
+  },
+  "fullPhotorealGoal": "UNMET",
+  "finalShowcaseVideo": "PENDING AFTER COMPLETION",
+  "notes": [
+    "An authored close QA pose intersected new relief and was excluded; close views were recaptured after actual walking.",
+    "Earlier long repeated grooves and pasted boulder candidates were rejected.",
+    "Local normal browser save was untouched; capture=1 uses ephemeral progression."
+  ]
+}

@@ -1,0 +1,393 @@
+{
+  "adventure": {
+    "avatarAction": "idle",
+    "boarding": 0,
+    "boat": [
+      -118.5950068345507,
+      0.02400321134600576,
+      -90.9578943776148
+    ],
+    "boatYaw": -0.6,
+    "depth": 0,
+    "grounded": true,
+    "interaction": "",
+    "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+    "mode": "walk",
+    "oxygen": 1,
+    "placed": 0,
+    "remaining": 0,
+    "speed": 0,
+    "stamina": 1,
+    "voyage": null
+  },
+  "camera": {
+    "height": 1.5154619036711725,
+    "pitch": 0.2,
+    "x": -86,
+    "yaw": -1.6,
+    "z": -22
+  },
+  "collision": {
+    "colliders": 3241,
+    "hashCells": 1273,
+    "largeColliders": 1,
+    "lastCandidates": 1,
+    "lastIterations": 0,
+    "lastTransformedTriangles": 0,
+    "lastTriangleTests": 0,
+    "storedTriangles": 453132,
+    "triangles": 2770768,
+    "uniqueBVHs": 29
+  },
+  "draws": 97,
+  "expedition": {
+    "banked": [],
+    "bestRace": null,
+    "capacity": 3,
+    "captain": false,
+    "cargo": [],
+    "credits": 0,
+    "gear": [],
+    "notebook": false,
+    "race": null,
+    "rank": "海の散歩人",
+    "save": "session",
+    "stamps": [],
+    "target": {
+      "depth": 0,
+      "groundY": 0.5215733328254478,
+      "id": "notebook",
+      "kind": "find",
+      "name": "漂着した調査ノート",
+      "note": "潮に流された調査機材を探して、浜の拠点へ届けよう。",
+      "value": 0,
+      "x": -41,
+      "y": 0.7715733328254478,
+      "z": 19
+    },
+    "version": 1
+  },
+  "foliage": {
+    "branchClusters": true,
+    "photoPass": false,
+    "pines": {
+      "byVariant": [
+        {
+          "distant": 0,
+          "far": 298,
+          "mid": 68,
+          "near": 1
+        },
+        {
+          "distant": 0,
+          "far": 302,
+          "mid": 70,
+          "near": 4
+        },
+        {
+          "distant": 0,
+          "far": 343,
+          "mid": 42,
+          "near": 3
+        }
+      ],
+      "culled": 1967,
+      "draws": 33,
+      "exclusiveLod": true,
+      "instances": {
+        "distant": 0,
+        "far": 943,
+        "mid": 180,
+        "near": 8
+      },
+      "levelTriangles": {
+        "far": [
+          1083,
+          1083,
+          1073
+        ],
+        "mid": [
+          4567,
+          4534,
+          4559
+        ],
+        "near": [
+          21663,
+          21467,
+          21614
+        ]
+      },
+      "nearTriangles": 172373,
+      "originalPlacements": 3098,
+      "oversized": {
+        "distant": 0,
+        "far": 0,
+        "mid": 0
+      },
+      "placements": 3098,
+      "rendered": 1131,
+      "selection": "actual transformed crown angular span within distance / triangle caps",
+      "source": "Native CC0 wood and leaves retained, with authored supplementary distant branch patches",
+      "status": "ready",
+      "thresholds": {
+        "midCapacity": 180,
+        "midDistance": 210,
+        "nearCapacity": 24,
+        "nearDistance": 35,
+        "triangleBudget": 3600000,
+        "viewAware": true
+      },
+      "triangles": 2009626,
+      "viewAware": true
+    },
+    "shrubs": {
+      "byVariant": [
+        {
+          "distant": 0,
+          "far": 1361,
+          "mid": 30,
+          "near": 1
+        },
+        {
+          "distant": 0,
+          "far": 1292,
+          "mid": 52,
+          "near": 2
+        },
+        {
+          "distant": 0,
+          "far": 1257,
+          "mid": 98,
+          "near": 1
+        }
+      ],
+      "culled": 6740,
+      "draws": 9,
+      "exclusiveLod": true,
+      "instances": {
+        "distant": 0,
+        "far": 3910,
+        "mid": 180,
+        "near": 4
+      },
+      "levelTriangles": {
+        "far": [
+          160,
+          160,
+          160
+        ],
+        "mid": [
+          420,
+          416,
+          434
+        ],
+        "near": [
+          2299,
+          2297,
+          2293
+        ]
+      },
+      "nearTriangles": 9186,
+      "originalPlacements": 10834,
+      "oversized": {
+        "distant": 0,
+        "far": 0,
+        "mid": 0
+      },
+      "placements": 10834,
+      "rendered": 4094,
+      "selection": "actual transformed crown angular span within distance / triangle caps",
+      "source": "CC0 all-angle branch/needle/leaf models in every ready band",
+      "status": "ready",
+      "thresholds": {
+        "midCapacity": 180,
+        "midDistance": 210,
+        "nearCapacity": 48,
+        "nearDistance": 26,
+        "triangleBudget": 1350000,
+        "viewAware": true
+      },
+      "triangles": 711550,
+      "viewAware": true
+    },
+    "source": "Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified; authored distance-faded branch atlas supplements distant pine crowns",
+    "status": "ready"
+  },
+  "fps": 56.6,
+  "frames": 12422,
+  "geometryReceivers": {
+    "bridge": null,
+    "enabled": false,
+    "geometry": null,
+    "irradiance": {
+      "coefficients": [],
+      "intensity": 0,
+      "measured": false,
+      "scope": "Nine SH coefficients from the actual rendered solar-removed environment cube; diffuse only, specular hemisphere remains approximate"
+    },
+    "maxTextureSize": 16384,
+    "maxTextures": 16,
+    "skinned": null
+  },
+  "ground": -0.12453809632882772,
+  "habushiGate": {
+    "baseHeight": 13.154579418318333,
+    "borrowedResources": 0,
+    "disposed": false,
+    "drawCalls": 7,
+    "groundMax": 15.232431199862322,
+    "groundMin": 11.518341589580851,
+    "maxStep": 0.244,
+    "relief": 3.714089610281471,
+    "triangles": 14264,
+    "windowCount": 4
+  },
+  "habushiGround": {
+    "borrowedResources": 0,
+    "dimensionStatus": "photo-informed layout; absolute pavement dimensions unmeasured",
+    "disposed": false,
+    "drawCalls": 6,
+    "groundTop": 0.02,
+    "maxStep": 0.14,
+    "photographicPavement": true,
+    "sidewalkTop": 0.14,
+    "triangles": 2040
+  },
+  "marineScans": {
+    "assets": [
+      "boulder_01",
+      "namaqualand_boulder_02",
+      "namaqualand_boulder_03"
+    ],
+    "capacity": 32,
+    "draws": 3,
+    "instances": 0,
+    "instancesPerVariant": [
+      0,
+      0,
+      0
+    ],
+    "license": "CC0-1.0",
+    "maxDistance": 29,
+    "status": "ready",
+    "trianglesPerVariant": [
+      18000,
+      17995,
+      18000
+    ],
+    "uniqueVariants": 3
+  },
+  "niijimaMaterials": {
+    "pumice": "ready"
+  },
+  "paused": true,
+  "photoCoast": null,
+  "photographicSky": true,
+  "preset": "day",
+  "programs": 63,
+  "quality": "auto",
+  "resolution": [
+    1279,
+    719
+  ],
+  "scannedCoast": [
+    {
+      "count": 20,
+      "name": "Photo-scanned cliff outcrops boulder_01"
+    },
+    {
+      "count": 20,
+      "name": "Photo-scanned cliff outcrops namaqualand_boulder_02"
+    },
+    {
+      "count": 20,
+      "name": "Photo-scanned cliff outcrops namaqualand_boulder_03"
+    },
+    {
+      "count": 30,
+      "name": "Photo-scanned cliff outcrops coast_rocks_01"
+    },
+    {
+      "count": 30,
+      "name": "Photo-scanned cliff outcrops coast_rocks_03"
+    }
+  ],
+  "shoreSolver": {
+    "bounds": {
+      "w": 1,
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "droppedSeconds": 0,
+    "order": 2,
+    "precision": "float32",
+    "ready": 0,
+    "simulationElapsed": 0,
+    "stableDelta": 0.0061153681793131975,
+    "substeps": 0
+  },
+  "spray": {
+    "active": 0,
+    "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater bilinear cached height, ground-culling, analytic onshore drift",
+    "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+    "capacity": 1500,
+    "drawCalls": 2,
+    "emitted": 0,
+    "failed": false,
+    "flowSamples": 0,
+    "interval": 0.2,
+    "maxEstimatedHeightDepthRatio": 0.08185102834908253,
+    "maxSampleCrest": 0.07190051117723328,
+    "maxSampleEnergy": 0,
+    "pending": false,
+    "readbackBytes": 2304,
+    "ready": true,
+    "sampleEnergyPositiveCount": 0,
+    "sampleWetEligibleCount": 205,
+    "samples": 576,
+    "updateMs": 0.4000000059604645,
+    "whitewaterActive": 0,
+    "whitewaterCapacity": 1024,
+    "whitewaterEmitted": 0,
+    "whitewaterMode": "legacy",
+    "whitewaterTriangles": 2048
+  },
+  "swell": 1,
+  "time": 192.2273666666701,
+  "topography": {
+    "canopyContinuity": true,
+    "cliffVolume": {
+      "source": "CC0 scan geometry / inferred placement",
+      "status": "ready",
+      "triangles": 124760
+    },
+    "coherentRock": true,
+    "connectedForm": false,
+    "dryToe": true
+  },
+  "triangles": 7549967,
+  "visualCaptureLocked": true,
+  "waterHeightCache": {
+    "failed": false,
+    "interval": 0.2,
+    "readbackBytes": 1024,
+    "ready": true,
+    "requestCapacity": 128,
+    "requestedPoints": 13,
+    "samples": 256
+  },
+  "wind": 8.5,
+  "worldSolids": {
+    "added": 3241,
+    "colliders": 3241,
+    "instances": 120,
+    "meshes": 23,
+    "removed": 0,
+    "replaced": 0,
+    "syncMs": 5800.5999999940395,
+    "triangles": 2770768,
+    "trunks": 3098,
+    "unchanged": 0
+  }
+}

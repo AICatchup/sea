@@ -1,0 +1,42 @@
+{
+  "kind": "continuous inverse DEM relief from five CC0 scans; capped and buried per local terrain height",
+  "triangles": 124760,
+  "vertices": 62382,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "finite": true,
+  "max_outward_offset_m": 1.0676231147458293,
+  "sources": [
+    {
+      "asset": "coast-rocks-01-2k.glb",
+      "sha256": "3c8ae71b23589c22ad1b0b673b509a1be1a9d55f6d9076195f41aefcfa930200",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    },
+    {
+      "asset": "coast-rocks-03-2k.glb",
+      "sha256": "f0001e9f71059afcbeb0848fb572a1244790a9d6df1092a101d5c44e3573a4a5",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    },
+    {
+      "asset": "boulder-01-2k.glb",
+      "sha256": "c9ce15df5031723038f21924bd4af5ccfddd2862dca54883dfa7abb48f0bda92",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    },
+    {
+      "asset": "namaqualand-boulder-02-2k.glb",
+      "sha256": "1489de97fe99fea99895a8dd605fb4942692121e7e331904073a61241a778d7b",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    },
+    {
+      "asset": "namaqualand-boulder-03-2k.glb",
+      "sha256": "1b6df6557941ee44f0774b0f8a411287aa7575626be2af5238a86824dfea6731",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    }
+  ],
+  "readback": {
+    "triangles": 124760,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0
+  },
+  "elapsed_seconds": 6.342607498168945
+}

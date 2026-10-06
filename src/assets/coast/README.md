@@ -1,5 +1,7 @@
 # Scanned fractured cliff material
 
+The separately generated `tomari-west-volume-v32.glb` is a closed, inferred cliff relief using five bundled CC0 scan geometries and pinned samples of the existing DEM. `tomari-west-volume-v32.json` records hashes, provenance and the reproducible builder. It is not a Tomari photogrammetry survey. Its grey GLB material is replaced by this folder's world-projected PBR in the runtime; no source photograph pixels are baked into the geometry asset.
+
 This folder contains the unchanged official **Rock Face 03** texture originals by **Dario Barresi** (photography) and **Rico Cilliers** (processing), from [Poly Haven](https://polyhaven.com/a/rock_face_03), under [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/). [Poly Haven's asset license](https://polyhaven.com/license) permits redistribution of the asset files. No Google photograph pixels or derived Google texture are included.
 
 The material is a generic weathered cliff reference. It is **not a Tomari scan**, and the source metadata does not establish rhyolite geology. Its angular, chipped and finely cracked structure was selected against Tomari's pale coastal crags. The shader reduces the source's brown mineral color and calibrates its dry palette toward gray-beige in linear light. This is an authored appearance adjustment, not a measured reflectance or geological match. Original image bytes are never recolored, recompressed or resized.

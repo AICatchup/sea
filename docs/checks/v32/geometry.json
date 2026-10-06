@@ -1,0 +1,134 @@
+{
+  "meshes": 1,
+  "bytes": 2246892,
+  "vertices": 62382,
+  "triangles": 124760,
+  "nonfinite": 0,
+  "hiddenSamples": 431326,
+  "maxHiddenExposure": -0.0533177406359826,
+  "exposedFront": 36847,
+  "minExposedY": 3.108093738555908,
+  "maxExposedY": 26.270000457763672,
+  "edgesNotPaired": 0,
+  "probes": [
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 8,
+        "z": -32
+      },
+      "to": {
+        "x": -143,
+        "y": 8,
+        "z": -32
+      },
+      "blocked": true,
+      "fraction": 0.2574476488846195
+    },
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 10,
+        "z": -22
+      },
+      "to": {
+        "x": -143,
+        "y": 10,
+        "z": -22
+      },
+      "blocked": true,
+      "fraction": 0.36543059164985187
+    },
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 12,
+        "z": -9
+      },
+      "to": {
+        "x": -143,
+        "y": 12,
+        "z": -9
+      },
+      "blocked": true,
+      "fraction": 0.5795792144446251
+    },
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 10,
+        "z": 4
+      },
+      "to": {
+        "x": -143,
+        "y": 10,
+        "z": 4
+      },
+      "blocked": true,
+      "fraction": 0.5424784863427531
+    },
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 10,
+        "z": 15
+      },
+      "to": {
+        "x": -143,
+        "y": 10,
+        "z": 15
+      },
+      "blocked": true,
+      "fraction": 0.4413700803255324
+    },
+    {
+      "kind": "shore/boat-clearance",
+      "from": {
+        "x": -86,
+        "y": 0,
+        "z": -36
+      },
+      "to": {
+        "x": -86,
+        "y": 0,
+        "z": -10
+      },
+      "blocked": false
+    },
+    {
+      "kind": "shore/boat-clearance",
+      "from": {
+        "x": -42,
+        "y": 0,
+        "z": 9
+      },
+      "to": {
+        "x": -36,
+        "y": 0,
+        "z": 27
+      },
+      "blocked": false
+    },
+    {
+      "kind": "shore/boat-clearance",
+      "from": {
+        "x": -56,
+        "y": -1,
+        "z": -50
+      },
+      "to": {
+        "x": -20,
+        "y": -1,
+        "z": -40
+      },
+      "blocked": false
+    }
+  ],
+  "exposedHiddenFaces": [],
+  "exposedHiddenFaceCount": 0
+}
