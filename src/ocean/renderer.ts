@@ -497,7 +497,7 @@ export class Ocean {
   }
   undoPlacement():void{this.assets.undoPlacement();this.syncSolids();}
   private syncSolids():void{
-    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup,this.expeditionWorld.solids,...(this.world.scarpVolume?[this.world.scarpVolume.group]:[])]);
+    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup,this.expeditionWorld.solids,...(this.world.scarpVolume?[this.world.scarpVolume.group]:[]),...(this.world.cliffVolume?[this.world.cliffVolume.group]:[])]);
     this.solidContactReady=true;
   }
   capture():Promise<Blob|null>{
@@ -642,7 +642,7 @@ export class Ocean {
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
-      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,canopyContinuity:this.assets.group.userData.canopyContinuity===true},
+      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null},
       geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       expedition:{...this.expedition.snapshot,credits:this.expedition.credits,capacity:this.expedition.capacity,rank:this.expedition.rank,race:this.expedition.race?{next:this.expedition.race.next,elapsed:this.expedition.race.elapsed}:null,target:this.expedition.target(state),save:this.expedition.saveStatus},

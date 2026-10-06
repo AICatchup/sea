@@ -1,0 +1,67 @@
+{
+  "asset": "tomari-west-volume-v32.glb",
+  "sha256": "a174055ccafd091ca04829afee4bcef62614c5a44a47eb29c46f006d6455251a",
+  "bytes": 2246892,
+  "units": "meters",
+  "coordinates": "runtime X east, Y up, Z south",
+  "construction": "Five CC0 scan relief fields on a closed inverse-DEM cliff; inferred positions, fractures and hidden faces, not a Tomari photogrammetry survey.",
+  "sources": [
+    {
+      "asset": "coast-rocks-01-2k.glb",
+      "sha256": "3c8ae71b23589c22ad1b0b673b509a1be1a9d55f6d9076195f41aefcfa930200",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement",
+      "url": "https://polyhaven.com/a/coast_rocks_01",
+      "license": "CC0-1.0"
+    },
+    {
+      "asset": "coast-rocks-03-2k.glb",
+      "sha256": "f0001e9f71059afcbeb0848fb572a1244790a9d6df1092a101d5c44e3573a4a5",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement",
+      "url": "https://polyhaven.com/a/coast_rocks_03",
+      "license": "CC0-1.0"
+    },
+    {
+      "asset": "boulder-01-2k.glb",
+      "sha256": "c9ce15df5031723038f21924bd4af5ccfddd2862dca54883dfa7abb48f0bda92",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement",
+      "url": "https://polyhaven.com/a/boulder_01",
+      "license": "CC0-1.0"
+    },
+    {
+      "asset": "namaqualand-boulder-02-2k.glb",
+      "sha256": "1489de97fe99fea99895a8dd605fb4942692121e7e331904073a61241a778d7b",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement",
+      "url": "https://polyhaven.com/a/namaqualand_boulder_02",
+      "license": "CC0-1.0"
+    },
+    {
+      "asset": "namaqualand-boulder-03-2k.glb",
+      "sha256": "1b6df6557941ee44f0774b0f8a411287aa7575626be2af5238a86824dfea6731",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement",
+      "url": "https://polyhaven.com/a/namaqualand_boulder_03",
+      "license": "CC0-1.0"
+    }
+  ],
+  "terrain": "Pinned samples of the existing GSI-derived IslandElevation(true,true,false), not a new survey",
+  "referenceUse": "Existing Tomari visual references informed large forms; no photograph pixels are included",
+  "materialAdapter": "makeCliffMaterial, shared rock_face_03 world triplanar PBR; the GLB contains a diagnostic grey material only",
+  "generator": "scripts/build-tomari-cliff.py",
+  "context": "scripts/geometry/tomari-west-context.json",
+  "contextSha256": "1908aef368a12c467243e9bbc4d14f3545c0e41508eeae3a8b203945de62dc8d",
+  "build": {
+    "kind": "continuous inverse DEM relief from five CC0 scans; capped and buried per local terrain height",
+    "triangles": 124760,
+    "vertices": 62382,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "finite": true,
+    "max_outward_offset_m": 1.0676231147458293,
+    "readback": {
+      "triangles": 124760,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0
+    },
+    "elapsed_seconds": 6.342607498168945
+  },
+  "reproducedGLBSha256": "a174055ccafd091ca04829afee4bcef62614c5a44a47eb29c46f006d6455251a"
+}
