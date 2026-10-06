@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "name": "lookout",
+    "provenance": "QA bookmark",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -25,
+      13.50407012014893,
+      36,
+      -0.12048441287007682,
+      0.2550747238774246,
+      0.0320514492656817,
+      0.9588498819388662
+    ],
+    "pose": {
+      "x": -25,
+      "z": 36,
+      "yaw": -0.52,
+      "pitch": -0.25,
+      "mode": "walk",
+      "depth": 0
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  "sourceRevision": "652a13bcd95222ddb68b105991951f6144bc4a83"
+}

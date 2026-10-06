@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "name": "reef",
+    "provenance": "QA bookmark",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -145,
+      -5,
+      -113,
+      -0.20197938638944213,
+      0.24196872057608015,
+      0.0515738045677269,
+      0.947626302093251
+    ],
+    "pose": {
+      "x": -145,
+      "z": -113,
+      "yaw": -0.5,
+      "pitch": -0.42,
+      "mode": "dive",
+      "depth": 5
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  "sourceRevision": "652a13bcd95222ddb68b105991951f6144bc4a83"
+}

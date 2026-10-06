@@ -1,0 +1,1188 @@
+{
+  "sourceRevision": "652a13bcd95222ddb68b105991951f6144bc4a83",
+  "baselineRevision": "d52b3e557ec6907851babf1fd1b861fd9fadcdc5",
+  "visualScope": "Parent visual inspection; static terrain/soil pairs only. Water/fish histories differ. No independent current art or Human approval.",
+  "comparisonCamera": "1280x720, actual absolute camera pinned, observation time34",
+  "pairsNote": "rock-only images use explicit ground=1 and cliffskin=1 before the equivalent default-flag adoption; normal images use final defaults",
+  "tests": {
+    "passed": 289,
+    "failed": 0,
+    "concurrency": 2
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "browserErrors": [],
+  "normalGround": true,
+  "normalCliffSkin": true,
+  "normalCoastform": false,
+  "fullPhotoGoal": "UNMET",
+  "nativeKeyboard": "Sustained command unsupported; no pass claimed",
+  "fullInterIslandJourney": "NOT VERIFIED",
+  "humanAcceptance": "UNMET",
+  "movement": {
+    "samples": [
+      {
+        "step": 0,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 2.211413616728023,
+          "x": -41.1861017767868,
+          "z": 19.460299704962527
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.85,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.026959923842512067,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.7
+      },
+      {
+        "step": 1,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.422368480706609,
+          "x": -46.3253078825737,
+          "z": 11.948342968934716
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.738409373577451,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.026959923842512067,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 57
+      },
+      {
+        "step": 2,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.1603001390219416,
+          "x": -51.05359151915092,
+          "z": 5.03702994071404
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.6070151317779768,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.026959923842512067,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.6
+      },
+      {
+        "step": 3,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.9068681845691059,
+          "x": -55.418065342694746,
+          "z": -1.342503758288464
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.4922644641805476,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.026959923842512067,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.8
+      },
+      {
+        "step": 4,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.72896852611217,
+          "x": -59.511799354013654,
+          "z": -7.326298171049073
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.4032624843742931,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.026959923842512067,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.9
+      },
+      {
+        "step": 5,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.6826417214341617,
+          "x": -63.36229617520774,
+          "z": -12.954553768825582
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.3548630463316527,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            -0.042101426523532305,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.5
+      },
+      {
+        "step": 6,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.9110887458118395,
+          "x": -67.35286440669019,
+          "z": -18.81631431451457
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.4679004813775927,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.10572475588923805,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.6
+      },
+      {
+        "step": 7,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.1303778408886078,
+          "x": -71.68560861485138,
+          "z": -25.14946896331003
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.5822061109612287,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.146560726904908,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.5
+      },
+      {
+        "step": 8,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.267229578013871,
+          "x": -76.26082183410047,
+          "z": -31.837039582904538
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.6659732889350893,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.022502449111655217,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.9
+      },
+      {
+        "step": 9,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.4084133548333202,
+          "x": -81.04192801789999,
+          "z": -38.82556311431439
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.7308201650972475,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            -0.0710128750230422,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.4
+      },
+      {
+        "step": 10,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.4033004959729225,
+          "x": -86.09215591851847,
+          "z": -46.20738594808131
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.7317929061187654,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            -0.10836058793963678,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.6
+      },
+      {
+        "step": 11,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.6292690990524732,
+          "x": -91.04769913153436,
+          "z": -53.45088337811693
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.8427238854827526,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            -0.031957334293055625,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.7
+      },
+      {
+        "step": 12,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 2.3508121154929063,
+          "x": -96.2612813179092,
+          "z": -61.07155532969914
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.85,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.12024900107035291,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.8
+      },
+      {
+        "step": 13,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.492271568032569,
+          "x": -101.46938160387319,
+          "z": -68.68421440966831
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.773556544477445,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            0.14178361709950044,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.7
+      },
+      {
+        "step": 14,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.143858799841004,
+          "x": -106.25461481052439,
+          "z": -75.67877039365372
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.5950932533980196,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            -0.017070378192861037,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.7
+      },
+      {
+        "step": 15,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.4972343137176771,
+          "x": -110.31644279024282,
+          "z": -81.61592788933662
+        },
+        "adventure": {
+          "mode": "walk",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 1.2474550524559689,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。",
+          "boat": [
+            -118.5950068345507,
+            -0.009425943751971706,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "walk"
+        },
+        "fps": 56.4
+      },
+      {
+        "step": 16,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.4377548998033144,
+          "x": -115.37115959631423,
+          "z": -88.97581130521237
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 2.0987138812993265,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            0.08128291437800124,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.8
+      },
+      {
+        "step": 17,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.4626878200439133,
+          "x": -121.30030365893066,
+          "z": -97.64241715118092
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 2.0987138812993265,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            0.06812779756030851,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.6
+      },
+      {
+        "step": 18,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.3301410232355355,
+          "x": -127.23560984113087,
+          "z": -106.31803014237047
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 2.0987138812993265,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            -0.026501170458557592,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.8
+      },
+      {
+        "step": 19,
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.2977037152566406,
+          "x": -133.15373318987537,
+          "z": -114.96852705553998
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 2.0987138812993265,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            -0.040073036154648634,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.6
+      },
+      {
+        "step": "dive",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": -7.610118006548559,
+          "x": -133.36269547767185,
+          "z": -115.42212793208778
+        },
+        "adventure": {
+          "mode": "dive",
+          "depth": 7.681286084674751,
+          "oxygen": 0.972195251190772,
+          "speed": 0,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+          "boat": [
+            -118.5950068345507,
+            -0.08131181816034976,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "dive"
+        },
+        "fps": 56.6
+      },
+      {
+        "step": "resurface",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.415684748607614,
+          "x": -133.36269547767185,
+          "z": -115.42212793208778
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 0,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            0.045620354302770366,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.8
+      },
+      {
+        "step": "back-to-boat-0",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.31597510912912435,
+          "x": -127.65056173312782,
+          "z": -107.22082824245979
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 2.0987138812993265,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            -0.10188993536877,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.5
+      },
+      {
+        "step": "back-to-boat-1",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.20058008457125334,
+          "x": -121.70079827036575,
+          "z": -98.52408310286694
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 2.0987138812993265,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            -0.11964447825635582,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.6
+      },
+      {
+        "step": "back-to-boat-2",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.29209134666363223,
+          "x": -115.78504496761431,
+          "z": -89.87705047632073
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 2.0987138812993265,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            -0.055473965628846406,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.8
+      },
+      {
+        "step": "ladder-approach",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.3308874149143122,
+          "x": -116.08315965338316,
+          "z": -88.73815522213114
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 2.1,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+          "boat": [
+            -118.5950068345507,
+            -0.11623042065885449,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "船に乗る",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.8
+      },
+      {
+        "step": "ui-board-complete",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.5078776298614487,
+          "x": -117.76924268048526,
+          "z": -90.60723503457695
+        },
+        "adventure": {
+          "mode": "boat",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 0,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+          "boat": [
+            -118.5950068345507,
+            0.05679128267157328,
+            -90.95789437761479
+          ],
+          "boatYaw": -0.6,
+          "interaction": "船から降りる",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "helm"
+        },
+        "fps": 56.7
+      },
+      {
+        "step": "manual-steer",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.4510401763861493,
+          "x": -134.08423570889676,
+          "z": -114.47838881149427
+        },
+        "adventure": {
+          "mode": "boat",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 12,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+          "boat": [
+            -134.93156040653503,
+            0.01439079422546123,
+            -114.83696852300838
+          ],
+          "boatYaw": -0.6,
+          "interaction": "",
+          "boarding": 0,
+          "grounded": true,
+          "stamina": 1,
+          "avatarAction": "helm"
+        },
+        "fps": 56.9
+      },
+      {
+        "step": "ui-disembark-complete",
+        "camera": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.44733438547772547,
+          "x": -145.70091890551333,
+          "z": -129.25022486717
+        },
+        "adventure": {
+          "mode": "swim",
+          "depth": 0,
+          "oxygen": 1,
+          "speed": 0,
+          "placed": 0,
+          "voyage": null,
+          "remaining": 0,
+          "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+          "boat": [
+            -147.1708612955354,
+            0.06776348413406909,
+            -132.727105027529
+          ],
+          "boatYaw": -0.6,
+          "interaction": "船に乗る",
+          "boarding": 0,
+          "grounded": false,
+          "stamina": 1,
+          "avatarAction": "swim"
+        },
+        "fps": 56.9
+      }
+    ],
+    "images": [
+      {
+        "name": "wading",
+        "metadata": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.6835991415728419,
+          "x": -63.38828325071919,
+          "z": -13.011069863976102
+        }
+      },
+      {
+        "name": "swimming",
+        "metadata": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.29990549903322267,
+          "x": -133.22724607285616,
+          "z": -115.08055720868663
+        }
+      },
+      {
+        "name": "dive",
+        "metadata": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": -7.604422006548558,
+          "x": -133.36269547767185,
+          "z": -115.42212793208778
+        }
+      },
+      {
+        "name": "resurface",
+        "metadata": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.415684748607614,
+          "x": -133.36269547767185,
+          "z": -115.42212793208778
+        }
+      },
+      {
+        "name": "boat",
+        "metadata": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 1.4517850068321638,
+          "x": -134.55259945385507,
+          "z": -115.16014935678899
+        }
+      },
+      {
+        "name": "after-boat",
+        "metadata": {
+          "yaw": -0.6,
+          "pitch": -0.035,
+          "height": 0.4507914730879988,
+          "x": -145.70091890551333,
+          "z": -129.25022486717
+        }
+      }
+    ],
+    "error": null,
+    "done": true,
+    "input": "moveFor uses the normal touch controller; visible UI buttons used for boarding and disembarking; no native-keyboard hold pass",
+    "initialCamera": {
+      "yaw": -0.6,
+      "pitch": -0.035,
+      "height": 3.119820126211253,
+      "x": -36,
+      "z": 27
+    }
+  },
+  "files": [
+    {
+      "file": "main-lookout.png",
+      "sha256": "0aa8b8eefd8c618e4a940a289a420bb7d88bc1f767d24a88244c6a33eca7b2c5",
+      "bytes": 1427476
+    },
+    {
+      "file": "main-lookout.json",
+      "sha256": "396162243e1602ceebce17a1f1392523cbb42e85b7b2a642c95bbf5b5e1a1618",
+      "bytes": 4599
+    },
+    {
+      "file": "main-cliff.png",
+      "sha256": "ed6d7a6e3ce2dbed5214982a62c01e37327398171b28d20af7a0036a8e1cf18e",
+      "bytes": 1621914
+    },
+    {
+      "file": "main-cliff.json",
+      "sha256": "002c478bee594f136a488218246ad2a5d6f302368f27be66d3d17d379600be30",
+      "bytes": 4589
+    },
+    {
+      "file": "main-rear.png",
+      "sha256": "0d63c72d8d104397b16500fc6d1deab3dd5700784696a0342a0158e8c9f6deae",
+      "bytes": 1823487
+    },
+    {
+      "file": "main-rear.json",
+      "sha256": "9b3943fcdca016c95d9b27c78b175a8c459cae14feea25fd2120391361c4b4f0",
+      "bytes": 4608
+    },
+    {
+      "file": "rock-only-lookout.png",
+      "sha256": "2e3ac8f1e0acce355423792945a612ff1ccf293d81ef56061ad4fce7493e0902",
+      "bytes": 1401039
+    },
+    {
+      "file": "rock-only-lookout.json",
+      "sha256": "5d3eb3257b5437eb7887d997f37ee3e70a6dbf62c4d837581dacf52a68402134",
+      "bytes": 4599
+    },
+    {
+      "file": "rock-only-cliff.png",
+      "sha256": "e0bc21f8459dde80f0ecc708965c5b9b1d6e1b3c7b6f33df49733c89de0ef135",
+      "bytes": 1636877
+    },
+    {
+      "file": "rock-only-cliff.json",
+      "sha256": "5ccf86e0f431d99184b49ce99ea4aa4263ee49ed8ec21c235d2203e79a44c09b",
+      "bytes": 4589
+    },
+    {
+      "file": "rock-only-rear.png",
+      "sha256": "a0a0651acbc2f545ac6ff9662bea45a8da2443ccaaf2a96e9ff42db6045323a7",
+      "bytes": 1870398
+    },
+    {
+      "file": "rock-only-rear.json",
+      "sha256": "2325f4e37c80f046e12b8a71c211f34784581f9bb8e66fbb57c35664677df6f3",
+      "bytes": 4608
+    },
+    {
+      "file": "normal-spawn.png",
+      "sha256": "32243bbd662109c733b55b91de7aa1bda458abda21f72a174be58c198f07c288",
+      "bytes": 1387927
+    },
+    {
+      "file": "normal-spawn.json",
+      "sha256": "1cae399c2e218d1cc7607799ce2c36f3f700124da0b0e0dd59ac33e8d5144032",
+      "bytes": 660
+    },
+    {
+      "file": "normal-shore.png",
+      "sha256": "403ed805b6c3564ba8933a01f755c64a2bde5ba152a1529304e5aabdbdbb8561",
+      "bytes": 1482131
+    },
+    {
+      "file": "normal-shore.json",
+      "sha256": "df983a676acf2caa1459a69a6230649bcc4475c71642200a802e8c19993c9407",
+      "bytes": 659
+    },
+    {
+      "file": "normal-cliff.png",
+      "sha256": "552279448cd704a9766bc9e10e756e124acbcd7b4f6f422af63cfdde3d0f3451",
+      "bytes": 1640432
+    },
+    {
+      "file": "normal-cliff.json",
+      "sha256": "b0f6a10ce29e4d7132181f160cac7443980a921a29ae5a4df8caac09bf8f42c9",
+      "bytes": 661
+    },
+    {
+      "file": "normal-lookout.png",
+      "sha256": "856ef990be4b7efc0a79d58cdb72173ed1638058a0857e0d54e9d276ba71e694",
+      "bytes": 1401027
+    },
+    {
+      "file": "normal-lookout.json",
+      "sha256": "7d7998a9a6f56fa9e3eb51e469f4b265e90d16c94aaebf0009badc9bc172b21c",
+      "bytes": 661
+    },
+    {
+      "file": "normal-reef.png",
+      "sha256": "65c9980a24076fee0c9b928da3295f1c8420e17806c0782852112040a559be6a",
+      "bytes": 1305178
+    },
+    {
+      "file": "normal-reef.json",
+      "sha256": "f4bd6ff7e770e45210cddd627c906f014a1c5cb7e6b69babdcb302913737b949",
+      "bytes": 648
+    },
+    {
+      "file": "normal-habushi-front.png",
+      "sha256": "62e50cdc6ce0404366702caf6d5bfbe1bc3a5212c9535f8dac2ff44fb54225e6",
+      "bytes": 835979
+    },
+    {
+      "file": "normal-habushi-front.json",
+      "sha256": "576a29ca61d541e648db8b01d3721af2b052c19eb4e3eb19f8b90984e13dd878",
+      "bytes": 700
+    },
+    {
+      "file": "normal-secret.png",
+      "sha256": "2c737086e9e65bf3e39f583f96b1d55ade4c4da012b8b8cb15b3e73b35cef545",
+      "bytes": 1254387
+    },
+    {
+      "file": "normal-secret.json",
+      "sha256": "e4a48223a3777708665caaedd2671a575d54f24123f63d1eb8220df566698a4d",
+      "bytes": 762
+    },
+    {
+      "file": "movement-wading.png",
+      "sha256": "1434783966e3f1a31f40cc5c90e0fc25f01e8f93cf3e1f1d2bb11003621fd9f4",
+      "bytes": 1444484
+    },
+    {
+      "file": "movement-swimming.png",
+      "sha256": "c3db75e85af7fcf26a4c28654e1a98b8a9f4b19c4d00910b4122b8a2ca5eb302",
+      "bytes": 1180339
+    },
+    {
+      "file": "movement-dive.png",
+      "sha256": "e80cf6c57766fd172e6ce9d270e293a154bc09f9ca7705268164136fdd0a2114",
+      "bytes": 1237852
+    },
+    {
+      "file": "movement-resurface.png",
+      "sha256": "809192a154fdaf05cb45b1ce2d914926b207f0879548e225568191a99a86f535",
+      "bytes": 1198587
+    },
+    {
+      "file": "movement-boat.png",
+      "sha256": "3722a666be9a621b93c901fe6bbb73b42a6b146c1767aae3d0c9eb9cc1453f7a",
+      "bytes": 1229670
+    },
+    {
+      "file": "movement-after-boat.png",
+      "sha256": "28c22b0658a3279d27d880e399b0c50a44294828f729aa49e6418841e07058cd",
+      "bytes": 1157000
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "name": "habushi-front",
+    "provenance": "QA bookmark",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      5837,
+      14.794579162597657,
+      -4503.84,
+      -0.014141192833542359,
+      -0.7069653645442927,
+      -0.014141192833542357,
+      0.7069653645442926
+    ],
+    "pose": {
+      "x": 5837,
+      "z": -4503.84,
+      "yaw": 1.5707963267948966,
+      "pitch": -0.04,
+      "mode": "walk",
+      "depth": 0
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  "sourceRevision": "652a13bcd95222ddb68b105991951f6144bc4a83"
+}

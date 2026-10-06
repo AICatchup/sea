@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "name": "cliff",
+    "provenance": "QA bookmark",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -86,
+      1.5154619036711723,
+      -22,
+      0.03482082255847939,
+      0.7164595825818137,
+      -0.035852861494419526,
+      0.6958360073794011
+    ],
+    "pose": {
+      "x": -86,
+      "z": -22,
+      "yaw": -1.6,
+      "pitch": 0.1,
+      "mode": "walk",
+      "depth": 0
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  "sourceRevision": "652a13bcd95222ddb68b105991951f6144bc4a83"
+}

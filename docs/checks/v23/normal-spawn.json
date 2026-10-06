@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "name": "spawn",
+    "provenance": "QA bookmark",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -36,
+      3.119820126211253,
+      27,
+      -0.0143295099661545,
+      0.29548696126144947,
+      0.004432636871673969,
+      0.9552290157857269
+    ],
+    "pose": {
+      "x": -36,
+      "z": 27,
+      "yaw": -0.6,
+      "pitch": -0.03,
+      "mode": "walk",
+      "depth": 0
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  "sourceRevision": "652a13bcd95222ddb68b105991951f6144bc4a83"
+}

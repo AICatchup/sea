@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "name": "shore",
+    "provenance": "QA bookmark",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -42,
+      1.3518743337820132,
+      9,
+      -0.11505006784720222,
+      0.2743682744614488,
+      0.03308314468637099,
+      0.9541441386892557
+    ],
+    "pose": {
+      "x": -42,
+      "z": 9,
+      "yaw": -0.56,
+      "pitch": -0.24,
+      "mode": "walk",
+      "depth": 0
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  "sourceRevision": "652a13bcd95222ddb68b105991951f6144bc4a83"
+}
