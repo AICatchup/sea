@@ -247,6 +247,7 @@ export const oceanFragment = /* glsl */ `
   uniform float uPointwiseContact;
   uniform float uContactDebug;
   uniform float uWetStencil;
+  uniform float uFarWaveFilter;
   uniform float uSnellRay;
   uniform mat4 uWaterProjection;
   uniform vec4 uBathyBounds;
@@ -351,7 +352,11 @@ export const oceanFragment = /* glsl */ `
     float footprint = max(length(dFdx(vOcean)),length(dFdy(vOcean)));
     // Widen the slope stencil with the pixel footprint: distant waves retain
     // their swell while unresolved capillary and whitecap detail falls away.
-    float longStep = max(1.5,min(14.0,footprint*0.65));
+    // A 14m cap retained aliased wave slopes in pixels covering hundreds of
+    // metres, alternating between sky and near-black interreflection. Keep
+    // the footprint-sized finite difference at the horizon; resolved near
+    // water is identical. This is a filtered shading slope, not a new wave.
+    float longStep = mix(max(1.5,min(14.0,footprint*0.65)),max(1.5,footprint*0.65),uFarWaveFilter);
     float shortStep = max(0.1875,min(1.5,footprint*0.55));
     float shortFade = (1.0-smoothstep(90.0,480.0,vDistance))*exp(-footprint*0.85);
     vec3 dx=(longDisplacement(vOcean+vec2(longStep,0))-longDisplacement(vOcean-vec2(longStep,0)))/(2.0*longStep);
@@ -598,7 +603,8 @@ export const oceanFragment = /* glsl */ `
       else if(uContactDebug<9.5)gl_FragColor=vec4(geometryUV,float(geometryMaterial),geometryKind);
       else if(uContactDebug<10.5)gl_FragColor=vec4(reflectedUV,reflectionLod,reflectionValid);
       else if(uContactDebug<11.5)gl_FragColor=vec4(textureLod(uReflection,clamp(reflectedUV,.002,.998),0.).rgb,1.);
-      else gl_FragColor=vec4(reflectedScene,1.);
+      else if(uContactDebug<12.5)gl_FragColor=vec4(reflectedScene,1.);
+      else gl_FragColor=vec4(footprint,longStep,roughnessAlpha,1.);
       return;
     }
     gl_FragColor=vec4(color,1.0);

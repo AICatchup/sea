@@ -175,7 +175,7 @@ export class Ocean {
     this.adventure.setContextInteraction({label:state=>this.expedition.context(state)?.label??'',activate:state=>this.expedition.interact(state)});
     const p=presets.day;
     this.uniforms={
-      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},
+      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},uFarWaveFilter:{value:new URLSearchParams(location.search).get('wavefilter')==='0'?0:1},
       uSnellRay:{value:new URLSearchParams(location.search).get('ray')==='1'?1:0},uWaterProjection:{value:this.camera.projectionMatrix},
       uTime:{value:this.time},uSunDirection:{value:new THREE.Vector3(...p.sun).normalize()},
       uSunColor:{value:new THREE.Vector3(...p.sunColor)},uZenith:{value:new THREE.Vector3(...p.zenith)},
@@ -598,11 +598,11 @@ export class Ocean {
     const result=points.map(point=>({point,values:[] as number[][]})),pixel=new Float32Array(4);
     try{
       r.autoClear=true;r.toneMapping=THREE.NoToneMapping;r.outputColorSpace=THREE.LinearSRGBColorSpace;r.setClearColor(0,0);r.setScissorTest(false);r.setRenderTarget(target);r.setViewport(0,0,size.x,size.y);
-      for(let mode=1;mode<=12;mode++){
+      for(let mode=1;mode<=13;mode++){
         this.uniforms.uContactDebug.value=mode;r.render(this.waterScene,this.camera);
         for(const row of result){const x=Math.min(size.x-1,Math.floor(row.point.x*size.x)),y=Math.min(size.y-1,Math.floor((1-row.point.y)*size.y));r.readRenderTargetPixels(target,x,y,1,1,pixel);row.values.push(Array.from(pixel));}
       }
-      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY','straightPath,acceptedPath,snellUsed','snellHitXYZ','receiverNormalXYZ,kind','receiverUV,materialId,kind','reflectionUV,lod,valid','reflectionLod0RGB','reflectionFilteredRGB'],result};
+      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY','straightPath,acceptedPath,snellUsed','snellHitXYZ','receiverNormalXYZ,kind','receiverUV,materialId,kind','reflectionUV,lod,valid','reflectionLod0RGB','reflectionFilteredRGB','footprint,longStep,roughnessAlpha'],result};
     }finally{
       this.uniforms.uContactDebug.value=saved.debug;r.setRenderTarget(saved.target);r.setViewport(saved.viewport);r.setScissor(saved.scissor);r.setScissorTest(saved.scissorTest);r.setClearColor(saved.clear,saved.alpha);r.autoClear=saved.auto;r.toneMapping=saved.tone;r.outputColorSpace=saved.color;target.dispose();
     }

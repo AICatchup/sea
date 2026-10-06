@@ -168,6 +168,8 @@ try {
     objectAt:(x:number,y:number)=>ocean.probeFoliage(x,y,false),
     terrainAt:(x:number,y:number)=>ocean.probeFoliage(x/window.innerWidth*2-1,1-y/window.innerHeight*2,false,true),
     depthSamples:(points:readonly{x:number;y:number}[])=>ocean.probeDepthSamples(points),
+    waterSamples:(points:readonly{x:number;y:number}[])=>ocean.probeWaterContact(points),
+    farWaveFilter:(enabled:boolean)=>{const old=ocean.uniforms.uFarWaveFilter.value;ocean.uniforms.uFarWaveFilter.value=enabled?1:0;return old;},
     inspectBodyHands:()=>inspectBodyHands(ocean),
     inspectGeometryReceivers:()=>ocean.inspectGeometryReceivers(),
     inspectSkinnedReceivers:()=>ocean.inspectSkinnedReceivers(),
