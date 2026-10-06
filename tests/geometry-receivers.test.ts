@@ -8,6 +8,24 @@ const material = () => new THREE.MeshBasicMaterial();
 const include = () => true;
 const ray = new THREE.Vector3(0, 0, -1);
 
+test('dynamic height and zero-count pool eligibility change only the instance table',()=>{
+  const pool=new THREE.InstancedMesh(new THREE.BoxGeometry(2,2,2),material(),2);pool.count=0;
+  const scene=setup(pool),r=new GeometryReceivers(scene,{include,active:mesh=>{
+    const instanced=mesh as THREE.InstancedMesh;instanced.computeBoundingBox();
+    return instanced.boundingBox!.clone().applyMatrix4(mesh.matrixWorld).min.y<=4;
+  }});
+  const nodes=r.uniforms.receiverNodes.value,triangles=r.uniforms.receiverTriangles.value;
+  pool.count=1;pool.setMatrixAt(0,new THREE.Matrix4().makeTranslation(0,7,-4));scene.updateMatrixWorld(true);r.refit();
+  assert.equal(r.traceCPU(new THREE.Vector3(0,7,0),ray,10),null,'a high pool is outside the current water receiver set');
+  pool.setMatrixAt(0,new THREE.Matrix4().makeTranslation(0,0,-4));r.refit();
+  assert.equal(r.traceCPU(new THREE.Vector3(),ray,10)?.distance,3);
+  pool.count=0;r.refit();assert.equal(r.traceCPU(new THREE.Vector3(),ray,10),null);
+  pool.count=1;r.refit();assert.equal(r.traceCPU(new THREE.Vector3(),ray,10)?.distance,3);
+  assert.equal(r.uniforms.receiverNodes.value,nodes);assert.equal(r.uniforms.receiverTriangles.value,triangles);
+  assert.equal(r.diagnostics.rebuilds,1,'changing active instances must not rebuild the whole scene or material atlas');
+  r.dispose();
+});
+
 test('nearest opaque receiver, inside double-sided hit, miss and UV', () => {
   const near = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), material()), far = near.clone(); near.position.z = -4; far.position.z = -8;
   const r = new GeometryReceivers(setup(far, near), { include, leafSize: 1 });

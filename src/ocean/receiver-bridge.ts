@@ -6,7 +6,7 @@ const WIDTH=1024,TILE=512;
 export const RECEIVER_PARAM_TEXELS=23;
 const MAP_KEYS=['map','normalMap','aoMap','roughnessMap','metalnessMap','emissiveMap'] as const;
 type Surface=THREE.MeshStandardMaterial;
-export interface ReceiverMaterialOptions {extraMaterials?:()=>readonly THREE.Material[];extraDynamicData?:()=>Float32Array;bedNormal?:THREE.Texture;bedARM?:THREE.Texture;}
+export interface ReceiverMaterialOptions {extraMaterials?:()=>readonly THREE.Material[];extraDynamicData?:()=>Float32Array;bedNormal?:THREE.Texture;bedARM?:THREE.Texture;activeMesh?:(mesh:THREE.Mesh)=>boolean;}
 const floatTexture=(data:Float32Array)=>{const t=new THREE.DataTexture(data,WIDTH,data.length/(WIDTH*4),THREE.RGBAFormat,THREE.FloatType);t.minFilter=t.magFilter=THREE.NearestFilter;t.generateMipmaps=false;t.needsUpdate=true;return t;};
 export function concatenateReceiverData(parts:readonly Float32Array[]):{data:Float32Array;offsets:number[]}{let length=0;const offsets=parts.map(p=>{const o=length/4;length+=p.length;return o;});const data=new Float32Array(Math.max(WIDTH*4,Math.ceil(length/(WIDTH*4))*WIDTH*4));let at=0;for(const p of parts){data.set(p,at);at+=p.length;}return {data,offsets};}
 /** Each map has independent transform/wrap/flip and a raw linear atlas layer. UV0 is the packed geometry contract. */
@@ -37,7 +37,7 @@ export class ReceiverBridge {
  private readonly maxTextureSize:number;private readonly maxLayers:number;private readonly options:ReceiverMaterialOptions;
  constructor(scene:THREE.Object3D,include:(mesh:THREE.Mesh)=>boolean,maxTextureSize:number,maxLayers:number,sand:THREE.Texture,options:ReceiverMaterialOptions={}){
  this.maxTextureSize=maxTextureSize;this.maxLayers=maxLayers;this.options=options;
- this.geometry=new GeometryReceivers(scene,{include,coverage:'Opaque UV0 authored meshes; height-field bed separately.',maxTriangles:1_000_000});
+ this.geometry=new GeometryReceivers(scene,{include,active:options.activeMesh,coverage:'Opaque UV0 authored meshes; height-field bed separately.',maxTriangles:1_000_000});
  const atlas=new THREE.DataArrayTexture(new Uint8Array([255,255,255,255]),1,1,1);atlas.needsUpdate=true;
  this.uniforms={receiverStatic:{value:floatTexture(new Float32Array(WIDTH*4))},receiverDynamic:{value:floatTexture(new Float32Array(WIDTH*4))},receiverAlbedo:{value:atlas},receiverTextureWidth:{value:WIDTH},receiverRoot:{value:-1},receiverAvailable:{value:0},receiverTriangleOffset:{value:0},receiverInstanceOffset:{value:0},receiverMaterialOffset:{value:0},receiverBedMaterial:{value:0},receiverExtraMaterialBase:{value:0},receiverExtraDataOffset:{value:0}};
  this.bed=new THREE.MeshStandardMaterial({map:sand,normalMap:options.bedNormal??null,aoMap:options.bedARM??null,roughnessMap:options.bedARM??null,metalnessMap:options.bedARM??null,color:'#ffffff',roughness:.85});this.sync();

@@ -519,12 +519,15 @@ export class Ocean {
         for(let p:THREE.Object3D|null=mesh;p;p=p.parent)if(p.userData.foliageLod)return false;
         const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];if(materials.some(m=>!(m instanceof THREE.MeshStandardMaterial||m instanceof THREE.MeshBasicMaterial)))return false;
         if(!materials.some(m=>m.visible&&!m.transparent&&m.opacity>=1&&m.alphaTest===0&&(!('alphaMap' in m)||!m.alphaMap)&&(!('transmission' in m)||m.transmission===0)))return false;
+        return true;
+      };
+      const activeMesh=(mesh:THREE.Mesh)=>{
         if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();let box:THREE.Box3;
         if(mesh instanceof THREE.InstancedMesh){mesh.computeBoundingBox();box=mesh.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);}else box=mesh.geometry.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);
         return box.min.y<=4;
       };
       this.skinnedReceivers=new SkinnedReceivers(this.body.group);this.updateSkinnedReceivers();
-      const gl=this.renderer.getContext() as WebGL2RenderingContext;this.receiverBridge=new ReceiverBridge(this.scene,include,this.renderer.capabilities.maxTextureSize,gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),this.receiverSand.albedo,{bedNormal:this.receiverSand.normalGL,bedARM:this.receiverSand.arm,extraMaterials:()=>this.skinnedReceivers?.materials??[],extraDynamicData:()=>this.skinnedReceivers?.packed.data??new Float32Array(0)});
+      const gl=this.renderer.getContext() as WebGL2RenderingContext;this.receiverBridge=new ReceiverBridge(this.scene,include,this.renderer.capabilities.maxTextureSize,gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),this.receiverSand.albedo,{activeMesh,bedNormal:this.receiverSand.normalGL,bedARM:this.receiverSand.arm,extraMaterials:()=>this.skinnedReceivers?.materials??[],extraDynamicData:()=>this.skinnedReceivers?.packed.data??new Float32Array(0)});
       if(!this.receiverBridge.diagnostics.available)throw new Error(this.receiverBridge.diagnostics.reason);
       Object.assign(this.uniforms,this.receiverBridge.uniforms);
       this.uniforms.receiverIBLHasProbe={value:0};this.uniforms.receiverSH={value:Array.from({length:9},()=>new THREE.Vector3())};this.uniforms.receiverEnvironmentIntensity={value:this.scene.environmentIntensity};
@@ -598,11 +601,11 @@ export class Ocean {
     const result=points.map(point=>({point,values:[] as number[][]})),pixel=new Float32Array(4);
     try{
       r.autoClear=true;r.toneMapping=THREE.NoToneMapping;r.outputColorSpace=THREE.LinearSRGBColorSpace;r.setClearColor(0,0);r.setScissorTest(false);r.setRenderTarget(target);r.setViewport(0,0,size.x,size.y);
-      for(let mode=1;mode<=13;mode++){
+      for(let mode=1;mode<=19;mode++){
         this.uniforms.uContactDebug.value=mode;r.render(this.waterScene,this.camera);
         for(const row of result){const x=Math.min(size.x-1,Math.floor(row.point.x*size.x)),y=Math.min(size.y-1,Math.floor((1-row.point.y)*size.y));r.readRenderTargetPixels(target,x,y,1,1,pixel);row.values.push(Array.from(pixel));}
       }
-      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY','straightPath,acceptedPath,snellUsed','snellHitXYZ','receiverNormalXYZ,kind','receiverUV,materialId,kind','reflectionUV,lod,valid','reflectionLod0RGB','reflectionFilteredRGB','footprint,longStep,roughnessAlpha'],result};
+      return {available:true,time:this.time,layout:['fresnel,skyVisibility,visibleBottom','normalXYZ','opticalPath,bottomContact,nV','meshHeight,pointHeight,bed','worldX,worldZ,reflectedY','straightPath,acceptedPath,snellUsed','snellHitXYZ','receiverNormalXYZ,kind','receiverUV,materialId,kind','reflectionUV,lod,valid','reflectionLod0RGB','reflectionFilteredRGB','footprint,longStep,roughnessAlpha','refractedRGB','waterBodyRGB','reflectionRGB','transmissionRGB','waterOutputRGB','screenReceiverRGB'],result};
     }finally{
       this.uniforms.uContactDebug.value=saved.debug;r.setRenderTarget(saved.target);r.setViewport(saved.viewport);r.setScissor(saved.scissor);r.setScissorTest(saved.scissorTest);r.setClearColor(saved.clear,saved.alpha);r.autoClear=saved.auto;r.toneMapping=saved.tone;r.outputColorSpace=saved.color;target.dispose();
     }

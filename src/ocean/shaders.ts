@@ -618,7 +618,13 @@ export const oceanFragment = /* glsl */ `
       else if(uContactDebug<10.5)gl_FragColor=vec4(reflectedUV,reflectionLod,reflectionValid);
       else if(uContactDebug<11.5)gl_FragColor=vec4(textureLod(uReflection,clamp(reflectedUV,.002,.998),0.).rgb,1.);
       else if(uContactDebug<12.5)gl_FragColor=vec4(reflectedScene,1.);
-      else gl_FragColor=vec4(footprint,longStep,roughnessAlpha,1.);
+      else if(uContactDebug<13.5)gl_FragColor=vec4(footprint,longStep,roughnessAlpha,1.);
+      else if(uContactDebug<14.5)gl_FragColor=vec4(refractedColor,1.);
+      else if(uContactDebug<15.5)gl_FragColor=vec4(body,1.);
+      else if(uContactDebug<16.5)gl_FragColor=vec4(reflection,1.);
+      else if(uContactDebug<17.5)gl_FragColor=vec4(transmission,1.);
+      else if(uContactDebug<18.5)gl_FragColor=vec4(color,1.);
+      else gl_FragColor=vec4(texture2D(uSceneColor,refractionUV).rgb,1.);
       return;
     }
     gl_FragColor=vec4(color,1.0);

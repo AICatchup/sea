@@ -3,6 +3,8 @@ import * as THREE from 'three';
 export interface ReceiverOptions {
   /** Explicit authored coverage. Exclude water, DEM, foliage, particles and first-person bodies here. */
   include: (mesh: THREE.Mesh) => boolean;
+  /** Dynamic spatial eligibility belongs to refit, never the immutable BLAS signature. */
+  active?: (mesh: THREE.Mesh) => boolean;
   coverage?: string;
   maxTriangles?: number; maxInstances?: number; maxDepth?: number; leafSize?: number;
 }
@@ -45,7 +47,7 @@ export class GeometryReceivers {
   get packed() { return { tlas: (this.uniforms.receiverTLAS.value as THREE.DataTexture).image.data as Float32Array, nodes: (this.uniforms.receiverNodes.value as THREE.DataTexture).image.data as Float32Array, triangles: (this.uniforms.receiverTriangles.value as THREE.DataTexture).image.data as Float32Array, instances: (this.uniforms.receiverInstances.value as THREE.DataTexture).image.data as Float32Array }; }
   constructor(scene: THREE.Object3D, options: ReceiverOptions) {
     this.scene = scene;
-    this.options = { coverage: options.coverage ?? 'explicit include predicate; no coverage guarantee outside selected meshes', maxTriangles: options.maxTriangles ?? 1_000_000, maxInstances: options.maxInstances ?? 4096, maxDepth: options.maxDepth ?? 48, leafSize: options.leafSize ?? 8, include: options.include };
+    this.options = { coverage: options.coverage ?? 'explicit include predicate; no coverage guarantee outside selected meshes', maxTriangles: options.maxTriangles ?? 1_000_000, maxInstances: options.maxInstances ?? 4096, maxDepth: options.maxDepth ?? 48, leafSize: options.leafSize ?? 8, include: options.include, active: options.active??(()=>true) };
     this.diagnostics = { available: true, reason: '', coverage: this.options.coverage, triangles: 0, instances: 0, nodes: 0, bytes: 0, version: 0, rebuilds: 0, refits: 0, excludedSurfaces: 0 };
     this.uniforms = { receiverNodes: { value: texture([]) }, receiverTLAS: { value: texture([]) }, receiverTriangles: { value: texture([]) }, receiverInstances: { value: texture([]) }, receiverTextureWidth: { value: WIDTH }, receiverRoot: { value: -1 }, receiverAvailable: { value: 0 } };
     try {
@@ -133,9 +135,11 @@ export class GeometryReceivers {
       if(signature!==this.signature){const a=this.signature.split('|'),b=signature.split('|'),index=b.findIndex((row,i)=>row!==a[i]),row=b[index]??'',uuid=row.split(':')[0],object=this.scene.getObjectByProperty('uuid',uuid);this.diagnostics.lastChange=`${object?.name??uuid} old=${a[index]?.slice(0,250)} new=${row.slice(0,250)}`;this.rebuild();}
       this.nodes.length = this.blasNodeCount; const found: Instance[] = [];
       for (const mesh of this.selected) {
-        if (!visible(mesh)) continue; const blas = this.getBlas(mesh); if (blas.root < 0) continue;
+        if (!visible(mesh)) continue;
         const count = mesh instanceof THREE.InstancedMesh ? mesh.count : 1;
         if (count < 0 || (mesh instanceof THREE.InstancedMesh && count > mesh.instanceMatrix.count)) throw new Error('invalid instance count');
+        if(!count||!this.options.active(mesh))continue;
+        const blas = this.getBlas(mesh); if (blas.root < 0) continue;
         for (let index = 0; index < count; index++) {
           if (found.length >= this.options.maxInstances) throw new Error('instance budget overflow');
           const world = mesh.matrixWorld.clone(); if (mesh instanceof THREE.InstancedMesh) { const local = new THREE.Matrix4(); mesh.getMatrixAt(index, local); world.multiply(local); }
