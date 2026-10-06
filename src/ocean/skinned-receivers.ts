@@ -5,6 +5,8 @@ export interface SkinnedReceiverHit { distance: number; point: THREE.Vector3; no
 type Surface = { mesh: THREE.SkinnedMesh; vertices: Float32Array; normals: Float32Array; boneSkin: Float64Array; source?: Float64Array; signature: string; attributes: object[] };
 type Triangle = { surface: number; indices: number[]; material: number };
 type Node = { left: number; right: number; start: number; count: number };
+export interface SkinnedGPUExport { surfaces: { source: Float64Array; vertexOffset: number; boneOffset: number }[]; triangles: { vertices: number[]; surface: number; material: number }[]; nodes: { left:number; right:number; start:number; count:number; depth:number }[]; staticPacked:Float32Array; triangleOffset:number; texels:number; vertices:number; bones:number; }
+export interface SkinnedGPUPose { bones:Float32Array; worlds:Float32Array; normals:Float32Array; visible:Float32Array; }
 const finite = (values: ArrayLike<number>) => { for(let i=0;i<values.length;i++)if(!Number.isFinite(values[i]))return false;return true; };
 const visible = (object: THREE.Object3D): boolean => object.visible && (!object.parent || visible(object.parent));
 const supported = (m: THREE.Material) => m.visible && !m.transparent && m.opacity === 1 && m.alphaTest === 0 && !('alphaMap' in m && m.alphaMap) && !('transmission' in m && Number(m.transmission) > 0);
@@ -22,6 +24,7 @@ export class SkinnedReceivers {
   private nodes: Node[] = [];
   private disposed = false;
   private poseKey='';
+  private gpuPose?: SkinnedGPUPose;
   private staticPacked=false;
   private maxDepth: number;
   private leafSize: number;
@@ -73,6 +76,30 @@ export class SkinnedReceivers {
     const g = mesh.geometry;
     const mats=Array.isArray(mesh.material)?mesh.material:[mesh.material];
     return `${g.uuid}:${g.index?.version}:${g.index?.count}:${Object.entries(g.attributes).map(([k, a]) => `${k}:${a.count}:${'version' in a ? a.version : a.data.version}`).join('|')}:${JSON.stringify(g.groups)}:${g.drawRange.start}:${g.drawRange.count}:${mats.map(m=>m.uuid).join(',')}`;
+  }
+  /** One-time immutable decoded source and fixed leaf-visit topology. Copies are owned by caller. */
+  exportGPU(): SkinnedGPUExport {
+    if(!this.diagnostics.available||this.disposed)throw new Error(this.diagnostics.reason||'unavailable');
+    let vertices=0,bones=0;const surfaces=this.surfaces.map(s=>{const result={source:s.source!.slice(),vertexOffset:vertices,boneOffset:bones};vertices+=s.vertices.length/3;bones+=s.boneSkin.length/16;return result;});
+    const depths=new Int32Array(this.nodes.length);if(depths.length)depths[0]=1;
+    const nodes=this.nodes.map((n,i)=>{if(!n.count){depths[n.left]=depths[i]+1;depths[n.right]=depths[i]+1;}return {...n,depth:depths[i]};});
+    return {surfaces,triangles:this.triangles.map(t=>({vertices:t.indices.map(i=>i+surfaces[t.surface].vertexOffset),surface:t.surface,material:t.material})),nodes,staticPacked:this.packed.data.slice(),triangleOffset:this.packed.triangleOffset,texels:this.packed.texels,vertices,bones};
+  }
+  /** Validates live identity/version and exports only O(bones + surfaces) pose data; never skins vertices. */
+  exportGPUPose():SkinnedGPUPose {
+    if(this.disposed)throw new Error('disposed');
+    const boneCount=this.surfaces.reduce((n,s)=>n+s.boneSkin.length/16,0);
+    const out=this.gpuPose??={bones:new Float32Array(boneCount*16),worlds:new Float32Array(this.surfaces.length*16),normals:new Float32Array(this.surfaces.length*12),visible:new Float32Array(this.surfaces.length*this.materials.length)};
+    const bone=new THREE.Matrix4(),normal=new THREE.Matrix3();let offset=0;
+    for(let si=0;si<this.surfaces.length;si++){const s=this.surfaces[si],m=s.mesh,g=m.geometry,attrs=[g.index!,...Object.values(g.attributes)];
+      if(this.signature(m)!==s.signature||attrs.length!==s.attributes.length||attrs.some((a,i)=>a!==s.attributes[i])||m.skeleton.bones.length*16!==s.boneSkin.length)throw new Error('source changes require rebuild');
+      for(const matrix of [m.matrixWorld,m.bindMatrix,m.bindMatrixInverse])if(!finite(matrix.elements)||Math.abs(matrix.determinant())<1e-20)throw new Error('singular/nonfinite skin transform');
+      if(!m.skeleton.boneMatrices||!finite(m.skeleton.boneMatrices)||m.skeleton.boneMatrices.length!==s.boneSkin.length)throw new Error('invalid bone palette');
+      for(let bi=0;bi<m.skeleton.bones.length;bi++){bone.fromArray(m.skeleton.boneMatrices,bi*16);if(Math.abs(bone.determinant())<1e-20)throw new Error('singular bone transform');bone.premultiply(m.bindMatrixInverse).multiply(m.bindMatrix).toArray(out.bones,offset);offset+=16;}
+      m.matrixWorld.toArray(out.worlds,si*16);normal.getNormalMatrix(m.matrixWorld);for(let col=0;col<3;col++)for(let row=0;row<3;row++)out.normals[si*12+col*4+row]=normal.elements[col*3+row];
+      for(let mi=0;mi<this.materials.length;mi++)out.visible[si*this.materials.length+mi]=visible(m)&&supported(this.materials[mi])?1:0;
+    }
+    if(!finite(out.bones)||!finite(out.worlds)||!finite(out.normals))throw new Error('float32 pose overflow');return out;
   }
   private fail(error: unknown) { this.diagnostics.available = false; this.diagnostics.reason = error instanceof Error ? error.message : String(error); }
   private pose() {
