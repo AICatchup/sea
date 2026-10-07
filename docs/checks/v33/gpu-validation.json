@@ -1,0 +1,614 @@
+{
+  "lifecycle": {
+    "results": [
+      {
+        "detail": "",
+        "name": "update at DPR 1",
+        "pass": true
+      },
+      {
+        "name": "renderer state at DPR 1",
+        "pass": true
+      },
+      {
+        "name": "compose 1/4",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 1/4",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 1/4",
+        "pass": true
+      },
+      {
+        "name": "compose 1/16384",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 1/16384",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 1/16384",
+        "pass": true
+      },
+      {
+        "name": "compose 1/16",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 1/16",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 1/16",
+        "pass": true
+      },
+      {
+        "name": "compose 1/8192",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 1/8192",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 1/8192",
+        "pass": true
+      },
+      {
+        "name": "compose 1/4",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 1/4",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 1/4",
+        "pass": true
+      },
+      {
+        "name": "compose 1/16384",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 1/16384",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 1/16384",
+        "pass": true
+      },
+      {
+        "name": "state after compose 1",
+        "pass": true
+      },
+      {
+        "detail": "",
+        "name": "update at DPR 2",
+        "pass": true
+      },
+      {
+        "name": "renderer state at DPR 2",
+        "pass": true
+      },
+      {
+        "name": "compose 2/4",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 2/4",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 2/4",
+        "pass": true
+      },
+      {
+        "name": "compose 2/16384",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 2/16384",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 2/16384",
+        "pass": true
+      },
+      {
+        "name": "compose 2/16",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 2/16",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 2/16",
+        "pass": true
+      },
+      {
+        "name": "compose 2/8192",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 2/8192",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 2/8192",
+        "pass": true
+      },
+      {
+        "name": "compose 2/4",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 2/4",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 2/4",
+        "pass": true
+      },
+      {
+        "name": "compose 2/16384",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 2/16384",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 2/16384",
+        "pass": true
+      },
+      {
+        "name": "state after compose 2",
+        "pass": true
+      },
+      {
+        "detail": "",
+        "name": "update at DPR 0.75",
+        "pass": true
+      },
+      {
+        "name": "renderer state at DPR 0.75",
+        "pass": true
+      },
+      {
+        "name": "compose 0.75/4",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 0.75/4",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 0.75/4",
+        "pass": true
+      },
+      {
+        "name": "compose 0.75/16384",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 0.75/16384",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 0.75/16384",
+        "pass": true
+      },
+      {
+        "name": "compose 0.75/16",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 0.75/16",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 0.75/16",
+        "pass": true
+      },
+      {
+        "name": "compose 0.75/8192",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 0.75/8192",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 0.75/8192",
+        "pass": true
+      },
+      {
+        "name": "compose 0.75/4",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 0.75/4",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 0.75/4",
+        "pass": true
+      },
+      {
+        "name": "compose 0.75/16384",
+        "pass": true
+      },
+      {
+        "name": "prefix and suffix 0.75/16384",
+        "pass": true
+      },
+      {
+        "detail": {
+          "targets": 4,
+          "textures": 9
+        },
+        "name": "bounded resources 0.75/16384",
+        "pass": true
+      },
+      {
+        "name": "state after compose 0.75",
+        "pass": true
+      },
+      {
+        "detail": "Error: Projective world transform requires CPU skinning",
+        "name": "projective world selects CPU",
+        "pass": true
+      },
+      {
+        "detail": "",
+        "name": "recovery after supported pose",
+        "pass": true
+      },
+      {
+        "detail": "Error: GPU skin shader did not compile/link: Fragment shader is not compiled.\n",
+        "name": "shader failure rejects stale result",
+        "pass": true
+      },
+      {
+        "detail": {
+          "callbackCalls": 1
+        },
+        "name": "shader callback restored",
+        "pass": true
+      },
+      {
+        "name": "state after shader failure",
+        "pass": true
+      },
+      {
+        "detail": "",
+        "name": "fresh instance after shader failure",
+        "pass": true
+      },
+      {
+        "detail": "Error: WebGL context lost",
+        "name": "lost context never publishes old data",
+        "pass": true
+      }
+    ],
+    "scope": "Actual isolated WebGL2 context; DPR, target/scissor/XR flag restoration, composition bytes, bounded ownership, shader failure and context loss. No XR headset session was used.",
+    "status": "GPU_LIFECYCLE_PASS"
+  },
+  "parity": {
+    "boundsEpsilon": "2 Float32 ULP relative + 0.00001m",
+    "labels": [
+      "idle-0",
+      "idle-1",
+      "idle-2",
+      "walk-0",
+      "walk-1",
+      "walk-2",
+      "run-0",
+      "run-1",
+      "run-2",
+      "swim-0",
+      "swim-1",
+      "swim-2",
+      "dive-0",
+      "dive-1",
+      "dive-2",
+      "helm-0",
+      "helm-1",
+      "helm-2",
+      "climb-0",
+      "climb-1",
+      "climb-2",
+      "island-offset-6000",
+      "island-offset--6000"
+    ],
+    "poses": [
+      {
+        "bounds": 0.00001049041748046875,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.1920928955078125e-7,
+        "pass": true,
+        "position": 1.1920928955078125e-7
+      },
+      {
+        "bounds": 0.00001049041748046875,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.1920928955078125e-7,
+        "pass": true,
+        "position": 1.1920928955078125e-7
+      },
+      {
+        "bounds": 0.00001049041748046875,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 1.1920928955078125e-7
+      },
+      {
+        "bounds": 0.000010609626770019531,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.1920928955078125e-7,
+        "pass": true,
+        "position": 2.384185791015625e-7
+      },
+      {
+        "bounds": 0.00001049041748046875,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.1920928955078125e-7,
+        "pass": true,
+        "position": 1.1920928955078125e-7
+      },
+      {
+        "bounds": 0.00001049041748046875,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.1920928955078125e-7,
+        "pass": true,
+        "position": 1.1920928955078125e-7
+      },
+      {
+        "bounds": 0.00001049041748046875,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.1920928955078125e-7,
+        "pass": true,
+        "position": 2.384185791015625e-7
+      },
+      {
+        "bounds": 0.00001049041748046875,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 1.1920928955078125e-7
+      },
+      {
+        "bounds": 0.00001049041748046875,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 1.1920928955078125e-7
+      },
+      {
+        "bounds": 0.000010609626770019531,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 2.384185791015625e-7
+      },
+      {
+        "bounds": 0.000010728836059570312,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 3.576278686523438e-7
+      },
+      {
+        "bounds": 0.000010728836059570312,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 2.409797161817551e-7,
+        "pass": true,
+        "position": 4.76837158203125e-7
+      },
+      {
+        "bounds": 0.000010728836059570312,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 2.086162567138672e-7,
+        "pass": true,
+        "position": 3.576278686523438e-7
+      },
+      {
+        "bounds": 0.000010848045349121094,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 2.868473529815674e-7,
+        "pass": true,
+        "position": 4.76837158203125e-7
+      },
+      {
+        "bounds": 0.000010609626770019531,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 3.8370490074157715e-7
+      },
+      {
+        "bounds": 0.000010609626770019531,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.4901161193847656e-7,
+        "pass": true,
+        "position": 2.384185791015625e-7
+      },
+      {
+        "bounds": 0.000010609626770019531,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.1920928955078125e-7,
+        "pass": true,
+        "position": 2.384185791015625e-7
+      },
+      {
+        "bounds": 0.000010609626770019531,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 3.576278686523438e-7
+      },
+      {
+        "bounds": 0.000010609626770019531,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.4901161193847656e-7,
+        "pass": true,
+        "position": 3.576278686523438e-7
+      },
+      {
+        "bounds": 0.000010728836059570312,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 4.470348358154297e-7,
+        "pass": true,
+        "position": 3.576278686523438e-7
+      },
+      {
+        "bounds": 0.000010728836059570312,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 3.576278686523438e-7
+      },
+      {
+        "bounds": 0.001953125,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.1920928955078125e-7,
+        "pass": true,
+        "position": 0.00048828125
+      },
+      {
+        "bounds": 0.001953125,
+        "containment": true,
+        "exact": true,
+        "finite": true,
+        "normal": 1.788139343261719e-7,
+        "pass": true,
+        "position": 0.00048828125
+      }
+    ],
+    "positionTolerance": 0.002,
+    "readbackBytes": 180125696,
+    "scope": "Actual full FirstPersonBody in a separate instance, 21 animation poses plus two 6km offsets; full packed GPU readback vs CPU, not gameplay speed or whole optical quality",
+    "status": "GPU_PARITY_PASS",
+    "triangles": 36700,
+    "vertices": 19372
+  }
+}

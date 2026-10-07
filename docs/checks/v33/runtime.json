@@ -1,0 +1,159 @@
+{
+  "sourceRevision": "3985d2cfdd3e66e464c20b96e97a44ad859e71b6",
+  "walking": [
+    {
+      "geometry": false,
+      "samples": 668,
+      "medianFrameMs": 17.69999998807907,
+      "p95FrameMs": 19.700000002980232,
+      "maxFrameMs": 138.69999998807907,
+      "skinCpuMedianMs": 1.5,
+      "skinCpuP95Ms": 1.5,
+      "backend": "gpu",
+      "gpuReadbackBytes": 0,
+      "rebuilds": 1,
+      "atlasRebuilds": 1,
+      "end": [
+        -51.726044380132414,
+        0.7471776089644517,
+        -6.470412309353308
+      ]
+    },
+    {
+      "geometry": true,
+      "samples": 536,
+      "medianFrameMs": 21.899999998509884,
+      "p95FrameMs": 27.200000002980232,
+      "maxFrameMs": 38,
+      "skinCpuMedianMs": 6.299999997019768,
+      "skinCpuP95Ms": 10.599999994039536,
+      "backend": "gpu",
+      "gpuReadbackBytes": 0,
+      "rebuilds": 1,
+      "atlasRebuilds": 1,
+      "end": [
+        -51.78665101208982,
+        0.7431012397388413,
+        -6.567301369115301
+      ]
+    }
+  ],
+  "walkingImageDimensions": [
+    [
+      1280,
+      720
+    ],
+    [
+      1280,
+      720
+    ]
+  ],
+  "dive": {
+    "commandedSeconds": 35,
+    "sampledFrameIntervalSumSeconds": 54.58909999999404,
+    "medianFrameMs": 19.900000005960464,
+    "p95FrameMs": 27.100000008940697,
+    "maxFrameMs": 268.70000000298023,
+    "modes": [
+      "dive",
+      "swim"
+    ],
+    "resolutions": [
+      [
+        1049,
+        590
+      ],
+      [
+        1049,
+        590
+      ],
+      [
+        1049,
+        590
+      ],
+      [
+        1049,
+        590
+      ],
+      [
+        1049,
+        590
+      ],
+      [
+        1049,
+        590
+      ],
+      [
+        1049,
+        590
+      ]
+    ],
+    "quality": [
+      "auto",
+      "auto",
+      "auto",
+      "auto",
+      "auto",
+      "auto",
+      "auto"
+    ],
+    "maxDepth": 9.396415486685738,
+    "final": {
+      "avatarAction": "swim",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        -0.08542995672698077,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "",
+      "message": "海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0,
+      "stamina": 1,
+      "voyage": null
+    },
+    "scope": "35 seconds of controller input with PNG pauses between phases; timing includes those captures and adaptive quality"
+  },
+  "lowDPRRayProbe": {
+    "ratio": 0.5499999970964023,
+    "viewport": [
+      0,
+      0,
+      4,
+      1
+    ],
+    "rows": [
+      {
+        "hit": true,
+        "materialMatch": true,
+        "pointError": 1.591442773119654e-06,
+        "normalError": 7.978883827285798e-05
+      },
+      {
+        "hit": true,
+        "materialMatch": true,
+        "pointError": 1.4277148005561536e-06,
+        "normalError": 3.3259684285607264e-05
+      },
+      {
+        "hit": true,
+        "materialMatch": true,
+        "pointError": 1.3109672099413661e-06,
+        "normalError": 4.031493405782512e-06
+      },
+      {
+        "hit": true,
+        "materialMatch": true,
+        "pointError": 6.370234283946984e-07,
+        "normalError": 3.3498318375427045e-05
+      }
+    ]
+  }
+}

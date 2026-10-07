@@ -1,0 +1,12 @@
+{
+  "sourceRevision": "3985d2cfdd3e66e464c20b96e97a44ad859e71b6",
+  "tests": 324,
+  "suiteExit": 0,
+  "typecheckExit": 0,
+  "viteExit": 0,
+  "standaloneBuildExit": 0,
+  "finalChange": "Shader-error observer cleanup in try/finally after the complete test suite; final typecheck, real GPU chain and build rerun",
+  "standaloneDirectStartup": "UNVERIFIED",
+  "fullPhotographicGoal": "UNMET",
+  "finalShowcaseVideo": "PENDING AFTER COMPLETION"
+}

@@ -1,0 +1,38 @@
+{
+  "source_revision": "3985d2cfdd3e66e464c20b96e97a44ad859e71b6",
+  "scope": "Opt-in GPU skinned receiver candidate, not default geometry adoption or full photographic quality",
+  "inspection": "Independent source/diff and existing GPU evidence review; reviewer did not rerun the GPU",
+  "actionable_blockers": [],
+  "criterion_results": [
+    {
+      "criterion_id": "routing",
+      "status": "passed",
+      "evidence_locator": "Locally verified exact completed Sol 6.1/low child turn and spawn provenance",
+      "gap_reason": null
+    },
+    {
+      "criterion_id": "skin_parity",
+      "status": "passed",
+      "evidence_locator": "gpu-validation.json; src/ocean/skinned-receivers.ts",
+      "gap_reason": null
+    },
+    {
+      "criterion_id": "bvh_parity",
+      "status": "passed",
+      "evidence_locator": "gpu-validation.json; src/ocean/gpu-skinned-receivers.ts",
+      "gap_reason": null
+    },
+    {
+      "criterion_id": "runtime_performance",
+      "status": "passed",
+      "evidence_locator": "runtime.json; src/ocean/geometry-receivers.ts",
+      "gap_reason": null
+    },
+    {
+      "criterion_id": "fallback_lifecycle",
+      "status": "passed",
+      "evidence_locator": "gpu-validation.json; src/ocean/gpu-skinned-safety.ts",
+      "gap_reason": null
+    }
+  ]
+}
