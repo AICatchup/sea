@@ -60,6 +60,7 @@ export interface AdventureState {
   /** Continuous standing-to-seated posture during the final boarding leg. */
   seatingBlend?: number;
   avatarAction?: 'idle' | 'walk' | 'run' | 'swim' | 'dive' | 'helm' | 'climb';
+  activity?:'fishing'|'surf';
   boatPitch?: number;
   boatRoll?: number;
 }

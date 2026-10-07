@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import type {SoundscapeFrame} from '../audio/soundscape-state.ts';
+import {ActivitySession} from '../activities/session.ts';
+import {ActivityWorld} from '../activities/world.ts';
 import { OceanSimulation } from './fft';
 import { environmentFragment, environmentVertex, oceanVertex, oceanFragment, skyVertex, skyFragment } from './shaders';
 import { presets, type PresetName } from './presets';
@@ -90,6 +93,10 @@ export class Ocean {
   readonly assets:AssetWorld;
   readonly marine:MarineLife;
   readonly adventure:ExplorerControls;
+  readonly activities:ActivitySession;
+  private readonly activityWorld:ActivityWorld;
+  private soundShoreDistance=80;
+  private soundShoreSampleAt=-Infinity;
   readonly expedition:Expedition;
   private readonly expeditionWorld:ExpeditionWorld;
   readonly body=new FirstPersonBody();
@@ -177,7 +184,10 @@ export class Ocean {
     }catch{/* Session play remains available. */}
     this.expedition=new Expedition(createExpeditionMap(this.world,this.world.destinations),this.world,expeditionStore);
     this.expeditionWorld=new ExpeditionWorld(this.expedition);
-    this.adventure.setContextInteraction({label:state=>this.expedition.context(state)?.label??'',activate:state=>this.expedition.interact(state)});
+    this.activities=new ActivitySession(this.world,this.waterHeights.sample,()=>this.waterHeights.diagnostics.ready,new URLSearchParams(location.search).get('capture')==='1'?undefined:expeditionStore as Storage|undefined);
+    this.activityWorld=new ActivityWorld(this.activities);
+    this.adventure.setActivityControls({activate:()=>this.activities.activate(this.adventure.state),motion:(dt,input,state)=>this.activities.motion(dt,input,state),blocked:()=>this.activities.blocked()});
+    this.adventure.setContextInteraction({label:state=>this.activities.tool!=='none'?'道具をしまう':this.expedition.context(state)?.label??'',activate:state=>this.activities.stow(state)||this.expedition.interact(state)});
     const p=presets.day;
     this.uniforms={
       uSandAppearance:this.world.sandAppearance,
@@ -227,7 +237,7 @@ export class Ocean {
     const seaGeometry=makeOceanGrid();
     const sea=new THREE.Mesh(seaGeometry,seaMat);sea.frustumCulled=false;this.waterScene.add(sea);
     this.materials=[skyMat,seaMat];this.meshGeometries=[skyGeometry,seaGeometry];
-    this.scene.add(this.world.group,this.assets.group,this.marine.group,this.body.group,this.expeditionWorld.group,this.sun,this.sun.target,this.fill);
+    this.scene.add(this.world.group,this.assets.group,this.marine.group,this.body.group,this.expeditionWorld.group,this.activityWorld.group,this.sun,this.sun.target,this.fill);
     this.scene.add(this.scannedCoast);
     prepareWorldMaterials(this.world.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
@@ -386,6 +396,7 @@ export class Ocean {
       this.adventure.setEquipment(this.expedition.hasGear('air')?1.45:1,this.expedition.hasGear('fins')?1.18:1);
       this.adventure.update(delta,this.time,this.paused);
       if(!this.adventure.inputBlocked)this.expedition.update(delta,this.adventure.state);
+      if(!this.adventure.inputBlocked)this.activities.update(delta,this.adventure.state);
     }
     const state=this.adventure.state;
     const nextFov=approachCameraFov(this.camera.fov,targetCameraFov(state,this.adventure.settings.value.boatFov),delta);
@@ -396,7 +407,9 @@ export class Ocean {
     this.target.copy(this.camera.position).add(this.direction);this.camera.lookAt(this.target);this.camera.updateMatrixWorld();
     this.assets.boat.position.copy(state.boatPosition);
     this.assets.boat.rotation.set(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ');
+    state.activity=this.activities.tool==='rod'?'fishing':this.activities.surf.phase==='riding'?'surf':undefined;
     this.body.update(state,this.camera,delta,this.time);
+    this.activityWorld.update(state,this.camera,this.waterHeights.sample);
     const underwater=cameraSubmersion(this.camera.position.y,this.waterHeights.sample(this.camera.position.x,this.camera.position.z));
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()),this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));
@@ -684,6 +697,25 @@ export class Ocean {
       ground:this.world.heightAt(state.position.x,state.position.z),programs:this.renderer.info.programs?.length,
       draws:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles};
   }
+  soundFrame(dt:number):SoundscapeFrame{
+    const s=this.adventure.state,p=s.position,w=this.waterHeights.sample(p.x,p.z),ready=this.waterHeights.diagnostics.ready;
+    const now=performance.now();
+    if(now-this.soundShoreSampleAt>400){
+      this.soundShoreSampleAt=now;this.soundShoreDistance=80;
+      const onLand=this.world.heightAt(p.x,p.z)>w-.1;
+      search:for(const r of [3,8,18,38,70])for(let i=0;i<8;i++){
+        const x=p.x+Math.sin(i*Math.PI/4)*r,z=p.z+Math.cos(i*Math.PI/4)*r;
+        if((this.world.heightAt(x,z)>w-.1)!==onLand){this.soundShoreDistance=r;break search;}
+      }
+    }
+    const gx=(this.waterHeights.sample(p.x+1,p.z)-this.waterHeights.sample(p.x-1,p.z))*.5;
+    const gz=(this.waterHeights.sample(p.x,p.z+1)-this.waterHeights.sample(p.x,p.z-1))*.5;
+    return{dt:this.adventure.inputBlocked?0:Math.min(.05,Math.max(0,dt)),time:this.time,mode:s.mode,position:{x:p.x,y:p.y,z:p.z},velocity:{x:s.velocity?.x??0,y:s.velocity?.y??0,z:s.velocity?.z??0},yaw:s.yaw,
+      depth:Math.max(0,w-p.y),immersion:cameraSubmersion(p.y,w),bodyImmersion:s.immersion??0,grounded:!!s.grounded,gaitPhase:s.gaitPhase??0,
+      boat:{pitch:s.boatPitch??0,roll:s.boatRoll??0,speed:s.mode==='boat'?s.speed:0},
+      environment:{windSpeed:this.wind,windDirection:Math.atan2(.8,-.6),exposure:Math.hypot(p.x,p.z)<220?.35:.85},
+      wave:{ready,level:w,slope:Math.hypot(gx,gz),shoreDistance:this.soundShoreDistance}};
+  }
   dispose():void{
     if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.animationFrame);this.abort.abort();
     this.captureNextFrame?.(null);this.captureNextFrame=null;
@@ -692,7 +724,7 @@ export class Ocean {
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();
     this.shoreSolver?.dispose();
-    this.expeditionWorld.dispose();this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
+    this.activityWorld.dispose();this.expeditionWorld.dispose();this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
     this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();
     this.caustics.dispose();this.reflection.dispose();this.reflection.geometry.dispose();this.photographicSky?.texture.dispose();this.renderer.dispose();

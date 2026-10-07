@@ -33,6 +33,6 @@ test('one island record is enough to guide the return and actual delivery',()=>{
  s.mode='boat';assert.match(g.objective(s).detail,/泊海水浴場/);
  s.mode='walk';s.position.set(g.map.camp.x,2.14,g.map.camp.z);
  const controls=new ControlSettings();assert.match(controls.hint(g.objective(s).detail),/Eで調査ボックス/);
- controls.rebind('interact',0,'KeyF');assert.match(controls.hint(g.objective(s).detail),/Fで調査ボックス/);assert.equal(g.interact(s),true);
+ assert.equal(controls.rebind('interact',0,'KeyG'),null);assert.match(controls.hint(g.objective(s).detail),/Gで調査ボックス/);assert.equal(g.interact(s),true);
  assert.ok(g.banked.includes('shore-nakanoura'));assert.equal(g.cargo.length,0);assert.equal(g.target(s)?.id,'glass');
 });
