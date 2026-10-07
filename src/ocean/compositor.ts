@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+import {waterVolumeGLSL} from './water-volume.ts';
 
 /** Metres along a normalized view ray; depth is camera-axis distance. */
 export function underwaterRayDistance(axisDistance: number, forwardCosine: number): number {
@@ -68,6 +69,7 @@ const occlusionFragment = /* glsl */ `
  }`;
 const mergeFragment = `
  precision highp float;
+ ${waterVolumeGLSL}
  varying vec2 vUv;
  uniform sampler2D uLand, uWater, uLandDepth, uWaterDepth, uOcclusion;
  uniform float uExposure, uUnderwater, uTime;
@@ -117,22 +119,20 @@ const mergeFragment = `
      vec3 transmission=exp(-extinction*path);
      vec3 refractedSun=-refract(-uSunDirection,vec3(0,1,0),.75019);
      float phase=(1.0-.76*.76)/pow(max(.035,1.0+.76*.76-2.0*.76*dot(ray,refractedSun)),1.5);
-     // Sample the illuminated near volume while retaining the full extinction
-     // distance. Beyond 500m even the least absorbing channel is negligible.
-     vec3 volume=vec3(0.0);float stepLength=min(path,500.0)/8.0;
+     // Integrate both optical paths in fixed metric shadow cells. Retain an
+     // analytic, unshadowed distant tail after the last cell at 510m.
+     vec3 volume=vec3(0.0);float sunCos=max(.35,refractedSun.y);
      float jitter=fract(sin(dot(gl_FragCoord.xy,vec2(73.156,52.235)))*43758.5453);
      for(int i=0;i<8;i++){
-       float distance=(float(i)+.25+jitter*.5)*stepLength;
+       float a=waterShadowCellStart(i),b=min(path,waterShadowCellStart(i+1));
+       if(a>=path)break;
+       float distance=mix(a,b,.25+jitter*.5);
        vec3 point=uCameraPosition+ray*distance;
-       float waterDepth=max(0.0,-point.y);
-       vec3 lightTrans=exp(-extinction*waterDepth/max(.35,refractedSun.y));
-       // Integrate camera transmittance over each cell analytically. A midpoint
-       // times width would miss the near volume on long rays and darken it.
-       vec3 cameraIntegral=(exp(-extinction*float(i)*stepLength)
-         -exp(-extinction*float(i+1)*stepLength))/extinction;
        float visibility=solarVisibility(point);
-       volume+=cameraIntegral*lightTrans*vec3(.0008,.0028,.0041)*uSunColor*(.12+phase*.12)*visibility;
+       volume+=waterLightIntegral(a,b,uCameraPosition.y,ray.y,sunCos,extinction)*visibility;
      }
+     if(path>510.0)volume+=waterLightIntegral(510.0,path,uCameraPosition.y,ray.y,sunCos,extinction);
+     volume*=vec3(.0008,.0028,.0041)*uSunColor*(.12+phase*.12);
      vec3 scatter=vec3(.003,.026,.041);
      vec3 underwater=color*transmission+scatter*(1.0-transmission)+volume;
      color=mix(color,underwater,uUnderwater);

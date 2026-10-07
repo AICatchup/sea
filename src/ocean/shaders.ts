@@ -7,6 +7,7 @@ import {refractedSceneGLSL,refractedBedGLSL} from './refracted-path.ts';
 import {packedReceiverGLSL,receiverMaterialGLSL} from './receiver-bridge.ts';
 import {waveCausticsSampling} from './caustics.ts';
 import {skinnedReceiverTraceGLSL} from './skinned-receivers-glsl.ts';
+import {waterVolumeGLSL} from './water-volume.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -234,6 +235,7 @@ export const oceanVertex = /* glsl */ `
 `;
 
 export const oceanFragment = /* glsl */ `
+  ${waterVolumeGLSL}
   precision highp float;
   uniform sampler2D uLongWaves, uShortWaves;
   uniform sampler2D uBathymetry, uSceneColor, uSceneDepth, uSceneOcclusion, uReflection;
@@ -256,6 +258,7 @@ export const oceanFragment = /* glsl */ `
   uniform vec4 uBathyBounds;
   uniform vec2 uBathyResolution, uResolution, uNearFar;
   uniform float uUnderwater;
+  uniform float uUnderwaterReflectionTrace;
   uniform float uSwell, uChoppiness, uWind;
   uniform vec3 uWaterTint;
   varying vec3 vWorld;
@@ -296,6 +299,36 @@ export const oceanFragment = /* glsl */ `
   }
   float linearDepth(float d){float n=uNearFar.x,f=uNearFar.y;return 2.0*n*f/(f+n-(d*2.0-1.0)*(f-n));}
   ${refractedSceneGLSL}
+  // Trace the local reflected direction through the already rendered mirror
+  // depth. A single flat-plane UV cannot follow a tilted wave at grazing view.
+  bool underwaterReflectionReceiver(vec3 p,out vec2 uv,out float residual,out vec3 receiver){
+    vec4 q=uReflectionMatrix*vec4(p,1.0);uv=q.xy/max(.0001,q.w);
+    if(q.w<=0.0||any(lessThan(uv,vec2(.002)))||any(greaterThan(uv,vec2(.998))))return false;
+    float d=texture2D(uReflectionDepth,uv).r;
+    if(d>=.999999){residual=-10000.0;receiver=p;return true;}
+    vec4 v=uReflectionInverseProjection*vec4(uv*2.0-1.0,d*2.0-1.0,1.0);
+    receiver=(uReflectionCameraWorld*vec4(v.xyz/v.w,1.0)).xyz;
+    vec3 eye=uReflectionCameraWorld[3].xyz;
+    residual=length(p-eye)-length(receiver-eye);return true;
+  }
+  bool traceUnderwaterReflection(vec3 origin,vec3 ray,out float distance,out vec2 uv){
+    distance=0.0;uv=vec2(0);
+    float previous=.025,current=.025,residual;vec3 receiver;bool found=false;
+    for(int i=0;i<13;i++){
+      current=.0625*exp2(float(i));
+      if(!underwaterReflectionReceiver(origin+ray*current,uv,residual,receiver))return false;
+      if(residual>=0.0){found=true;break;}previous=current;
+    }
+    if(!found)return false;
+    for(int i=0;i<7;i++){
+      float middle=(previous+current)*.5;
+      if(!underwaterReflectionReceiver(origin+ray*middle,uv,residual,receiver))return false;
+      if(residual>=0.0)current=middle;else previous=middle;
+    }
+    if(!underwaterReflectionReceiver(origin+ray*current,uv,residual,receiver))return false;
+    vec3 delta=receiver-origin;distance=dot(delta,ray);
+    return distance>.025&&distance<=256.0&&length(delta-ray*distance)<.06+distance*.012;
+  }
   float surfaceSunVisibility(vec3 p){
     if(uShadowReady<.5)return 1.0;
     vec4 projected=uSunShadowMatrix*vec4(p,1);vec3 q=projected.xyz/projected.w;
@@ -437,16 +470,24 @@ export const oceanFragment = /* glsl */ `
       }
       vec3 sigma=vec3(.105,.021,.012),reflectedTrans=exp(-sigma*reflectedPath);
       vec3 reflectedDirection=normalize(reflect(-view,belowNormal));
+      if(uUnderwaterReflectionTrace>.5&&uHasReflection>.5){
+        float tracedDistance;vec2 tracedUV;
+        bool hit=traceUnderwaterReflection(vWorld+reflectedDirection*.025,reflectedDirection,tracedDistance,tracedUV);
+        reflectedPath=hit?tracedDistance:10000.0;
+        reflectedRadiance=hit?texture2D(uReflection,tracedUV).rgb:vec3(0);
+        reflectedTrans=exp(-sigma*reflectedPath);
+      }
       vec3 waterSun=-refract(-uSunDirection,vec3(0,1,0),.75019);
       float reflectedPhase=(1.0-.76*.76)/pow(max(.035,1.0+.76*.76-2.0*.76*dot(reflectedDirection,waterSun)),1.5);
-      vec3 reflectedVolume=vec3(0);float reflectedStep=min(reflectedPath,500.0)/8.0;
+      vec3 reflectedVolume=vec3(0);float sunCos=max(.35,waterSun.y);
       for(int i=0;i<8;i++){
-        float a=float(i)*reflectedStep,b=float(i+1)*reflectedStep;
+        float a=waterShadowCellStart(i),b=min(reflectedPath,waterShadowCellStart(i+1));
+        if(a>=reflectedPath)break;
         vec3 point=vWorld+reflectedDirection*(a+b)*.5;
-        vec3 lightTrans=exp(-sigma*max(0.0,-point.y)/max(.35,waterSun.y));
-        vec3 cameraIntegral=(exp(-sigma*a)-exp(-sigma*b))/sigma;
-        reflectedVolume+=cameraIntegral*lightTrans*vec3(.0008,.0028,.0041)*uSunColor*(.12+reflectedPhase*.12)*surfaceSunVisibility(point);
+        reflectedVolume+=waterLightIntegral(a,b,vWorld.y,reflectedDirection.y,sunCos,sigma)*surfaceSunVisibility(point);
       }
+      if(reflectedPath>510.0)reflectedVolume+=waterLightIntegral(510.0,reflectedPath,vWorld.y,reflectedDirection.y,sunCos,sigma);
+      reflectedVolume*=vec3(.0008,.0028,.0041)*uSunColor*(.12+reflectedPhase*.12);
       // Both camera-to-interface and interface-to-reflected-hit legs scatter
       // light. Omitting the second leg darkens the entire TIR ceiling.
       vec3 underwaterColor=reflectedRadiance*reflectedTrans+vec3(.003,.026,.041)*(1.0-reflectedTrans)+reflectedVolume;

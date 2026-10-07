@@ -205,6 +205,7 @@ export class Ocean {
       uSceneColor:{value:null},uSceneDepth:{value:null},uSceneOcclusion:{value:null},uResolution:{value:new THREE.Vector2()},
       uReflectionDepth:{value:null},uReflectionInverseProjection:{value:new THREE.Matrix4()},uReflectionCameraWorld:{value:new THREE.Matrix4()},
       uNearFar:{value:new THREE.Vector2(this.camera.near,this.camera.far)},uUnderwater:{value:0},
+      uUnderwaterReflectionTrace:{value:new URLSearchParams(location.search).get('reflectionray')==='0'?0:1},
       uReflection:{value:this.reflection.getRenderTarget().texture},uReflectionMatrix:{value:this.reflectionMatrix},uHasReflection:{value:0},
       uReflectionResolution:{value:new THREE.Vector2(512,320)},
       uCaustics:{value:null},uCausticBounds:{value:new THREE.Vector4()},
