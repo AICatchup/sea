@@ -2,6 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ControlSettings, CONTROLS_STORAGE_KEY, defaultControls, parseControls, keyLabel } from '../src/input/control-settings.ts';
 
+test('legacy custom F interaction survives the added activity binding',()=>{
+ const old=JSON.parse(JSON.stringify({version:1,...defaultControls()}));delete old.bindings.activity;old.bindings.interact=['KeyF',''];old.sensitivity=.7;
+ const settings=parseControls(JSON.stringify(old));assert.deepEqual(settings.bindings.interact,['KeyF','']);assert.equal(settings.sensitivity,.7);assert.deepEqual(settings.bindings.activity,['KeyG','']);
+});
+
 test('preferences survive reload and reset without touching adventure progress', () => {
   const data = new Map([['sea.expedition', 'existing-progress']]);
   const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value); } };

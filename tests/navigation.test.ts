@@ -467,6 +467,12 @@ test('boat wheel changes the lens without releasing held propulsion and ignores 
  }finally{controls.dispose();}
 });
 
+test('paddling uses a valid embodied capsule and crosses empty water without false collision',()=>{
+ const collision=new WorldCollision(),{controls,state}=setup(withWorldCollision({heightAt:()=>-8},collision));let blocked=0;
+ controls.viewpoint(0,0,0,0,'swim');controls.setActivityControls({activate(){},blocked(){blocked++;},motion:dt=>({dx:0,dz:-dt,eyeY:.4,vx:0,vz:-1,standing:false})});
+ try{advance(controls,.3);assert.equal(blocked,0);assert.ok(state.position.z<-.29);}finally{controls.dispose();collision.dispose();}
+});
+
 test('rightward drag turns the actual FPS forward vector right; sensitivity and both inversion axes apply', () => {
   const results: {yaw:number;pitch:number}[] = [];
   for (const preferences of [{sensitivity:1,invertX:false,invertY:false},{sensitivity:.5,invertX:false,invertY:false},{sensitivity:1,invertX:true,invertY:true}]) {
@@ -487,15 +493,15 @@ test('remapped movement, jump and interaction use new keys; menus freeze inputs 
   const {controls,canvas,state}=setup({heightAt:()=>0}); let interactions=0;
   try {
     controls.setContextInteraction({label:()=> '調べる',activate:()=>{interactions++;return true;}});
-    controls.settings.rebind('forward',0,'KeyI');controls.settings.rebind('rise',0,'KeyR');controls.settings.rebind('interact',0,'KeyF');
+    controls.settings.rebind('forward',0,'KeyI');controls.settings.rebind('rise',0,'KeyR');assert.equal(controls.settings.rebind('interact',0,'KeyG'),null);
     key(canvas,'keydown','KeyW');advance(controls,1);assert.equal(state.position.z,0);
     key(canvas,'keydown','KeyI');advance(controls,1);assert.ok(state.position.z<-1.5);
     controls.setInputBlocked(true);const before=state.position.clone(),yaw=state.yaw;
-    controls.setMove(1,1);controls.setVertical(1);key(canvas,'keydown','KeyI');key(canvas,'keydown','KeyF');
+    controls.setMove(1,1);controls.setVertical(1);key(canvas,'keydown','KeyI');key(canvas,'keydown','KeyG');
     pointer(canvas,'pointerdown',100,100);pointer(canvas,'pointermove',300,100);advance(controls,2);
     assert.ok(state.position.equals(before));assert.equal(state.yaw,yaw);assert.equal(interactions,0);
     controls.setInputBlocked(false);advance(controls,1);assert.ok(state.position.equals(before));
-    key(canvas,'keydown','KeyE');assert.equal(interactions,0);key(canvas,'keydown','KeyF');assert.equal(interactions,1);
+    key(canvas,'keydown','KeyE');assert.equal(interactions,0);key(canvas,'keydown','KeyG');assert.equal(interactions,1);
     key(canvas,'keydown','Space');advance(controls,.1);assert.equal(state.grounded,true);
     key(canvas,'keydown','KeyR');advance(controls,.1);assert.equal(state.grounded,false);assert.ok(state.position.y>1.8);
   } finally {controls.dispose();}

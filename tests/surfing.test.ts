@@ -4,6 +4,9 @@ import {createSurfState, stepSurfing} from '../src/activities/surfing.ts';
 import type {SurfInput, SurfState} from '../src/activities/surfing.ts';
 const base: SurfInput = {dt: .02, playerPosition: {x: 0,z: 0}, boardPosition: {x: 0,z: 0}, waterHeight: 0, waterGradient: {x: 0,z: 0}, waveReady: true, groundDepth: 2, shoreward: {x: 0,z: -1}, forward: 1, steer: 0};
 function paddle() {return stepSurfing(stepSurfing(createSurfState(), {...base,pickup:true}).state, {...base,launch:true}).state;}
+test('east-positive heading agrees with the FPS controller coordinate system',()=>{
+ const s={...paddle(),yaw:Math.PI/2};const out=stepSurfing(s,base);assert.ok(out.displacement.x>0);assert.ok(Math.abs(out.displacement.z)<1e-8);
+});
 function run(s: SurfState, seconds: number, extra: Partial<SurfInput> = {}, dt = .02) {
   let x=0,z=0; for(let i=0;i<Math.round(seconds/dt);i++){const o=stepSurfing(s,{...base,...extra,dt});s=o.state;x+=o.displacement.x;z+=o.displacement.z;} return {state:s,x,z};
 }
@@ -41,4 +44,10 @@ test('invalid numeric inputs and oversized frames stay finite and bounded',()=>{
 test('constant wave integration is consistent at 30/60/120 fps',()=>{
  const start=riding();const a=run(start,2,wave,1/30),b=run(start,2,wave,1/60),c=run(start,2,wave,1/120);
  assert.ok(Math.abs(a.z-b.z)<.08);assert.ok(Math.abs(a.z-c.z)<.08);assert.ok(Math.abs(a.state.speed-c.state.speed)<.02);
+});
+test('five-Hz wave cache drives the interval between samples, then expires when the crest stops',()=>{
+ let s=riding();for(let i=0;i<300;i++)s=stepSurfing(s,{...base,...wave,waterVerticalVelocity:i%10===0?.2:0}).state;
+ assert.equal(s.phase,'riding');assert.ok(s.rideDistance>20);assert.ok(s.speed>2);
+ for(let i=0;i<650;i++)s=stepSurfing(s,{...base,...wave,waterVerticalVelocity:0}).state;
+ assert.equal(s.phase,'wipeout');
 });

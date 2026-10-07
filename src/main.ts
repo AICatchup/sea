@@ -7,6 +7,7 @@ import {inspectGpuSkinLifecycle} from './qa/gpu-skinned-lifecycle.ts';
 import {createCaptureGate} from './qa/capture-exclusivity.ts';
 import { Ocean, type Quality } from './ocean/renderer';
 import {ExpeditionUI} from './ui/expedition-ui';
+import {ActivityUI} from './ui/activity-ui.ts';
 import { presets, type PresetName } from './ocean/presets';
 import { SurfAudio } from './audio';
 import { AdventureUI } from './ui/adventure-ui';
@@ -122,6 +123,7 @@ try {
   }, ocean.world.destinations, ocean.world.mapOutlines,controls);
   expeditionUI=new ExpeditionUI(ocean.expedition,{map:()=>adventureUI.openMap(),cue:()=>sound.cue(),modal:open=>{if(open)adventureUI.close();modal('journal',open);}},controls);
   controlSettingsUI=new ControlSettingsUI(controls,open=>modal('settings',open));
+  const activityUI=new ActivityUI(ocean.activities,controls,()=>{ocean.adventure.useActivity();focus();});
   const revealUI=()=>{if(document.body.classList.contains('immersed'))toggleImmersive();};
   const openControls=()=>{revealUI();adventureUI.close();expeditionUI.close();controlSettingsUI.open();};
   element('controls-open').addEventListener('click',openControls,events);
@@ -135,10 +137,13 @@ try {
     element('leave-immersive').querySelector('span')!.textContent=controls.primary('immersive');
   };
   const unsubscribeHints=controls.subscribe(syncControlHints);syncControlHints();
+  let previousSoundStamp=performance.now();
   const updateUI = () => {
     if (disposed) return;
     adventureUI.update(ocean.adventure.state, ocean.assets.placedCount);
     expeditionUI.update(ocean.adventure.state);
+    activityUI.update(ocean.adventure.state,ocean.adventure.inputBlocked);
+    const soundStamp=performance.now();sound.setFrame(ocean.soundFrame((soundStamp-previousSoundStamp)/1000));previousSoundStamp=soundStamp;
     uiFrame = requestAnimationFrame(updateUI);
   };
   uiFrame = requestAnimationFrame(updateUI);
@@ -189,6 +194,9 @@ try {
   // as the touch controls; bookmarks are QA starts, never normal travel actions.
   let crestSeriesBusy=false;
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
+    audioDiagnostics:()=>sound.diagnostics,
+    activities:()=>ocean.activities.diagnostics,
+    async recordAudio(milliseconds:number){const blob=await sound.record(milliseconds);return await new Promise<string>((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});},
     async captureSandComparison(name:string){
       const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown sand comparison view');
       await ocean.ready;const before=captureHost.readState(),original=ocean.world.sandAppearance.value,clock=ocean.diagnostics.time,variants=[];
@@ -603,8 +611,8 @@ try {
       const enabled = await sound.toggle();
       if (disposed) return;
       button.setAttribute('aria-pressed', String(enabled));
-      button.setAttribute('aria-label', enabled ? '波の音をオフにする' : '波の音をオンにする');
-      toast(enabled ? '波の音を、そっと。' : '波の音を止めました。');
+      button.setAttribute('aria-label', enabled ? '環境音をオフにする' : '環境音をオンにする');
+      toast(enabled ? '風と水、動きに合わせた海の音。' : '環境音を止めました。');
     } catch { toast('音を再生できませんでした。もう一度お試しください。'); }
     finally { if (!disposed) button.disabled = false; }
   }, events);
@@ -669,6 +677,7 @@ try {
       disposed = true;
       clearTimeout(windTimer); clearTimeout(toastTimer);
       cancelAnimationFrame(uiFrame); controlSettingsUI.dispose();unsubscribeHints();adventureUI.dispose();expeditionUI.dispose();
+      activityUI.dispose();
       abort.abort(); ocean.dispose(); sound.dispose();
       photoUrls.forEach((timer, url) => { clearTimeout(timer); URL.revokeObjectURL(url); });
       photoUrls.clear();

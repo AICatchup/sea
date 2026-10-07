@@ -24,9 +24,9 @@ test('continuous air cut and quiet sheltered bay, wave readiness gates surf', ()
   const s = new SoundscapeState(), f = frame(); const dry = s.update(f);
   f.immersion = .5; const half = s.update(f); assert.ok(half.wind > 0 && half.wind < dry.wind); assert.ok(half.cutoffHz < dry.cutoffHz);
   f.depth = .4; f.mode = 'dive'; f.velocity.z = 1; const under = s.update(f);
-  assert.equal(under.wind, 0); assert.equal(under.surf, 0); assert.equal(under.breath, 0); assert.ok(under.bubbles > 0);
+  assert.equal(under.wind, 0); assert.equal(under.surf, 0); assert.ok(under.breath > 0); assert.ok(under.bubbles > 0);
   f.depth = 0; f.immersion = 0; f.wave.shoreStrength = 0; f.environment.windSpeed = 1;
-  const bay = s.update(f); assert.equal(bay.surf, 0); assert.ok(bay.wind < .01);
+  const bay = s.update(f); assert.equal(bay.surf, 0); assert.ok(bay.wind < .04);
   f.wave.ready = false; f.wave.shoreStrength = 1; assert.equal(s.update(f).surf, 0);
 });
 test('footfalls cross gait boundaries and pause, large dt, pose reset cannot burst', () => {

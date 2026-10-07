@@ -22,6 +22,8 @@ const editable = (target: EventTarget | null): boolean => {
     || Boolean(element.closest?.('[contenteditable="true"]'));
 };
 interface MotionInput { x: number; forward: number; vertical: number; running: boolean; }
+export interface ActivityMotion {dx:number;dz:number;eyeY:number;vx:number;vz:number;standing:boolean;yawDelta?:number;stance?:number;}
+export interface ActivityControls {activate:()=>void;motion:(dt:number,input:MotionInput,state:AdventureState)=>ActivityMotion|null;blocked:()=>void;}
 interface Boarding { from: THREE.Vector3; to: THREE.Vector3; elapsed: number; duration: number; leaving: boolean; via?:readonly(readonly[number,number,number])[]; }
 function boardingPosition(from:THREE.Vector3,to:THREE.Vector3,progress:number,via:readonly THREE.Vector3[]=[],leaving=false):THREE.Vector3{
   const points=[from,...via,to],scaled=progress*(points.length-1),index=Math.min(points.length-2,Math.floor(scaled));
@@ -75,6 +77,9 @@ export class ExplorerControls {
   private waterHeightSampler: (x: number, z: number) => number = () => 0;
   private disposed = false;
   private contextInteraction:{label:(state:AdventureState)=>string;activate:(state:AdventureState)=>boolean}|null=null;
+  private activityControls:ActivityControls|null=null;
+  setActivityControls(controls:ActivityControls):void{this.activityControls=controls;}
+  useActivity():void{if(!this.disposed&&!this.blocked&&!this.boarding)this.activityControls?.activate();}
   private airCapacity=1;
   private swimmingPower=1;
   private blocked = false;
@@ -198,7 +203,8 @@ export class ExplorerControls {
       return;
     }
     if (editable(key.target) || key.metaKey || key.altKey || (key.ctrlKey && !key.code.startsWith('Control'))) return;
-    if (!(['forward', 'back', 'left', 'right', 'rise', 'descend', 'sprint', 'interact'] as ControlAction[]).some(action => this.settings.matches(action, key.code))) return;
+    if (!(['forward', 'back', 'left', 'right', 'rise', 'descend', 'sprint', 'interact','activity'] as ControlAction[]).some(action => this.settings.matches(action, key.code))) return;
+    if (this.settings.matches('activity', key.code) && !key.repeat) this.useActivity();
     if (this.settings.matches('interact', key.code) && !key.repeat) this.interact();
     if (this.settings.matches('rise', key.code) && !key.repeat && this.state.grounded && this.state.mode === 'walk') this.jumpRequested = true;
     this.keys.add(key.code); key.preventDefault();
@@ -394,7 +400,7 @@ export class ExplorerControls {
     for (let step = 0; step < steps; step++) {
       if (this.boarding) this.updateBoarding(dt / steps);
       else if (this.state.mode === 'boat') this.updateBoat(dt / steps, input.x, input.forward);
-      else this.updatePerson(dt / steps, input, ambientPaused ? 0 : dt / steps);
+      else if(!this.updateActivityMotion(dt/steps,input))this.updatePerson(dt / steps, input, ambientPaused ? 0 : dt / steps);
     }
     if (this.state.mode === 'boat' && !this.boarding) this.state.position.copy(this.boatEye());
     this.state.depth = Math.max(0, this.waterAt(this.state.position.x, this.state.position.z) - this.state.position.y);
@@ -412,6 +418,21 @@ export class ExplorerControls {
     boat.y += ((bow + stern + port + starboard) / 4 - boat.y) * smooth;
     this.state.boatPitch = (this.state.boatPitch ?? 0) + (clamp(Math.atan2(bow - stern, 4.8), -.24, .24) - (this.state.boatPitch ?? 0)) * smooth;
     this.state.boatRoll = (this.state.boatRoll ?? 0) + (clamp(Math.atan2(starboard - port, 1.9), -.28, .28) - (this.state.boatRoll ?? 0)) * smooth;
+  }
+  private updateActivityMotion(dt:number,input:MotionInput):boolean{
+    const motion=this.activityControls?.motion(dt,input,this.state);if(!motion)return false;
+    if(!Object.values(motion).filter(v=>typeof v==='number').every(Number.isFinite)){this.activityControls?.blocked();return false;}
+    const p=this.state.position,stance=clamp(motion.stance??(motion.standing?1:0),0,1),eye=p.y+(motion.eyeY-p.y)*(1-Math.exp(-dt*9));
+    const direction=new THREE.Vector3(Math.sin(this.state.yaw)*(1-stance),stance,-Math.cos(this.state.yaw)*(1-stance)).normalize();
+    const feet=(x:number,y:number,z:number)=>({x:x-direction.x*.85*(1-stance),y:y-.25-1.30*stance,z:z-direction.z*.85*(1-stance)});
+    const from=feet(p.x,p.y,p.z),to=feet(p.x+motion.dx,eye,p.z+motion.dz);
+    const hit=this.ground.sweepBody?.(from,to,PLAYER_DIMENSIONS.radius,PLAYER_DIMENSIONS.height,{direction});
+    if(hit?.blocked){this.activityControls?.blocked();return false;}
+    const turn=motion.yawDelta??0;this.targetYaw+=turn;this.state.yaw+=turn;
+    p.set(p.x+motion.dx,eye,p.z+motion.dz);this.velocity.set(motion.vx,0,motion.vz);this.state.speed=this.velocity.length();
+    this.state.mode='swim';this.state.grounded=false;this.state.immersion=motion.standing?.1:1;this.state.avatarAction=motion.standing?'idle':'swim';
+    this.state.gaitPhase=(this.state.gaitPhase??0)+dt*3.4*(input.forward>0?1:.2);
+    this.state.oxygen=Math.min(1,this.state.oxygen+dt*.1);this.state.viewOffset?.set(0,0,0);return true;
   }
   private updateBoarding(dt: number): void {
     const motion = this.boarding!,priorProgress=clamp(motion.elapsed/motion.duration,0,1); motion.elapsed += dt;
@@ -449,8 +470,8 @@ export class ExplorerControls {
     }
   }
   private updateInteraction(): void {
-    this.state.interactionLabel = this.boarding ? 'はしごを移動中' : this.state.mode === 'boat'
-      ? this.state.voyageTarget || Math.abs(this.boatVelocity) > .9 ? '' : '船から降りる' : this.contextInteraction?.label(this.state) || (this.canBoard() ? '船に乗る' : '');
+    this.state.interactionLabel = this.boarding ? 'はしごを移動中' : this.contextInteraction?.label(this.state) || (this.state.mode === 'boat'
+      ? this.state.voyageTarget || Math.abs(this.boatVelocity) > .9 ? '' : '船から降りる' : this.canBoard() ? '船に乗る' : '');
   }
   private updateBoat(dt: number, steer: number, throttle: number): void {
     const boat = this.state.boatPosition;

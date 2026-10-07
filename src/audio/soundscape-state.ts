@@ -6,11 +6,12 @@ export interface SoundscapeFrame {
   dt: number; time: number; mode: 'walk' | 'swim' | 'dive' | 'boat';
   position: {x: number; y: number; z: number};
   velocity: {x: number; y: number; z: number}; yaw: number;
-  depth: number; immersion: number; grounded: boolean;
+  /** Listener immersion is independent of submerged feet/torso. */
+  depth: number; immersion: number; bodyImmersion?:number; grounded: boolean;
   /** Accumulated radians, with footfalls crossing 0 and PI each cycle. */
   gaitPhase: number;
   boat: {pitch: number; roll: number; speed: number};
-  environment: {windSpeed: number; windDirection: number};
+  environment: {windSpeed: number; windDirection: number; exposure?:number};
   wave: {ready: boolean; level: number; slope: number; shoreDistance?: number; shoreStrength?: number};
 }
 export interface SoundEvent {amplitude: number; variation: number; pan: number}
@@ -30,6 +31,7 @@ export class SoundscapeState {
   private seed: number;
   private previous: SoundscapeFrame | null = null;
   private birdRemaining = 12;
+  private breathTime=0;
   constructor(seed = 0x534541) {this.seed = finite(seed, 1) >>> 0;}
   /** Explicit lifecycle reset; does not alter the deterministic random sequence. */
   reset(): void {this.previous = null; this.birdRemaining = 12;}
@@ -46,8 +48,8 @@ export class SoundscapeState {
     const relativeWindSpeed = Math.min(100, Math.hypot(rx, rz));
     const speed = Math.min(100, Math.hypot(finite(v.x), finite(v.y), finite(v.z)));
     const boatSpeed = clamp(Math.abs(finite(f.boat.speed)), 0, 30);
-    const wet = clamp(f.immersion), depth = clamp(f.depth, 0, 100);
-    const airTransmission = 1 - smooth(Math.max(wet, depth / .35));
+    const wet = clamp(f.bodyImmersion??f.immersion), headWet=clamp(f.immersion), depth = clamp(f.depth, 0, 100);
+    const airTransmission = 1 - smooth(Math.max(headWet, depth / .35));
     const shore = f.wave.ready ? (f.wave.shoreStrength === undefined
       ? 1 - smooth(clamp(finite(f.wave.shoreDistance ?? 100) / 70))
       : clamp(f.wave.shoreStrength)) : 0;
@@ -63,20 +65,21 @@ export class SoundscapeState {
     if (active && !transition && p) rocking = clamp((Math.abs(finite(f.boat.pitch) - p.boat.pitch)
       + Math.abs(finite(f.boat.roll) - p.boat.roll)) / dt / 1.8);
     const out: SoundscapeTargets = {
-      wind: clamp(Math.pow(relativeWindSpeed / 20, 1.4) * airTransmission * (.2 + .8 * shore)),
+      wind: clamp(Math.pow(relativeWindSpeed / 20, 1.4) * airTransmission * clamp(f.environment.exposure??1,.1,1)),
       surf: clamp(shore * (.12 + .4 * windSpeed / 20 + .25 * roughness) * airTransmission),
       hullwash: aboard ? clamp((boatSpeed / 10 * .6 + roughness * .18) * airTransmission) : 0,
       creak: aboard ? clamp(rocking * .55 * airTransmission) : 0,
       engine: aboard ? clamp((.08 + .62 * smooth(boatSpeed / 12)) * airTransmission) : 0,
       swim: (f.mode === 'swim' || f.mode === 'dive') ? clamp(waterMotion * wet * .55) : 0,
-      breath: f.mode === 'swim' ? clamp(.12 * airTransmission * wet) : 0,
-      bubbles: (f.mode === 'swim' || f.mode === 'dive') ? clamp(wet * (1 - airTransmission) * waterMotion * .4) : 0,
+      breath: f.mode==='dive' ? .1+.09*Math.max(0,Math.sin(this.breathTime*1.45)) : f.mode === 'swim' ? clamp(.08 * airTransmission * wet) : 0,
+      bubbles: (f.mode === 'swim' || f.mode === 'dive') ? clamp(wet * (1 - airTransmission) * (waterMotion*.32+.08*Math.max(0,-Math.sin(this.breathTime*1.45)))) : 0,
       footsteps: [], bird: null, cutoffHz: 350 + 13650 * airTransmission,
       windCutoffHz: 600 + 7400 * clamp(relativeWindSpeed / 25) * airTransmission,
       pan, enginePitch: .65 + .9 * smooth(boatSpeed / 12), relativeWindSpeed, airTransmission,
     };
     if (active) {
-      if (!transition && p && f.mode === 'walk' && f.grounded && wet < .2 && speed > .15) {
+      this.breathTime+=dt;
+      if (!transition && p && f.mode === 'walk' && f.grounded && headWet < .2 && speed > .15) {
         const before = phase(p.gaitPhase), now = phase(f.gaitPhase);
         const advance = (finite(f.gaitPhase) - p.gaitPhase) / (2 * Math.PI);
         // Reject backward/discontinuous gait jumps; emit at most one footfall per frame.

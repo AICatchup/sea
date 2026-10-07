@@ -1,4 +1,4 @@
-/** Bounded game dynamics. Metres, X east/Z south; yaw 0 north, positive toward west (Three.js Y rotation). */
+/** Bounded game dynamics. Metres, X east/Z south; yaw 0 north, positive east. */
 export type SurfPhase = 'absent' | 'carried' | 'paddling' | 'riding' | 'wipeout';
 export interface SurfVector { x: number; z: number }
 export interface SurfState {
@@ -41,7 +41,7 @@ export function stepSurfing(previous: SurfState, input: SurfInput): SurfOutput {
   const waterValid = input.waveReady && Number.isFinite(input.waterHeight) && Number.isFinite(input.waterGradient.x) && Number.isFinite(input.waterGradient.z);
   // Height difference includes board advection: subtract grad dot last board velocity.
   const sampledDerivative = dt > 0 && s.previousWaterHeight !== null && Number.isFinite(s.previousWaterHeight)
-    ? (water - s.previousWaterHeight) / dt - (gx * -Math.sin(s.yaw) + gz * -Math.cos(s.yaw)) * s.speed : 0;
+    ? (water - s.previousWaterHeight) / dt - (gx * Math.sin(s.yaw) + gz * -Math.cos(s.yaw)) * s.speed : 0;
   const derivative = clamp(input.waterVerticalVelocity ?? sampledDerivative, -4, 4);
   s.previousWaterHeight = waterValid ? water : null;
   const slope = Math.hypot(gx, gz);
@@ -61,7 +61,7 @@ export function stepSurfing(previous: SurfState, input: SurfInput): SurfOutput {
       const forward = clamp(input.forward, 0, 1), steer = clamp(input.steer, -1, 1);
       const moving = waterValid && slope >= .035 && Math.abs(derivative) >= .018;
       s.movingWave = moving ? .65 : Math.max(0, s.movingWave - h);
-      const dx = -Math.sin(s.yaw), dz = -Math.cos(s.yaw);
+      const dx = Math.sin(s.yaw), dz = -Math.cos(s.yaw);
       const alignment = dx * shore.x + dz * shore.z;
       if (s.phase === 'paddling') {
         s.yaw = angle(s.yaw + steer * .8 * h);
@@ -75,7 +75,9 @@ export function stepSurfing(previous: SurfState, input: SurfInput): SurfOutput {
         s.yaw = angle(s.yaw + steer * (1.1 / (1 + s.speed * .14)) * h);
         s.balance = clamp(s.balance + (.28 * (1 - Math.abs(steer)) - Math.abs(steer) * s.speed * .22) * h, 0, 1);
         // Drive expires when moving crest evidence disappears; flat water cannot sustain a ride.
-        const drive = moving ? 2.7 * Math.max(0, alignment) * Math.min(1, slope / .12) : 0;
+        // The renderer delivers water samples at 5 Hz. Retain decaying crest
+        // evidence between samples; evaluating only its arrival frame loses drive.
+        const drive = waterValid ? 2.7 * Math.min(1,s.movingWave/.65) * Math.max(0, alignment) * Math.min(1, slope / .12) : 0;
         s.speed += (drive - .35 * s.speed) * h;
         s.rideTime += h;
         if (s.balance <= .08 || s.speed < .65 || !waterValid) {s.phase = 'wipeout'; s.wipeoutTime = 0; s.speed = 0;}
@@ -85,7 +87,7 @@ export function stepSurfing(previous: SurfState, input: SurfInput): SurfOutput {
       if (depth < .3) {s.phase = 'carried'; s.speed = 0; s.catchWindow = 0;}
       if (s.phase === 'paddling' || s.phase === 'riding') {
         const travel = s.speed * h;
-        displacement.x -= Math.sin(s.yaw) * travel; displacement.z -= Math.cos(s.yaw) * travel;
+        displacement.x += Math.sin(s.yaw) * travel; displacement.z -= Math.cos(s.yaw) * travel;
         if (s.phase === 'riding') s.rideDistance += travel;
       }
     }
@@ -93,9 +95,9 @@ export function stepSurfing(previous: SurfState, input: SurfInput): SurfOutput {
     s.bestDistance = Math.max(s.bestDistance, s.rideDistance); s.bestTime = Math.max(s.bestTime, s.rideTime);
     s.eyeBlend += ((s.phase === 'riding' ? 1 : 0) - s.eyeBlend) * (1 - Math.exp(-8 * h));
   }
-  const velocity = {x: -Math.sin(s.yaw) * s.speed, z: -Math.cos(s.yaw) * s.speed};
-  const pitch = Math.atan(gx * -Math.sin(s.yaw) + gz * -Math.cos(s.yaw));
-  const roll = Math.atan(gx * Math.cos(s.yaw) - gz * Math.sin(s.yaw));
+  const velocity = {x: Math.sin(s.yaw) * s.speed, z: -Math.cos(s.yaw) * s.speed};
+  const pitch = Math.atan(gx * Math.sin(s.yaw) + gz * -Math.cos(s.yaw));
+  const roll = Math.atan(gx * Math.cos(s.yaw) + gz * Math.sin(s.yaw));
   const hint = s.phase === 'absent' ? 'ボードへ近づいて拾う' : s.phase === 'carried' ? '深さのある海でボードを出す' : s.phase === 'wipeout' ? '泳いで体勢を戻し、再びパドル' : s.phase === 'riding' ? '小さく曲がってバランスを保つ' : s.catchWindow > 0 ? '波をつかんだ！ 立ち上がる' : '岸へ向けてパドルし、動く波を待つ';
   return {state: s, displacement, velocity, boardPitch: clamp(pitch, -.55, .55), boardRoll: clamp(roll - clamp(input.steer, -1, 1) * s.speed * .025, -.5, .5), eyeHeight: .4 + s.eyeBlend * 1.15, eyeBlend: s.eyeBlend, swimming: s.phase === 'wipeout', hint};
 }

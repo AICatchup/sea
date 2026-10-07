@@ -595,9 +595,13 @@ export class FirstPersonBody {
     s.line([v(-.134, 1.435, .054), v(-.173, 1.396, .015), v(-.181, 1.321, -.054), v(-.158, 1.246, -.071)], .006, chest, RUBBER, 10);
   }
 
+  private fishingBlend=0;
+  private surfBlend=0;
   update(state: AdventureState, camera: THREE.PerspectiveCamera, delta: number, time: number): void {
     if (this.disposed || ![state.yaw, state.pitch, state.speed, time, camera.position.x, camera.position.y, camera.position.z].every(Number.isFinite)) return;
     const dt = clamp(Number.isFinite(delta) ? delta : 0, 0, .08);
+    this.fishingBlend+=((state.activity==='fishing'?1:0)-this.fishingBlend)*(1-Math.exp(-dt*8));
+    this.surfBlend+=((state.activity==='surf'?1:0)-this.surfBlend)*(1-Math.exp(-dt*7));
     const action: Action = state.avatarAction ?? (state.mode === 'boat' ? 'helm' : state.mode === 'dive' ? 'dive' : state.mode === 'swim' ? 'swim' : Math.abs(state.speed) > 3.5 ? 'run' : Math.abs(state.speed) > .1 ? 'walk' : 'idle');
     const damping = this.initialized ? 1 - Math.exp(-dt * 7.5) : 1;
     const seated=Number.isFinite(state.seatingBlend)&&state.seatingBlend!>0?clamp(state.seatingBlend!,0,1):null;
@@ -662,13 +666,20 @@ export class FirstPersonBody {
       // A small balancing response to acceleration remains coherent with the shoulder.
       const velocity = state.velocity;
       if (velocity) this.target.z -= clamp(finite(velocity.y), -3, 3) * .009 * moving;
+      if(this.fishingBlend>.001){
+        const grip=new THREE.Vector3(i===0?.08:.24,i===0?-.36:-.44,i===0?-.58:-.38).applyMatrix4(camera.matrixWorld).applyMatrix4(this.inverseGroup);
+        this.target.lerp(grip,this.fishingBlend);
+      }
+      if(this.surfBlend>.001)this.target.lerp(v(side*.46,1.11,-.18),this.surfBlend);
       this.poseArm(this.arms[i], side, this.target);
       const wrist = this.arms[i].end;
       this.poseEuler.set(water * (.17 + stroke * .13) + helm * 1.19 + climb * .1,
         side * (.99 * idle + .87 * walk + .67 * run + .18 * water + .68 * helm + .18 * climb),
         side * (water * (Math.PI - stroke * .20) + climb * 2.5 + helm * .22), 'XYZ');
-      this.orientAbsolute(wrist, this.targetQuaternion.setFromEuler(this.poseEuler));
-      const curl = .20 * idle + .24 * walk + .43 * run + (.08 + .12 * Math.max(0, -stroke)) * water + .92 * helm + .7 * climb;
+      this.targetQuaternion.setFromEuler(this.poseEuler);
+      if(this.fishingBlend>.001){const grip=new THREE.Quaternion().copy(this.rootQuaternion).invert().multiply(camera.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(1.18,side*.35,side*.16)));this.targetQuaternion.slerp(grip,this.fishingBlend);}
+      this.orientAbsolute(wrist,this.targetQuaternion);
+      const curl = (.20 * idle + .24 * walk + .43 * run + (.08 + .12 * Math.max(0, -stroke)) * water + .92 * helm + .7 * climb)*(1-this.fishingBlend)+.82*this.fishingBlend;
       const fingers = this.arms[i].fingers!;
       for (let f = 0; f < fingers.length; f++) {
         const finger = fingers[f], difference = f * .022;
@@ -688,6 +699,7 @@ export class FirstPersonBody {
         0, (i === 0 ? -.015 : .015) * (1 - water));
       leg.lower.rotation.set(-Math.max(0, -step) * (.52 * walk + .88 * run) - .12 * water - .36 * airborne - climb * .67 - helm * 1.087, 0, 0);
       leg.end.rotation.set(step * .10 * moving + water * .22 + climb * .12, 0, 0);
+      if(this.surfBlend>.001){leg.upper.rotation.x+=this.surfBlend*(i===0?.24:-.12);leg.upper.rotation.z+=this.surfBlend*(i===0?-.15:.15);leg.lower.rotation.x-=this.surfBlend*.28;}
     }
     this.anchor(camera);
     this.group.updateMatrixWorld(true); this.mesh.skeleton.update();
