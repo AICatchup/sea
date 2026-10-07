@@ -1,0 +1,4133 @@
+{
+  "final": {
+    "adventure": {
+      "avatarAction": "swim",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        0.14755178596666818,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": false,
+      "interaction": "",
+      "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+      "mode": "swim",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 0,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 0.3513527122911421,
+      "pitch": 0.18,
+      "x": -145,
+      "yaw": -0.45,
+      "z": -113
+    },
+    "underwater": 0
+  },
+  "images": [
+    "deep",
+    "surface"
+  ],
+  "samples": [
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.01499010604437187,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.32633,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.9,
+      "time": 34.420966666666665,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.009668259278843912,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2832728383968912,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.9,
+      "time": 34.47486666666666,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0019841578764767326,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.1892184223968805,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.9,
+      "time": 34.58156666666668,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.004480371156180132,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.067351174396878,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.9,
+      "time": 34.671566666666685,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.012676729515462035,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.11787756382241708,
+        "grounded": false,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.12190594560314492,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.9,
+      "time": 34.778266666666696,
+      "underwater": 0.6548753545689837
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.017297078345278008,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.28289756382238473,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9998922455293524,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.2869259456031126,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 34.86746666666669,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.02708296207877668,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.5111976332509666,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9992422150697168,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.4863559456031449,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 34.975266666666705,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.0325098513375586,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.6754776332509451,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9987056247372736,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.6506359456031234,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.0640666666667,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.04372244516980912,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.8973575630594658,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9980563109991704,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.8489559456031449,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.17126666666671,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.050024431822397075,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.0629325630594657,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9975130666446628,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.0145309456031448,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.26076666666671,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.060013750262042365,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.3141872658899818,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.996757350422727,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.2443009456031124,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.3849666666667,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06568271580885053,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.4792072658900033,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9962133263927836,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.409320945603134,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.47416666666672,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.07374993908857762,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.6985198965453785,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.995559248394061,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.6072709456031342,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.58116666666672,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.07876462049244977,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.8640948965453783,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9950109847562392,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.7728459456031342,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.67066666666672,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.08437807142752678,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.0779218462668907,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9943516233624284,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.9715359456031236,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.77806666666672,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.08808087169110938,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.2444218462668912,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9937979030835018,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.138035945603124,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.86806666666672,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.08977906883269625,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.4398807170992822,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.993134537098504,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.3370959456031355,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 35.97566666666673,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.0898501643718215,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.6378307170992827,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9924733974989878,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.535045945603136,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.08266666666674,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.08752376362588121,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.7835174112321894,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9919162022437058,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.7015459456031365,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.17266666666674,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.08226748262544573,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.9799874112321576,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.991257457539086,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.8980159456031047,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.27886666666673,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.07772936132716611,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.117008872664991,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9906974693646468,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.064700945603116,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.368966666666736,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06977548094937107,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.275183872664991,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9901652459530654,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.222875945603116,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.45446666666673,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06448026736732788,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.3563041755565544,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9898423742075324,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.3187059456030945,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.50626666666672,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.05642230446593737,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.5209541755565548,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9892868489410338,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.483355945603095,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.59526666666672,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.048773031602565416,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.657292889602485,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9887272045836992,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.6489309456030954,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.684766666666725,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.03494811418355397,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.855427889602496,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9880563193394408,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.847065945603106,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.79186666666673,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.027212385187113903,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.0198928896024855,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9874983129058488,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.011530945603096,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 36.88076666666673,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.00961925833566598,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.2202893975753675,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9867223031125274,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.239820945603139,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 37.004166666666755,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.0013005977600784426,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.386419397575344,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9861563477915092,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.405950945603116,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 38.4,
+      "time": 37.093966666666745,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.013368288797644484,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.558165998628216,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.985487103268066,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.602050945603115,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.19996666666674,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.022614670962613017,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.719670998628195,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9849348561225084,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.763555945603094,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.28726666666673,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.035381302180152965,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.8945574249652894,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9842744973774252,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.956325945603116,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.39146666666675,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0461147780612394,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.0915824249652895,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9835981515775172,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.153350945603116,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.497966666666755,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.055793603594009096,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.285305801023905,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.982922262357946,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.349820945603137,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.60416666666677,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06222991959404786,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.427810801023905,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9823515949595176,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.492325945603137,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.693666666666765,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06683134199988044,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.541000348877108,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9817935544904802,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.594467961603132,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.78106666666676,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.07130235474166348,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.623252060877111,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9809946058978684,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.676719673603135,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.90606666666676,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.07104440396174914,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.646928720555149,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9804190703165911,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.689470873603138,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 37.99606666666676,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06933704357652627,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.63836872055515,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9797348122214744,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.680910873603139,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.10306666666676,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06545585534543298,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.636348788000027,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9791586651962432,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.67370287360314,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.19316666666677,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.05915785735518357,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.629212788000029,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9785882985693152,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.666566873603141,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.28236666666675,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.052272333744916105,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.617268839270342,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9778971446651872,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.657918873603141,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.39046666666676,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.042483851939864835,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.6101168392703435,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9773256186516472,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.650766873603143,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.47986666666676,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.034461073241752786,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.601428839270343,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.976631409071659,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.642078873603142,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.58846666666677,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.022181119907340025,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.580857766103333,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.975943732382136,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.633470873603142,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.69606666666677,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.013167735342691457,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.572345766103334,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9752638031369582,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.624958873603143,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.802466666666774,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.002536225744726028,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.558227652118441,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9746919543257532,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.617798873603143,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.89196666666678,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.007358477230451193,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.549675652118442,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9740089994392884,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.609246873603144,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 38.99886666666678,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.020058711387804157,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.538931389052904,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9733216504873008,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.6006388736031445,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 39.10646666666678,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.028068702690010126,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.531731389052904,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9727467824356616,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.593438873603144,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 39.19646666666679,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.038164530423876304,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.5210271259873664,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9720627592232204,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.584870873603144,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 39.3035666666668,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.04513110367118652,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.513835125987368,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9714886425550926,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.577678873603146,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 39.3934666666668,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.05147492632399652,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.512298446045353,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.970917749757794,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.570526873603146,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 39.482866666666794,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.059753409013703504,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.502290446045353,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.970118928641214,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.560518873603146,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 51.3,
+      "time": 39.607966666666805,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06473185089507097,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.512811947533109,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9695410536464076,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.553278873603148,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 39.69846666666681,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.07030771304452811,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.504171947533111,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9688514148904842,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.54463887360315,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 39.806466666666815,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.07322462238342976,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.522570068231975,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9682786490064974,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.53746287360315,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 39.89616666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.0746109333374185,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.4999012202319655,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9677071160479024,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.514794025603141,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 39.98566666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.07573646589391944,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.421842772231955,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.967021038123684,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.43673557760313,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.09316666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.07279060404435803,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.331693672843832,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9664503679168172,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.329435337603121,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.18266666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06915073092180035,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 5.120269232843822,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9656547288078132,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -5.118010897603111,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.30766666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06200330415533701,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.958789325923889,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9650881539857422,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.9529908976031445,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.39686666666682,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.0562075645074163,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.761209325923858,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9644111437503164,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.755410897603113,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.50366666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.04786719323449563,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.596372434186652,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9638468321224088,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.590390897603147,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.592866666666815,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.039851977066514235,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.398422434186653,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9631712701935918,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.392440897603148,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.699866666666814,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.030418465959964683,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.241199919499846,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.962604154433362,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.22594089760315,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.78986666666682,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.019661009356338903,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 4.042324919499848,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9619281123971376,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -4.027065897603151,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 40.89736666666682,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.00674030495775939,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.861646240549657,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9612560081027948,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.82893089760314,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.00446666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0047291967598495875,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.6949612405496457,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9606916834724404,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.6622458976031287,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.09456666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.014890656094399563,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.5505028351174226,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9601315054892142,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.4964858976031175,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.18416666666684,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.031472263839236465,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.353292835117465,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9594662700938538,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.29927589760316,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.290766666666826,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.04431286553843412,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.1793413679624662,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9588037211731664,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -3.102435897603117,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.39716666666685,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.05873929303879247,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 3.0122863679624876,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9582424581856344,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.935380897603138,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.48746666666684,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0702767029958545,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.814521367962498,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.957579380552018,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.737615897603148,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.59436666666683,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.08430317770141772,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.6713447203695972,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.957024637850222,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.571855897603137,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.68396666666685,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.09739286538541288,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.4735797203696075,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9563641114648244,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.374090897603147,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.79086666666685,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.11292307728722312,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.2899443243979567,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9557148477781764,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -2.179285897603114,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 41.896166666666865,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.1242717836087742,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 2.094954324397967,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.955066391794996,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.984295897603125,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 42.00156666666687,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.13287233834749862,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.9375103662077084,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9545211484630696,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.8200158976031464,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 42.090366666666846,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.14028810950630366,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.7440003662076975,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9538801885549832,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.6265058976031357,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.19496666666685,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.14333013482814858,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.581488521010486,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9533365423798764,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.4620408976031467,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.283866666666846,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.14504139926810547,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.3824285210104748,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.952679905220256,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.2629808976031356,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.39146666666686,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.1414675874877748,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.1646990451578554,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.952027272168765,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -1.064660897603114,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.49866666666688,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.13625673980803218,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 1.0022690451578768,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9514939129203236,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.9022308976031356,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.58646666666687,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.12650147893496294,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.760792747759551,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9508429567593224,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.7035408976031462,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.69386666666687,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.113663629577063,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.5978077477595402,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.950310268061732,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.5405558976031354,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.781966666666875,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0954457513127984,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.3181196867997263,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.9495641503452208,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.3117108976031138,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.90566666666688,
+      "underwater": 1
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.07738200140985796,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.15309968679975858,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 0.9555077914724138,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.1466908976031461,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 42.994866666666866,
+      "underwater": 0.8505538155542144
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.05862849815597857,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 0.9646027914724138,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.05125910239685391,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.101866666666865,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.03327494442544506,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 0.9722612914724142,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.21794410239686468,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.19196666666687,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.012945033794657732,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 0.9813477914724138,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2906218051422906,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.29886666666687,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.02283088805959713,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 0.9903067914724132,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2476523994811934,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.404266666666864,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.04336095290783008,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 0.9979142914724134,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2476523994811934,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.493766666666865,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.07736570594770374,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2189044022278172,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.600566666666886,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.09900834658574977,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2189044022278172,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.69056666666689,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.12701267804052577,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.20474402990768295,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.7980666666669,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.14631895958413424,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.20474402990768295,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.88766666666691,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.16673727369876243,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2029129472800794,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 43.99516666666691,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.1838251706838868,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2029129472800794,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 44.10276666666689,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.19429763344361717,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2075785472800794,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 44.19276666666689,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.2039949906444504,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2171953917753872,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 44.30016666666691,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.20822383279143108,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.2187679197753832,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 44.39026666666688,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.20686989094325073,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.25436636911574,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 44.49676666666688,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.20612283464172948,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.25436636911574,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56,
+      "time": 44.58346666666689,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.19108744983065484,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.28636441711573657,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 44.69036666666688,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.181305356204287,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.29745784695201055,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 44.7969666666669,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.15594403663732564,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.32895246814679185,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 44.90306666666691,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.14142768276676096,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.32895246814679185,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 44.99316666666692,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.11677853243182154,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.34437534814678433,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.082266666666904,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.09040793485642794,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3510475318532082,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.2062666666669,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06510007336696173,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3662991478532032,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.29546666666691,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.04157118670738225,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3716777294575417,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.401466666666906,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.019234848919653862,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3805320494575338,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.48926666666689,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.004962564991077201,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3822369726100556,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.594566666666914,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.02459815447184531,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.37851377126726166,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.6827666666669,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.04952065978294266,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.37851377126726166,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.78946666666692,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.06967117735337869,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.37179980163271525,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.89406666666691,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.08975454709759298,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.37179980163271525,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 45.999266666666905,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.10221151679511473,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3660624093995574,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 46.08706666666693,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.1168513836263609,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3660624093995574,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 46.193266666666915,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.12703390458925,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.35507591363393604,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 46.300066666666936,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.13469090253388394,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.35507591363393604,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 46.38806666666694,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.14095307818483793,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.35507591363393604,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 46.49386666666693,
+      "underwater": 0
+    },
+    {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.14475858971415195,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3513527122911421,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "fps": 56.1,
+      "time": 46.580866666666935,
+      "underwater": 0
+    }
+  ],
+  "scope": "b0c1a44 default reflection; QA water start; same controller vertical inputs through immersion and emergence",
+  "status": "done"
+}

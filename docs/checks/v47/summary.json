@@ -1,0 +1,274 @@
+{
+  "version": "V47",
+  "globalGoal": "ACTIVE_UNMET",
+  "fullSuite": {
+    "revision": "b0c1a44",
+    "pass": 413,
+    "fail": 0,
+    "seconds": 84.2560897,
+    "logSha256": "7713a9bb82fefea92e9558c7412cf26a52e89136b54fd256bacf7e9ee97a1671"
+  },
+  "afterSuite": "78008c5 adds the 25mm ray-origin bias to optical path; type/build and final production immersion verified after it. No motion, bathymetry or wave forcing changed.",
+  "gpuIntegral": {
+    "conditions": 8,
+    "channels": 24,
+    "maxRelativeError": 4.343012223752559e-07,
+    "finite": true
+  },
+  "gpuTrace": {
+    "conditions": 7,
+    "allPass": true,
+    "knownPlaneMetres": 3.999997138977051
+  },
+  "pixelControls": [
+    {
+      "name": "above",
+      "sameSize": true,
+      "pixelBounds": null,
+      "meanAbs": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maxAbs": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "no-reflection",
+      "sameSize": true,
+      "pixelBounds": null,
+      "meanAbs": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maxAbs": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "immersion": {
+    "samples": 124,
+    "maxDepth": 5.646928720555149,
+    "final": {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.14755178596666818,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3513527122911421,
+        "pitch": 0.18,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "underwater": 0
+    }
+  },
+  "production": {
+    "qa": "undefined",
+    "errors": [],
+    "externalRequests": 0,
+    "scope": "Final standalone HTTP, actual app key listeners via synthetic DOM C/Space; not OS keyboard proof"
+  },
+  "limitations": [
+    "Reflection depth holds only nearest visible receivers; no guarantee for hidden/thin/offscreen/>256m objects",
+    "8 metric shadow cells; after510m tail ignores shadow",
+    "Distant blue region and rigid algae unresolved",
+    "No physical centimetre agreement or photoreal completion claim"
+  ],
+  "files": [
+    {
+      "path": "above-0.png",
+      "bytes": 1420562,
+      "sha256": "e192be5c54dd7799a0cf326503735e77abaf62b15ff5b968b3d341cfdce2ecee"
+    },
+    {
+      "path": "above-1.png",
+      "bytes": 1420562,
+      "sha256": "e192be5c54dd7799a0cf326503735e77abaf62b15ff5b968b3d341cfdce2ecee"
+    },
+    {
+      "path": "across-0.png",
+      "bytes": 1256705,
+      "sha256": "58547fbdda99a34fdb58979e25425ef8b39a28d5847e8a2f98deec69283f722d"
+    },
+    {
+      "path": "across-1.png",
+      "bytes": 1440813,
+      "sha256": "c20b96d9eade04f5cdf1fae91eec8d02c423a5a884415a14d481d0efb61aa8fa"
+    },
+    {
+      "path": "analytic-after.json",
+      "bytes": 308,
+      "sha256": "085f52d63277e9045d8473e8e921c98dc2898a20c2c1984acd99d5f52c7a63b7"
+    },
+    {
+      "path": "analytic-after.png",
+      "bytes": 1241515,
+      "sha256": "6d938bed06a3861883d527b5fff8ca9704037395e6a653dbfc95e91d29ee49a9"
+    },
+    {
+      "path": "baseline.png",
+      "bytes": 1205383,
+      "sha256": "93ff91f1812727fd4036f905a57f87a251487179d55fd0248d95d3b8c5a27cdb"
+    },
+    {
+      "path": "diagnostic.json",
+      "bytes": 1277,
+      "sha256": "74067bdda8b9e0d564da297ff4ac9225411c3428d7fc70e2c03a3cbc4b82b344"
+    },
+    {
+      "path": "gpu-trace-controls.js",
+      "bytes": 4216,
+      "sha256": "6f358787cc2193a905fa37ccd8e0fadaa43432d4de2c888a3a8374c5d17831be"
+    },
+    {
+      "path": "gpu-trace-controls.json",
+      "bytes": 1625,
+      "sha256": "c879febbdba976e3a7308f287cd2459e531607ef750fb4a3b1598f059ce5a2c5"
+    },
+    {
+      "path": "gpu-volume.json",
+      "bytes": 2536,
+      "sha256": "6dcd0e1bc422785ce5a5a3f2abec0323afb945eecfd20675c598c83dc2d4f6b4"
+    },
+    {
+      "path": "guard-pixels.json",
+      "bytes": 405,
+      "sha256": "0507a88152f98060b3f2887ec2e9321f461130dca7f726cc359fa09440cdcc8d"
+    },
+    {
+      "path": "guards.json",
+      "bytes": 1146,
+      "sha256": "a9278b4aabb88ad680a66a844b95532579cb083e4ccd8e6118466e1a218cf321"
+    },
+    {
+      "path": "hit.png",
+      "bytes": 1164738,
+      "sha256": "098abb713be368c63894289eca9e086ffa24fb7961a070a048edf1c654643fe7"
+    },
+    {
+      "path": "immersion-deep.png",
+      "bytes": 1147642,
+      "sha256": "7e7b7a048cf261f918974a5fc02aa54b20fa108d3a8f31825d1a693a1f8107e0"
+    },
+    {
+      "path": "immersion-surface.png",
+      "bytes": 1155645,
+      "sha256": "fb3b92007f541df2f1648d06a5a83dfd395570baf676403f86e90cff003eb46b"
+    },
+    {
+      "path": "immersion.json",
+      "bytes": 102054,
+      "sha256": "e3b90f76844f3184a4dd85e0e61d6ec6675952b1ebed70112a1dcbae42f4b6cd"
+    },
+    {
+      "path": "no-reflection-0.png",
+      "bytes": 1261674,
+      "sha256": "591dbf42ae67d45392740b1d29a43acc190f2abcd829f364eb80031feef51013"
+    },
+    {
+      "path": "no-reflection-1.png",
+      "bytes": 1261674,
+      "sha256": "591dbf42ae67d45392740b1d29a43acc190f2abcd829f364eb80031feef51013"
+    },
+    {
+      "path": "path.png",
+      "bytes": 996850,
+      "sha256": "0491284fe4d4983c4a08da6f95a03f27278b4c9da502e26b1056e0adbc7f9e90"
+    },
+    {
+      "path": "reef-0.png",
+      "bytes": 1300197,
+      "sha256": "22ad6d9a4dda44a94246ef587997e73790c9b1f5c8255f662f316502803749a1"
+    },
+    {
+      "path": "reef-1.png",
+      "bytes": 1319881,
+      "sha256": "f8b56cf92dd546416e823d5930b1bad264f6bc69bdca2714436a94579ac1a58c"
+    },
+    {
+      "path": "review-runtime.json",
+      "bytes": 762,
+      "sha256": "3ec7ce3ee42aad9ba3efb9e09d93c60b978dcc3bd5eca56f7785826456b67082"
+    },
+    {
+      "path": "standalone-input.json",
+      "bytes": 177347,
+      "sha256": "8c485460b566512dbcc72ec16a927a01b4a7ada59faf297ef87eea3b09f39407"
+    },
+    {
+      "path": "standalone-underwater.png",
+      "bytes": 88455,
+      "sha256": "8c2354ef239e46063165edee7b47ec7edbdea64b4f393d7e62b3c3dfcc05e158"
+    },
+    {
+      "path": "standalone.json",
+      "bytes": 1011,
+      "sha256": "0e10eab047fe4d6f459c6816dd148b699a0031838d894ec260d1bfb83009eec7"
+    },
+    {
+      "path": "standalone.png",
+      "bytes": 90403,
+      "sha256": "24341f794c78841ef7991b0d8679ff235c161d54ac85b95a96624081079011c4"
+    },
+    {
+      "path": "trace-0-0.png",
+      "bytes": 1241515,
+      "sha256": "6d938bed06a3861883d527b5fff8ca9704037395e6a653dbfc95e91d29ee49a9"
+    },
+    {
+      "path": "trace-1-1.png",
+      "bytes": 1432471,
+      "sha256": "b001c15e7a4e8765e20189e574bae0c97e564cf55b1abb1d66d8d5e46c417cee"
+    },
+    {
+      "path": "trace-2-0.png",
+      "bytes": 1241515,
+      "sha256": "6d938bed06a3861883d527b5fff8ca9704037395e6a653dbfc95e91d29ee49a9"
+    },
+    {
+      "path": "trace.json",
+      "bytes": 3582,
+      "sha256": "3846c5038134b6f3db2957b6c156bedc4ba669bc58bd7f2a6e0858e6ad50671c"
+    },
+    {
+      "path": "upward-0.png",
+      "bytes": 1125089,
+      "sha256": "5b6aff48d91d06993660f59728a155de8429badd33a6d18da26a80b07ba95a6d"
+    },
+    {
+      "path": "upward-1.png",
+      "bytes": 1310748,
+      "sha256": "941b6b6f587a32607fce92f7ba3ffa844dcac877bb9ff2b939f5ef666d548661"
+    },
+    {
+      "path": "views.json",
+      "bytes": 1788,
+      "sha256": "85f6af18a61fb0d49b16e19c3e1eb9d373c013982c6b8db5f4e833a0fc5040d0"
+    }
+  ]
+}

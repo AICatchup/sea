@@ -1,0 +1,61 @@
+{
+  "status": "done",
+  "variants": [
+    {
+      "camera": {
+        "height": -2.3692524819080933,
+        "pitch": -0.035,
+        "x": -118.401425,
+        "yaw": -0.6,
+        "z": -93.524357
+      },
+      "hasReflection": 0,
+      "mode": 0,
+      "name": "no-reflection",
+      "time": 34,
+      "underwater": 1
+    },
+    {
+      "camera": {
+        "height": -2.3692524819080933,
+        "pitch": -0.035,
+        "x": -118.401425,
+        "yaw": -0.6,
+        "z": -93.524357
+      },
+      "hasReflection": 0,
+      "mode": 1,
+      "name": "no-reflection",
+      "time": 34,
+      "underwater": 1
+    },
+    {
+      "camera": {
+        "height": 1.4648967692248138,
+        "pitch": -0.24,
+        "x": -42,
+        "yaw": -0.56,
+        "z": 9
+      },
+      "hasReflection": 1,
+      "mode": 0,
+      "name": "above",
+      "time": 34,
+      "underwater": 0
+    },
+    {
+      "camera": {
+        "height": 1.4648967692248138,
+        "pitch": -0.24,
+        "x": -42,
+        "yaw": -0.56,
+        "z": 9
+      },
+      "hasReflection": 1,
+      "mode": 1,
+      "name": "above",
+      "time": 34,
+      "underwater": 0
+    }
+  ]
+}

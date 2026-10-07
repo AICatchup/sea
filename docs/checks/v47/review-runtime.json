@@ -1,0 +1,24 @@
+{
+  "threadId": "01a1183c-85ab-76a0-9f7e-c67a02d35b52",
+  "source": {
+    "subagent": {
+      "thread_spawn": {
+        "parent_thread_id": "01a0eeb7-7548-7120-a943-323a68d702eb",
+        "depth": 1,
+        "agent_path": "/root/v46_integration_review",
+        "agent_nickname": "Nash the 2nd",
+        "agent_role": "default"
+      }
+    }
+  },
+  "turn": {
+    "turnId": "01a1187a-73b9-7ae3-bd40-86012fb7eb44",
+    "model": "gpt-6.1-sol",
+    "effort": "low",
+    "sandbox": {
+      "type": "danger-full-access"
+    },
+    "completed": true
+  },
+  "scope": "Existing independent reviewer reused for one V47 turn: 11 comparison images and source. GPU and browser checks executed by root. Conditional adoption after negative controls."
+}

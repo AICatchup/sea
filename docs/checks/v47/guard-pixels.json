@@ -1,0 +1,32 @@
+[
+  {
+    "name": "above",
+    "sameSize": true,
+    "pixelBounds": null,
+    "meanAbs": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "maxAbs": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "no-reflection",
+    "sameSize": true,
+    "pixelBounds": null,
+    "meanAbs": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "maxAbs": [
+      0,
+      0,
+      0
+    ]
+  }
+]

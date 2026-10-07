@@ -1,0 +1,91 @@
+{
+  "cases": [
+    {
+      "distance": 3.999997138977051,
+      "expectedDistance": 4,
+      "expectedHit": true,
+      "finite": true,
+      "hit": true,
+      "name": "known plane",
+      "pass": true,
+      "uv": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "distance": 0,
+      "expectedHit": false,
+      "finite": true,
+      "hit": false,
+      "name": "empty depth",
+      "pass": true,
+      "uv": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "distance": 0,
+      "expectedHit": false,
+      "finite": true,
+      "hit": false,
+      "name": "UV outside",
+      "pass": true,
+      "uv": [
+        783.6903076171875,
+        0.5
+      ]
+    },
+    {
+      "distance": -0.5000000596046448,
+      "expectedHit": false,
+      "finite": true,
+      "hit": false,
+      "name": "receiver before ray origin",
+      "pass": true,
+      "uv": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "distance": 0,
+      "expectedHit": false,
+      "finite": true,
+      "hit": false,
+      "name": "passes plane silhouette into empty depth",
+      "pass": true,
+      "uv": [
+        0.912451446056366,
+        0.5
+      ]
+    },
+    {
+      "distance": 0,
+      "expectedHit": false,
+      "finite": true,
+      "hit": false,
+      "name": "behind mirror camera",
+      "pass": true,
+      "uv": [
+        -5312.5,
+        -5312.5
+      ]
+    },
+    {
+      "distance": 0,
+      "expectedHit": false,
+      "finite": true,
+      "hit": false,
+      "name": "parallel to plane",
+      "pass": true,
+      "uv": [
+        1.3321397304534912,
+        0.5
+      ]
+    }
+  ],
+  "pass": true,
+  "status": "done"
+}

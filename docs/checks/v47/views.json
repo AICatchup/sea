@@ -1,0 +1,107 @@
+{
+  "status": "done",
+  "variants": [
+    {
+      "camera": {
+        "height": -4.5,
+        "pitch": 0.85,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "mode": 0,
+      "name": "upward",
+      "size": [
+        1280,
+        720
+      ],
+      "submersion": 1,
+      "time": 34
+    },
+    {
+      "camera": {
+        "height": -4.5,
+        "pitch": 0.85,
+        "x": -145,
+        "yaw": -0.45,
+        "z": -113
+      },
+      "mode": 1,
+      "name": "upward",
+      "size": [
+        1280,
+        720
+      ],
+      "submersion": 1,
+      "time": 34
+    },
+    {
+      "camera": {
+        "height": -4.9071030746929125,
+        "pitch": -0.42,
+        "x": -140,
+        "yaw": -0.5,
+        "z": -110
+      },
+      "mode": 0,
+      "name": "reef",
+      "size": [
+        1280,
+        720
+      ],
+      "submersion": 1,
+      "time": 34
+    },
+    {
+      "camera": {
+        "height": -4.9071030746929125,
+        "pitch": -0.42,
+        "x": -140,
+        "yaw": -0.5,
+        "z": -110
+      },
+      "mode": 1,
+      "name": "reef",
+      "size": [
+        1280,
+        720
+      ],
+      "submersion": 1,
+      "time": 34
+    },
+    {
+      "camera": {
+        "height": -2.3450142079816927,
+        "pitch": 0.1,
+        "x": -118.401425,
+        "yaw": 0.95,
+        "z": -93.524357
+      },
+      "mode": 0,
+      "name": "across",
+      "size": [
+        1280,
+        720
+      ],
+      "submersion": 1,
+      "time": 34
+    },
+    {
+      "camera": {
+        "height": -2.3450142079816927,
+        "pitch": 0.1,
+        "x": -118.401425,
+        "yaw": 0.95,
+        "z": -93.524357
+      },
+      "mode": 1,
+      "name": "across",
+      "size": [
+        1280,
+        720
+      ],
+      "submersion": 1,
+      "time": 34
+    }
+  ]
+}

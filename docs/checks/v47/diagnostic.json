@@ -1,0 +1,68 @@
+{
+  "status": "done",
+  "variants": [
+    {
+      "meta": {
+        "camera": {
+          "height": -2.3692524819080933,
+          "pitch": -0.035,
+          "x": -118.401425,
+          "yaw": -0.6,
+          "z": -93.524357
+        },
+        "draws": 98,
+        "fov": 62,
+        "quality": "high",
+        "size": [
+          1280,
+          720
+        ],
+        "time": 34,
+        "triangles": 7517133
+      },
+      "name": "baseline"
+    },
+    {
+      "meta": {
+        "camera": {
+          "height": -2.3692524819080933,
+          "pitch": -0.035,
+          "x": -118.401425,
+          "yaw": -0.6,
+          "z": -93.524357
+        },
+        "draws": 98,
+        "fov": 62,
+        "quality": "high",
+        "size": [
+          1280,
+          720
+        ],
+        "time": 34,
+        "triangles": 7517133
+      },
+      "name": "hit"
+    },
+    {
+      "meta": {
+        "camera": {
+          "height": -2.3692524819080933,
+          "pitch": -0.035,
+          "x": -118.401425,
+          "yaw": -0.6,
+          "z": -93.524357
+        },
+        "draws": 207,
+        "fov": 62,
+        "quality": "high",
+        "size": [
+          1280,
+          720
+        ],
+        "time": 34,
+        "triangles": 13712724
+      },
+      "name": "path"
+    }
+  ]
+}

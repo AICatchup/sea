@@ -1,0 +1,46 @@
+{
+  "adventure": {
+    "avatarAction": "swim",
+    "boarding": 0,
+    "boat": [
+      -118.5950068345507,
+      0.026959923842512026,
+      -90.9578943776148
+    ],
+    "boatYaw": -0.6,
+    "depth": 0,
+    "grounded": false,
+    "interaction": "",
+    "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+    "mode": "swim",
+    "oxygen": 1,
+    "placed": 0,
+    "remaining": 0,
+    "speed": 0,
+    "stamina": 1,
+    "voyage": null
+  },
+  "camera": {
+    "height": 0.2665735866330966,
+    "pitch": -0.28,
+    "x": -145,
+    "yaw": -0.45,
+    "z": -113
+  },
+  "frames": 4616,
+  "qa": "undefined",
+  "quality": "auto",
+  "resources": [],
+  "topography": {
+    "chunks": 247,
+    "fullResolutionOnly": true,
+    "kind": "measured-heightfield",
+    "maxUnblendedHeightError": 0,
+    "nativeSamples": 3840000,
+    "triangles": 7672002,
+    "unknownSamples": 0,
+    "vertices": 3897816
+  },
+  "url": "http://127.0.0.1:5199/sea.html?capture=1&view=dive",
+  "errors": []
+}
