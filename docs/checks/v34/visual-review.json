@@ -1,0 +1,24 @@
+{
+  "kind": "independent visual review and same-reviewer repair check",
+  "model": "gpt-6.1-sol",
+  "runtimeModelVerified": true,
+  "firstResult": "revise",
+  "firstEvidence": [
+    "before-0..3.png",
+    "datum-0..3.png",
+    "after-1.png"
+  ],
+  "blocker": "Long straight raised base and rectangular scan perimeter",
+  "repairResult": "adopt for bounded grounding improvement",
+  "repairEvidence": [
+    "contour-0..3.png",
+    "contour.json"
+  ],
+  "remaining": [
+    "elongated close stone faces",
+    "scan repetition",
+    "material variety",
+    "whole photographic quality"
+  ],
+  "scope": "Review of saved images and camera metadata only, not independent GPU replay or journey proof"
+}

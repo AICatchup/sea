@@ -1,0 +1,12 @@
+{
+  "testsExit": 0,
+  "standaloneExit": 0,
+  "started": "2026-10-07T00:39:35.9857862Z",
+  "typecheckExit": 0,
+  "finished": "2026-10-07T00:41:52.9607995Z",
+  "buildExit": 0,
+  "sourceRevision": "bb013a4b5c6b825ef82f34e4e9a0a378bb1c6642",
+  "tests": 327,
+  "fullPhotographicGoal": "UNMET",
+  "finalShowcaseVideo": "PENDING AFTER COMPLETION"
+}

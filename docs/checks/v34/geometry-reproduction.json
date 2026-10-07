@@ -1,0 +1,27 @@
+[
+  {
+    "file": "boulder-01-seams-v34.glb",
+    "sha256": "a1366783d8df327c13260ecefc84aa0db5e06ca477e6fe13a050abe01f1295a4",
+    "reproduced": true
+  },
+  {
+    "file": "coast-rocks-01-seams-v34.glb",
+    "sha256": "d41001e2af337e3069aae3672375008520d49d37cf94cee9f12367604576954b",
+    "reproduced": true
+  },
+  {
+    "file": "coast-rocks-03-seams-v34.glb",
+    "sha256": "7ab5179a379543a400ddc4ec35960498ba394f10974b10f69f5cd25306fdfef7",
+    "reproduced": true
+  },
+  {
+    "file": "namaqualand-boulder-02-seams-v34.glb",
+    "sha256": "1553db320fc317e6a5ebcd337375128e53aa045a1fce8f688d18eab8279fe127",
+    "reproduced": true
+  },
+  {
+    "file": "namaqualand-boulder-03-seams-v34.glb",
+    "sha256": "a3e8dba6c512b897d540b5f0786217d84b6e46edd1f18f9e34d8b4ab43fc0c58",
+    "reproduced": true
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "name": "custom",
+    "provenance": "Authored developer comparison camera; no travel or surveyed camera claim",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -147.944,
+      -9.325,
+      -124.503,
+      -0.30938224897819155,
+      0.2344525417054558,
+      0.07899825784577841,
+      0.9181905602664296
+    ],
+    "pose": {
+      "x": -147.944,
+      "z": -124.503,
+      "yaw": -0.5,
+      "pitch": -0.65,
+      "mode": "dive",
+      "depth": 9.325
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  {
+    "name": "custom",
+    "provenance": "Authored developer comparison camera; no travel or surveyed camera claim",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -154,
+      -7.125662118623636,
+      -130,
+      0.06375924489862714,
+      0.8942566153905974,
+      0.13515366856713035,
+      -0.4218688781990872
+    ],
+    "pose": {
+      "x": -154,
+      "z": -130,
+      "yaw": 2.26,
+      "pitch": -0.3,
+      "mode": "dive",
+      "depth": 7
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  {
+    "name": "custom",
+    "provenance": "Authored developer comparison camera; no travel or surveyed camera claim",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -146,
+      -6,
+      -126,
+      -0.22949648533368278,
+      0.7649123013448665,
+      0.36949476191706776,
+      0.47509383850628534
+    ],
+    "pose": {
+      "x": -146,
+      "z": -126,
+      "yaw": -2.03,
+      "pitch": -0.9,
+      "mode": "dive",
+      "depth": 6
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  },
+  {
+    "name": "custom",
+    "provenance": "Authored developer comparison camera; no travel or surveyed camera claim",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -145,
+      -5,
+      -113,
+      -0.20197938638944213,
+      0.24196872057608015,
+      0.0515738045677269,
+      0.947626302093251
+    ],
+    "pose": {
+      "x": -145,
+      "z": -113,
+      "yaw": -0.5,
+      "pitch": -0.42,
+      "mode": "dive",
+      "depth": 5
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true
+  }
+]
