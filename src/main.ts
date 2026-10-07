@@ -2,6 +2,7 @@ import './style.css';
 import { inspectBodyHands } from './qa/body-inspection';
 import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
 import {inspectShoreTransport} from './qa/shore-transport-probe.ts';
+import {inspectShoreIncident} from './qa/shore-incident-probe.ts';
 import {inspectGpuSkinOnDevice} from './qa/gpu-skinned-browser-check.ts';
 import {inspectGpuSkinLifecycle} from './qa/gpu-skinned-lifecycle.ts';
 import {createCaptureGate} from './qa/capture-exclusivity.ts';
@@ -290,6 +291,7 @@ try {
     breakerEnabled:(enabled:boolean)=>ocean.setBreakerCandidateEnabled(enabled),
     shoreEnabled:(enabled:boolean)=>ocean.setShoreCandidateEnabled(enabled),
     reflectionOverscan:(scale:number)=>ocean.setReflectionOverscan(scale),
+    inspectShoreIncident:()=>inspectShoreIncident(ocean.renderer),
     shoreState:()=>ocean.probeShoreState(),
     whitewaterSites:()=>ocean.probeWhitewaterSites(),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
@@ -500,13 +502,15 @@ try {
         return {png,pngWithoutWhitewater,pngWithoutSurfaceFoam,pngFoamFilm,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,lightComparison,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,foamComparison:compareFoam?'Frozen state: all foam, whitewater pool hidden, both pool and surface-shader foam hidden':null,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null,lightComparison:compareLight?'One frozen camera/FFT/solver/time/environment; legacy256->fine512->legacy256, caustic history reset only':null}};
       }finally{try{ocean.setCausticResolution(previousLight);}finally{captureHost.restoreState(before);}}
     },
-    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number}){
+    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},startClock?:number){
       if(stops.length<1||stops.length>6||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown temporal capture view');
-      const frames=[];
+      if(startClock!==undefined&&(!Number.isFinite(startClock)||startClock<0||startClock>86400))throw new Error('Finite bounded QA clock required');
+      const clock=ocean.diagnostics.time,frames=[];
       try{
         captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');ocean.setWind(Math.max(2,Math.min(18,wind)));ocean.setSwell(Math.max(.3,Math.min(2,swell)));
         const p=profile.pose;captureHost.viewpoint(Number.isFinite(look?.x)?look!.x!:p.x,Number.isFinite(look?.z)?look!.z!:p.z,Number.isFinite(look?.yaw)?look!.yaw!:p.yaw,Number.isFinite(look?.pitch)?Math.max(-1.35,Math.min(1.35,look!.pitch!)):p.pitch,look?.mode??p.mode,Number.isFinite(look?.depth)?Math.max(0,Math.min(100,look!.depth!)):p.depth);captureHost.setPaused(true);await captureHost.nextFrame();
+        if(startClock!==undefined){ocean.setObservationClock(startClock);await captureHost.nextFrame();}
         for(let i=0;i<stops.length;i++){
           if(i){captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,(stops[i]-stops[i-1])*1000));captureHost.setPaused(true);}
           await captureHost.nextFrame();const png=await capturePNG();if(!png)throw new Error('No temporal capture');
@@ -515,7 +519,7 @@ try {
         const visible=ocean.setWhitewaterVisible(false);
         try{await captureHost.nextFrame();await captureHost.nextFrame();const pngWithoutWhitewater=await capturePNG();return {frames,pngWithoutWhitewater,whitewaterComparison:'Frozen same solver, particles, camera and light; volume/legacy material visible vs hidden only'};}
         finally{ocean.setWhitewaterVisible(visible);}
-      }finally{captureHost.restoreState(before);}
+      }finally{try{if(startClock!==undefined){captureHost.setPaused(true);ocean.setObservationClock(clock);}}finally{captureHost.restoreState(before);}}
     },
     async captureCrestSeries(name:string,seconds=12,interval=.2,wind=14,swell=1.3,look?:{x:number;z:number;yaw:number;pitch:number;mode?:'walk'|'swim'|'dive';depth?:number}){
       if(crestSeriesBusy)throw new Error('Crest series already in flight');

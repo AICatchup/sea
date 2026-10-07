@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { whitewaterAerationStrength } from './whitewater-flow.ts';
+import { relaxWhitewaterVelocity } from './whitewater-flow.ts';
 
 const LIMIT=1024;
 export interface WhitewaterSample {height:number;compression:number;depth:number;shelter:number;ground:number;gradientX:number;gradientZ:number;waveGradientX?:number;waveGradientZ?:number;flowX?:number;flowZ?:number}
@@ -16,8 +17,9 @@ export function whitewaterBirthRate(s:WhitewaterSample):number {
   return 9*Math.min(1,s.compression)*Math.min(1,s.shelter)*Math.min(1,(s.depth-.2)/.4)*Math.min(1,(3.8-s.depth)/1.2);
 }
 
-/** Analytic horizontal transport avoids frame-rate-dependent integration. Surface
- * height follows the shared coarse FFT cache; this does not resolve overturning. */
+/** Transport follows solved signed swash flow, including offshore backwash.
+ * FFT-only fallback retains the analytic shoreward drift. Surface height comes
+ * from the shared coarse cache; this does not resolve overturning. */
 export class WhitewaterPool {
   readonly positions:Float32Array;
   readonly shape:Float32Array;
@@ -27,18 +29,20 @@ export class WhitewaterPool {
   active=0;
   private readonly births:(WhitewaterBirth|null)[];
   private readonly ages:Float64Array;
+  private readonly transport:Float64Array;
   private readonly sample:WhitewaterSample={height:0,compression:0,depth:0,shelter:0,ground:0,gradientX:0,gradientZ:0};
   private cursor=0;
   private disposed=false;
   constructor(capacity=LIMIT){
     if(!Number.isInteger(capacity)||capacity<1||capacity>LIMIT)throw new Error('Invalid whitewater capacity');
-    this.capacity=capacity;this.positions=new Float32Array(capacity*3);this.shape=new Float32Array(capacity*3);this.alpha=new Float32Array(capacity);this.seeds=new Float32Array(capacity);this.ages=new Float64Array(capacity);this.births=Array(capacity).fill(null);
+    this.capacity=capacity;this.positions=new Float32Array(capacity*3);this.shape=new Float32Array(capacity*3);this.alpha=new Float32Array(capacity);this.seeds=new Float32Array(capacity);this.ages=new Float64Array(capacity);this.transport=new Float64Array(capacity*4);this.births=Array(capacity).fill(null);
   }
   emit(b:WhitewaterBirth):boolean {
     if(this.disposed||!Object.values(b).every(Number.isFinite)||Math.abs(b.x)>1e6||Math.abs(b.z)>1e6||Math.abs(b.height)>1e4||b.energy<=0||b.energy>1||Math.hypot(b.nx,b.nz)<.9||Math.hypot(b.nx,b.nz)>1.1||b.seed<0||b.seed>1)return false;
     for(let n=0;n<this.capacity;n++){
       const i=(n+this.cursor)%this.capacity;if(this.births[i])continue;
       this.births[i]={...b};this.ages[i]=0;this.seeds[i]=b.seed;this.positions.set([b.x,b.height+.025,b.z],i*3);
+      this.transport.set([b.x,b.z,0,0],i*4);
       this.shape.set([1.2+b.seed*2.5,.22+whitewaterAerationStrength(b.energy)*.6,Math.atan2(b.nz,b.nx)+Math.PI/2],i*3);this.alpha[i]=0;this.active++;this.cursor=(i+1)%this.capacity;return true;
     }return false;
   }
@@ -46,11 +50,21 @@ export class WhitewaterPool {
     if(this.disposed||!Number.isFinite(delta)||delta<=0)return;
     for(let i=0;i<this.capacity;i++){
       const b=this.births[i];if(!b)continue;
-      const age=this.ages[i]+=delta,life=2.2+b.energy*3+b.seed*1.8;
-      const speed=.45+b.energy*1.05,travel=speed*(1-Math.exp(-age*.24))/.24;
-      const along=(b.seed-.5)*.5*age;
-      const x=b.x+b.nx*travel-b.nz*along,z=b.z+b.nz*travel+b.nx*along;
-      const s=this.sample;
+      const previousAge=this.ages[i],age=this.ages[i]+=delta,life=2.2+b.energy*3+b.seed*1.8;
+      const s=this.sample,j=i*4;delete s.flowX;delete s.flowZ;
+      if(age>=life||!sampler(this.transport[j],this.transport[j+1],s)||!Object.values(s).every(Number.isFinite)||s.depth<=0||s.depth>5||s.ground>=s.height-.015){this.births[i]=null;this.alpha[i]=0;this.active--;continue;}
+      if(s.flowX!==undefined&&s.flowZ!==undefined){
+        const x=relaxWhitewaterVelocity(this.transport[j+2],THREE.MathUtils.clamp(s.flowX,-12,12),delta),z=relaxWhitewaterVelocity(this.transport[j+3],THREE.MathUtils.clamp(s.flowZ,-12,12),delta);
+        this.transport[j]+=x.distance;this.transport[j+1]+=z.distance;this.transport[j+2]=x.velocity;this.transport[j+3]=z.velocity;
+      }else{
+        // Integrate from the current position. Losing a boundary sample must
+        // not snap a returning strand back to its original onshore-only path.
+        const speed=.45+b.energy*1.05,travel=speed*(Math.exp(-previousAge*.24)-Math.exp(-age*.24))/.24,along=(b.seed-.5)*.5*delta;
+        this.transport[j]+=b.nx*travel-b.nz*along;this.transport[j+1]+=b.nz*travel+b.nx*along;
+        this.transport[j+2]=b.nx*speed*Math.exp(-age*.24)-b.nz*(b.seed-.5)*.5;
+        this.transport[j+3]=b.nz*speed*Math.exp(-age*.24)+b.nx*(b.seed-.5)*.5;
+      }
+      const x=this.transport[j],z=this.transport[j+1];delete s.flowX;delete s.flowZ;
       // Cache loss/out-of-range, grounded fragments and nonfinite terrain are
       // culled rather than left hovering. Shallow wet strands survive briefly.
       if(age>=life||!sampler(x,z,s)||!Object.values(s).every(Number.isFinite)||Math.abs(s.height)>1e4||s.depth<=0||s.depth>5||s.ground>=s.height-.015){this.births[i]=null;this.alpha[i]=0;this.active--;continue;}

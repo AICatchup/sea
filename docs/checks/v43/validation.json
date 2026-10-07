@@ -1,0 +1,75 @@
+{
+  "version": "V43",
+  "globalGoal": "ACTIVE_UNMET",
+  "tests": {
+    "passed": 379,
+    "durationMs": 79854.0837
+  },
+  "typecheck": "PASS",
+  "vite": "PASS",
+  "standaloneBuild": "PASS",
+  "incidentGpu": {
+    "cases": 8,
+    "nonfinite": 0,
+    "maximumError": 3.1342281636703717e-06
+  },
+  "flow": {
+    "samples": 105,
+    "validFlowSamples": 2796,
+    "shorewardOver005": 600,
+    "offshoreUnderMinus005": 2115,
+    "trackedParticleIdentities": 334,
+    "particlesWithSignedFlowReversal": 39,
+    "scope": "Live cached GPU solver velocity at existing particles. Simulation evidence, not field observations or precise material tracers."
+  },
+  "route": {
+    "sampleCount": 302,
+    "modes": [
+      "dive",
+      "swim",
+      "walk"
+    ],
+    "first": {
+      "time": 34.35016666666667,
+      "camera": {
+        "yaw": 1.5707963267948966,
+        "pitch": -0.12,
+        "height": 2.6950346169918387,
+        "x": 5900.026016,
+        "z": -1300
+      },
+      "mode": "walk",
+      "grounded": true,
+      "ground": 1.0550346169918385,
+      "oxygen": 1
+    },
+    "last": {
+      "time": 88.34876666666746,
+      "camera": {
+        "yaw": 1.5707963267948966,
+        "pitch": -0.12,
+        "height": 2.8426583099907874,
+        "x": 5899.424234825161,
+        "z": -1300
+      },
+      "mode": "walk",
+      "grounded": true,
+      "ground": 1.2026583099907875,
+      "oxygen": 1
+    },
+    "scope": "QA start + normal controller; not native held keys/full voyage"
+  },
+  "staticHTTP": {
+    "externalResources": 0,
+    "consoleErrors": 0,
+    "qa": "undefined",
+    "normalFoamFlowSamples": 576
+  },
+  "visual": "limited adoption, photoreality unmet",
+  "remaining": [
+    "opaque/flat broad foam pattern",
+    "high water film and dark edge beside cliffs",
+    "3D breaker aeration",
+    "dynamic sediment/erosion"
+  ]
+}

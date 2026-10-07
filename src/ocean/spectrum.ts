@@ -1,3 +1,5 @@
+import {OCEAN_SPECTRUM_AXIS} from './wave-direction.ts';
+
 export interface SpectrumOptions {
   size: number;
   length: number;
@@ -40,7 +42,7 @@ export function createSpectrum(options: SpectrumOptions): Float32Array {
       const kz = (y - size / 2) * waveStep;
       const k = Math.hypot(kx, kz);
       if (k < 1e-6) continue;
-      const direction = (kx * 0.8 + kz * 0.6) / k;
+      const direction = (kx * OCEAN_SPECTRUM_AXIS.x + kz * OCEAN_SPECTRUM_AXIS.z) / k;
       // Long waves have a clear wind alignment; ripples spread more widely.
       const spreading = 4 - 2 * smoothstep(0.25, 2.0, k);
       const directional = 0.035 + 0.965 * Math.abs(direction) ** spreading;

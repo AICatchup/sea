@@ -1,0 +1,37 @@
+{
+  "qa": "undefined",
+  "spray": {
+    "active": 0,
+    "capacity": 1500,
+    "drawCalls": 2,
+    "whitewaterActive": 0,
+    "whitewaterCapacity": 1024,
+    "whitewaterTriangles": 2048,
+    "whitewaterMode": "legacy",
+    "whitewaterEmitted": 0,
+    "maxSampleEnergy": 0,
+    "maxSampleCrest": 0.04553292133974196,
+    "maxEstimatedHeightDepthRatio": 0.07667658503089925,
+    "sampleEnergyPositiveCount": 0,
+    "sampleWetEligibleCount": 121,
+    "samples": 576,
+    "readbackBytes": 4608,
+    "flowSamples": 576,
+    "interval": 0.2,
+    "pending": false,
+    "ready": true,
+    "failed": false,
+    "emitted": 0,
+    "updateMs": 5.0999999940395355,
+    "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+    "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+  },
+  "external": [],
+  "frames": 9091,
+  "fps": 56.3,
+  "resolution": [
+    1433,
+    806
+  ],
+  "errors": []
+}

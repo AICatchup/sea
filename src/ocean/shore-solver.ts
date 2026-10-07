@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSurfaceTransitionGLSL } from './shore-surface-transition.ts';
 import {shoreBoreGLSL} from './shore-bore.ts';
+import {shoreIncidentDirectionGLSL} from './wave-direction.ts';
 
 /** Include after shoreWaveSampling, so terrain interpolation agrees with geometry. */
 export const shoreSolverSampling = /* glsl */`
@@ -43,9 +44,10 @@ precision highp float;
 uniform sampler2D uInput,uOriginal,uBathymetry,uLongWaves,uShortWaves;
 uniform vec4 uBathyBounds,uBounds,uOldBounds;
 uniform vec2 uBathyResolution;
-uniform float uSize,uDx,uDt,uMode,uSwell,uChoppiness,uMaxDepth,uMaxSpeed,uMaxHeight,uSecondOrder,uStage;
+uniform float uSize,uDx,uDt,uMode,uSwell,uChoppiness,uMaxDepth,uMaxSpeed,uMaxHeight,uSecondOrder,uStage,uIncidentDirection;
 ${shoreWaveSampling}
 ${shoreBoreGLSL}
+${shoreIncidentDirectionGLSL}
 vec2 world(vec2 uv){return uBounds.xy+uv*uBounds.zw;}
 float bed(vec2 p){
   #ifdef SHORE_PERIODIC_PROBE
@@ -61,10 +63,10 @@ float fft(vec2 p){vec2 q=p;for(int i=0;i<3;i++){
   q=p-d.xz*uChoppiness;
 }return clamp((texture2D(uLongWaves,q/384.).y+texture2D(uShortWaves,q/24.).y)*uSwell,-uMaxHeight,uMaxHeight);}
 vec4 incident(vec2 p){float b=bed(p),h=max(0.,fft(p)-b);
-  // Authored shoreward characteristic proxy: actual FFT height, bathymetry uphill direction.
-  // FFT does not provide incident propagation direction here.
+  // Match the offshore spectrum's dominant travel direction. A local
+  // shallow-water refraction approximation turns incoming rays shoreward.
   vec2 grad=vec2(bed(p+vec2(uDx,0))-bed(p-vec2(uDx,0)),bed(p+vec2(0,uDx))-bed(p-vec2(0,uDx)));
-  vec2 n=grad/max(length(grad),.00001);
+  vec2 n=uIncidentDirection>.5?shoreIncidentDirection(grad/(2.*uDx),max(0.,-b)):grad/max(length(grad),.00001);
   float velocity=incidentBoreVelocity(h,max(0.,-b),uMaxSpeed);
   return vec4(h,h*n*velocity,0.);
 }
@@ -146,7 +148,7 @@ export function createShoreSolverUniforms():Record<string,THREE.IUniform> {
 
 const finiteOption=(value:number|undefined,fallback:number,min:number,max:number):number=>Number.isFinite(value)?Math.max(min,Math.min(max,value!)):fallback;
 
-export interface ShoreSolverOptions { resolution?: number; span?: number; maxDepth?: number; maxSpeed?: number; maxHeight?: number; maxSubsteps?: number; order?:1|2 }
+export interface ShoreSolverOptions { resolution?: number; span?: number; maxDepth?: number; maxSpeed?: number; maxHeight?: number; maxSubsteps?: number; order?:1|2; incidentDirection?:boolean }
 /** Depth-integrated SWE candidate with optional MUSCL/RK2. Opt-in; RGBA32F.
  * Iterated half-float storage loses small depth updates and can drain water. */
 export class ShoreSolver {
@@ -184,7 +186,7 @@ export class ShoreSolver {
     // the piecewise-constant operator, especially beside newly wet cells.
     this.stableDelta=(this.secondOrder?.10:.20)*(this.span/this.resolution)/(maxSpeed+Math.sqrt(9.81*(maxDepth+maxHeight)));
     this.targets=Array.from({length:this.secondOrder?3:2},()=>new THREE.WebGLRenderTarget(this.resolution,this.resolution,{type:THREE.FloatType,format:THREE.RGBAFormat,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter,depthBuffer:false,stencilBuffer:false}));
-    this.material=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:shoreTransportFragment,uniforms:{uInput:{value:null},uOriginal:{value:null},uSecondOrder:{value:this.secondOrder?1:0},uStage:{value:0},uBathymetry:{value:null},uLongWaves:{value:null},uShortWaves:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uBathyTriangulated:{value:0},uBounds:this.uniforms.uShoreBounds,uOldBounds:{value:new THREE.Vector4()},uSize:{value:this.resolution},uDx:{value:this.span/this.resolution},uDt:{value:0},uMode:{value:2},uSwell:{value:1},uChoppiness:{value:1},uMaxDepth:{value:maxDepth},uMaxSpeed:{value:maxSpeed},uMaxHeight:{value:maxHeight}}});
+    this.material=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:shoreTransportFragment,uniforms:{uInput:{value:null},uOriginal:{value:null},uIncidentDirection:{value:options.incidentDirection===false?0:1},uSecondOrder:{value:this.secondOrder?1:0},uStage:{value:0},uBathymetry:{value:null},uLongWaves:{value:null},uShortWaves:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uBathyTriangulated:{value:0},uBounds:this.uniforms.uShoreBounds,uOldBounds:{value:new THREE.Vector4()},uSize:{value:this.resolution},uDx:{value:this.span/this.resolution},uDt:{value:0},uMode:{value:2},uSwell:{value:1},uChoppiness:{value:1},uMaxDepth:{value:maxDepth},uMaxSpeed:{value:maxSpeed},uMaxHeight:{value:maxHeight}}});
     this.quad.material=this.material;this.quad.frustumCulled=false;this.scene.add(this.quad);
   }
   get diagnostics():{order:number;precision:'float32';substeps:number;simulationElapsed:number;droppedSeconds:number;stableDelta:number;bounds:THREE.Vector4} {

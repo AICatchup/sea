@@ -147,7 +147,7 @@ export class Ocean {
     this.renderer.info.autoReset=false;
     this.simulation=new OceanSimulation(this.renderer,this.wind);
     const experience=experienceOptions(location.search);
-    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2}):null;
+    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2,incidentDirection:new URLSearchParams(location.search).get('shoreincident')!=='0'}):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0',new URLSearchParams(location.search).get('strandprofile')!=='0');
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
@@ -614,7 +614,7 @@ export class Ocean {
   probeShoreState(){return this.shoreSolver?.probeState()??null;}
   probeCrestDriver(expanded=false){return this.breaker?.probeDriver(this.renderer,expanded)??null;}
   setWhitewaterVisible(visible:boolean):boolean{const material=this.spray.whitewater?.material;const before=material?.visible??false;if(material)material.visible=visible;return before;}
-  probeWhitewaterSites(){const pool=this.spray.whitewater?.pool;if(!pool)return [];const sites=[];for(let i=0;i<pool.capacity&&sites.length<32;i++)if(pool.alpha[i]>.01){const x=pool.positions[i*3],y=pool.positions[i*3+1],z=pool.positions[i*3+2];sites.push({x,y,z,alpha:pool.alpha[i],distance:Math.hypot(x-this.camera.position.x,z-this.camera.position.z)});}return sites;}
+  probeWhitewaterSites(){return this.spray.probeWhitewaterSites().map(site=>({...site,distance:Math.hypot(site.x-this.camera.position.x,site.z-this.camera.position.z)}));}
   /** Raw floating-point water-only probes; no tone mapping or temporal update. */
   probeWaterContact(points:readonly{x:number;y:number}[]){
     if(points.length>16||points.some(p=>![p.x,p.y].every(Number.isFinite)||p.x<0||p.x>1||p.y<0||p.y>1))throw new Error('Up to sixteen normalized contact probes required');

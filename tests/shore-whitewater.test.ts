@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { WhitewaterPool, ShoreWhitewater, whitewaterBirthRate, type WhitewaterSample, type WhitewaterBirth } from '../src/ocean/shore-whitewater.ts';
+import {relaxWhitewaterVelocity} from '../src/ocean/whitewater-flow.ts';
 const water:WhitewaterSample={height:.3,compression:.8,depth:1,shelter:1,ground:-1,gradientX:1,gradientZ:0};
 const birth:WhitewaterBirth={x:0,z:0,height:.3,energy:.8,nx:1,nz:0,seed:.4};
 const sampler=(_x:number,_z:number,out:WhitewaterSample)=>{Object.assign(out,water);return true;};
@@ -35,23 +36,52 @@ test('underwater visibility and idempotent disposal retain fixed budget and forb
   foam.dispose();foam.dispose();assert.equal(disposed,1);assert.equal(foam.pool.active,0);assert.equal(foam.pool.emit(birth),false);assert.equal(foam.group.children.length,0);
 });
 
-// Integration keeps the existing single 576-cell readback and explicit default-off gate.
+test('ordinary foam follows offshore and alongshore flow, and cache loss does not teleport it',()=>{
+  const pool=new WhitewaterPool(1);pool.emit(birth);
+  const flow=(x:number,z:number,out:WhitewaterSample)=>{Object.assign(out,{...water,flowX:-1.2,flowZ:.4});return true;};
+  pool.advance(1,flow);
+  const expected=relaxWhitewaterVelocity(0,-1.2,1).distance;
+  assert.ok(expected<-.8&&Math.abs(pool.positions[0]-expected)<1e-6);
+  assert.ok(pool.positions[2]>.2);
+  const x=pool.positions[0];pool.advance(.01,sampler);
+  assert.ok(Math.abs(pool.positions[0]-x)<.02,'missing flow keeps the current transported position');
+  const dry=new WhitewaterPool(1);dry.emit(birth);
+  dry.advance(1,(x,z,out)=>{Object.assign(out,{...water,flowX:-2,flowZ:0,ground:x<-.4?1:-1});return true;});
+  assert.equal(dry.active,0,'revalidate the destination after transporting foam');
+});
+
+test('signed-flow transport agrees across frame partitions',()=>{
+  const a=new WhitewaterPool(1),b=new WhitewaterPool(1);a.emit(birth);b.emit(birth);
+  const flow=(x:number,z:number,out:WhitewaterSample)=>{Object.assign(out,{...water,flowX:-1.2,flowZ:.4});return true;};
+  a.advance(.8,flow);for(let i=0;i<48;i++)b.advance(1/60,flow);
+  for(let i=0;i<3;i++)assert.ok(Math.abs(a.positions[i]-b.positions[i])<1e-6);
+});
+
+// Integration keeps one 576-site request; normal foam also reads signed flow.
 import * as THREE from 'three';
 import { ShoreSpray } from '../src/ocean/shore-spray.ts';
 test('optional integration shares one FFT sample request and produces persistent foam',async()=>{
-  let reads=0;const pixels=new Uint8Array(2304);
-  for(let i=0;i<pixels.length;i+=4){pixels[i]=132;pixels[i+1]=204;pixels[i+2]=220;pixels[i+3]=32;}
+  let reads=0;const pixels=new Uint8Array(4608);
+  for(let i=0;i<2304;i+=4){pixels[i]=132;pixels[i+1]=204;pixels[i+2]=220;pixels[i+3]=32;}
+  for(let i=2304;i<4608;i+=4)pixels.set([117,128,255,137],i);
   const renderer={getRenderTarget(){return null;},setRenderTarget(){},render(){},readRenderTargetPixelsAsync(){reads++;return Promise.resolve(pixels);},getDrawingBufferSize(v:THREE.Vector2){return v.set(800,600);}} as unknown as THREE.WebGLRenderer;
   const ground={heightAt:(x:number)=>-1+x*.001};
   const off=new ShoreSpray(renderer,ground);assert.equal(off.whitewater,null);off.dispose();
   const spray=new ShoreSpray(renderer,ground,{whitewater:true}),camera=new THREE.PerspectiveCamera();
   const u={uLongWaves:{value:new THREE.Texture()},uShortWaves:{value:new THREE.Texture()},uBathymetry:{value:new THREE.Texture()}};
   for(let i=0;i<30;i++){spray.update(1+i*.05,.05,camera,u);await new Promise(r=>setImmediate(r));}
-  assert.ok(reads>0&&reads<12);assert.equal(spray.diagnostics.readbackBytes,2304);assert.equal(spray.diagnostics.drawCalls,2);assert.ok(spray.diagnostics.whitewaterActive>0);
+  assert.ok(reads>0&&reads<12);assert.equal(spray.diagnostics.readbackBytes,4608);assert.equal(spray.diagnostics.drawCalls,2);assert.ok(spray.diagnostics.whitewaterActive>0);
   assert.ok(spray.diagnostics.whitewaterEmitted>=spray.diagnostics.whitewaterActive);
   assert.equal(spray.diagnostics.maxSampleEnergy,220/255);
   assert.equal(spray.diagnostics.maxSampleCrest,(132*256+204)/65535*16-8);
   assert.equal(spray.diagnostics.sampleEnergyPositiveCount,576);assert.equal(spray.diagnostics.sampleWetEligibleCount,576);
   assert.equal(spray.diagnostics.maxEstimatedHeightDepthRatio,spray.diagnostics.maxSampleCrest/(32/255*8));
+  const sites=spray.probeWhitewaterSites();assert.ok(sites.length>0);assert.ok(sites.every(p=>p.flowX!<0));
+  const pool=spray.whitewater!.pool,before=pool.positions.slice(),seeds=pool.seeds.slice(),active=pool.alpha.slice();
+  for(let i=2;i<2304;i+=4)pixels[i]=0;
+  for(let i=0;i<10;i++){spray.update(2.5+i*.05,.05,camera,u);await new Promise(r=>setImmediate(r));}
+  let tracked=0;
+  for(let i=0;i<pool.capacity;i++)if(active[i]>.1&&pool.alpha[i]>.01&&seeds[i]===pool.seeds[i]){assert.ok(pool.positions[i*3]<before[i*3]-.3,'existing normal foam moves seaward with actual decoded flow');tracked++;}
+  assert.ok(tracked>0);
   spray.dispose();assert.equal(spray.whitewater!.pool.active,0);
 });

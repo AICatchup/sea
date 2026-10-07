@@ -66,7 +66,7 @@ export function sprayBirthRate(depth:number,energy:number,shelter:number,distanc
 }
 
 /** 576 surface samples, RG16 height/B breaker energy/A depth, 2304 bytes.
- * Volume mode adds 576 RG8 signed flow/B validity/A sentinel pixels in the
+ * Whitewater adds 576 RG8 signed flow/B validity/A sentinel pixels in the
  * same draw/read request (4608 bytes total at 5Hz, not another readback).
  * The shader recomputes compression: FFT alpha contains historical foam, not
  * the instantaneous Jacobian. Bathymetry uses the renderer's half-texel map.
@@ -134,7 +134,7 @@ export class ShoreSpray {
   };
   constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number},options:{whitewater?:boolean;volume?:boolean}={}){
     this.renderer=renderer;this.ground=ground;
-    this.flowReadback=!!options.volume;
+    this.flowReadback=!!options.volume||!!options.whitewater;
     this.target=new THREE.WebGLRenderTarget(GRID,GRID*(this.flowReadback?2:1),{type:THREE.UnsignedByteType,depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
     this.whitewater=options.volume?new ShoreWhitewaterVolume():options.whitewater?new ShoreWhitewater():null;
     if(this.whitewater)this.group.add(this.whitewater.group);
@@ -323,7 +323,18 @@ export class ShoreSpray {
     this.failed=true;this.pixels=null;this.foamCacheValid=false;
     this.credits.fill(0);this.foamCredits.fill(0);
   }
-  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:this.whitewater?2:1,whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?2048:0,whitewaterMode:this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input',approximation:this.whitewater instanceof ShoreWhitewaterVolume?'6m grid / <=0.5s cache; instantaneous compression births; sampled SWE flow with FFT-only heuristic fallback; no overturning CFD':'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater bilinear cached height, ground-culling, analytic onshore drift'};}
+  /** Developer observation of existing cached values, without a GPU request. */
+  probeWhitewaterSites(){
+    const pool=this.whitewater?.pool;if(!pool)return [];
+    const sites=[];
+    for(let i=0;i<pool.capacity&&sites.length<32;i++)if(pool.alpha[i]>.01){
+      const x=pool.positions[i*3],y=pool.positions[i*3+1],z=pool.positions[i*3+2];
+      const sample:WhitewaterSample={height:0,compression:0,depth:0,shelter:0,ground:0,gradientX:0,gradientZ:0};
+      const valid=this.sampleFoam(x,z,sample),slope=Math.hypot(sample.gradientX,sample.gradientZ);
+      sites.push({slot:i,seed:pool.seeds[i],x,y,z,alpha:pool.alpha[i],flowX:valid?sample.flowX??null:null,flowZ:valid?sample.flowZ??null:null,shorewardFlow:valid&&slope>1e-6&&sample.flowX!==undefined&&sample.flowZ!==undefined?(sample.flowX*sample.gradientX+sample.flowZ*sample.gradientZ)/slope:null});
+    }return sites;
+  }
+  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:this.whitewater?2:1,whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?2048:0,whitewaterMode:this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input',approximation:this.whitewater instanceof ShoreWhitewaterVolume?'6m grid / <=0.5s cache; instantaneous compression births; sampled SWE flow with FFT-only heuristic fallback; no overturning CFD':'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback'};}
   dispose():void{
     if(this.disposed)return;this.disposed=true;
     this.whitewater?.dispose();
