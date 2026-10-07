@@ -1,0 +1,43 @@
+{
+  "source": "bb013a4b5c6b825ef82f34e4e9a0a378bb1c6642",
+  "hulls": [
+    {
+      "inner": false,
+      "vertices": 222,
+      "position": "7041c3c63cce118899f6ac348f433123558ea73fcbdf50c0a86b260fda5722b7",
+      "uv": "8b11eeab20d1cd1b604d3073e7c531b8270410d458cfdc2797ac5e1a78ea3392",
+      "legacyNormal": "1fa48938a17c1c6291f264f751a6734f01752b792dbea76ed2c0d6cd57385aa3",
+      "bounds": [
+        [
+          -1.0700000524520874,
+          -0.6000000238418579,
+          -2.799999952316284
+        ],
+        [
+          1.0700000524520874,
+          0.38999998569488525,
+          2.5
+        ]
+      ]
+    },
+    {
+      "inner": true,
+      "vertices": 222,
+      "position": "3fa055f86c4ebc5b47727f77746aebd778b360e939455ad20a653b0ea42f69eb",
+      "uv": "8720e6be79e7b7d7f4d49751083aebc16a1a203b93cac26b8dcbc1b7ec1bcc53",
+      "legacyNormal": "432c0fb2596bbc500e6ccca18e6e0a8253a21eec4c7bc3f86c25aec39955a36f",
+      "bounds": [
+        [
+          -0.9736999869346619,
+          0.07500000298023224,
+          -2.799999952316284
+        ],
+        [
+          0.9736999869346619,
+          0.36500000953674316,
+          2.5
+        ]
+      ]
+    }
+  ]
+}
