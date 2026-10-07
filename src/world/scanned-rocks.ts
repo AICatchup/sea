@@ -10,6 +10,13 @@ const scanAssets = [
   { id: 'coast_rocks_03', kind: 'shelf', url: new URL('../assets/marine/coast-rocks-03-2k.glb', import.meta.url).href },
 ];
 const cachedBytes = new Map<string, Promise<ArrayBuffer>>();
+const seamGeometry:Readonly<Record<string,string>>={
+  boulder_01:new URL('../assets/marine/boulder-01-seams-v34.glb',import.meta.url).href,
+  namaqualand_boulder_02:new URL('../assets/marine/namaqualand-boulder-02-seams-v34.glb',import.meta.url).href,
+  namaqualand_boulder_03:new URL('../assets/marine/namaqualand-boulder-03-seams-v34.glb',import.meta.url).href,
+  coast_rocks_01:new URL('../assets/marine/coast-rocks-01-seams-v34.glb',import.meta.url).href,
+  coast_rocks_03:new URL('../assets/marine/coast-rocks-03-seams-v34.glb',import.meta.url).href,
+};
 function scanBytes(url: string): Promise<ArrayBuffer> {
   let cached = cachedBytes.get(url);
   if (!cached) {
@@ -56,6 +63,16 @@ export class ScannedRockLibrary {
         });
         sources.push(object);
       });
+      if(new URLSearchParams(location.search).get('scanseams')!=='0'&&seamGeometry[asset.id]){
+        try{
+          const corrected=await new GLTFLoader().parseAsync(await scanBytes(seamGeometry[asset.id]),'');
+          const meshes:THREE.Mesh[]=[];
+          corrected.scene.traverse(object=>{if(object instanceof THREE.Mesh){meshes.push(object);loaded.geometry(object.geometry);(Array.isArray(object.material)?object.material:[object.material]).forEach(m=>loaded.material(m));}});
+          if(sources.length!==1||meshes.length!==1)throw new Error('Expected one corrected rock mesh');
+          sources[0].geometry=meshes[0].geometry;
+          sources[0].geometry.userData.scanSeams=corrected.parser.json.asset.extras;
+        }catch(error){console.warn('Corrected rock scan unavailable; original geometry retained',error);}
+      }
       if (this.disposed) { loaded.dispose(); return []; }
       const bounds = new THREE.Box3().setFromObject(gltf.scene), size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
       // Coastal sources are whole rocky shelves; keep their broad habitat role.

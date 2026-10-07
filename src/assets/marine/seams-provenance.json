@@ -1,0 +1,164 @@
+{
+  "assets": [
+    {
+      "source": "https://polyhaven.com/a/boulder_01",
+      "license": "CC0-1.0",
+      "sourceTriangles": 66122,
+      "triangles": 54106,
+      "sourceChartComponents": 270,
+      "crossedCharts": 0,
+      "previousCrossedCharts": 1100,
+      "normalizedError": 0.011304158717393875,
+      "method": "Meshopt attribute-aware, no Permissive, original UV charts retained",
+      "maps": "Unchanged original 2K maps in existing GLB",
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/boulder_01/boulder_01_2k.gltf",
+          "bytes": 2773,
+          "sha256": "52d118b56748a18509e4ec0075d07b254d72a0401793f22363c0bb3a682e7361",
+          "md5": "3ef4b3c88c898e12b096eeb40f1edbb9"
+        },
+        {
+          "path": "boulder_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/boulder_01/boulder_01.bin",
+          "bytes": 2938808,
+          "sha256": "7f5b06503d62bd95bfe9c6b8a354a5cc8ff04a4d271a8cf87a3e3125db4232d7",
+          "md5": "27a19fa031d8b4c3a09261f19c444dc5"
+        }
+      ],
+      "output": {
+        "file": "boulder-01-seams-v34.glb",
+        "bytes": 2504544,
+        "sha256": "a1366783d8df327c13260ecefc84aa0db5e06ca477e6fe13a050abe01f1295a4"
+      }
+    },
+    {
+      "source": "https://polyhaven.com/a/namaqualand_boulder_02",
+      "license": "CC0-1.0",
+      "sourceTriangles": 97964,
+      "triangles": 17995,
+      "sourceChartComponents": 92,
+      "crossedCharts": 0,
+      "previousCrossedCharts": 86,
+      "normalizedError": 0.0020095105282962322,
+      "method": "Meshopt attribute-aware, no Permissive, original UV charts retained",
+      "maps": "Unchanged original 2K maps in existing GLB",
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_02/namaqualand_boulder_02_2k.gltf",
+          "bytes": 2818,
+          "sha256": "e181b722c8c8bd56f98ab8883b283b3cb3c437c372af3b831aec2f94c22fe0f2",
+          "md5": "9193646b820fdbc76cb9c3c77f0c5c38"
+        },
+        {
+          "path": "namaqualand_boulder_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_02/namaqualand_boulder_02.bin",
+          "bytes": 2297768,
+          "sha256": "0f6daa7ec9b1a92207c0b09b737ff1eec904aebc1c1eada778afa6e5eacd55c0",
+          "md5": "aa8f2212633a07a7e9a805e90977f4fd"
+        }
+      ],
+      "output": {
+        "file": "namaqualand-boulder-02-seams-v34.glb",
+        "bytes": 576860,
+        "sha256": "1553db320fc317e6a5ebcd337375128e53aa045a1fce8f688d18eab8279fe127"
+      }
+    },
+    {
+      "source": "https://polyhaven.com/a/namaqualand_boulder_03",
+      "license": "CC0-1.0",
+      "sourceTriangles": 64826,
+      "triangles": 18000,
+      "sourceChartComponents": 6,
+      "crossedCharts": 0,
+      "previousCrossedCharts": 1,
+      "normalizedError": 0.0016548613784834743,
+      "method": "Meshopt attribute-aware, no Permissive, original UV charts retained",
+      "maps": "Unchanged original 2K maps in existing GLB",
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_03/namaqualand_boulder_03_2k.gltf",
+          "bytes": 2823,
+          "sha256": "5d135c8e3a74edf7f53ae04d41deed19582ed6ced6d629d5d51e730319ed0dcb",
+          "md5": "51e9fe01b1b5420b955488ba907497c8"
+        },
+        {
+          "path": "namaqualand_boulder_03.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_03/namaqualand_boulder_03.bin",
+          "bytes": 1450268,
+          "sha256": "d24151021ed310fe3207f1b5964bff22b583e77d2617427a88b5dcbc0447a475",
+          "md5": "ded61ea310a66144546eac2a891b6dba"
+        }
+      ],
+      "output": {
+        "file": "namaqualand-boulder-03-seams-v34.glb",
+        "bytes": 521236,
+        "sha256": "a3e8dba6c512b897d540b5f0786217d84b6e46edd1f18f9e34d8b4ab43fc0c58"
+      }
+    },
+    {
+      "source": "https://polyhaven.com/a/coast_rocks_01",
+      "license": "CC0-1.0",
+      "sourceTriangles": 679936,
+      "triangles": 17999,
+      "sourceChartComponents": 97,
+      "crossedCharts": 0,
+      "previousCrossedCharts": 144,
+      "normalizedError": 0.0015040439320728183,
+      "method": "Meshopt attribute-aware, no Permissive, original UV charts retained",
+      "maps": "Unchanged original 2K maps in existing GLB",
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/coast_rocks_01/coast_rocks_01_2k.gltf",
+          "bytes": 2810,
+          "sha256": "9e75ec94594ce0a2e7625ed4339e2f2b35da192eb41630c59aaa8ccaa9e49240",
+          "md5": "d763b6ff59061342a2e0b85c43abecf6"
+        },
+        {
+          "path": "coast_rocks_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/coast_rocks_01/coast_rocks_01.bin",
+          "bytes": 19320352,
+          "sha256": "3d1c33b18fdcf0efebab46526e94d17efccbc3c9a06dc14b89b04b93109fa3d2",
+          "md5": "4cf9d5009388434a0520e1643127a725"
+        }
+      ],
+      "output": {
+        "file": "coast-rocks-01-seams-v34.glb",
+        "bytes": 555020,
+        "sha256": "d41001e2af337e3069aae3672375008520d49d37cf94cee9f12367604576954b"
+      }
+    },
+    {
+      "source": "https://polyhaven.com/a/coast_rocks_03",
+      "license": "CC0-1.0",
+      "sourceTriangles": 813464,
+      "triangles": 17998,
+      "sourceChartComponents": 80,
+      "crossedCharts": 0,
+      "previousCrossedCharts": 162,
+      "normalizedError": 0.0030880807898938656,
+      "method": "Meshopt attribute-aware, no Permissive, original UV charts retained",
+      "maps": "Unchanged original 2K maps in existing GLB",
+      "sources": [
+        {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/coast_rocks_03/coast_rocks_03_2k.gltf",
+          "bytes": 2811,
+          "sha256": "b12da85ca435c27a3aea6c87dc15eca66690e888a3f1b781a97939b111f9d89e",
+          "md5": "78877cf5cb28d3e3ffdd234a0968893d"
+        },
+        {
+          "path": "coast_rocks_03.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/coast_rocks_03/coast_rocks_03.bin",
+          "bytes": 23052416,
+          "sha256": "3936cfa8f679c237a1d9479a471c5008a219e7803aba142f2748ce6dbec54ca5",
+          "md5": "d2a51492a0132d36c2ff8947ed0b36b7"
+        }
+      ],
+      "output": {
+        "file": "coast-rocks-03-seams-v34.glb",
+        "bytes": 548940,
+        "sha256": "7ab5179a379543a400ddc4ec35960498ba394f10974b10f69f5cd25306fdfef7"
+      }
+    }
+  ]
+}

@@ -31,6 +31,7 @@ import {LightProbeGenerator} from 'three/addons/lights/LightProbeGenerator.js';
 import {Expedition,createExpeditionMap,type SaveStore} from '../game/expedition.ts';
 import {ExpeditionWorld} from '../game/expedition-world.ts';
 import {resizeReflectionTarget} from './reflection-target.ts';
+import {groundScannedShelf} from '../world/grounded-reef.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -261,6 +262,7 @@ export class Ocean {
         }
       }
       let seed=31851;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+      const groundedReef=new URLSearchParams(location.search).get('reefseat')!=='0';
       const helper=new THREE.Object3D();
       for(const variant of variants){
         const matrices:THREE.Matrix4[]=[];
@@ -277,26 +279,30 @@ export class Ocean {
           helper.rotateY(random()*Math.PI*2);helper.updateMatrix();matrices.push(helper.matrix.clone());
         }
         if(variant.kind==='shelf'){
-          const patches:THREE.BufferGeometry[]=[];
+          const patches:THREE.BufferGeometry[]=[],seating:ReturnType<typeof groundScannedShelf>['diagnostics'][]=[];
           for(const [x,z] of [[-138,-119],[-147,-125],[-157,-117],[-130,-132],[-167,-137],[-155,-150]]){
             const px=x+(random()-.5)*5,pz=z+(random()-.5)*5,h=this.world.heightAt(px,pz),s=.70+random()*.35;
             if(h> -3.8||h< -16)continue;
             helper.position.set(px,h-.20,pz);helper.scale.set(s,.5*s,s);
             helper.rotation.set((random()-.5)*.08,random()*Math.PI*2,(random()-.5)*.08);
             helper.updateMatrix();
-            const patch=variant.geometry.clone(),source=variant.geometry.getAttribute('position');
-            patch.applyMatrix4(helper.matrix);
-            const vertices=patch.getAttribute('position');
-            for(let i=0;i<vertices.count;i++){
-              const vx=vertices.getX(i),vz=vertices.getZ(i);
-              vertices.setY(i,this.world.heightAt(vx,vz)-.30+source.getY(i)*s*.5);
+            if(groundedReef){
+              const patch=groundScannedShelf(variant.geometry,helper.matrix,(x,z)=>this.world.heightAt(x,z));
+              patches.push(patch.geometry);seating.push(patch.diagnostics);
+            }else{
+              const patch=variant.geometry.clone(),source=variant.geometry.getAttribute('position');patch.applyMatrix4(helper.matrix);
+              const vertices=patch.getAttribute('position');
+              for(let i=0;i<vertices.count;i++){
+                const vx=vertices.getX(i),vz=vertices.getZ(i);vertices.setY(i,this.world.heightAt(vx,vz)-.30+source.getY(i)*s*.5);
+              }
+              patch.computeVertexNormals();patches.push(patch);
             }
-            patch.computeVertexNormals();patches.push(patch);
           }
           if(patches.length){
             const geometry=mergeGeometries(patches,false)!;patches.forEach(patch=>patch.dispose());
             geometry.computeBoundingSphere();this.reefGeometries.push(geometry);
             const reef=new THREE.Mesh(geometry,variant.material);reef.name='Ground-conforming scanned rocky habitat '+variant.id;
+            reef.userData.groundedShelf={enabled:groundedReef,patches:seating};
             reef.castShadow=reef.receiveShadow=true;this.scannedCoast.add(reef);
           }
         }
@@ -663,6 +669,7 @@ export class Ocean {
       shoreSolver:this.shoreSolver?{...this.shoreSolver.diagnostics,ready:this.uniforms.uShoreReady.value}:null,
       photoCoast:this.photoCoast?{instances:this.photoCoast.diagnostics.instances,triangles:this.photoCoast.diagnostics.triangles,draws:this.photoCoast.diagnostics.draws,roles:this.photoCoast.diagnostics.roles}:null,
       scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),
+      reefShelves:this.scannedCoast.children.filter(m=>m.userData.groundedShelf).map(m=>({name:m.name,...m.userData.groundedShelf})),
       ground:this.world.heightAt(state.position.x,state.position.z),programs:this.renderer.info.programs?.length,
       draws:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles};
   }
