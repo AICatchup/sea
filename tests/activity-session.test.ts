@@ -7,6 +7,7 @@ test('integrated reel actions count one catch and preserve existing expedition s
  for(let i=0;i<3000&&a.catches===0;i++){const f=a.fishing.snapshot();if(f.phase==='bite'||f.phase==='reeling'&&(f.reeling&&f.tension>.70||!f.reeling&&f.tension<.32))a.activate(s);a.update(.02,s);}
  assert.equal(a.catches,1);for(let i=0;i<100;i++)a.update(.02,s);assert.equal(a.catches,1);
  const restored=new ActivitySession(ground,()=>0,()=>true,store);assert.equal(restored.catches,1);assert.equal(restored.bestFish,a.bestFish);assert.equal(restored.tool,'none');assert.equal(values.get('sea.expedition.v1'),'old progress');
+ for(let i=0;i<3;i++){a.stow(s);a.activate(s);a.update(.02,s);assert.equal(a.catches,1,'putting away and picking up the same rod must not count the old catch again');}
  a.activate(s);a.update(.02,s);assert.equal(a.fishing.snapshot().phase,'casting');assert.equal(a.stow(s),true);assert.equal(a.tool,'none');assert.equal(a.fishing.snapshot().phase,'escaped');
 });
 test('physical board pickup, carrying and launch preserve east-positive movement and local stow',()=>{

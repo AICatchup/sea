@@ -30,7 +30,7 @@ export class ActivitySession{
  }
  activate(s:AdventureState):void{
   if(this.tool==='none'){
-   if(s.mode==='boat'&&!s.voyageTarget&&s.speed<.9||s.mode==='walk'&&this.near(s,this.pole)){this.tool='rod';this.previousCatch='';}
+   if(s.mode==='boat'&&!s.voyageTarget&&s.speed<.9||s.mode==='walk'&&this.near(s,this.pole)){this.tool='rod';}
    else if(s.mode==='walk'&&this.near(s,this.board,2.5)){this.tool='board';this.surf=stepSurfing(this.surf,{...this.surfInput(s,1/60,0,0),pickup:true,yaw:s.yaw}).state;}
   }else this.actionPending=true;
  }
