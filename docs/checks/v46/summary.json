@@ -1,0 +1,218 @@
+{
+  "version": "V46",
+  "globalGoal": "ACTIVE_UNMET",
+  "fullSuite": {
+    "revision": "995c8ed2e2e933cf035d9e580fe86f83c7e229e0",
+    "tests": 410,
+    "pass": 410,
+    "fail": 0,
+    "seconds": 91.8586872,
+    "logSha256": "dcfab5389bde8e9b6f9e9f31c972d991422da9be99206dbb4bfb2febb784edbe"
+  },
+  "changesAfterSuite": "Boat caught-fish visual attachment only; checked with type/build and repeat actual boat fishing. Documentation/evidence added afterward.",
+  "typeAndBuild": {
+    "typeExit": 0,
+    "buildExit": 0,
+    "standaloneExit": 0,
+    "sourceWorldSha256": "6afc8c3b476acbc8a1f3204a226c8903498804bba12858b2153153ae6c5e16fa"
+  },
+  "surf": {
+    "samples": 99,
+    "distanceMetres": 23.588714457522453,
+    "rideSeconds": 10.010899999999983,
+    "finalMode": "walk",
+    "finalPhase": "carried",
+    "grounded": true,
+    "eyeMinusGround": 1.6399999999999997,
+    "scope": "995c8ed physical board pickup; QA sea start; same controller forward inputs and actual activity UI activation; no full voyage claim"
+  },
+  "boatFishing": {
+    "catch": {
+      "lengthCm": 35,
+      "species": "メバル"
+    },
+    "catches": 1,
+    "toolAfterThrottle": "none",
+    "speedAfterThrottle": 7.573524980162401,
+    "scope": "Physical boarding and actual UI fishing at same boat QA checkpoint; presentation offset fix"
+  },
+  "standalone": {
+    "httpOnly": true,
+    "decoded": 9,
+    "decodeErrors": 0,
+    "consoleErrors": 0,
+    "remoteResources": [],
+    "developerQA": "undefined",
+    "nativeSamples": 3840000
+  },
+  "limitations": [
+    "No physical centimetre agreement claim",
+    "No full Niijima voyage replay this version",
+    "Audio digital output and lifecycle checked, perceptual acceptance pending",
+    "Native IAB tab hiding did not set document.hidden; controlled visibility-event test only",
+    "Underwater reflection plate and rigid algae appearance unresolved",
+    "No completed showcase video"
+  ],
+  "files": [
+    {
+      "path": "audio-dispose.json",
+      "bytes": 2032,
+      "sha256": "77dfb48c2aad888c1c729f124c6ae4b110542d8692e8ff47e71dc4e003ad5877"
+    },
+    {
+      "path": "audio-files-analysis.json",
+      "bytes": 3039,
+      "sha256": "0dbb27f4b7b4466c01e3eccec00aab0f5a6fbadf12a7a3678dd5fc164e33ddcf"
+    },
+    {
+      "path": "audio-nine-assets.json",
+      "bytes": 830,
+      "sha256": "f078921632f0bde2dc9351ee89811c2497bdd9fb753fe94ab0bb11c0632928be"
+    },
+    {
+      "path": "audio-paused.json",
+      "bytes": 833,
+      "sha256": "7b365d8f8afe95e6b6e194a9776b506c92d31b96252ebfb4a7d5aa233b9f3ded"
+    },
+    {
+      "path": "audio-visibility.json",
+      "bytes": 2923,
+      "sha256": "56df11f1c21c2edb752df1f4d25aba25b6930890df8315e0f83359540c0567ab"
+    },
+    {
+      "path": "board-ground.png",
+      "bytes": 87469,
+      "sha256": "0c2c1d3edc2010d1afd33ee77ca260541d13f9a4073dadeded91121d7fdcb8b0"
+    },
+    {
+      "path": "board-walk.json",
+      "bytes": 472540,
+      "sha256": "f0887e09f6ad4ec3d71ba920d77fd6a5c7e58fd39ed1e1cf4ca2e7843d7776ed"
+    },
+    {
+      "path": "boat-catch-visible.json",
+      "bytes": 537967,
+      "sha256": "9386b2422a4704c523da88d8b411238139777f7c9eeede64c7a6edba9936c8f7"
+    },
+    {
+      "path": "boat-catch-visible.png",
+      "bytes": 1317330,
+      "sha256": "1a8a4faf4c9681a7f8c0b3e567e4bd52046614bb03dda30659efe21b6e6b8440"
+    },
+    {
+      "path": "boat-final-audio.webm",
+      "bytes": 112352,
+      "sha256": "1a83d0ba324b983380df2ef9d20dea77ce8ca6d1a67636b9a13477aecd5a8beb"
+    },
+    {
+      "path": "boat-final.json",
+      "bytes": 121741,
+      "sha256": "515a1ec4f4a7279897df5e9d408e51324d40862d2d1bab457ffdb1704ccf9e0b"
+    },
+    {
+      "path": "boat-fishing.json",
+      "bytes": 515170,
+      "sha256": "7388c7eea67925f322d24183f8c961d11ea72caf09a9e8201d0415281ad033a1"
+    },
+    {
+      "path": "boat-fishing.png",
+      "bytes": 1316972,
+      "sha256": "f9cfa4752d48dafc0186a472f57bc6655ed6dd89dcb2bdab4d6b57f09c488192"
+    },
+    {
+      "path": "catch-detailed.png",
+      "bytes": 100336,
+      "sha256": "86080eca85121df79d1274b4f7075edcfda557f3edbd25f528c1d150cc45995f"
+    },
+    {
+      "path": "fishing-detailed.json",
+      "bytes": 494310,
+      "sha256": "e8f9d5471450ffb8a57f805de206d32a62c35ac06e3865ee171b5a53b98a9e27"
+    },
+    {
+      "path": "map-hold.json",
+      "bytes": 1914,
+      "sha256": "1ed17c7d10b6d3cb4266af211d03b1ab688eb9ff0182a4a6f61aefee280ae626"
+    },
+    {
+      "path": "review-runtime.json",
+      "bytes": 1187,
+      "sha256": "65f672691fb582a0dd1519705bd10cab8a64ea5ba4d9bc3a45f409d47c0a5678"
+    },
+    {
+      "path": "standalone.json",
+      "bytes": 1514,
+      "sha256": "bb81524aa7f81318c86c1dbb762bd26e79ab959198a767ad716f6099aa06b95e"
+    },
+    {
+      "path": "standalone.png",
+      "bytes": 75764,
+      "sha256": "5797cd5e3d9d9c285beab0166b3dc4d9f607659b2f453096a2fb077aa2b6a52b"
+    },
+    {
+      "path": "surf-verified-shore.png",
+      "bytes": 1515346,
+      "sha256": "31e8fe2349f146b228efd91b21f0bc5d29397bcf14ed420a1f6a45ed035ba7ad"
+    },
+    {
+      "path": "surf-verified-standing.png",
+      "bytes": 1420634,
+      "sha256": "9aa4a0a4c192a786522e9b5ee7b0083ab3e057cb39b985e7fda4728264bd217f"
+    },
+    {
+      "path": "surf-verified-wipeout.png",
+      "bytes": 1465650,
+      "sha256": "056590ed0a047fd75272a5b69088363c14339f8ccb0ec3ccbe3543d475127a43"
+    },
+    {
+      "path": "surf-verified.json",
+      "bytes": 203860,
+      "sha256": "8d9c6cc56ae5ff69fbb91927e62f89541ef9861f30efd308c67e5b28131207f3"
+    },
+    {
+      "path": "underwater-audio.webm",
+      "bytes": 80474,
+      "sha256": "5c6970b453936699be98bbe680a2ca67e62542207a8fb81a301997c4040b30f6"
+    },
+    {
+      "path": "underwater-diagnostic-before.png",
+      "bytes": 79602,
+      "sha256": "c1bc36df7a05f1b12d3810c7323b29dc2c56f29e6a4e57037273842dfa8df04f"
+    },
+    {
+      "path": "underwater-diagnostic-no-volume-shadow.png",
+      "bytes": 79467,
+      "sha256": "9e5f0bdb167404a5f260b07660e4a147267b3169cd2084cfd50a4977b35e93fe"
+    },
+    {
+      "path": "underwater-reflection-validity.png",
+      "bytes": 74812,
+      "sha256": "7b44e8588516fac0489812c44ec22817e4ac9f68fdbea1f4936a6799d8d6b208"
+    },
+    {
+      "path": "underwater.json",
+      "bytes": 108551,
+      "sha256": "df3f8966159c4ad36439f295c0caf28d5852d2c68eabfe0f4ba620186f931f20"
+    },
+    {
+      "path": "underwater.png",
+      "bytes": 1214881,
+      "sha256": "b6f6de600e58c18fd9543047f1134224a460fec7f97c17077d762d74ebb88eb0"
+    },
+    {
+      "path": "walk-audio.webm",
+      "bytes": 104624,
+      "sha256": "5e75e622cf3fa7523a7dc1b143c86063ada4fd7b4d5ebe41561702e01bf89534"
+    },
+    {
+      "path": "wind-mute-final.json",
+      "bytes": 94762,
+      "sha256": "01a5f8e3d4805e1add43ff50c73e58c6deb1d67daed63775df9d4694222fa209"
+    },
+    {
+      "path": "wind-mute-final.webm",
+      "bytes": 28310,
+      "sha256": "30033cf8367e11316ae611fa053f436ac40dea1dc47068229772149c5a2718e8"
+    }
+  ]
+}

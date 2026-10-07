@@ -40,14 +40,18 @@ export class ActivityWorld{
     if(f.phase==='reeling'){const close=new THREE.Vector3(.13,-.55,-1.4).applyMatrix4(camera.matrixWorld);this.bobber.position.lerp(close,f.progress*.88);}
     // Keep the whole catch visible below the line at normal FPS pitch. The
     // former 14cm float covered the fish, which also hung below the screen.
-    if(f.phase==='caught')this.bobber.position.set(.05,-.18,-1.25).applyMatrix4(camera.matrixWorld);
+    if(f.phase==='caught'){
+      // Bring a boat catch inside the helm's sight line; the shore distance
+      // puts the fish behind the dashboard when viewed from the seated eye.
+      this.bobber.position.set(s.mode==='boat'?.32:.05,s.mode==='boat'?-.07:-.18,s.mode==='boat'?-.68:-1.25).applyMatrix4(camera.matrixWorld);
+    }
     const attr=this.line.geometry.getAttribute('position') as THREE.BufferAttribute;
     for(let i=0;i<=32;i++){const t=i/32,point=this.poleTip.clone().lerp(this.bobber.position,t);point.y-=Math.sin(t*Math.PI)*(f.phase==='reeling'?.08:.35);attr.setXYZ(i,point.x,point.y,point.z);}attr.needsUpdate=true;
   }
   this.fish.visible=model.tool==='rod'&&f.phase==='caught'&&!!f.catch;
   if(this.fish.visible&&f.catch){
     this.catchDisplay.set(f.catch.species,f.catch.lengthCm/100,time);
-    this.fish.position.set(.05,-.205,-1.25).applyMatrix4(camera.matrixWorld);
+    this.fish.position.copy(this.bobber.position).add(new THREE.Vector3(0,-.025,0).applyQuaternion(camera.quaternion));
     this.fish.quaternion.copy(camera.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(.10,.25,Math.PI/2,'YXZ')));
   }
   if(model.tool==='board'){

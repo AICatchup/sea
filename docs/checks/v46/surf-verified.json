@@ -1,0 +1,6909 @@
+{
+  "final": {
+    "activities": {
+      "bestFish": 0,
+      "bestRide": 23.588714457522453,
+      "catches": 0,
+      "fishing": {
+        "canCast": false,
+        "catch": null,
+        "cooldown": 0,
+        "floatPosition": null,
+        "hint": "水面を正面にして止まる",
+        "lineEndpoint": null,
+        "message": "水面に向かって竿を投げられます。",
+        "phase": "idle",
+        "progress": 0,
+        "reeling": false,
+        "tension": 0
+      },
+      "surf": {
+        "balance": 1,
+        "bestDistance": 23.588714457522453,
+        "bestTime": 10.010899999999983,
+        "catchWindow": 0,
+        "eyeBlend": 1.4988425273449982e-34,
+        "movingWave": 0,
+        "phase": "carried",
+        "previousPlayerX": 5930.037499239704,
+        "previousPlayerZ": -4510,
+        "previousWaterHeight": 0.33132067057909936,
+        "rideDistance": 23.588714457522453,
+        "rideTime": 10.010899999999983,
+        "speed": 0,
+        "wipeoutTime": 0,
+        "yaw": -1.5707963267948966
+      },
+      "tool": "board"
+    },
+    "adventure": {
+      "avatarAction": "walk",
+      "boarding": 0,
+      "boat": [
+        -118.5950068345507,
+        -0.7599904624805518,
+        -90.9578943776148
+      ],
+      "boatYaw": -0.6,
+      "depth": 0,
+      "grounded": true,
+      "interaction": "道具をしまう",
+      "message": "足が浜に着きました。歩いて海岸を探検できます。",
+      "mode": "walk",
+      "oxygen": 1,
+      "placed": 0,
+      "remaining": 0,
+      "speed": 1.070599999999948,
+      "stamina": 1,
+      "voyage": null
+    },
+    "camera": {
+      "height": 2.033828537940308,
+      "pitch": -0.65,
+      "x": 5930.0191919797035,
+      "yaw": -1.5707963267948966,
+      "z": -4510
+    },
+    "ground": 0.3938285379403084
+  },
+  "images": [
+    "shore",
+    "standing",
+    "wipeout"
+  ],
+  "samples": [
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 0,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 0,
+          "bestTime": 0,
+          "catchWindow": 0,
+          "eyeBlend": 0,
+          "movingWave": 0.5245999999999913,
+          "phase": "paddling",
+          "previousPlayerX": 5970,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.28467231250476877,
+          "rideDistance": 0,
+          "rideTime": 0,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.6990002805661393,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.0630723994962905,
+        "pitch": -0.65,
+        "x": 5970,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.457760600828576,
+      "time": 76.60326666666772,
+      "wall": 0.20000001788139343
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 0,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 0,
+          "bestTime": 0,
+          "catchWindow": 0,
+          "eyeBlend": 0,
+          "movingWave": 0.5258999999999943,
+          "phase": "paddling",
+          "previousPlayerX": 5969.958913450176,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.09978293470086703,
+          "rideDistance": 0,
+          "rideTime": 0,
+          "speed": 0.4038408314148052,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.6328366103713947,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.4038408314148052,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.24275208016966948,
+        "pitch": -0.65,
+        "x": 5969.951846235626,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.455169285682655,
+      "time": 76.81606666666772,
+      "wall": 214.10000002384183
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 0,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 0,
+          "bestTime": 0,
+          "catchWindow": 0,
+          "eyeBlend": 0,
+          "movingWave": 0.5249000000000087,
+          "phase": "paddling",
+          "previousPlayerX": 5969.840186263766,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.08588433711437621,
+          "rideDistance": 0,
+          "rideTime": 0,
+          "speed": 0.7268196002923156,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.4973017311089258,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.7268196002923156,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.42935536773074895,
+        "pitch": -0.65,
+        "x": 5969.82710351096,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.4484527940052336,
+      "time": 77.0293666666677,
+      "wall": 426.90000000596046
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 0,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 0,
+          "bestTime": 0,
+          "catchWindow": 0.5423999999999943,
+          "eyeBlend": 0,
+          "movingWave": 0.5423999999999943,
+          "phase": "paddling",
+          "previousPlayerX": 5969.674142376543,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.24332702217551583,
+          "rideDistance": 0,
+          "rideTime": 0,
+          "speed": 0.966872005259819,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.3158376274383054,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.966872005259819,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.5851788368924429,
+        "pitch": -0.65,
+        "x": 5969.6572221164515,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.4392967185226873,
+      "time": 77.2264666666677,
+      "wall": 631.8000000119209
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 0.501899779737218,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 0.501899779737218,
+          "bestTime": 0.19689999999999416,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.8209338520885068,
+          "movingWave": 0.65,
+          "phase": "riding",
+          "previousPlayerX": 5969.199629416797,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.32877667808502387,
+          "rideDistance": 0.501899779737218,
+          "rideTime": 0.19689999999999416,
+          "speed": 2.475255870584345,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.08131897269586127,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.475255870584345,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3464077080573351,
+        "pitch": -0.65,
+        "x": 5969.155322336713,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.4098484578752797,
+      "time": 77.44146666666771,
+      "wall": 837
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 1.0168547951438285,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 1.0168547951438285,
+          "bestTime": 0.3935999999999914,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9628800233460912,
+          "movingWave": 0.65,
+          "phase": "riding",
+          "previousPlayerX": 5968.68879644126,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.39914376924000494,
+          "rideDistance": 1.0168547951438285,
+          "rideTime": 0.3935999999999914,
+          "speed": 2.6905066641237663,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.13448843968717286,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.6905066641237663,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.7683556993914904,
+        "pitch": -0.65,
+        "x": 5968.640367321305,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.3780606719068405,
+      "time": 77.6381666666677,
+      "wall": 1039.5
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 1.5574639630479687,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 1.5574639630479687,
+          "bestTime": 0.5885000000000001,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.992193511249294,
+          "movingWave": 0.65,
+          "phase": "riding",
+          "previousPlayerX": 5968.148473750498,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.4323669153341323,
+          "rideDistance": 1.5574639630479687,
+          "rideTime": 0.5885000000000001,
+          "speed": 2.8159304680600177,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.3225685625836192,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.8159304680600177,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.921557174307141,
+        "pitch": -0.65,
+        "x": 5968.0997581534,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.344689274390983,
+      "time": 77.83306666666772,
+      "wall": 1240.5
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 2.1636252201676096,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 2.1636252201676096,
+          "bestTime": 0.8000999999999914,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9985635780292144,
+          "movingWave": 0.65,
+          "phase": "riding",
+          "previousPlayerX": 5967.545077327251,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.4513829667820204,
+          "rideDistance": 2.1636252201676096,
+          "rideTime": 0.8000999999999914,
+          "speed": 2.8760017301566783,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.4716659923998426,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.8760017301566783,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.9793577668873623,
+        "pitch": -0.65,
+        "x": 5967.493596896282,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.307258226987408,
+      "time": 78.04466666666772,
+      "wall": 1442.9000000059605
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 2.7772993756838,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 2.7772993756838,
+          "bestTime": 1.013399999999994,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.999739263437644,
+          "movingWave": 0.5611000000000059,
+          "phase": "riding",
+          "previousPlayerX": 5966.931056087421,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.4627006989569638,
+          "rideDistance": 2.7772993756838,
+          "rideTime": 1.013399999999994,
+          "speed": 2.856611544895473,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.5533824010640721,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.856611544895473,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.002532494679008,
+        "pitch": -0.65,
+        "x": 5966.879922740767,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.264524004834993,
+      "time": 78.25796666666773,
+      "wall": 1656.600000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 3.614460948612849,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 3.614460948612849,
+          "bestTime": 1.3106999999999964,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.99997583003956,
+          "movingWave": 0.4751999999999971,
+          "phase": "riding",
+          "previousPlayerX": 5966.090760467205,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.4575530152214848,
+          "rideDistance": 3.614460948612849,
+          "rideTime": 1.3106999999999964,
+          "speed": 2.7585804233515594,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.5668101741596873,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.7585804233515594,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.00861448165677,
+        "pitch": -0.65,
+        "x": 5966.042761167839,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.2061769560952063,
+      "time": 78.55526666666773,
+      "wall": 1963.2000000178816
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 4.183376051017504,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 4.183376051017504,
+          "bestTime": 1.5223999999999938,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.999995556196926,
+          "movingWave": 0.26349999999999985,
+          "phase": "riding",
+          "previousPlayerX": 5965.5204742619535,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.4556552695515886,
+          "rideDistance": 4.183376051017504,
+          "rideTime": 1.5223999999999938,
+          "speed": 2.6195616022023276,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.5014343108973146,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.6195616022023276,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.005881962618673,
+        "pitch": -0.65,
+        "x": 5965.473846065434,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.166262059609141,
+      "time": 78.76696666666773,
+      "wall": 2164.2000000178814
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 4.6794331863207175,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 4.6794331863207175,
+          "bestTime": 1.7177999999999878,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999990691800756,
+          "movingWave": 0.06810000000000571,
+          "phase": "riding",
+          "previousPlayerX": 5965.022212160137,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.4413512827475801,
+          "rideDistance": 4.6794331863207175,
+          "rideTime": 1.7177999999999878,
+          "speed": 2.467957222549435,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.36848815693778575,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.467957222549435,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.993901619395802,
+        "pitch": -0.65,
+        "x": 5964.977788930131,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.128584889386402,
+      "time": 78.96236666666772,
+      "wall": 2365.600000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 5.189140849594318,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 5.189140849594318,
+          "bestTime": 1.932799999999988,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999998333216618,
+          "movingWave": 0,
+          "phase": "riding",
+          "previousPlayerX": 5964.509294688798,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.4204299846853684,
+          "rideDistance": 5.189140849594318,
+          "rideTime": 1.932799999999988,
+          "speed": 2.2896345522150257,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.1859898248732886,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.2896345522150257,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.973760389435536,
+        "pitch": -0.65,
+        "x": 5964.4680812668585,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.0898709166880116,
+      "time": 79.17736666666772,
+      "wall": 2572.2000000178814
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 5.628515418795097,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 5.628515418795097,
+          "bestTime": 2.128299999999987,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999651146896,
+          "movingWave": 0.5244000000000087,
+          "phase": "riding",
+          "previousPlayerX": 5964.06889352656,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.3914122813015733,
+          "rideDistance": 5.628515418795097,
+          "rideTime": 2.128299999999987,
+          "speed": 2.2326016056927505,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.007670812489513795,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.2326016056927505,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.947792987130075,
+        "pitch": -0.65,
+        "x": 5964.028706697657,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.056498973705619,
+      "time": 79.37286666666773,
+      "wall": 2774.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 6.059082835769618,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 6.059082835769618,
+          "bestTime": 2.322299999999986,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999926104574,
+          "movingWave": 0.5437000000000116,
+          "phase": "riding",
+          "previousPlayerX": 5963.63807668866,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.35470894949572424,
+          "rideDistance": 6.059082835769618,
+          "rideTime": 2.322299999999986,
+          "speed": 2.218744887632732,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.15588486968402882,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.218744887632732,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.9160313909164,
+        "pitch": -0.65,
+        "x": 5963.5981392806825,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -2.0238083849754673,
+      "time": 79.56686666666774,
+      "wall": 2976.2000000178814
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 6.53183166310477,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 6.53183166310477,
+          "bestTime": 2.5356999999999936,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999986597372,
+          "movingWave": 0.5440999999999914,
+          "phase": "riding",
+          "previousPlayerX": 5963.1636266996,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.3144553463033794,
+          "rideDistance": 6.53183166310477,
+          "rideTime": 2.5356999999999936,
+          "speed": 2.22303757286575,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.3105064264841193,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.22303757286575,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.8774817600738032,
+        "pitch": -0.65,
+        "x": 5963.125390453347,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.9863860005928011,
+      "time": 79.78026666666776,
+      "wall": 3177.9000000059605
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 6.969183806436065,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 6.969183806436065,
+          "bestTime": 2.7318999999999893,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999997210532,
+          "movingWave": 0.5613999999999942,
+          "phase": "riding",
+          "previousPlayerX": 5962.7284489751755,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.2734383539349021,
+          "rideDistance": 6.969183806436065,
+          "rideTime": 2.7318999999999893,
+          "speed": 2.2450369533102323,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.42885455368222986,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.2450369533102323,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.840157319763858,
+        "pitch": -0.65,
+        "x": 5962.688038310016,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.951582768384264,
+      "time": 79.97646666666775,
+      "wall": 3381.800000011921
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 7.41351497771782,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 7.41351497771782,
+          "bestTime": 2.9288999999999885,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999423136,
+          "movingWave": 0.5786000000000059,
+          "phase": "riding",
+          "previousPlayerX": 5962.284601388006,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.22953644848175497,
+          "rideDistance": 7.41351497771782,
+          "rideTime": 2.9288999999999885,
+          "speed": 2.271902737275754,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5221154943461672,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.271902737275754,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.8023342392733608,
+        "pitch": -0.65,
+        "x": 5962.243707138735,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.9162241650999252,
+      "time": 80.17346666666775,
+      "wall": 3582.800000011921
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 7.904865758823864,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 7.904865758823864,
+          "bestTime": 3.143899999999987,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999896704,
+          "movingWave": 0.5781000000000059,
+          "phase": "riding",
+          "previousPlayerX": 5961.793830682124,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.18986667700066143,
+          "rideDistance": 7.904865758823864,
+          "rideTime": 3.143899999999987,
+          "speed": 2.3041291386393317,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5973501672206017,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.3041291386393317,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.7617880194771405,
+        "pitch": -0.65,
+        "x": 5961.752356357629,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.877134475165715,
+      "time": 80.38846666666775,
+      "wall": 3784.900000005961
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 8.359492164333169,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 8.359492164333169,
+          "bestTime": 3.3400999999999836,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.99999999999785,
+          "movingWave": 0.5969000000000088,
+          "phase": "riding",
+          "previousPlayerX": 5961.339735898823,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.14961896573258343,
+          "rideDistance": 8.359492164333169,
+          "rideTime": 3.3400999999999836,
+          "speed": 2.3336637057344647,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.6345856348438476,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.3336637057344647,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.726768650243474,
+        "pitch": -0.65,
+        "x": 5961.29772995212,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.8406688283539971,
+      "time": 80.58466666666774,
+      "wall": 3988.900000005961
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 8.862562899727182,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 8.862562899727182,
+          "bestTime": 3.5542999999999796,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999996124,
+          "movingWave": 0.596800000000003,
+          "phase": "riding",
+          "previousPlayerX": 5960.837001172696,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.11484727752919682,
+          "rideDistance": 8.862562899727182,
+          "rideTime": 3.5542999999999796,
+          "speed": 2.36547240051286,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.6338728582233762,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.36547240051286,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.690111491810423,
+        "pitch": -0.65,
+        "x": 5960.794659216726,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.800092114230093,
+      "time": 80.79886666666773,
+      "wall": 4193.9000000059605
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 9.373106525080775,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 9.373106525080775,
+          "bestTime": 3.768899999999984,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999304,
+          "movingWave": 0.5963999999999943,
+          "phase": "riding",
+          "previousPlayerX": 5960.326010976364,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.08184824163191555,
+          "rideDistance": 9.373106525080775,
+          "rideTime": 3.768899999999984,
+          "speed": 2.3940219994974554,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5909238610854719,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.3940219994974554,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.6558500421966402,
+        "pitch": -0.65,
+        "x": 5960.284115591373,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.758912651231631,
+      "time": 81.01346666666774,
+      "wall": 4408
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 9.843813853993357,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 9.843813853993357,
+          "bestTime": 3.964699999999986,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999856,
+          "movingWave": 0.6156999999999971,
+          "phase": "riding",
+          "previousPlayerX": 5959.854953236194,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.049651699364635565,
+          "rideDistance": 9.843813853993357,
+          "rideTime": 3.964699999999986,
+          "speed": 2.4154054495865265,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5090875841174302,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.4154054495865265,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.6283692243332129,
+        "pitch": -0.65,
+        "x": 5959.813408262461,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.720955368157374,
+      "time": 81.20926666666774,
+      "wall": 4611.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 10.350642256222043,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 10.350642256222043,
+          "bestTime": 4.173499999999988,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999972,
+          "movingWave": 0.6145,
+          "phase": "riding",
+          "previousPlayerX": 5959.349249447215,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.02267684238037982,
+          "rideDistance": 10.350642256222043,
+          "rideTime": 4.173499999999988,
+          "speed": 2.43826211325278,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.3774555986738104,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.43826211325278,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.5990804561844885,
+        "pitch": -0.65,
+        "x": 5959.306579860233,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.6802795844737624,
+      "time": 81.41806666666776,
+      "wall": 4812.600000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 10.830675236623255,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 10.830675236623255,
+          "bestTime": 4.369699999999984,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999994,
+          "movingWave": 0.6323999999999942,
+          "phase": "riding",
+          "previousPlayerX": 5958.86972289021,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.004847572255743232,
+          "rideDistance": 10.830675236623255,
+          "rideTime": 4.369699999999984,
+          "speed": 2.4531824078637365,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.25428940224109664,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.4531824078637365,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.5765831197103124,
+        "pitch": -0.65,
+        "x": 5958.826546879832,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.641879372422003,
+      "time": 81.61426666666775,
+      "wall": 5015.5
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 11.31721787549235,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 11.31721787549235,
+          "bestTime": 4.567299999999974,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.65,
+          "phase": "riding",
+          "previousPlayerX": 5958.384373001205,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.030212863355458808,
+          "rideDistance": 11.31721787549235,
+          "rideTime": 4.567299999999974,
+          "speed": 2.4649311245728245,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.13318376039826132,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.4649311245728245,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.5566920126791135,
+        "pitch": -0.65,
+        "x": 5958.340004240963,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.6029584205966316,
+      "time": 81.81186666666774,
+      "wall": 5218.300000011921
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 11.845452690350726,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 11.845452690350726,
+          "bestTime": 4.780699999999981,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.4365999999999912,
+          "phase": "riding",
+          "previousPlayerX": 5957.855025423755,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.004268491359297599,
+          "rideDistance": 11.845452690350726,
+          "rideTime": 4.780699999999981,
+          "speed": 2.4717712943458277,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0013644038924838422,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.4717712943458277,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.54048742437682,
+        "pitch": -0.65,
+        "x": 5957.811769426105,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.5607113219991624,
+      "time": 82.02526666666776,
+      "wall": 5426.9000000059605
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 12.334856893221025,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 12.334856893221025,
+          "bestTime": 4.977699999999979,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.471,
+          "phase": "riding",
+          "previousPlayerX": 5957.366089509673,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.027941398289066333,
+          "rideDistance": 12.334856893221025,
+          "rideTime": 4.977699999999979,
+          "speed": 2.484334456770228,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.14101099679994697,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.484334456770228,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.5189469293345252,
+        "pitch": -0.65,
+        "x": 5957.322365223234,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.522000257739569,
+      "time": 82.22226666666776,
+      "wall": 5631.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 12.873507670283615,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 12.873507670283615,
+          "bestTime": 5.193499999999982,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.4521999999999971,
+          "phase": "riding",
+          "previousPlayerX": 5956.828097466725,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.04718368316708021,
+          "rideDistance": 12.873507670283615,
+          "rideTime": 5.193499999999982,
+          "speed": 2.4934281210817444,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.282822417462622,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.4934281210817444,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4982543960835906,
+        "pitch": -0.65,
+        "x": 5956.78371444617,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.4796740696236743,
+      "time": 82.43806666666778,
+      "wall": 5835.4000000059605
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 13.408652574998854,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 13.408652574998854,
+          "bestTime": 5.407099999999972,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.4545,
+          "phase": "riding",
+          "previousPlayerX": 5956.293626220522,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.06456945280441004,
+          "rideDistance": 13.408652574998854,
+          "rideTime": 5.407099999999972,
+          "speed": 2.503148837051763,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.395337264556313,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.503148837051763,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4804781101603632,
+        "pitch": -0.65,
+        "x": 5956.248569541455,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.4376233665137692,
+      "time": 82.65166666666778,
+      "wall": 6046.4000000059605
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 13.949402536657326,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 13.949402536657326,
+          "bestTime": 5.622099999999971,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.45300000000000007,
+          "phase": "riding",
+          "previousPlayerX": 5955.753049527991,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.07953487505862933,
+          "rideDistance": 13.949402536657326,
+          "rideTime": 5.622099999999971,
+          "speed": 2.5127748996511734,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.47674199514516286,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.5127748996511734,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4649781418441037,
+        "pitch": -0.65,
+        "x": 5955.707819579797,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.3951435520628337,
+      "time": 82.86666666666778,
+      "wall": 6261.5
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 14.444715844926264,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 14.444715844926264,
+          "bestTime": 5.818199999999975,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.4718999999999942,
+          "phase": "riding",
+          "previousPlayerX": 5955.257978847855,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.0945161326675045,
+          "rideDistance": 14.444715844926264,
+          "rideTime": 5.818199999999975,
+          "speed": 2.526254240405953,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.5045216315125536,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.526254240405953,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4507257365425026,
+        "pitch": -0.65,
+        "x": 5955.212506271528,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.3567711769001702,
+      "time": 83.06276666666778,
+      "wall": 6467.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 14.944516386325704,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 14.944516386325704,
+          "bestTime": 6.015199999999974,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.48909999999999126,
+          "phase": "riding",
+          "previousPlayerX": 5954.75870434608,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.10663847734643032,
+          "rideDistance": 14.944516386325704,
+          "rideTime": 6.015199999999974,
+          "speed": 2.5413599974191996,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.49878824192661614,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.5413599974191996,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.439184797373053,
+        "pitch": -0.65,
+        "x": 5954.712705730127,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.318116133363349,
+      "time": 83.25976666666779,
+      "wall": 6668
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 15.491542468252089,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 15.491542468252089,
+          "bestTime": 6.229599999999967,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.48910000000000575,
+          "phase": "riding",
+          "previousPlayerX": 5954.211728592265,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.114135883267828,
+          "rideDistance": 15.491542468252089,
+          "rideTime": 6.229599999999967,
+          "speed": 2.5582746702941823,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.4595635761180013,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.5582746702941823,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4309549112479694,
+        "pitch": -0.65,
+        "x": 5954.165679648199,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.2758086221441434,
+      "time": 83.47416666666778,
+      "wall": 6868.700000017881
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 15.997659750443756,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 15.997659750443756,
+          "bestTime": 6.426499999999974,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5066999999999972,
+          "phase": "riding",
+          "previousPlayerX": 5953.706018195963,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.1200577159091656,
+          "rideDistance": 15.997659750443756,
+          "rideTime": 6.426499999999974,
+          "speed": 2.5808794419947105,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.37923261889574816,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.5808794419947105,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4252326038819407,
+        "pitch": -0.65,
+        "x": 5953.659562366007,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.2367050336701615,
+      "time": 83.6710666666678,
+      "wall": 7073.4000000059605
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 16.508037692970447,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 16.508037692970447,
+          "bestTime": 6.623299999999961,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5248000000000029,
+          "phase": "riding",
+          "previousPlayerX": 5953.19612785464,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.12291162914065844,
+          "rideDistance": 16.508037692970447,
+          "rideTime": 6.623299999999961,
+          "speed": 2.607968397720732,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.2612833647300249,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.607968397720732,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.422685356578642,
+        "pitch": -0.65,
+        "x": 5953.149184423481,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.1978707781200475,
+      "time": 83.86786666666778,
+      "wall": 7276.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 17.071921136176762,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 17.071921136176762,
+          "bestTime": 6.838299999999959,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.524600000000006,
+          "phase": "riding",
+          "previousPlayerX": 5952.632832132414,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.11978764647866422,
+          "rideDistance": 17.071921136176762,
+          "rideTime": 6.838299999999959,
+          "speed": 2.6406195632915637,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.09893613761831796,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.6406195632915637,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.424444766881202,
+        "pitch": -0.65,
+        "x": 5952.585300980274,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.154965331176998,
+      "time": 84.08286666666778,
+      "wall": 7480.40000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 17.581632285318815,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 17.581632285318815,
+          "bestTime": 7.030299999999957,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5455000000000001,
+          "phase": "riding",
+          "previousPlayerX": 5952.1237026177,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.11772495383353926,
+          "rideDistance": 17.581632285318815,
+          "rideTime": 7.030299999999957,
+          "speed": 2.6729325870896603,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.06561756309917297,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.6729325870896603,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4274815110525805,
+        "pitch": -0.65,
+        "x": 5952.075589831132,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.1161827699866305,
+      "time": 84.27486666666776,
+      "wall": 7682.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 18.1568072911547,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 18.1568072911547,
+          "bestTime": 7.244399999999961,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5433999999999942,
+          "phase": "riding",
+          "previousPlayerX": 5951.549068144733,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.11265050110982998,
+          "rideDistance": 18.1568072911547,
+          "rideTime": 7.244399999999961,
+          "speed": 2.7029621909403896,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.23473578231828116,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.7029621909403896,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4323251353166635,
+        "pitch": -0.65,
+        "x": 5951.500414825296,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.0725897137270544,
+      "time": 84.48896666666776,
+      "wall": 7883.90000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 18.678504871680428,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 18.678504871680428,
+          "bestTime": 7.436899999999961,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.563300000000003,
+          "phase": "riding",
+          "previousPlayerX": 5951.02580467903,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.11292453403949984,
+          "rideDistance": 18.678504871680428,
+          "rideTime": 7.436899999999961,
+          "speed": 2.721817009323519,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.35500790187284803,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.721817009323519,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.435003895720823,
+        "pitch": -0.65,
+        "x": 5950.9787172447695,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -1.0333020155285884,
+      "time": 84.68146666666775,
+      "wall": 8084.800000011921
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 19.25307675511765,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 19.25307675511765,
+          "bestTime": 7.647699999999965,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5623999999999942,
+          "phase": "riding",
+          "previousPlayerX": 5950.451718445467,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.11209174014739988,
+          "rideDistance": 19.25307675511765,
+          "rideTime": 7.647699999999965,
+          "speed": 2.7340852952153907,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.4404529455131908,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.7340852952153907,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4365607930460027,
+        "pitch": -0.65,
+        "x": 5950.40414536133,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.9900324900553488,
+      "time": 84.89226666666774,
+      "wall": 8287
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 19.823071630838665,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 19.823071630838665,
+          "bestTime": 7.856199999999965,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5626999999999971,
+          "phase": "riding",
+          "previousPlayerX": 5949.881796871409,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.1134372257408427,
+          "rideDistance": 19.823071630838665,
+          "rideTime": 7.856199999999965,
+          "speed": 2.738298034571749,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.4700365818504658,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.738298034571749,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4361992727767556,
+        "pitch": -0.65,
+        "x": 5949.834150485608,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.9471114822657344,
+      "time": 85.10076666666774,
+      "wall": 8495.5
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 20.347693822797098,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 20.347693822797098,
+          "bestTime": 8.048099999999957,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5791999999999972,
+          "phase": "riding",
+          "previousPlayerX": 5949.358456137971,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.1175650797175198,
+          "rideDistance": 20.347693822797098,
+          "rideTime": 8.048099999999957,
+          "speed": 2.733399124100663,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.4549222247709466,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.733399124100663,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4346173406792109,
+        "pitch": -0.65,
+        "x": 5949.30952829365,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.907721759830384,
+      "time": 85.29266666666773,
+      "wall": 8699.800000011921
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 20.91568350374813,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 20.91568350374813,
+          "bestTime": 8.25859999999996,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5801000000000058,
+          "phase": "riding",
+          "previousPlayerX": 5948.788094786572,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.11819499333947787,
+          "rideDistance": 20.91568350374813,
+          "rideTime": 8.25859999999996,
+          "speed": 2.6452371517785083,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.4285280303673685,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.6452371517785083,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4336883499799742,
+        "pitch": -0.65,
+        "x": 5948.741538612701,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.8651033776301114,
+      "time": 85.50316666666771,
+      "wall": 8901.600000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 21.44874291042182,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 21.44874291042182,
+          "bestTime": 8.468499999999969,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5807999999999885,
+          "phase": "riding",
+          "previousPlayerX": 5948.250098831112,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.11952639614712936,
+          "rideDistance": 21.44874291042182,
+          "rideTime": 8.468499999999969,
+          "speed": 2.433896203829931,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.4259157454815331,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.433896203829931,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4326822671127282,
+        "pitch": -0.65,
+        "x": 5948.208479206027,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.8251059440655522,
+      "time": 85.71306666666773,
+      "wall": 9109.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 21.89141198866846,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 21.89141198866846,
+          "bestTime": 8.661499999999972,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5972999999999884,
+          "phase": "riding",
+          "previousPlayerX": 5947.804880772992,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.12390567665166805,
+          "rideDistance": 21.89141198866846,
+          "rideTime": 8.661499999999972,
+          "speed": 2.170591400650396,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.45688414242585673,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 2.170591400650396,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.431114801042853,
+        "pitch": -0.65,
+        "x": 5947.76581012778,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.7918928951471512,
+      "time": 85.90606666666771,
+      "wall": 9313.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 22.31091874279772,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 22.31091874279772,
+          "bestTime": 8.871299999999962,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.5980000000000001,
+          "phase": "riding",
+          "previousPlayerX": 5947.378743467477,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.12871408814078156,
+          "rideDistance": 22.31091874279772,
+          "rideTime": 8.871299999999962,
+          "speed": 1.853719647140541,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5092011712159118,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.853719647140541,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4274755310523763,
+        "pitch": -0.65,
+        "x": 5947.346303373652,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.7604315753737576,
+      "time": 86.1158666666677,
+      "wall": 9515.80000001192
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 22.642477931632815,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 22.642477931632815,
+          "bestTime": 9.067299999999964,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.6139000000000088,
+          "phase": "riding",
+          "previousPlayerX": 5947.042994622446,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.13858380946468357,
+          "rideDistance": 22.642477931632815,
+          "rideTime": 9.067299999999964,
+          "speed": 1.5607976590766532,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.539770060360357,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5607976590766532,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4219189675536923,
+        "pitch": -0.65,
+        "x": 5947.014744184817,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.7355659982161054,
+      "time": 86.31186666666771,
+      "wall": 9718.600000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 22.94170268884872,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 22.94170268884872,
+          "bestTime": 9.280899999999974,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.6143999999999942,
+          "phase": "riding",
+          "previousPlayerX": 5946.737936095358,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.14881131591856975,
+          "rideDistance": 22.94170268884872,
+          "rideTime": 9.280899999999974,
+          "speed": 1.2736743044600995,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5401561484199006,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.2736743044600995,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4126271961594186,
+        "pitch": -0.65,
+        "x": 5946.7155194276,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.7131253706039107,
+      "time": 86.52546666666771,
+      "wall": 9920.30000001192
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.165418402833215,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.165418402833215,
+          "bestTime": 9.475599999999972,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.6324000000000087,
+          "phase": "riding",
+          "previousPlayerX": 5946.510303622403,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.15978670720441485,
+          "rideDistance": 23.165418402833215,
+          "rideTime": 9.475599999999972,
+          "speed": 1.0511311810598112,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5125920493258487,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.0511311810598112,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4040017369788185,
+        "pitch": -0.65,
+        "x": 5946.491803713616,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.6963476110521276,
+      "time": 86.72016666666771,
+      "wall": 10124.30000001192
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.366378010058835,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.366378010058835,
+          "bestTime": 9.689399999999978,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.632,
+          "phase": "riding",
+          "previousPlayerX": 5946.306177486439,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.17147372033150296,
+          "rideDistance": 23.366378010058835,
+          "rideTime": 9.689399999999978,
+          "speed": 0.8518544471564459,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.4503102973204719,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.8518544471564459,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.392615416765903,
+        "pitch": -0.65,
+        "x": 5946.29084410639,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.681276466027911,
+      "time": 86.93396666666771,
+      "wall": 10331
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.530501338309985,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.530501338309985,
+          "bestTime": 9.904399999999985,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.9999999999999996,
+          "movingWave": 0.6318999999999942,
+          "phase": "riding",
+          "previousPlayerX": 5946.1392327815565,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.1814043964535495,
+          "rideDistance": 23.530501338309985,
+          "rideTime": 9.904399999999985,
+          "speed": 0.6912709070665095,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.34292804657594556,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.6912709070665095,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3806955010221789,
+        "pitch": -0.65,
+        "x": 5946.126720778138,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.6689679564699527,
+      "time": 87.14896666666772,
+      "wall": 10545.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.371131066421072,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5945.988177461989,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.18482380689339897,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0.12389999999999418,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.1887939815250837,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.8819571409074063,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.2889636728035596,
+        "pitch": -0.65,
+        "x": 5945.972390429167,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.657393949514592,
+      "time": 87.36146666666771,
+      "wall": 10758.600000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.03811299419533094,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5945.689904297056,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.1827415722220328,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0.40839999999999427,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.03434525005223964,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.614694963700023,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.005959340860227,
+        "pitch": -0.65,
+        "x": 5945.661001257206,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.6340406591397728,
+      "time": 87.6459666666677,
+      "wall": 11040.600000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.007913382225767249,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5945.371820879453,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.16065436978579672,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0.6048999999999943,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.17554430095065504,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6156129303875777,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.0297683617636992,
+        "pitch": -0.65,
+        "x": 5945.34354765317,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.6102316382363008,
+      "time": 87.8424666666677,
+      "wall": 11242.600000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.0016682168124658309,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5945.058219505277,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.12385011529398723,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0.7995000000000001,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.3130509599244709,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6087197521188596,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.0533397451158557,
+        "pitch": -0.65,
+        "x": 5945.029262549739,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.5866602548841442,
+      "time": 88.03706666666771,
+      "wall": 11443.40000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.00030769546934666687,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5944.717196160708,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.1026581444035887,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 1.0107999999999886,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.4470698491450345,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.610995025465544,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.078907485759977,
+        "pitch": -0.65,
+        "x": 5944.688359349752,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.5610925142400229,
+      "time": 88.2483666666677,
+      "wall": 11647.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.00006393778863066759,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5944.399551501821,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.07611113924903021,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 1.2071999999999974,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.5419734536614826,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6095817141719375,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.1027168665439633,
+        "pitch": -0.65,
+        "x": 5944.37090094731,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.5372831334560365,
+      "time": 88.44476666666772,
+      "wall": 11850
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.000011522602693031156,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5944.053712379027,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": -0.028278939137673938,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 1.421399999999995,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.614035516847032,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5982207265344632,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.1286516211449076,
+        "pitch": -0.65,
+        "x": 5944.025104228022,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.5113483788550924,
+      "time": 88.65896666666771,
+      "wall": 12053.90000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 0.0000020965865250441144,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5943.710837706649,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.004511656877001773,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 1.6343999999999947,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.6361627003869849,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5945494944053544,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.154314457106893,
+        "pitch": -0.65,
+        "x": 5943.682933090497,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.4856855428931069,
+      "time": 88.8719666666677,
+      "wall": 12267
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 4.4803252801094635e-7,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5943.402004204159,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.02153894614209328,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 1.827299999999989,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.6095459556382823,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5977330771060696,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.177541063822323,
+        "pitch": -0.65,
+        "x": 5943.373245008772,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.46245893617767697,
+      "time": 89.0648666666677,
+      "wall": 12471.40000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 8.41049847519929e-8,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5943.063892700977,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.04719481286821564,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 2.0363999999999947,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.5465729172794981,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5975787018933982,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.2027913822292533,
+        "pitch": -0.65,
+        "x": 5943.036574105175,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.43720861777074654,
+      "time": 89.27396666666769,
+      "wall": 12672
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 1.7715958383136905e-8,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5942.749973322937,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.0919813839932857,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 2.2310999999999916,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.46855471080933503,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5865558560284727,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.2263211993761518,
+        "pitch": -0.65,
+        "x": 5942.722843217799,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.413678800623848,
+      "time": 89.46866666666769,
+      "wall": 12872.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 3.3470047350620446e-9,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5942.41631790245,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.10119783321889032,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 2.4393999999999947,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.3356373220358363,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.5947585142351464,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.2513558764535202,
+        "pitch": -0.65,
+        "x": 5942.389047531857,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.3886441235464796,
+      "time": 89.67696666666768,
+      "wall": 13074.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 7.072761020711464e-10,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5942.104440595422,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.06990302630628473,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 2.6336999999999966,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.18878156343240737,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6231350083241578,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.274819588464081,
+        "pitch": -0.65,
+        "x": 5942.076198046277,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.365180411535919,
+      "time": 89.87126666666768,
+      "wall": 13280.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 1.2848614993619315e-10,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5941.760332479787,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.07523720130725285,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 2.846899999999993,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.0037350454546011777,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6326382769054422,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.297824917774356,
+        "pitch": -0.65,
+        "x": 5941.730944990803,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.34217508222564386,
+      "time": 90.08446666666768,
+      "wall": 13482.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 2.3007519929052647e-11,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5941.411576268926,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.09037074946267906,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 3.061899999999991,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.14353854513612768,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.633869674851916,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.315332660385761,
+        "pitch": -0.65,
+        "x": 5941.382166614779,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.3246673396142391,
+      "time": 90.29946666666768,
+      "wall": 13693.90000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 4.7770400386925065e-12,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5941.0933259900185,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.11708428513223612,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 3.25839999999999,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.2569476795735621,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6282975852816528,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3313029394146083,
+        "pitch": -0.65,
+        "x": 5941.064016633483,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.30869706058539137,
+      "time": 90.49596666666768,
+      "wall": 13900.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 8.554061581476374e-13,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5940.743689038955,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.12149026669577076,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 3.4733999999999883,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.35853198498368183,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6351184847919875,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.348859943235773,
+        "pitch": -0.65,
+        "x": 5940.714256906229,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.29114005676422694,
+      "time": 90.71096666666767,
+      "wall": 14108.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 1.788909486754268e-13,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5940.422645882949,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.12557796966129398,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 3.668999999999993,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.43385162178220954,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.641359742507824,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.364906938519098,
+        "pitch": -0.65,
+        "x": 5940.3945786313525,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.27509306148090196,
+      "time": 90.90656666666769,
+      "wall": 14309.40000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 3.216170293637871e-14,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5940.071630561895,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.13549206039410255,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 3.883499999999992,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5273258213101099,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6453583705109096,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3825634318460287,
+        "pitch": -0.65,
+        "x": 5940.0428367904115,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.25743656815397126,
+      "time": 91.12106666666767,
+      "wall": 14515.80000001192
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 6.704482918116469e-15,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5939.749247913808,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.14305828466358006,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 4.0794999999999915,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.6340292743232768,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6498411396710135,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3987776888350631,
+        "pitch": -0.65,
+        "x": 5939.720375693864,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.24122231116493675,
+      "time": 91.31706666666769,
+      "wall": 14718.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 1.3842748034764014e-15,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5939.42415477769,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.142987641290212,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 4.276699999999987,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.7418460016938847,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.658375754400867,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4152037764198282,
+        "pitch": -0.65,
+        "x": 5939.394304014111,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.2247962235801718,
+      "time": 91.51426666666768,
+      "wall": 14920.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 2.586127253868415e-16,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5939.074764161658,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.14014206701109214,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 4.486399999999984,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.843622640912979,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6689854253997496,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4327805615647475,
+        "pitch": -0.65,
+        "x": 5939.045390018171,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.2072194384352524,
+      "time": 91.72396666666768,
+      "wall": 15121.30000001192
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 5.373860657778256e-17,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5938.745959106411,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.14108240894878318,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 4.682799999999977,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.9110992513702558,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6770924672160492,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4493346357032073,
+        "pitch": -0.65,
+        "x": 5938.716777697481,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.19066536429679248,
+      "time": 91.92036666666768,
+      "wall": 15322.30000001192
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0.5242999999999886,
+          "eyeBlend": 1.1086539046521936e-17,
+          "movingWave": 0.5253999999999943,
+          "phase": "wipeout",
+          "previousPlayerX": 5938.415474539206,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.14121570361275082,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 4.880099999999979,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.9239430303489206,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.685662190393165,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.466049978725316,
+        "pitch": -0.65,
+        "x": 5938.38496405356,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.17395002127468384,
+      "time": 92.11766666666767,
+      "wall": 15524
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 2.005977902734166e-18,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5938.053222502768,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.13986286079242655,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.8692327184672785,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6957861000195138,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4841548840376568,
+        "pitch": -0.65,
+        "x": 5938.023546246018,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.15584511596234307,
+      "time": 92.33136666666768,
+      "wall": 15726.90000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 4.1483753135818996e-19,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5937.718193353749,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.13582864104859332,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.7567025811713011,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7018033960740866,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4902363808594317,
+        "pitch": -0.65,
+        "x": 5937.688581974657,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.14976361914056832,
+      "time": 92.52836666666768,
+      "wall": 15930.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 8.613251245511487e-20,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5937.383874275569,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.13489180610705964,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5895432489404441,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7023130457238569,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4902817387414595,
+        "pitch": -0.65,
+        "x": 5937.354083797269,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.14971826125854015,
+      "time": 92.72486666666768,
+      "wall": 16133.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 1.542341721527613e-20,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5937.018753035186,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.13564570028484743,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.3625910614983505,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7019475392442949,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4903313636288635,
+        "pitch": -0.65,
+        "x": 5936.988117979479,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.14966863637113642,
+      "time": 92.93986666666768,
+      "wall": 16334.5
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 3.1870220459569047e-21,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5936.683583444594,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.13791843904424028,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.14341102637933312,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7007917931170824,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.49037683279614,
+        "pitch": -0.65,
+        "x": 5936.652799113138,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.14962316720385996,
+      "time": 93.13696666666767,
+      "wall": 16539.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 5.761927452305655e-22,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5936.319674017087,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.14265549229829644,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.10647142896263244,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6983591920246035,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4904254351290618,
+        "pitch": -0.65,
+        "x": 5936.289443223469,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.14957456487093804,
+      "time": 93.35076666666772,
+      "wall": 16746.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 1.0350730934029412e-22,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5935.956069579097,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.14979875365684683,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.3539929260661416,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6946756119182462,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4904675002368988,
+        "pitch": -0.65,
+        "x": 5935.925395950521,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.14953249976310112,
+      "time": 93.5653666666677,
+      "wall": 16960.30000001192
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 2.1405378706181305e-23,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5935.622586054304,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.15459129530233198,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.5527769122850403,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6921269053797146,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4903348381276884,
+        "pitch": -0.65,
+        "x": 5935.5919585573165,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.1496651618723115,
+      "time": 93.7623666666677,
+      "wall": 17163.5
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 3.8606757458907324e-24,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5935.260750775182,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.15699885903325592,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.7222937872768216,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6908029132058702,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4901908871097636,
+        "pitch": -0.65,
+        "x": 5935.230147242452,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.14980911289023635,
+      "time": 93.9764666666677,
+      "wall": 17373.100000023842
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 6.913163341519841e-25,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5934.897519345658,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.16537912648745368,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.8555333972629621,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6863793822649285,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.490046470031846,
+        "pitch": -0.65,
+        "x": 5934.867164516777,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.14995352996815373,
+      "time": 94.19146666666772,
+      "wall": 17588.5
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 1.4182551165257197e-25,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5934.563848891438,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.17383099120104045,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.9324322942528928,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.681924802242883,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.489913814015459,
+        "pitch": -0.65,
+        "x": 5934.533742437478,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.15008618598454082,
+      "time": 94.38946666666772,
+      "wall": 17802.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 2.55592046191696e-26,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5934.204663921111,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.18787509368203625,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.9642067543783696,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6745675217514595,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4897809283352443,
+        "pitch": -0.65,
+        "x": 5934.17452170572,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.15021907166475554,
+      "time": 94.6036666666677,
+      "wall": 18008.40000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 4.6061736929593745e-27,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5933.84596380653,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.2034685806559547,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.92758131425475,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6744468971671178,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.509203398813226,
+        "pitch": -0.65,
+        "x": 5933.816660985829,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.13079660118677386,
+      "time": 94.81786666666773,
+      "wall": 18222.90000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 8.468747338723692e-28,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5933.488345505246,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.20789139631009512,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.8199202082810562,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.6978062079572294,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.5586056097333143,
+        "pitch": -0.65,
+        "x": 5933.45931301909,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.0813943902666857,
+      "time": 95.02956666666772,
+      "wall": 18433.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 1.563274412477938e-28,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5933.128614381162,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.2086611577489335,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.6756164392180646,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.723212664211192,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.6086117516568346,
+        "pitch": -0.65,
+        "x": 5933.097596553206,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": -0.031388248343165344,
+      "time": 95.24076666666772,
+      "wall": 18644.40000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 3.240629810360142e-29,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5932.787315462181,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.20831930768630388,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.4925161607736792,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7478736746811496,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.6558566006713464,
+        "pitch": -0.65,
+        "x": 5932.755853736036,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": 0.01585660067134661,
+      "time": 95.43746666666772,
+      "wall": 18846.40000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 5.8261289382883575e-30,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5932.409742805675,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.208729245235815,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.2645558958778881,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.774746735283162,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.7080810887003366,
+        "pitch": -0.65,
+        "x": 5932.37779736444,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": 0.06808108870033666,
+      "time": 95.65196666666772,
+      "wall": 19049.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 1.213553448130331e-30,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5932.061763320903,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.23823183910471327,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.057557340266120235,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7839897320172302,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.755359292749808,
+        "pitch": -0.65,
+        "x": 5932.0298299047,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": 0.11535929274980826,
+      "time": 95.84806666666776,
+      "wall": 19252.40000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 2.171325656879199e-31,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5931.677312303871,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.2650389476490278,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.1399811559242216,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.7976655935846084,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.8086768797170527,
+        "pitch": -0.65,
+        "x": 5931.6449543231865,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": 0.16867687971705284,
+      "time": 96.06316666666774,
+      "wall": 19457.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 4.490315541595651e-32,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5931.320941921131,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.2894863714958483,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.291906066836739,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.8106617786131105,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.85805143953168,
+        "pitch": -0.65,
+        "x": 5931.289436406183,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": 0.21805143953167985,
+      "time": 96.26016666666774,
+      "wall": 19660.70000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 8.422511559931512e-33,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5930.941669766584,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.31454797769998344,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.4416119065581777,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.8249896907520111,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.910911700512266,
+        "pitch": -0.65,
+        "x": 5930.90881995215,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": 0.270911700512266,
+      "time": 96.46936666666774,
+      "wall": 19865.20000001788
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 1.6001671120189036e-33,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5930.5582984197035,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.31586812694497335,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.5873650439964961,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.9640372344267476,
+        "pitch": -0.65,
+        "x": 5930.5262934197035,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": 0.32403723442674764,
+      "time": 96.67696666666774,
+      "wall": 20071.90000000596
+    },
+    {
+      "activities": {
+        "bestFish": 0,
+        "bestRide": 23.588714457522453,
+        "catches": 0,
+        "fishing": {
+          "canCast": false,
+          "catch": null,
+          "cooldown": 0,
+          "floatPosition": null,
+          "hint": "水面を正面にして止まる",
+          "lineEndpoint": null,
+          "message": "水面に向かって竿を投げられます。",
+          "phase": "idle",
+          "progress": 0,
+          "reeling": false,
+          "tension": 0
+        },
+        "surf": {
+          "balance": 1,
+          "bestDistance": 23.588714457522453,
+          "bestTime": 10.010899999999983,
+          "catchWindow": 0,
+          "eyeBlend": 2.9966444973554e-34,
+          "movingWave": 0,
+          "phase": "carried",
+          "previousPlayerX": 5930.172203419705,
+          "previousPlayerZ": -4510,
+          "previousWaterHeight": 0.3278548677805405,
+          "rideDistance": 23.588714457522453,
+          "rideTime": 10.010899999999983,
+          "speed": 0,
+          "wipeoutTime": 0,
+          "yaw": -1.5707963267948966
+        },
+        "tool": "board"
+      },
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.7184445959457881,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "道具をしまう",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.017391525707915,
+        "pitch": -0.65,
+        "x": 5930.138903419705,
+        "yaw": -1.5707963267948966,
+        "z": -4510
+      },
+      "ground": 0.37739152570791495,
+      "time": 96.88636666666773,
+      "wall": 20282.10000002384
+    }
+  ],
+  "scope": "995c8ed physical board pickup; QA sea start; same controller forward inputs and actual activity UI activation; no full voyage claim",
+  "status": "done"
+}

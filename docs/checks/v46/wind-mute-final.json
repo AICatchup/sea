@@ -1,0 +1,3705 @@
+{
+  "state": "done",
+  "samples": [
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 3.1054952497769475,
+        "x": -36.06090012000001,
+        "z": 26.93909987999999
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.3707972060083895,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.0077547680027807405,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.08284782270861321,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2715.1006160860284,
+          "pan": -0.3470544347146217,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 7.145610189479826,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 0,
+          "frames": 20,
+          "master": 0.7152535915374756,
+          "reduction": -5.137256622314453
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 3.0791812135794276,
+        "x": -36.1719398856055,
+        "z": 26.78947390586935
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.01478382232576288,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 0,
+          "frames": 26,
+          "master": 0.7192324995994568,
+          "reduction": -3.6697356700897217
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 3.0574714277060684,
+        "x": -36.265952857425766,
+        "z": 26.652055525986892
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.02306901604972893,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 0,
+          "frames": 31,
+          "master": 0.7198298573493958,
+          "reduction": -2.776406764984131
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 3.0293402197804298,
+        "x": -36.37636586988581,
+        "z": 26.490665273169366
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.030711671181059393,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 0,
+          "frames": 37,
+          "master": 0.7199655175209045,
+          "reduction": -2.04947829246521
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 3.003549242570699,
+        "x": -36.46975208856063,
+        "z": 26.35416301581942
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.038836102554904155,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 0,
+          "frames": 42,
+          "master": 0.7200000286102295,
+          "reduction": -1.464041829109192
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.976079511718615,
+        "x": -36.580478477593395,
+        "z": 26.19231470173563
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.047721455646453095,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 1,
+          "shotCount": 1,
+          "frames": 48,
+          "master": 0.7200000286102295,
+          "reduction": -1.1076669692993164
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.948218602861061,
+        "x": -36.69141378434133,
+        "z": 26.030161013474306
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.05624799536972311,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 1,
+          "shotCount": 1,
+          "frames": 54,
+          "master": 0.7200000286102295,
+          "reduction": -0.784813404083252
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.9239601135455966,
+        "x": -36.78323312015243,
+        "z": 25.895949062455824
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.0629313061335119,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 1,
+          "shotCount": 1,
+          "frames": 59,
+          "master": 0.7200000286102295,
+          "reduction": -0.598681628704071
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.8970218662796876,
+        "x": -36.895004097760975,
+        "z": 25.732573877484455
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.0699728622983108,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 1,
+          "shotCount": 1,
+          "frames": 65,
+          "master": 0.7200000286102295,
+          "reduction": -0.4383496940135956
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.8722839285183417,
+        "x": -37.005521569078574,
+        "z": 25.571030937578207
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.07697463781643969,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 2,
+          "shotCount": 2,
+          "frames": 71,
+          "master": 0.7200000286102295,
+          "reduction": -0.31316447257995605
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.854405362650101,
+        "x": -37.09796765803518,
+        "z": 25.43590286402712
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.08093676295422852,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 2,
+          "shotCount": 2,
+          "frames": 76,
+          "master": 0.7200000286102295,
+          "reduction": -0.23696006834506989
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.8330147299646042,
+        "x": -37.20932080021345,
+        "z": 25.273138427410732
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.08638489825863503,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 2,
+          "shotCount": 2,
+          "frames": 82,
+          "master": 0.7200000286102295,
+          "reduction": -0.17495028674602509
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.816306019162373,
+        "x": -37.30134905373971,
+        "z": 25.138621102214717
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.85,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.08942796932973802,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07688507129972276,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2605.2118469333227,
+          "pan": -0.4033744609528786,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 6.774364347747712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 2,
+          "shotCount": 2,
+          "frames": 87,
+          "master": 0.7200000286102295,
+          "reduction": -0.12812241911888123
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.8045941510991996,
+        "x": -37.35304155591794,
+        "z": 25.035517305598365
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0.5738295057743924,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.08979766260819888,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "walk"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "running",
+        "targets": {
+          "wind": 0.0987664336010622,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2998.011306377831,
+          "pan": -0.3681732064798032,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.101389548573753,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 93,
+          "master": 0.6303435564041138,
+          "reduction": -0.09461033344268799
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.09000571736934816,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "running",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 98,
+          "master": 0.1164400652050972,
+          "reduction": -0.06930302828550339
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.08507776254080984,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "running",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 104,
+          "master": 0.022486895322799683,
+          "reduction": -0.051191918551921844
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.08102751448920466,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "running",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 110,
+          "master": 0.00415388448163867,
+          "reduction": -0.03751501441001892
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.07299237204491023,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 116,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.06663486582697142,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 121,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.05475788381794679,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 127,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.044518899977961275,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 133,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.030792338464547653,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 139,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.02064076496393456,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 144,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.00716443436679899,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 150,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.003893619228015002,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 155,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.01622788673034195,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 161,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.029944811222978242,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 167,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.03881890540159623,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 172,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.048904839865473074,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 177,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.05699243581439411,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 183,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.06453386422305174,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 189,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.06951450573861893,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 195,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.07099730170339297,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 200,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.0722037520580399,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 206,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.06801623511097579,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 212,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.06448361538384108,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 218,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.05684752910172667,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 223,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.04914971168187267,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 229,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.03835748574916513,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 235,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.028847108124506884,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 241,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.0192065863233575,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 246,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          0.00860824597222002,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 252,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.000239309115783268,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 257,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.013242510670550257,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 264,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.021809629092545666,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 269,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.03229330428211434,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 275,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.03916223413752455,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 280,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.048172570669353876,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 286,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.05323317717495526,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 291,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 2.803284258084478,
+        "x": -37.35304155591794,
+        "z": 25.022380270580143
+      },
+      "state": {
+        "mode": "walk",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "boat": [
+          -118.5950068345507,
+          -0.06107746667440938,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "idle"
+      },
+      "audio": {
+        "enabled": false,
+        "playing": false,
+        "context": "suspended",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.24233516034985428,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 2,
+          "frames": 297,
+          "master": 0.0017853229073807597,
+          "reduction": -0.03211887553334236
+        },
+        "mode": "walk"
+      }
+    }
+  ]
+}

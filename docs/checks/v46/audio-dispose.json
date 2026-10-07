@@ -1,0 +1,86 @@
+{
+  "state": "done",
+  "scope": "Actual active SurfAudio instance observed on its normal frame call; public dispose closes its real context",
+  "before": {
+    "enabled": true,
+    "playing": true,
+    "context": "running",
+    "targets": {
+      "wind": 0.14094913152725158,
+      "surf": 0.1338633477029291,
+      "hullwash": 0.01232379835131746,
+      "creak": 0.022179559514775366,
+      "engine": 0.08,
+      "swim": 0,
+      "breath": 0,
+      "bubbles": 0,
+      "footsteps": [],
+      "bird": null,
+      "cutoffHz": 14000,
+      "windCutoffHz": 3116,
+      "pan": -0.32148300789072154,
+      "enginePitch": 0.65,
+      "relativeWindSpeed": 8.5,
+      "airTransmission": 1
+    },
+    "graph": {
+      "layers": 7,
+      "decoded": [
+        "wind",
+        "engine",
+        "bird",
+        "stepSand",
+        "creak",
+        "stepWater",
+        "hullwash",
+        "breath",
+        "surf"
+      ],
+      "failures": [],
+      "activeShots": 0,
+      "shotCount": 49,
+      "frames": 37054,
+      "master": 0.7200000286102295,
+      "reduction": -0.00013368613144848496
+    },
+    "mode": "boat"
+  },
+  "after": {
+    "context": "closed",
+    "graph": {
+      "layers": 0,
+      "decoded": [],
+      "failures": [],
+      "activeShots": 0,
+      "shotCount": 49,
+      "frames": 37054,
+      "master": 0.7200000286102295,
+      "reduction": -0.00013368613144848496
+    },
+    "sound": {
+      "enabled": false,
+      "playing": false,
+      "context": "not-created",
+      "targets": {
+        "wind": 0.14094913152725158,
+        "surf": 0.1338633477029291,
+        "hullwash": 0.01232379835131746,
+        "creak": 0.022179559514775366,
+        "engine": 0.08,
+        "swim": 0,
+        "breath": 0,
+        "bubbles": 0,
+        "footsteps": [],
+        "bird": null,
+        "cutoffHz": 14000,
+        "windCutoffHz": 3116,
+        "pan": -0.32148300789072154,
+        "enginePitch": 0.65,
+        "relativeWindSpeed": 8.5,
+        "airTransmission": 1
+      },
+      "graph": null,
+      "mode": "boat"
+    }
+  }
+}

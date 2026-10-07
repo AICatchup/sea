@@ -1,0 +1,79 @@
+{
+  "camera": {
+    "height": 2.4417462079746395,
+    "pitch": -0.04,
+    "x": 5898,
+    "yaw": 3.141592653589793,
+    "z": -923.918
+  },
+  "contexts": [
+    {
+      "sampleRate": 48000,
+      "state": "running"
+    }
+  ],
+  "decoded": [
+    {
+      "channels": 2,
+      "duration": 1.48,
+      "sampleRate": 48000
+    },
+    {
+      "channels": 2,
+      "duration": 1.48,
+      "sampleRate": 48000
+    },
+    {
+      "channels": 2,
+      "duration": 2,
+      "sampleRate": 48000
+    },
+    {
+      "channels": 2,
+      "duration": 3,
+      "sampleRate": 48000
+    },
+    {
+      "channels": 2,
+      "duration": 4.7,
+      "sampleRate": 48000
+    },
+    {
+      "channels": 2,
+      "duration": 5.7,
+      "sampleRate": 48000
+    },
+    {
+      "channels": 2,
+      "duration": 5.7,
+      "sampleRate": 48000
+    },
+    {
+      "channels": 2,
+      "duration": 5.7,
+      "sampleRate": 48000
+    },
+    {
+      "channels": 2,
+      "duration": 7.7,
+      "sampleRate": 48000
+    }
+  ],
+  "failures": [],
+  "qa": "undefined",
+  "remoteResources": [],
+  "scope": "Final boat catch placement build, production standalone over local HTTP; native decode instrumentation restored; not perceptual acceptance.",
+  "topography": {
+    "patch": {
+      "chunks": 247,
+      "fullResolutionOnly": true,
+      "kind": "measured-heightfield",
+      "maxUnblendedHeightError": 0,
+      "nativeSamples": 3840000,
+      "triangles": 7672002,
+      "unknownSamples": 0,
+      "vertices": 3897816
+    }
+  },
+  "consoleErrors": []
+}

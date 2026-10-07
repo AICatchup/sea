@@ -1,0 +1,4594 @@
+{
+  "state": "done",
+  "samples": [
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 0.6986933903948798,
+        "x": -118.2770622130817,
+        "z": -92.91182466847626
+      },
+      "adventure": {
+        "mode": "swim",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 2.5742298934556715,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "船の縁をつかんで乗船しています。",
+        "boat": [
+          -118.5950068345507,
+          -0.03547557046547755,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "はしごを移動中",
+        "boarding": 0.2891249999999855,
+        "grounded": false,
+        "stamina": 1,
+        "avatarAction": "climb"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.13663666773237437,
+          "surf": 0.1299695428256,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0.3725910860263738,
+          "breath": 0.0655361974070328,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3623.677258932116,
+          "pan": -0.18648835320010967,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 10.215125874770662,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19814,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "swim"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 0.9720946906491751,
+        "x": -118.16553781272964,
+        "z": -92.37871251030226
+      },
+      "adventure": {
+        "mode": "swim",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 3.0043059871838285,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "船の縁をつかんで乗船しています。",
+        "boat": [
+          -118.5950068345507,
+          -0.010615085652448626,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "はしごを移動中",
+        "boarding": 0.4228749999999856,
+        "grounded": false,
+        "stamina": 1,
+        "avatarAction": "climb"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.1453838119800339,
+          "surf": 0.13037577972124498,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0.4487951504577623,
+          "breath": 0.0655361974070328,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3760.709408984907,
+          "pan": -0.159451302405694,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 10.678072327651712,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19826,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "swim"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.1862894626334426,
+        "x": -118.06208199514761,
+        "z": -91.89486991187924
+      },
+      "adventure": {
+        "mode": "swim",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 3.0088776086725666,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "船の縁をつかんで乗船しています。",
+        "boat": [
+          -118.5950068345507,
+          0.007982598944298537,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "はしごを移動中",
+        "boarding": 0.5341249999999856,
+        "grounded": false,
+        "stamina": 1,
+        "avatarAction": "climb"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.1473552759418731,
+          "surf": 0.12838954909282044,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0.45056135717335055,
+          "breath": 0.0655361974070328,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3791.2650960623187,
+          "pan": -0.15726372066484817,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 10.781301000210537,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19835,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "swim"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3898675742862372,
+        "x": -117.93788058688487,
+        "z": -91.34049419112252
+      },
+      "adventure": {
+        "mode": "swim",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 2.6311672225785703,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "船の縁をつかんで乗船しています。",
+        "boat": [
+          -118.5950068345507,
+          0.023097466306353814,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "はしごを移動中",
+        "boarding": 0.667124999999942,
+        "grounded": false,
+        "stamina": 1,
+        "avatarAction": "climb"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.14331919186079956,
+          "surf": 0.12881882197557998,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0.40229347067378207,
+          "breath": 0.0655361974070328,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3728.582702203747,
+          "pan": -0.17047503043037368,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 10.56953615609374,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19845,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "swim"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.5056792753735562,
+        "x": -117.83964923841052,
+        "z": -90.91800641690351
+      },
+      "adventure": {
+        "mode": "swim",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.916526822182117,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "船の縁をつかんで乗船しています。",
+        "boat": [
+          -118.5950068345507,
+          0.03406654946836736,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "はしごを移動中",
+        "boarding": 0.7907499999999712,
+        "grounded": false,
+        "stamina": 1,
+        "avatarAction": "climb"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.13436878724527482,
+          "surf": 0.12954383009471476,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0.29956822277352235,
+          "breath": 0.0655361974070328,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3587.7440314617406,
+          "pan": -0.2047754970339568,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 10.093729836019394,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19856,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "swim"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.5256013218409086,
+        "x": -117.76741390586913,
+        "z": -90.64055474445561
+      },
+      "adventure": {
+        "mode": "swim",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0.8386899193143837,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "船の縁をつかんで乗船しています。",
+        "boat": [
+          -118.5950068345507,
+          0.04163303193595299,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "はしごを移動中",
+        "boarding": 0.9244374999999858,
+        "grounded": false,
+        "stamina": 1,
+        "avatarAction": "climb"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.11896218330613105,
+          "surf": 0.12869094269209697,
+          "hullwash": 0,
+          "creak": 0,
+          "engine": 0,
+          "swim": 0.1396550070112711,
+          "breath": 0.0655361974070328,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3338.8307405872297,
+          "pan": -0.26437950938956545,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 9.252806556037937,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19868,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "swim"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4808852962803005,
+        "x": -117.75032121115109,
+        "z": -90.59650652102954
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -118.5950068345507,
+          0.04338572593785608,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "船から降りる",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.12864626471853874,
+          "hullwash": 0.0037058963966871868,
+          "creak": 0.007133643638273243,
+          "engine": 0.08,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19878,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4755984337315913,
+        "x": -117.74474126653314,
+        "z": -90.60217446116185
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -118.5950068345507,
+          0.039975988628947134,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "船から降りる",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.1289201106121965,
+          "hullwash": 0.004158252065416571,
+          "creak": 0.018779224431270385,
+          "engine": 0.08,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19888,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.470150618252598,
+        "x": -117.7445991534819,
+        "z": -90.60648013095445
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -118.5950068345507,
+          0.03355227382109394,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "船から降りる",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.1288101395318314,
+          "hullwash": 0.003976594999338302,
+          "creak": 0.006617952922187415,
+          "engine": 0.08,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19898,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4654677453761167,
+        "x": -117.75147629263323,
+        "z": -90.60768447690036
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -118.5950068345507,
+          0.024527340538355858,
+          -90.95789437761479
+        ],
+        "boatYaw": -0.6,
+        "interaction": "船から降りる",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.1056361455808623,
+          "surf": 0.12795442647629449,
+          "hullwash": 0.0025630749851888873,
+          "creak": 0.010566646536323512,
+          "engine": 0.08,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3116,
+          "pan": -0.32148300789072154,
+          "enginePitch": 0.65,
+          "relativeWindSpeed": 8.5,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19909,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4623183409387295,
+        "x": -117.8037299966927,
+        "z": -90.66897553353266
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0.7494676542082905,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -118.63711993011685,
+          0.015553597366667853,
+          -91.01945091872274
+        ],
+        "boatYaw": -0.6,
+        "interaction": "船から降りる",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.09473660488044901,
+          "surf": 0.1268182779397576,
+          "hullwash": 0.04118279405851633,
+          "creak": 0.03680356810820289,
+          "engine": 0.08566349743164164,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2927.709006263765,
+          "pan": -0.34748812917614336,
+          "enginePitch": 0.6582212059491572,
+          "relativeWindSpeed": 7.863881777918125,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19918,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4594047735551163,
+        "x": -117.96230886131129,
+        "z": -90.8837495819474
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.616654031835022,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -118.78416111696363,
+          0.00609239097335986,
+          -91.23438042559025
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.08137813719577548,
+          "surf": 0.12808109228591388,
+          "hullwash": 0.09545193101480823,
+          "creak": 0.031058633581489706,
+          "engine": 0.10817414857528346,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2688.2314647305716,
+          "pan": -0.387337927578548,
+          "enginePitch": 0.6908979576092824,
+          "relativeWindSpeed": 7.054836029495174,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19929,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.454915857846647,
+        "x": -118.19560846343195,
+        "z": -91.2139778899004
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 2.393406159136465,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -119.00942747898348,
+          -0.0031400664765266627,
+          -91.56365135396773
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.07016977205025847,
+          "surf": 0.1303053400314525,
+          "hullwash": 0.14570497925639253,
+          "creak": 0.008273439966376646,
+          "engine": 0.14060912792685026,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2478.4899020826597,
+          "pan": -0.4305858908031879,
+          "enginePitch": 0.7379809921518794,
+          "relativeWindSpeed": 6.346249669198176,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19940,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4480975572089303,
+        "x": -118.54183540683935,
+        "z": -91.72039323133754
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 3.2251558041197175,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -119.35326704330414,
+          -0.012199856995882524,
+          -92.06624025158033
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.058933457446748515,
+          "surf": 0.13000699090964724,
+          "hullwash": 0.19542584100781488,
+          "creak": 0.00624746070536095,
+          "engine": 0.18620934348808593,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2258.343433539768,
+          "pan": -0.4877465255351518,
+          "enginePitch": 0.8041748534504474,
+          "relativeWindSpeed": 5.602511599796512,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19952,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4406135949361654,
+        "x": -118.93820470842549,
+        "z": -92.30665650731885
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 3.9635725332814142,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -119.7514315478677,
+          -0.019689718324510806,
+          -92.64823569417123
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04982172977172355,
+          "surf": 0.12856243816162094,
+          "hullwash": 0.23747517007304123,
+          "creak": 0.007417942289418453,
+          "engine": 0.23379106882020284,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2070.8630829217263,
+          "pan": -0.5499160712133391,
+          "enginePitch": 0.8732450999002945,
+          "relativeWindSpeed": 4.969132036897724,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19963,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4309996566945908,
+        "x": -119.4180450163907,
+        "z": -93.01532280786437
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 4.692623851419011,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -120.23423389690734,
+          -0.02833926617333884,
+          -93.35394593100226
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04172397593213144,
+          "surf": 0.1288007340847329,
+          "hullwash": 0.2816731065628096,
+          "creak": 0.003664450997226298,
+          "engine": 0.2855625085245392,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1895.831681681064,
+          "pan": -0.6241946846088405,
+          "enginePitch": 0.948397189793686,
+          "relativeWindSpeed": 4.377809735409,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19974,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.422657071837377,
+        "x": -119.9776677724004,
+        "z": -93.8411610292866
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 5.407563932640127,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -120.79801399719243,
+          -0.03475756341489779,
+          -94.17802101863224
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.034786077343521196,
+          "surf": 0.13024966730659648,
+          "hullwash": 0.3270235075858677,
+          "creak": 0.006663871765383876,
+          "engine": 0.3393996017874927,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1737.9787312859874,
+          "pan": -0.7107788797941792,
+          "enginePitch": 1.0265478090463604,
+          "relativeWindSpeed": 3.8445227408310387,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19985,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4175103448194686,
+        "x": -120.67646445237763,
+        "z": -94.86513839270899
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 6.169188916429305,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -121.50145843976382,
+          -0.03628903250705229,
+          -95.2062429093335
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.028712778241607496,
+          "surf": 0.12806071501270705,
+          "hullwash": 0.36917209109578103,
+          "creak": 0.010260298435649342,
+          "engine": 0.39830897809669374,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1592.2304350035022,
+          "pan": -0.815184879760517,
+          "enginePitch": 1.1120614198177812,
+          "relativeWindSpeed": 3.3521298479848047,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 19997,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.418327966533456,
+        "x": -121.39265753795196,
+        "z": -95.91324692952232
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 6.848101590002785,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -122.22199503660589,
+          -0.031790615442745335,
+          -96.25944833265896
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.0246900659015357,
+          "surf": 0.12819563824335742,
+          "hullwash": 0.4102293364925909,
+          "creak": 0.004790274261169884,
+          "engine": 0.4507034089665822,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1490.8180245798217,
+          "pan": -0.9079870697885482,
+          "enginePitch": 1.1881178517256838,
+          "relativeWindSpeed": 3.009520353310209,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20008,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.427342030703976,
+        "x": -122.19445922207377,
+        "z": -97.08790547488331
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 7.5200023957208755,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -123.0258640948881,
+          -0.021507708874736606,
+          -97.43446047713157
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.02226697703506282,
+          "surf": 0.12842058767297074,
+          "hullwash": 0.45089151407969635,
+          "creak": 0.001968858558383818,
+          "engine": 0.5008662071680436,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1427.4569976398686,
+          "pan": -0.9775145417346375,
+          "enginePitch": 1.2609348168568375,
+          "relativeWindSpeed": 2.7954628298644213,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20019,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4409475409425918,
+        "x": -123.06650418490841,
+        "z": -98.36536576422088
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 8.174514877371148,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -123.8995213420201,
+          -0.0070808258875133465,
+          -98.71148173439981
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.021578441493944955,
+          "surf": 0.12769910638009724,
+          "hullwash": 0.4891274854301027,
+          "creak": 0.008387093059343093,
+          "engine": 0.5472209058516726,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1409.0991189484284,
+          "pan": -0.9996936455749756,
+          "enginePitch": 1.3282238955911376,
+          "relativeWindSpeed": 2.733442969420367,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20030,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4537340184316976,
+        "x": -124.01205689670557,
+        "z": -99.7427168658932
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 8.813427739141893,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -124.84240783467926,
+          0.004381257587794383,
+          -100.08969509927442
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.02257136642717372,
+          "surf": 0.12711916176037755,
+          "hullwash": 0.5265591847378971,
+          "creak": 0.0009430366972829075,
+          "engine": 0.5885845759256046,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1435.5208328778597,
+          "pan": -0.9680802871988917,
+          "enginePitch": 1.3882679327952325,
+          "relativeWindSpeed": 2.8227055164792554,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20041,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4599260241515808,
+        "x": -125.03218592813272,
+        "z": -101.2216709101202
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 9.438089249880523,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -125.85406993009862,
+          0.005704709984124512,
+          -101.56843748396143
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.025044082517570614,
+          "surf": 0.12914892776250742,
+          "hullwash": 0.5674268957677917,
+          "creak": 0.009594782629812145,
+          "engine": 0.6243204731892621,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1499.922968872374,
+          "pan": -0.8988005371910514,
+          "enginePitch": 1.4401426223715097,
+          "relativeWindSpeed": 3.0402803002445062,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20052,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4495887010086985,
+        "x": -126.22846440277077,
+        "z": -102.95304167657201
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 10.105635729510897,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -127.03780315206403,
+          -0.011915386468323418,
+          -103.29869553693
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.029132694275598826,
+          "surf": 0.12973843195771234,
+          "hullwash": 0.6085138887529533,
+          "creak": 0.009656865968371297,
+          "engine": 0.6562079644097247,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1602.573972782583,
+          "pan": -0.8067746319088437,
+          "enginePitch": 1.4864309160786329,
+          "relativeWindSpeed": 3.3870742323735907,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20064,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4204032481742321,
+        "x": -127.35688585443283,
+        "z": -104.6022108582536
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 10.691620820463699,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -128.168131903369,
+          -0.03932308462498295,
+          -104.95089249157839
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.033790250552403,
+          "surf": 0.12754201800018763,
+          "hullwash": 0.6402595439501922,
+          "creak": 0.008128335402662635,
+          "engine": 0.6779028322223236,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1714.6130210256695,
+          "pan": -0.7256789868727251,
+          "enginePitch": 1.5179234661291794,
+          "relativeWindSpeed": 3.7655845304921263,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20075,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3870276186679518,
+        "x": -128.67126756091176,
+        "z": -106.53628630318244
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 11.325009239921894,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -129.49042605438976,
+          -0.06858011018441812,
+          -106.88368449297057
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.03972151085080011,
+          "surf": 0.12866605488522975,
+          "hullwash": 0.6801384397820198,
+          "creak": 0.01453193184745543,
+          "engine": 0.693454731749326,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1851.098498573138,
+          "pan": -0.6465128435335349,
+          "enginePitch": 1.5404988041522476,
+          "relativeWindSpeed": 4.226684116801142,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20087,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3601910452030728,
+        "x": -129.93976047499063,
+        "z": -108.40046638821734
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 11.891567888332366,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -130.765594146015,
+          -0.09170502319207169,
+          -108.74759252434247
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04574409943222138,
+          "surf": 0.12680895328214176,
+          "hullwash": 0.7111991298353627,
+          "creak": 0.011948712778919374,
+          "engine": 0.6996809302429727,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1983.8336167649652,
+          "pan": -0.584500360486931,
+          "enginePitch": 1.5495368342236704,
+          "relativeWindSpeed": 4.675113570151909,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20098,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3400594115772635,
+        "x": -131.2590458617313,
+        "z": -110.33744468407919
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -132.09232860665026,
+          -0.10701984866386044,
+          -110.68687490830192
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04752055298750446,
+          "surf": 0.12820077347576364,
+          "hullwash": 0.7229700062712341,
+          "creak": 0.01093905867514847,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20109,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3264430803022205,
+        "x": -132.59038906543006,
+        "z": -112.27897558165968
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -133.4217228460112,
+          -0.12136020487443035,
+          -112.63004508004482
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04752055298750446,
+          "surf": 0.12711591172317419,
+          "hullwash": 0.7211779641959752,
+          "creak": 0.005628612373808442,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20120,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3119827151526855,
+        "x": -134.01833377810772,
+        "z": -114.35865909650875
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -134.85004244671163,
+          -0.1336204146375773,
+          -114.71781405152078
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04752055298750446,
+          "surf": 0.1272514834832309,
+          "hullwash": 0.7214019100560433,
+          "creak": 0.012266199056967396,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20132,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.31496110014893,
+        "x": -135.33724613315303,
+        "z": -116.29207337403143
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -136.1780815441367,
+          -0.12339148340786053,
+          -116.65900341778837
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04752055298750446,
+          "surf": 0,
+          "hullwash": 0.7271138704228937,
+          "creak": 0.020145715185890947,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20143,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3424101066059186,
+        "x": -136.6508875899589,
+        "z": -118.22331336587298
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -137.50476549962517,
+          -0.08617084859917942,
+          -118.59821197857949
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.047524028952510004,
+          "surf": 0,
+          "hullwash": 0.726918352684296,
+          "creak": 0.020651573103887107,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20154,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.404572155904388,
+        "x": -138.08072776933187,
+        "z": -120.30835939598569
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -138.93444024226142,
+          -0.022865079911018372,
+          -120.6879617555308
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04763964778994894,
+          "surf": 0,
+          "hullwash": 0.7313511720257162,
+          "creak": 0.015336097368855283,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20166,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4608319788045332,
+        "x": -139.39634566258977,
+        "z": -122.21525642271371
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -140.2333437880598,
+          0.021365075221753942,
+          -122.58656380406968
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04788939532486793,
+          "surf": 0,
+          "hullwash": 0.722894536747987,
+          "creak": 0.02430673937135134,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20177,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4746744801256133,
+        "x": -140.8208038548649,
+        "z": -124.29885360789541
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -141.65149982423833,
+          0.028854585725937895,
+          -124.65947673447613
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04830876644343119,
+          "surf": 0,
+          "hullwash": 0.7207338949807949,
+          "creak": 0.007396021433455155,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20189,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4606287536104003,
+        "x": -142.12466211867408,
+        "z": -126.20509617190194
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -142.95582393778093,
+          0.015147169447409636,
+          -126.5660020049175
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04882195442847297,
+          "surf": 0,
+          "hullwash": 0.7213088851710513,
+          "creak": 0.003404220255700607,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20200,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4419055884025527,
+        "x": -143.52683936633102,
+        "z": -128.2628516967428
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -144.36449398040702,
+          0.0005008409810813748,
+          -128.6250492969944
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04951032523112899,
+          "surf": 0,
+          "hullwash": 0.7216396586988293,
+          "creak": 0.003836419308799368,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20212,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4338196862906236,
+        "x": -144.83560770594522,
+        "z": -130.172058771214
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -145.67491623266235,
+          -0.005041307281192799,
+          -130.54048819207702
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.05026688168229754,
+          "surf": 0,
+          "hullwash": 0.7217681424898922,
+          "creak": 0.011511758730039179,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20223,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4378700427931614,
+        "x": -146.1202431429115,
+        "z": -132.05298677125185
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -146.97178706555619,
+          0.010080626151814136,
+          -132.4361190324018
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.051119456479947534,
+          "surf": 0,
+          "hullwash": 0.734255334623507,
+          "creak": 0.04289454011046881,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20234,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4889087045176854,
+        "x": -147.5506932341129,
+        "z": -134.14598788172086
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -148.41433565658517,
+          0.07269501700781904,
+          -134.54468646137215
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.052183537625511714,
+          "surf": 0.1364561823945826,
+          "hullwash": 0.7366068038592019,
+          "creak": 0.018910015259510658,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20246,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.557289708777438,
+        "x": -148.86821984109713,
+        "z": -136.08595330228312
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -149.73559904432955,
+          0.14094268596306664,
+          -136.4759718002608
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.05326693554321315,
+          "surf": 0.13364469487386216,
+          "hullwash": 0.731962614017344,
+          "creak": 0.034500502547717395,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20257,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.6146687254341892,
+        "x": -150.31568279330443,
+        "z": -138.2012757581161
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -151.16662892890236,
+          0.18214570533456875,
+          -138.56770238268865
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.0545740827090238,
+          "surf": 0.1314052172372485,
+          "hullwash": 0.7282633056567775,
+          "creak": 0.042781147355887436,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20269,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.6389822584683467,
+        "x": -151.67076709712927,
+        "z": -140.14333636993277
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -152.48653717471007,
+          0.1829821467592253,
+          -140.49700691610087
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.05586889763999834,
+          "surf": 0.13280557089180625,
+          "hullwash": 0.7305764968659063,
+          "creak": 0.05562441509656381,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20280,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.6300515573117595,
+        "x": -152.9912795744537,
+        "z": -142.07396929245388
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -153.8057678495507,
+          0.17277299970382415,
+          -142.42532104677656
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.05723955666757015,
+          "surf": 0.1306312261340155,
+          "hullwash": 0.7269847790430789,
+          "creak": 0.016821173244567566,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20291,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.6217559997651279,
+        "x": -154.32963818095325,
+        "z": -144.00903349392064
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 12,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -155.12974152116755,
+          0.15657405256814583,
+          -144.36056799661705
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.05868745777731392,
+          "surf": 0.13230786979939302,
+          "hullwash": 0.7297543632655854,
+          "creak": 0.03337623165025623,
+          "engine": 0.7,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2022.0102810631054,
+          "pan": -0.5688082981005962,
+          "enginePitch": 1.55,
+          "relativeWindSpeed": 4.804088787375356,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20302,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.5651445912113717,
+        "x": -155.73683457791176,
+        "z": -146.05800386733898
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 11.029883390601011,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -156.51998197369804,
+          0.08691113079222257,
+          -146.39267683154497
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.04855812652155729,
+          "surf": 0.13671020654480467,
+          "hullwash": 0.6845370924633638,
+          "creak": 0.02197233424174265,
+          "engine": 0.6905951363738745,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1817.972727403292,
+          "pan": -0.6640963542570608,
+          "enginePitch": 1.5363477786072373,
+          "relativeWindSpeed": 4.114772727713825,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20314,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.477102593196533,
+        "x": -156.89566943356772,
+        "z": -147.74685254419776
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 9.977859238145056,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -157.6804852103406,
+          0.0014626643680090605,
+          -148.0889797091165
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.038049502122731206,
+          "surf": 0.13226211442925598,
+          "hullwash": 0.6140728799582319,
+          "creak": 0.020017017976401777,
+          "engine": 0.6571807800772086,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1606.6415275564214,
+          "pan": -0.8035146829442918,
+          "enginePitch": 1.4878430678540124,
+          "relativeWindSpeed": 3.4008159714743966,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20325,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.4002814815519533,
+        "x": -157.91118252538686,
+        "z": -149.2405797391719
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 8.968015568984876,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -158.7065475185226,
+          -0.06827478037478231,
+          -149.5887708264357
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.031277799624153696,
+          "surf": 0.13320802282735014,
+          "hullwash": 0.5548312902495899,
+          "creak": 0.03315027486411212,
+          "engine": 0.6065795361134436,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1462.4406400903592,
+          "pan": -0.9378630948656487,
+          "enginePitch": 1.4143896491969343,
+          "relativeWindSpeed": 2.9136508111160784,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20336,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3386729397948762,
+        "x": -158.88355421094192,
+        "z": -150.70731098173488
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 7.881046378665645,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -159.7102705616018,
+          -0.11236795732417988,
+          -151.05590873049348
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.029186052658820204,
+          "surf": 0.13198347842532673,
+          "hullwash": 0.48743284523751484,
+          "creak": 0.03676394420473453,
+          "engine": 0.537205253006848,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1409.1852847921323,
+          "pan": -0.9995871935076489,
+          "enginePitch": 1.31368504468736,
+          "relativeWindSpeed": 2.7337340702436905,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20348,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3087758574670603,
+        "x": -159.59430754872113,
+        "z": -151.775595313652
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 6.990616923249561,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -160.45132912855308,
+          -0.12086407360128859,
+          -152.13911103435365
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.032153834302482615,
+          "surf": 0.2558634608709661,
+          "hullwash": 0.4364903548564357,
+          "creak": 0.04953749735651806,
+          "engine": 0.47283871596889365,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1458.1226542773716,
+          "pan": -0.9425823264556417,
+          "enginePitch": 1.2202497489871038,
+          "relativeWindSpeed": 2.8990630212073367,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20358,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3078433399433018,
+        "x": -160.33593432002715,
+        "z": -152.87462134420323
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 5.952177313585058,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -161.21911164908911,
+          -0.09960787613408242,
+          -153.26137563285855
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.040690513852452745,
+          "surf": 0.2663138123830769,
+          "hullwash": 0.3829183183860206,
+          "creak": 0.05190219846152068,
+          "engine": 0.3929164332892486,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1604.3019473547204,
+          "pan": -0.8053865174547634,
+          "enginePitch": 1.1042335321940704,
+          "relativeWindSpeed": 3.3929119843064877,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20370,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3265124393814662,
+        "x": -160.93309016143183,
+        "z": -153.7482810850954
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 5.013053542697362,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -161.82004068004534,
+          -0.07725746929538699,
+          -154.13975116188882
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.05227404396555677,
+          "surf": 0.25423984821008005,
+          "hullwash": 0.3160585697369116,
+          "creak": 0.01805729891561278,
+          "engine": 0.32052225787343624,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 1790.714287946235,
+          "pan": -0.679299187085574,
+          "enginePitch": 0.9991452130420849,
+          "relativeWindSpeed": 4.022683405223766,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20381,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3302113982644623,
+        "x": -161.4884068849839,
+        "z": -154.53087123143132
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 4.019648796245251,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -162.3547243371048,
+          -0.08667338779944993,
+          -154.9212960963815
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.0677084467010304,
+          "surf": 0.24486915620266866,
+          "hullwash": 0.2482648353748981,
+          "creak": 0.03771305401492032,
+          "engine": 0.247766692495287,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2021.0859278944824,
+          "pan": -0.5691782825908848,
+          "enginePitch": 0.8935322955576748,
+          "relativeWindSpeed": 4.800965972616495,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20393,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3047807377236893,
+        "x": -161.899293056044,
+        "z": -155.09802172487545
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 3.1248567344406846,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -162.743394393264,
+          -0.12518617721496705,
+          -155.48941354221998
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.08387668872556296,
+          "surf": 0.25298317320054237,
+          "hullwash": 0.2014371773931504,
+          "creak": 0.04224654997468321,
+          "engine": 0.18901810470076136,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2246.3393745227013,
+          "pan": -0.49130286280588636,
+          "enginePitch": 0.8082520874688471,
+          "relativeWindSpeed": 5.561957346360477,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20404,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.2610608871747282,
+        "x": -162.2242569073176,
+        "z": -155.55526540851164
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 2.1722558200757627,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -163.05590674872587,
+          -0.17630462928149107,
+          -155.94621158561037
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.10294755469211078,
+          "surf": 0.2506288510810369,
+          "hullwash": 0.14227565056265046,
+          "creak": 0.015661992052637207,
+          "engine": 0.1373188981387111,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2496.8942065222204,
+          "pan": -0.4264082019291994,
+          "enginePitch": 0.7332048521368387,
+          "relativeWindSpeed": 6.408426373385879,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20416,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.22869766107872,
+        "x": -162.40183143605168,
+        "z": -155.81652166738962
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.3853195128812883,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -163.23177995484934,
+          -0.21078133605960714,
+          -156.2032847382007
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.11996974710142065,
+          "surf": 0.24844399611359352,
+          "hullwash": 0.09308338414711839,
+          "creak": 0.012609311780670193,
+          "engine": 0.10542147098460845,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2710.354966357772,
+          "pan": -0.38327734468720154,
+          "enginePitch": 0.6869021353002381,
+          "relativeWindSpeed": 7.1295775890465265,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20426,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.1992789839628055,
+        "x": -162.50595933806608,
+        "z": -155.96963790022699
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0.5421804161960541,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -163.33402915190393,
+          -0.242258962539183,
+          -156.3527419751275
+        ],
+        "boatYaw": -0.6,
+        "interaction": "船から降りる",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.13926157568761613,
+          "surf": 0.25159212854344404,
+          "hullwash": 0.045005023231471535,
+          "creak": 0.0004969628060563191,
+          "engine": 0.08475096585224502,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 2943.7564884850467,
+          "pan": -0.34510891034412844,
+          "enginePitch": 0.6568965633339041,
+          "relativeWindSpeed": 7.918096244881914,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20437,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.191859620747555,
+        "x": -162.50917818730213,
+        "z": -155.9977323337663
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 0.35246724448214006,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -163.34073499204175,
+          -0.2524138368269686,
+          -156.36254387447875
+        ],
+        "boatYaw": -0.6,
+        "interaction": "船から降りる",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.1606162646957695,
+          "surf": 0.25928748986801925,
+          "hullwash": 0.03136022565894757,
+          "creak": 0.016625883467299048,
+          "engine": 0.08099148365462634,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3194.4006741421586,
+          "pan": -0.3117680533753727,
+          "enginePitch": 0.6514392504663931,
+          "relativeWindSpeed": 8.764867142372157,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20449,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.2099702817950608,
+        "x": -162.41930618973242,
+        "z": -155.88967614074093
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 1.1609792903755303,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -163.2524914031136,
+          -0.23849348006410895,
+          -156.23355857818686
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.18049208072770687,
+          "surf": 0.2583849258265779,
+          "hullwash": 0.07908956296225578,
+          "creak": 0.0233115576817642,
+          "engine": 0.0943576597516052,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3422.7607967706904,
+          "pan": -0.2865461532477005,
+          "enginePitch": 0.670841764155556,
+          "relativeWindSpeed": 9.536354043144224,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20460,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.2614350552374796,
+        "x": -162.2258037273834,
+        "z": -155.63951410821088
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 2.0019454894482807,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -163.06144677352086,
+          -0.19221710836787348,
+          -155.95430941740017
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.20167294963780938,
+          "surf": 0.2614804689592548,
+          "hullwash": 0.13243409272080622,
+          "creak": 0.02887275502974795,
+          "engine": 0.12305087807824906,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3663.1232033896167,
+          "pan": -0.2640609580959688,
+          "enginePitch": 0.7124932101135873,
+          "relativeWindSpeed": 10.348389200640597,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20472,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.316235152959911,
+        "x": -161.98666476175663,
+        "z": -155.2938357185211
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 2.707405622112667,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -162.8195058583644,
+          -0.14072444754716976,
+          -155.6006653622836
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.21952604059605116,
+          "surf": 0.25258042204341574,
+          "hullwash": 0.16712801222588125,
+          "creak": 0.008581020542180273,
+          "engine": 0.15673230495094265,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 3865.159365576481,
+          "pan": -0.24772182833723602,
+          "enginePitch": 0.7613856039610458,
+          "relativeWindSpeed": 11.030943802623247,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20482,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    },
+    {
+      "camera": {
+        "yaw": -0.6,
+        "pitch": -0.035,
+        "height": 1.3639643218620785,
+        "x": -161.6074105827053,
+        "z": -154.73550798933547
+      },
+      "adventure": {
+        "mode": "boat",
+        "depth": 0,
+        "oxygen": 1,
+        "speed": 3.2,
+        "placed": 0,
+        "voyage": null,
+        "remaining": 0,
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "boat": [
+          -162.4489602255232,
+          -0.08435229908347368,
+          -155.0590403125521
+        ],
+        "boatYaw": -0.6,
+        "interaction": "",
+        "boarding": 0,
+        "grounded": true,
+        "stamina": 1,
+        "avatarAction": "helm"
+      },
+      "audio": {
+        "enabled": true,
+        "playing": true,
+        "context": "running",
+        "targets": {
+          "wind": 0.23310449518615284,
+          "surf": 0.2598943378322142,
+          "hullwash": 0.20712927902423947,
+          "creak": 0.02650594111225934,
+          "engine": 0.1887525925925926,
+          "swim": 0,
+          "breath": 0,
+          "bubbles": 0,
+          "footsteps": [],
+          "bird": null,
+          "cutoffHz": 14000,
+          "windCutoffHz": 4026.4757856258407,
+          "pan": -0.23605923358519226,
+          "enginePitch": 0.8078666666666667,
+          "relativeWindSpeed": 11.575931708195409,
+          "airTransmission": 1
+        },
+        "graph": {
+          "layers": 7,
+          "decoded": [
+            "wind",
+            "engine",
+            "bird",
+            "stepSand",
+            "creak",
+            "stepWater",
+            "hullwash",
+            "breath",
+            "surf"
+          ],
+          "failures": [],
+          "activeShots": 0,
+          "shotCount": 8,
+          "frames": 20494,
+          "master": 0.7200000286102295,
+          "reduction": -0.00013368613144848496
+        },
+        "mode": "boat"
+      }
+    }
+  ],
+  "scope": "QA starts beside the same physical boat; final audio settings, not a replay of the full shore route"
+}

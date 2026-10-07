@@ -1,0 +1,125 @@
+{
+  "scope": "Decoded digital output statistics, not perceptual acceptance. First boat recordings precede final wind-direction adjustment.",
+  "files": [
+    {
+      "file": "underwater-audio.webm",
+      "metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "opus",
+            "sample_rate": "48000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "4.919902",
+          "size": "80474"
+        }
+      },
+      "stats": {
+        "Peak level dB": "-27.770352",
+        "RMS level dB": "-41.499867",
+        "Number of NaNs": "0.000000",
+        "Number of Infs": "0.000000"
+      }
+    },
+    {
+      "file": "boat-idle.webm",
+      "metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "opus",
+            "sample_rate": "48000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "2.941237",
+          "size": "48596"
+        }
+      },
+      "stats": {
+        "Peak level dB": "-27.511495",
+        "RMS level dB": "-42.250799",
+        "Number of NaNs": "0.000000",
+        "Number of Infs": "0.000000"
+      }
+    },
+    {
+      "file": "boat-sailing.webm",
+      "metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "opus",
+            "sample_rate": "48000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "6.891417",
+          "size": "112352"
+        }
+      },
+      "stats": {
+        "Peak level dB": "-12.403557",
+        "RMS level dB": "-29.755779",
+        "Number of NaNs": "0.000000",
+        "Number of Infs": "0.000000"
+      }
+    },
+    {
+      "file": "wind-mute-final.webm",
+      "metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "opus",
+            "sample_rate": "48000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "1.679933",
+          "size": "28310"
+        }
+      },
+      "stats": {
+        "Peak level dB": "-18.835257",
+        "RMS level dB": "-36.010675",
+        "Number of NaNs": "0.000000",
+        "Number of Infs": "0.000000"
+      }
+    },
+    {
+      "file": "boat-final-audio.webm",
+      "metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "opus",
+            "sample_rate": "48000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "6.901188",
+          "size": "112352"
+        }
+      },
+      "stats": {
+        "Peak level dB": "-11.634578",
+        "RMS level dB": "-30.487190",
+        "Number of NaNs": "0.000000",
+        "Number of Infs": "0.000000"
+      }
+    }
+  ]
+}

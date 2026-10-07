@@ -1,0 +1,44 @@
+{
+  "enabled": true,
+  "playing": true,
+  "context": "running",
+  "targets": {
+    "wind": 0.1056361455808623,
+    "surf": 0.28869915565644166,
+    "hullwash": 0,
+    "creak": 0,
+    "engine": 0,
+    "swim": 0,
+    "breath": 0,
+    "bubbles": 0,
+    "footsteps": [],
+    "bird": null,
+    "cutoffHz": 14000,
+    "windCutoffHz": 3116,
+    "pan": 0.32148300789072176,
+    "enginePitch": 0.65,
+    "relativeWindSpeed": 8.5,
+    "airTransmission": 1
+  },
+  "graph": {
+    "layers": 7,
+    "decoded": [
+      "stepWater",
+      "stepSand",
+      "creak",
+      "bird",
+      "breath",
+      "wind",
+      "engine",
+      "hullwash",
+      "surf"
+    ],
+    "failures": [],
+    "activeShots": 0,
+    "shotCount": 39,
+    "frames": 26929,
+    "master": 0.7200000286102295,
+    "reduction": -0.00013368613144848496
+  },
+  "mode": "walk"
+}

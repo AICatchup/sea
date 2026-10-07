@@ -1,0 +1,81 @@
+{
+  "before": {
+    "camera": {
+      "yaw": -1.5707963267948966,
+      "pitch": -0.65,
+      "height": -0.14942578779411186,
+      "x": 5968.5482474147075,
+      "z": -4510
+    },
+    "surf": {
+      "phase": "paddling",
+      "yaw": -1.5707963267948966,
+      "speed": 1.4660297621929481,
+      "balance": 1,
+      "catchWindow": 0,
+      "movingWave": 0,
+      "previousWaterHeight": -0.5934538796063171,
+      "previousPlayerX": 5968.5482474147075,
+      "previousPlayerZ": -4510,
+      "wipeoutTime": 0,
+      "eyeBlend": 0,
+      "rideDistance": 0,
+      "rideTime": 0,
+      "bestDistance": 0,
+      "bestTime": 0
+    }
+  },
+  "state": "done",
+  "after": {
+    "camera": {
+      "yaw": -1.5707963267948966,
+      "pitch": -0.65,
+      "height": -0.14942578779411186,
+      "x": 5968.5482474147075,
+      "z": -4510
+    },
+    "surf": {
+      "phase": "paddling",
+      "yaw": -1.5707963267948966,
+      "speed": 1.4660297621929481,
+      "balance": 1,
+      "catchWindow": 0,
+      "movingWave": 0,
+      "previousWaterHeight": -0.43384451056687245,
+      "previousPlayerX": 5968.5482474147075,
+      "previousPlayerZ": -4510,
+      "wipeoutTime": 0,
+      "eyeBlend": 0,
+      "rideDistance": 0,
+      "rideTime": 0,
+      "bestDistance": 0,
+      "bestTime": 0
+    }
+  },
+  "afterKey": {
+    "camera": {
+      "yaw": -1.5707963267948966,
+      "pitch": -0.65,
+      "height": -0.14942578779411186,
+      "x": 5968.5482474147075,
+      "z": -4510
+    },
+    "surf": {
+      "phase": "paddling",
+      "yaw": -1.5707963267948966,
+      "speed": 1.4660297621929481,
+      "balance": 1,
+      "catchWindow": 0,
+      "movingWave": 0,
+      "previousWaterHeight": -0.25391012436102844,
+      "previousPlayerX": 5968.5482474147075,
+      "previousPlayerZ": -4510,
+      "wipeoutTime": 0,
+      "eyeBlend": 0,
+      "rideDistance": 0,
+      "rideTime": 0,
+      "bestDistance": 0,
+      "bestTime": 0
+    }
+  }
+}
