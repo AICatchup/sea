@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type {SoundscapeFrame} from '../audio/soundscape-state.ts';
 import {ActivitySession} from '../activities/session.ts';
 import {ActivityWorld} from '../activities/world.ts';
+import {OCEAN_PROPAGATION_DIRECTION} from './wave-direction.ts';
 import { OceanSimulation } from './fft';
 import { environmentFragment, environmentVertex, oceanVertex, oceanFragment, skyVertex, skyFragment } from './shaders';
 import { presets, type PresetName } from './presets';
@@ -409,7 +410,7 @@ export class Ocean {
     this.assets.boat.rotation.set(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ');
     state.activity=this.activities.tool==='rod'?'fishing':this.activities.surf.phase==='riding'?'surf':undefined;
     this.body.update(state,this.camera,delta,this.time);
-    this.activityWorld.update(state,this.camera,this.waterHeights.sample);
+    this.activityWorld.update(state,this.camera,this.waterHeights.sample,this.time);
     const underwater=cameraSubmersion(this.camera.position.y,this.waterHeights.sample(this.camera.position.x,this.camera.position.z));
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()),this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));
@@ -713,7 +714,7 @@ export class Ocean {
     return{dt:this.adventure.inputBlocked?0:Math.min(.05,Math.max(0,dt)),time:this.time,mode:s.mode,position:{x:p.x,y:p.y,z:p.z},velocity:{x:s.velocity?.x??0,y:s.velocity?.y??0,z:s.velocity?.z??0},yaw:s.yaw,
       depth:Math.max(0,w-p.y),immersion:cameraSubmersion(p.y,w),bodyImmersion:s.immersion??0,grounded:!!s.grounded,gaitPhase:s.gaitPhase??0,
       boat:{pitch:s.boatPitch??0,roll:s.boatRoll??0,speed:s.mode==='boat'?s.speed:0},
-      environment:{windSpeed:this.wind,windDirection:Math.atan2(.8,-.6),exposure:Math.hypot(p.x,p.z)<220?.35:.85},
+      environment:{windSpeed:this.wind,windDirection:Math.atan2(OCEAN_PROPAGATION_DIRECTION.x,-OCEAN_PROPAGATION_DIRECTION.z),exposure:THREE.MathUtils.lerp(.35,.85,THREE.MathUtils.smoothstep(Math.hypot(p.x,p.z),180,300))},
       wave:{ready,level:w,slope:Math.hypot(gx,gz),shoreDistance:this.soundShoreDistance}};
   }
   dispose():void{

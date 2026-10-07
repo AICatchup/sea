@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import type {AdventureState} from '../world/contracts.ts';
 import {ActivitySession} from './session.ts';
+import {CatchDisplay} from './catch-display.ts';
 const Y=new THREE.Vector3(0,1,0);
 /** Physical equipment stays in the same rendered world, including when carried. */
 export class ActivityWorld{
  readonly group=new THREE.Group();private rod=new THREE.Group();private spareRod=new THREE.Group();private board=new THREE.Group();
- private fish=new THREE.Group();private fishBody:THREE.Mesh;
+ private fish=new THREE.Group();private catchDisplay=new CatchDisplay();
  private bobber:THREE.Mesh;private line:THREE.Line;private poleTip=new THREE.Vector3();private resources:(THREE.BufferGeometry|THREE.Material)[]=[];
  constructor(private session:ActivitySession){
   this.group.name='Fishing and surfing equipment';
@@ -23,12 +24,10 @@ export class ActivityWorld{
   this.bobber=mesh(new THREE.SphereGeometry(.018,14,10),material(0xed573d),this.group);this.bobber.scale.y=1.8;
   const lineGeometry=new THREE.BufferGeometry();lineGeometry.setAttribute('position',new THREE.Float32BufferAttribute(new Float32Array(33*3),3));this.resources.push(lineGeometry);
   const lineMaterial=new THREE.LineBasicMaterial({color:0xd9e9dc,transparent:true,opacity:.65});this.resources.push(lineMaterial);this.line=new THREE.Line(lineGeometry,lineMaterial);this.line.frustumCulled=false;this.group.add(this.line);
-  const fishSilver=material(0xa1aba2,.32,.32);this.fishBody=mesh(new THREE.SphereGeometry(.5,24,16),fishSilver,this.fish);this.fishBody.scale.set(.22,.38,.82);
-  const tail=mesh(new THREE.ConeGeometry(.14,.24,4),fishSilver,this.fish);tail.position.z=.5;tail.rotation.x=Math.PI/2;tail.scale.z=.18;
-  for(const side of [-1,1]){const eye=mesh(new THREE.SphereGeometry(.022,10,8),carbon,this.fish);eye.position.set(side*.064,.059,-.28);}
+  this.fish.add(this.catchDisplay.group);
   this.group.add(this.fish);
  }
- update(s:AdventureState,camera:THREE.Camera,water:(x:number,z:number)=>number):void{
+ update(s:AdventureState,camera:THREE.Camera,water:(x:number,z:number)=>number,time=0):void{
   const model=this.session,f=model.fishing.snapshot();this.spareRod.position.set(model.pole.x,model.pole.y+.02,model.pole.z);this.spareRod.rotation.set(.18,0,-.16);this.spareRod.visible=model.tool!=='rod'||s.mode==='boat';
   this.rod.visible=model.tool==='rod'||s.mode==='boat';
   if(model.tool==='rod'){
@@ -46,11 +45,15 @@ export class ActivityWorld{
     for(let i=0;i<=32;i++){const t=i/32,point=this.poleTip.clone().lerp(this.bobber.position,t);point.y-=Math.sin(t*Math.PI)*(f.phase==='reeling'?.08:.35);attr.setXYZ(i,point.x,point.y,point.z);}attr.needsUpdate=true;
   }
   this.fish.visible=model.tool==='rod'&&f.phase==='caught'&&!!f.catch;
-  if(this.fish.visible&&f.catch){const length=f.catch.lengthCm/100;this.fish.scale.setScalar(length);this.fish.position.copy(this.bobber.position);this.fish.position.y-=length*.41;this.fish.rotation.set(Math.PI/2,-s.yaw,.15);(this.fishBody.material as THREE.MeshStandardMaterial).color.setHex(f.catch.species==='メバル'?0x807b62:f.catch.species==='サバ'?0x648792:0xaab29c);}
+  if(this.fish.visible&&f.catch){
+    this.catchDisplay.set(f.catch.species,f.catch.lengthCm/100,time);
+    this.fish.position.set(.05,-.205,-1.25).applyMatrix4(camera.matrixWorld);
+    this.fish.quaternion.copy(camera.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(.10,.25,Math.PI/2,'YXZ')));
+  }
   if(model.tool==='board'){
     if(model.surf.phase==='carried'){this.board.position.set(.63,-.60,.05).applyMatrix4(camera.matrixWorld);this.board.quaternion.copy(camera.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0,0,Math.PI/2)));}
     else {this.board.position.set(s.position.x,water(s.position.x,s.position.z)+.035,s.position.z);this.board.rotation.set(model.surfOutput?.boardPitch??0,-model.surf.yaw,model.surfOutput?.boardRoll??0,'YXZ');}
   }else{this.board.position.set(model.board.x,model.board.y+.12,model.board.z);this.board.rotation.set(0,.45,0);}
  }
- dispose(){this.resources.forEach(r=>r.dispose());this.group.clear();}
+ dispose(){this.resources.forEach(r=>r.dispose());this.catchDisplay.dispose();this.group.clear();}
 }
