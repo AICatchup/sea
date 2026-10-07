@@ -1,0 +1,299 @@
+{
+  "state": "done",
+  "diagnostics": {
+    "bridge": {
+      "atlasRebuilds": 1,
+      "available": true,
+      "bytes": 165806080,
+      "dynamicBackend": "cpu",
+      "materials": 62,
+      "parameterUpdates": 162,
+      "reason": "",
+      "rebuilds": 1,
+      "refits": 518
+    },
+    "enabled": true,
+    "geometry": {
+      "available": true,
+      "bytes": 111820800,
+      "coverage": "Opaque UV0 authored meshes; height-field bed separately.",
+      "excludedSurfaces": 0,
+      "instances": 1788,
+      "nodes": 168820,
+      "reason": "",
+      "rebuilds": 1,
+      "refits": 519,
+      "triangles": 538856,
+      "version": 519
+    },
+    "irradiance": {
+      "coefficients": [
+        [
+          0.8598632918522118,
+          1.0029369151453904,
+          1.3752555242182265
+        ],
+        [
+          0.6160492720042697,
+          0.6984216732548232,
+          1.0478145303316715
+        ],
+        [
+          0.29480475164209136,
+          0.35425995969251295,
+          0.48610961226741695
+        ],
+        [
+          -0.25307526416379106,
+          -0.2964329149170805,
+          -0.39071739020768925
+        ],
+        [
+          -0.26094870537032905,
+          -0.2919424912337042,
+          -0.3815555302085442
+        ],
+        [
+          0.29831165759289613,
+          0.34632996241988223,
+          0.4741700687857981
+        ],
+        [
+          -0.027970025408841578,
+          -0.009461031024678768,
+          0.021961542137902343
+        ],
+        [
+          -0.2080862577758216,
+          -0.23637104945880907,
+          -0.31132367815605816
+        ],
+        [
+          -0.005580786535956537,
+          0.004642003712827196,
+          0.01992467658487411
+        ]
+      ],
+      "intensity": 0.48,
+      "measured": true,
+      "preset": "day",
+      "scope": "Nine SH coefficients from the actual rendered solar-removed environment cube; diffuse only, specular hemisphere remains approximate"
+    },
+    "maxTextureSize": 16384,
+    "maxTextures": 16,
+    "skinned": {
+      "available": true,
+      "backend": "cpu",
+      "bytes": 10457648,
+      "excludedSurfaces": 0,
+      "gpu": null,
+      "maxDepth": 14,
+      "nodes": 16055,
+      "reason": "",
+      "rebuilds": 1,
+      "refits": 2,
+      "skipped": 517,
+      "timeMs": 0.20000000298023224,
+      "triangles": 36700,
+      "vertices": 19372
+    }
+  },
+  "scope": "Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance",
+  "variants": [
+    {
+      "blend": 0,
+      "collision": {
+        "colliders": 3241,
+        "hashCells": 1273,
+        "largeColliders": 1,
+        "lastCandidates": 1,
+        "lastIterations": 0,
+        "lastTransformedTriangles": 0,
+        "lastTriangleTests": 0,
+        "storedTriangles": 489224,
+        "triangles": 3492816,
+        "uniqueBVHs": 29
+      },
+      "draws": 243,
+      "name": "shore",
+      "programs": 65,
+      "state": {
+        "action": "idle",
+        "camera": [
+          -42,
+          1.3518743337820132,
+          9,
+          -0.11505006784720222,
+          0.2743682744614488,
+          0.03308314468637099,
+          0.9541441386892556
+        ],
+        "disposed": false,
+        "eyeY": 1.3518743337820132,
+        "height": 720,
+        "hidden": false,
+        "locked": true,
+        "oxygen": 1,
+        "paused": true,
+        "pose": {
+          "depth": 0,
+          "mode": "walk",
+          "pitch": -0.24,
+          "x": -42,
+          "yaw": -0.56,
+          "z": 9
+        },
+        "preset": "day",
+        "quality": "high",
+        "stamina": 1,
+        "swell": 1,
+        "width": 1280,
+        "wind": 8.5
+      },
+      "time": 34,
+      "triangles": 14343700,
+      "worldSolids": {
+        "added": 3241,
+        "colliders": 3241,
+        "instances": 120,
+        "meshes": 23,
+        "removed": 0,
+        "replaced": 0,
+        "syncMs": 7371.800000011921,
+        "triangles": 3492816,
+        "trunks": 3098,
+        "unchanged": 0
+      }
+    },
+    {
+      "blend": 1,
+      "collision": {
+        "colliders": 3241,
+        "hashCells": 1273,
+        "largeColliders": 1,
+        "lastCandidates": 1,
+        "lastIterations": 0,
+        "lastTransformedTriangles": 0,
+        "lastTriangleTests": 0,
+        "storedTriangles": 489224,
+        "triangles": 3492816,
+        "uniqueBVHs": 29
+      },
+      "draws": 245,
+      "name": "shore",
+      "programs": 65,
+      "state": {
+        "action": "idle",
+        "camera": [
+          -42,
+          1.3518743337820132,
+          9,
+          -0.11505006784720222,
+          0.2743682744614488,
+          0.03308314468637099,
+          0.9541441386892556
+        ],
+        "disposed": false,
+        "eyeY": 1.3518743337820132,
+        "height": 720,
+        "hidden": false,
+        "locked": true,
+        "oxygen": 1,
+        "paused": true,
+        "pose": {
+          "depth": 0,
+          "mode": "walk",
+          "pitch": -0.24,
+          "x": -42,
+          "yaw": -0.56,
+          "z": 9
+        },
+        "preset": "day",
+        "quality": "high",
+        "stamina": 1,
+        "swell": 1,
+        "width": 1280,
+        "wind": 8.5
+      },
+      "time": 34,
+      "triangles": 16951310,
+      "worldSolids": {
+        "added": 3241,
+        "colliders": 3241,
+        "instances": 120,
+        "meshes": 23,
+        "removed": 0,
+        "replaced": 0,
+        "syncMs": 7371.800000011921,
+        "triangles": 3492816,
+        "trunks": 3098,
+        "unchanged": 0
+      }
+    },
+    {
+      "blend": 0,
+      "collision": {
+        "colliders": 3241,
+        "hashCells": 1273,
+        "largeColliders": 1,
+        "lastCandidates": 1,
+        "lastIterations": 0,
+        "lastTransformedTriangles": 0,
+        "lastTriangleTests": 0,
+        "storedTriangles": 489224,
+        "triangles": 3492816,
+        "uniqueBVHs": 29
+      },
+      "draws": 245,
+      "name": "shore",
+      "programs": 65,
+      "state": {
+        "action": "idle",
+        "camera": [
+          -42,
+          1.3518743337820132,
+          9,
+          -0.11505006784720222,
+          0.2743682744614488,
+          0.03308314468637099,
+          0.9541441386892556
+        ],
+        "disposed": false,
+        "eyeY": 1.3518743337820132,
+        "height": 720,
+        "hidden": false,
+        "locked": true,
+        "oxygen": 1,
+        "paused": true,
+        "pose": {
+          "depth": 0,
+          "mode": "walk",
+          "pitch": -0.24,
+          "x": -42,
+          "yaw": -0.56,
+          "z": 9
+        },
+        "preset": "day",
+        "quality": "high",
+        "stamina": 1,
+        "swell": 1,
+        "width": 1280,
+        "wind": 8.5
+      },
+      "time": 34,
+      "triangles": 16951310,
+      "worldSolids": {
+        "added": 3241,
+        "colliders": 3241,
+        "instances": 120,
+        "meshes": 23,
+        "removed": 0,
+        "replaced": 0,
+        "syncMs": 7371.800000011921,
+        "triangles": 3492816,
+        "trunks": 3098,
+        "unchanged": 0
+      }
+    }
+  ]
+}

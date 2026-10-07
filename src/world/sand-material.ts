@@ -21,6 +21,7 @@ export const SAND_SURFACE = Object.freeze({
 });
 
 export interface SandTextureSet {
+  appearance?: { value: number };
   ready:Promise<void>;
   albedo: THREE.Texture;
   normalGL: THREE.Texture;
@@ -30,7 +31,7 @@ export interface SandTextureSet {
 }
 
 /** Start image loading without blocking terrain construction; safe for CPU-only tests. */
-export function loadSandTextures(anisotropy = 8): SandTextureSet {
+export function loadSandTextures(anisotropy = 8, appearance?: { value: number }): SandTextureSet {
   const pending:Promise<void>[]=[];
   const loader = typeof document === 'undefined' ? undefined : new THREE.TextureLoader();
   const load = (role: keyof typeof SAND_TEXTURE_URLS, colorSpace: THREE.ColorSpace) => {
@@ -49,5 +50,5 @@ export function loadSandTextures(anisotropy = 8): SandTextureSet {
   const albedo = load('albedo', THREE.SRGBColorSpace);
   const normalGL = load('normalGL', THREE.NoColorSpace);
   const arm = load('arm', THREE.NoColorSpace);
-  return { albedo, normalGL, arm, ready:Promise.all(pending).then(()=>{}), textures: [albedo, normalGL, arm] };
+  return { albedo, normalGL, arm, appearance, ready:Promise.all(pending).then(()=>{}), textures: [albedo, normalGL, arm] };
 }

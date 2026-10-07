@@ -1,0 +1,196 @@
+[
+  {
+    "name": "spawn",
+    "poseAndTimeMatched": true,
+    "collisionStatsMatched": true,
+    "changedPixelFraction": 0.5091395399305556,
+    "candidateWhiteClipFraction": 0.0,
+    "baselineWhiteClipFraction": 0.0,
+    "returnMeanAbsoluteDifference": 0.0,
+    "candidateMeanRGBInChangedPixels": [
+      181.78685188066228,
+      182.20335107187842,
+      180.20208088691305
+    ],
+    "baselineMeanRGBInChangedPixels": [
+      138.98088755240045,
+      136.24747934351043,
+      133.24668228113285
+    ],
+    "draws": [
+      266,
+      266,
+      153
+    ],
+    "triangles": [
+      15596836,
+      15596836,
+      8813391
+    ],
+    "counterScope": "Whole-frame counters include shadow every 4 frames and reflection every 3 frames; not a geometry budget delta or performance comparison."
+  },
+  {
+    "name": "shore",
+    "poseAndTimeMatched": true,
+    "collisionStatsMatched": true,
+    "changedPixelFraction": 0.7018294270833333,
+    "candidateWhiteClipFraction": 0.0,
+    "baselineWhiteClipFraction": 0.0,
+    "returnMeanAbsoluteDifference": 0.0,
+    "candidateMeanRGBInChangedPixels": [
+      156.09819946011632,
+      163.82559685593517,
+      164.75839123322913
+    ],
+    "baselineMeanRGBInChangedPixels": [
+      113.05602916485005,
+      118.92634267461959,
+      123.18931797169476
+    ],
+    "draws": [
+      138,
+      138,
+      138
+    ],
+    "triangles": [
+      8122528,
+      8122528,
+      8122528
+    ],
+    "counterScope": "Whole-frame counters include shadow every 4 frames and reflection every 3 frames; not a geometry budget delta or performance comparison."
+  },
+  {
+    "name": "lookout",
+    "poseAndTimeMatched": true,
+    "collisionStatsMatched": true,
+    "changedPixelFraction": 0.5625770399305555,
+    "candidateWhiteClipFraction": 0.0,
+    "baselineWhiteClipFraction": 0.0,
+    "returnMeanAbsoluteDifference": 0.0,
+    "candidateMeanRGBInChangedPixels": [
+      162.64007630127819,
+      166.2601630563715,
+      166.50497906343847
+    ],
+    "baselineMeanRGBInChangedPixels": [
+      119.85879634540794,
+      120.2200142341616,
+      120.51241824518632
+    ],
+    "draws": [
+      159,
+      394,
+      272
+    ],
+    "triangles": [
+      10019860,
+      26466705,
+      16843205
+    ],
+    "counterScope": "Whole-frame counters include shadow every 4 frames and reflection every 3 frames; not a geometry budget delta or performance comparison."
+  },
+  {
+    "name": "reef",
+    "poseAndTimeMatched": true,
+    "collisionStatsMatched": true,
+    "changedPixelFraction": 0.8976204427083333,
+    "candidateWhiteClipFraction": 0.0,
+    "baselineWhiteClipFraction": 0.0,
+    "returnMeanAbsoluteDifference": 0.11497468171296296,
+    "candidateMeanRGBInChangedPixels": [
+      40.06389022867415,
+      130.72733657541218,
+      144.05455202617838
+    ],
+    "baselineMeanRGBInChangedPixels": [
+      22.69345431291984,
+      85.98296276686406,
+      98.65166026591815
+    ],
+    "draws": [
+      184,
+      260,
+      184
+    ],
+    "triangles": [
+      12615504,
+      20107775,
+      12615504
+    ],
+    "counterScope": "Whole-frame counters include shadow every 4 frames and reflection every 3 frames; not a geometry budget delta or performance comparison."
+  },
+  {
+    "name": "habushi-front",
+    "poseAndTimeMatched": true,
+    "collisionStatsMatched": true,
+    "changedPixelFraction": 0.0,
+    "candidateWhiteClipFraction": 0.0,
+    "baselineWhiteClipFraction": 0.0,
+    "returnMeanAbsoluteDifference": 0.0,
+    "candidateMeanRGBInChangedPixels": null,
+    "baselineMeanRGBInChangedPixels": null,
+    "draws": [
+      57,
+      30,
+      30
+    ],
+    "triangles": [
+      2892030,
+      1294530,
+      1294530
+    ],
+    "counterScope": "Whole-frame counters include shadow every 4 frames and reflection every 3 frames; not a geometry budget delta or performance comparison."
+  },
+  {
+    "name": "cliff",
+    "poseAndTimeMatched": true,
+    "collisionStatsMatched": true,
+    "changedPixelFraction": 0.40310546875,
+    "candidateWhiteClipFraction": 0.0,
+    "baselineWhiteClipFraction": 0.0,
+    "returnMeanAbsoluteDifference": 0.0,
+    "candidateMeanRGBInChangedPixels": [
+      175.13823613331826,
+      175.8767570564896,
+      174.2062815274211
+    ],
+    "baselineMeanRGBInChangedPixels": [
+      139.3138691043386,
+      138.60519458845442,
+      137.16395604868885
+    ],
+    "draws": [
+      292,
+      94,
+      179
+    ],
+    "triangles": [
+      22834927,
+      8263941,
+      16458838
+    ],
+    "counterScope": "Whole-frame counters include shadow every 4 frames and reflection every 3 frames; not a geometry budget delta or performance comparison."
+  },
+  {
+    "name": "secret",
+    "poseAndTimeMatched": true,
+    "collisionStatsMatched": true,
+    "changedPixelFraction": 0.0,
+    "candidateWhiteClipFraction": 0.0,
+    "baselineWhiteClipFraction": 0.0,
+    "returnMeanAbsoluteDifference": 0.0,
+    "candidateMeanRGBInChangedPixels": null,
+    "baselineMeanRGBInChangedPixels": null,
+    "draws": [
+      54,
+      40,
+      40
+    ],
+    "triangles": [
+      5168652,
+      3546994,
+      3546994
+    ],
+    "counterScope": "Whole-frame counters include shadow every 4 frames and reflection every 3 frames; not a geometry budget delta or performance comparison."
+  }
+]

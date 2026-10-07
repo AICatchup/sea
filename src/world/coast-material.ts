@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { FOREST_GROUND_SURFACE, loadForestGroundTextures } from './forest-ground.ts';
 import { SAND_SURFACE, type SandTextureSet } from './sand-material.ts';
+import { SAND_REFLECTANCE_GLSL } from './sand-reflectance.ts';
 
 /** Standard lit material. Only texture projection and grain are extended; the renderer owns grading. */
 function makeLegacyTerrainMaterial(texture: THREE.DataTexture, atlas: THREE.Texture, sand:SandTextureSet): THREE.MeshStandardMaterial {
@@ -166,6 +167,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
       uSandNormal: { value: sand.normalGL }, uSandARM: { value: sand.arm }, uSandReady: sandReady,
       uCoastWaterLevel: waterLevel, uCoastSplashHeight: splashHeight,
     });
+    if (sand.appearance) shader.uniforms.uSandAppearance = sand.appearance;
     if (ground) Object.assign(shader.uniforms, { uForestAlbedo: { value: ground.albedo }, uForestNormal: { value: ground.normalGL }, uForestARM: { value: ground.arm }, uForestReady: ground.ready });
     shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>
       varying vec3 vCoastPoint;
@@ -187,7 +189,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
       uniform sampler2D uCoastAtlas, uSandAlbedo, uSandNormal, uSandARM;
       uniform float uCoastRockReady, uSandReady, uCoastWaterLevel, uCoastSplashHeight;${ground ? '\n      uniform sampler2D uForestAlbedo, uForestNormal, uForestARM;\n      uniform float uForestReady;' : ''}
       varying vec3 vCoastPoint;
-      varying vec3 vCoastAxis;
+      varying vec3 vCoastAxis;${sand.appearance ? SAND_REFLECTANCE_GLSL : ''}
 
       vec3 coastCellHash(vec2 p) {
         vec3 h = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
@@ -300,7 +302,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
       vec3 sandPhoto = texture2D(uSandAlbedo, sandUV).rgb;
       float sandLuma = dot(sandPhoto, vec3(.2126, .7152, .0722));
       vec3 sandColor = mix(sandPhoto, vec3(sandLuma) * vec3(1.055, 1.025, .94), .7) * 2.25;
-      sandColor *= mix(${SAND_SURFACE.wetAlbedoMultiplier}, 1.0, sandDry);
+      ${sand.appearance ? 'sandColor = mix(sandColor, paleSandReflectance(sandPhoto), uSandAppearance);\n      ' : ''}sandColor *= mix(${SAND_SURFACE.wetAlbedoMultiplier}, 1.0, sandDry);
       sandColor = mix(vec3(.46, .43, .37) * mix(.62, 1.0, sandDry), sandColor, uSandReady);
       ${ground ? `// Fixed world surface: camera distance cannot change soil into canopy.
       float forestSlope = smoothstep(.62, .86, abs(coastAxis.y));
@@ -369,7 +371,7 @@ function makeScannedTerrainMaterial(atlas: THREE.Texture, sand: SandTextureSet, 
         reflectedLight.indirectSpecular *= computeSpecularOcclusion(saturate(dot(geometryNormal, geometryViewDir)), coastOcclusion, material.roughness);
       #endif`);
   };
-  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-evergreen-v23" : ""}`;
+  material.customProgramCacheKey = () => `tomari-scanned-coast-world-stochastic-pbr-v5-${albedoGain}${ground ? "-forest-ground-evergreen-v23" : ""}${sand.appearance ? '-sand-reflectance-v37' : ''}`;
   return material;
 }
 

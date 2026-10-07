@@ -65,6 +65,7 @@ function traceOutline(field: ElevationField): [number, number][] {
 }
 
 export class IslandWorld {
+  readonly sandAppearance = { value: 0 };
   readonly group = new THREE.Group();
   readonly destinations: WorldDestination[];
   readonly mapOutlines: MapOutline[];
@@ -92,7 +93,7 @@ export class IslandWorld {
     atlas.colorSpace=THREE.SRGBColorSpace;
     atlas.anisotropy=8;atlas.minFilter=THREE.LinearMipmapLinearFilter;atlas.magFilter=THREE.LinearFilter;
     this.textures.push(atlas);
-    const sand=loadSandTextures();this.textures.push(...sand.textures);
+    const sand=loadSandTextures(8,this.sandAppearance);this.textures.push(...sand.textures);
     const terrainMaterial = makeTerrainMaterial(grain, atlas, sand,forestGround); this.materials.push(terrainMaterial);
     this.cliffVolume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('cliffvolume')!=='0'?new TomariCliffVolume(terrainMaterial):null;
     if(this.cliffVolume)this.group.add(this.cliffVolume.group);

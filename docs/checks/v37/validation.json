@@ -1,0 +1,14 @@
+{
+  "version": "V37",
+  "tests": 338,
+  "typecheck": "PASS",
+  "build": "PASS",
+  "comparisonViews": 7,
+  "whiteClippedPixels": 0,
+  "appearance": "adopt for bounded sand material improvement",
+  "fullPhotoGoal": "UNMET",
+  "standaloneSha256": "13d94dcf41b12fcef1fcf4786899e8fc5df49543f0f33d72ea8b42b1e5392543",
+  "standaloneBytes": 268908565,
+  "nativeGameplay": "No new full journey claim; geometry and controller unchanged",
+  "geometryRefraction": "Optional path compiled and rendered; normal default remains OFF"
+}

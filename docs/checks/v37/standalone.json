@@ -1,0 +1,15 @@
+{
+  "camera": {
+    "height": 1.3518743337820132,
+    "pitch": -0.24,
+    "x": -42,
+    "yaw": -0.56,
+    "z": 9
+  },
+  "foliage": "ready",
+  "qa": "undefined",
+  "ready": "complete",
+  "resources": [],
+  "sandAppearance": 1,
+  "sky": true
+}

@@ -149,6 +149,7 @@ export class Ocean {
     this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2}):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0');
+    this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
@@ -178,6 +179,7 @@ export class Ocean {
     this.adventure.setContextInteraction({label:state=>this.expedition.context(state)?.label??'',activate:state=>this.expedition.interact(state)});
     const p=presets.day;
     this.uniforms={
+      uSandAppearance:this.world.sandAppearance,
       ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},uHideSurfaceFoam:{value:0},uFoamFilm:{value:new URLSearchParams(location.search).get('foamfilm')==='0'?0:1},uFarWaveFilter:{value:new URLSearchParams(location.search).get('wavefilter')==='0'?0:1},
       uSnellRay:{value:new URLSearchParams(location.search).get('ray')==='1'?1:0},uWaterProjection:{value:this.camera.projectionMatrix},
       uTime:{value:this.time},uSunDirection:{value:new THREE.Vector3(...p.sun).normalize()},
@@ -653,7 +655,7 @@ export class Ocean {
   get diagnostics(){
     const state=this.adventure.state;
     return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,preset:this.currentPreset,
-      visualCaptureLocked:this.visualCaptureLocked,
+      visualCaptureLocked:this.visualCaptureLocked,sandAppearance:this.world.sandAppearance.value,
       resolution:[this.canvas.width,this.canvas.height],camera:{yaw:state.yaw,pitch:state.pitch,height:state.position.y,x:state.position.x,z:state.position.z},
       adventure:{mode:state.mode,depth:state.depth,oxygen:state.oxygen,speed:state.speed,placed:this.assets.placedCount,
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,

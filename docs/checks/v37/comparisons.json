@@ -1,0 +1,1402 @@
+[
+  {
+    "scope": "Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance",
+    "variants": [
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 266,
+        "name": "spawn",
+        "programs": 62,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -36,
+            3.119820126211253,
+            27,
+            -0.0143295099661545,
+            0.29548696126144947,
+            0.004432636871673969,
+            0.9552290157857268
+          ],
+          "disposed": false,
+          "eyeY": 3.119820126211253,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.03,
+            "x": -36,
+            "yaw": -0.6,
+            "z": 27
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 15596836,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 1,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 266,
+        "name": "spawn",
+        "programs": 62,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -36,
+            3.119820126211253,
+            27,
+            -0.0143295099661545,
+            0.29548696126144947,
+            0.004432636871673969,
+            0.9552290157857268
+          ],
+          "disposed": false,
+          "eyeY": 3.119820126211253,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.03,
+            "x": -36,
+            "yaw": -0.6,
+            "z": 27
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 15596836,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 153,
+        "name": "spawn",
+        "programs": 62,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -36,
+            3.119820126211253,
+            27,
+            -0.0143295099661545,
+            0.29548696126144947,
+            0.004432636871673969,
+            0.9552290157857268
+          ],
+          "disposed": false,
+          "eyeY": 3.119820126211253,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.03,
+            "x": -36,
+            "yaw": -0.6,
+            "z": 27
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 8813391,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      }
+    ]
+  },
+  {
+    "scope": "Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance",
+    "variants": [
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 138,
+        "name": "shore",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -42,
+            1.3518743337820132,
+            9,
+            -0.11505006784720222,
+            0.2743682744614488,
+            0.03308314468637099,
+            0.9541441386892556
+          ],
+          "disposed": false,
+          "eyeY": 1.3518743337820132,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.24,
+            "x": -42,
+            "yaw": -0.56,
+            "z": 9
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 8122528,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 1,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 138,
+        "name": "shore",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -42,
+            1.3518743337820132,
+            9,
+            -0.11505006784720222,
+            0.2743682744614488,
+            0.03308314468637099,
+            0.9541441386892556
+          ],
+          "disposed": false,
+          "eyeY": 1.3518743337820132,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.24,
+            "x": -42,
+            "yaw": -0.56,
+            "z": 9
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 8122528,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 138,
+        "name": "shore",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -42,
+            1.3518743337820132,
+            9,
+            -0.11505006784720222,
+            0.2743682744614488,
+            0.03308314468637099,
+            0.9541441386892556
+          ],
+          "disposed": false,
+          "eyeY": 1.3518743337820132,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.24,
+            "x": -42,
+            "yaw": -0.56,
+            "z": 9
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 8122528,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      }
+    ]
+  },
+  {
+    "scope": "Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance",
+    "variants": [
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 159,
+        "name": "lookout",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -25,
+            13.50407012014893,
+            36,
+            -0.12048441287007682,
+            0.2550747238774246,
+            0.0320514492656817,
+            0.9588498819388662
+          ],
+          "disposed": false,
+          "eyeY": 13.50407012014893,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.25,
+            "x": -25,
+            "yaw": -0.52,
+            "z": 36
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 10019860,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 1,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 394,
+        "name": "lookout",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -25,
+            13.50407012014893,
+            36,
+            -0.12048441287007682,
+            0.2550747238774246,
+            0.0320514492656817,
+            0.9588498819388662
+          ],
+          "disposed": false,
+          "eyeY": 13.50407012014893,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.25,
+            "x": -25,
+            "yaw": -0.52,
+            "z": 36
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 26466705,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 272,
+        "name": "lookout",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -25,
+            13.50407012014893,
+            36,
+            -0.12048441287007682,
+            0.2550747238774246,
+            0.0320514492656817,
+            0.9588498819388662
+          ],
+          "disposed": false,
+          "eyeY": 13.50407012014893,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.25,
+            "x": -25,
+            "yaw": -0.52,
+            "z": 36
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 16843205,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      }
+    ]
+  },
+  {
+    "scope": "Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance",
+    "variants": [
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 184,
+        "name": "reef",
+        "programs": 65,
+        "state": {
+          "action": "dive",
+          "camera": [
+            -145,
+            -5,
+            -113,
+            -0.20197938638944213,
+            0.24196872057608015,
+            0.0515738045677269,
+            0.947626302093251
+          ],
+          "disposed": false,
+          "eyeY": -5,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 5,
+            "mode": "dive",
+            "pitch": -0.42,
+            "x": -145,
+            "yaw": -0.5,
+            "z": -113
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 12615504,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 1,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 260,
+        "name": "reef",
+        "programs": 65,
+        "state": {
+          "action": "dive",
+          "camera": [
+            -145,
+            -5,
+            -113,
+            -0.20197938638944213,
+            0.24196872057608015,
+            0.0515738045677269,
+            0.947626302093251
+          ],
+          "disposed": false,
+          "eyeY": -5,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 5,
+            "mode": "dive",
+            "pitch": -0.42,
+            "x": -145,
+            "yaw": -0.5,
+            "z": -113
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 20107775,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 184,
+        "name": "reef",
+        "programs": 65,
+        "state": {
+          "action": "dive",
+          "camera": [
+            -145,
+            -5,
+            -113,
+            -0.20197938638944213,
+            0.24196872057608015,
+            0.0515738045677269,
+            0.947626302093251
+          ],
+          "disposed": false,
+          "eyeY": -5,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 5,
+            "mode": "dive",
+            "pitch": -0.42,
+            "x": -145,
+            "yaw": -0.5,
+            "z": -113
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 12615504,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      }
+    ]
+  },
+  {
+    "scope": "Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance",
+    "variants": [
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 57,
+        "name": "habushi-front",
+        "programs": 70,
+        "state": {
+          "action": "idle",
+          "camera": [
+            5837,
+            14.794579162597657,
+            -4503.84,
+            -0.01414119283354236,
+            -0.7069653645442927,
+            -0.014141192833542355,
+            0.7069653645442926
+          ],
+          "disposed": false,
+          "eyeY": 14.794579162597657,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.04,
+            "x": 5837,
+            "yaw": 1.5707963267948966,
+            "z": -4503.84
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 2892030,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 1,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 30,
+        "name": "habushi-front",
+        "programs": 70,
+        "state": {
+          "action": "idle",
+          "camera": [
+            5837,
+            14.794579162597657,
+            -4503.84,
+            -0.01414119283354236,
+            -0.7069653645442927,
+            -0.014141192833542355,
+            0.7069653645442926
+          ],
+          "disposed": false,
+          "eyeY": 14.794579162597657,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.04,
+            "x": 5837,
+            "yaw": 1.5707963267948966,
+            "z": -4503.84
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 1294530,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 30,
+        "name": "habushi-front",
+        "programs": 70,
+        "state": {
+          "action": "idle",
+          "camera": [
+            5837,
+            14.794579162597657,
+            -4503.84,
+            -0.01414119283354236,
+            -0.7069653645442927,
+            -0.014141192833542355,
+            0.7069653645442926
+          ],
+          "disposed": false,
+          "eyeY": 14.794579162597657,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.04,
+            "x": 5837,
+            "yaw": 1.5707963267948966,
+            "z": -4503.84
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 1294530,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5387.9000000059605,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      }
+    ]
+  },
+  {
+    "scope": "Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance",
+    "variants": [
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 292,
+        "name": "cliff",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -86,
+            1.5154619036711725,
+            -22,
+            0.03482082255847939,
+            0.7164595825818137,
+            -0.035852861494419526,
+            0.6958360073794011
+          ],
+          "disposed": false,
+          "eyeY": 1.5154619036711725,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": 0.1,
+            "x": -86,
+            "yaw": -1.6,
+            "z": -22
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 22834927,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 7371.800000011921,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 1,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 94,
+        "name": "cliff",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -86,
+            1.5154619036711725,
+            -22,
+            0.03482082255847939,
+            0.7164595825818137,
+            -0.035852861494419526,
+            0.6958360073794011
+          ],
+          "disposed": false,
+          "eyeY": 1.5154619036711725,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": 0.1,
+            "x": -86,
+            "yaw": -1.6,
+            "z": -22
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 8263941,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 7371.800000011921,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 179,
+        "name": "cliff",
+        "programs": 63,
+        "state": {
+          "action": "idle",
+          "camera": [
+            -86,
+            1.5154619036711725,
+            -22,
+            0.03482082255847939,
+            0.7164595825818137,
+            -0.035852861494419526,
+            0.6958360073794011
+          ],
+          "disposed": false,
+          "eyeY": 1.5154619036711725,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": 0.1,
+            "x": -86,
+            "yaw": -1.6,
+            "z": -22
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 16458838,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 7371.800000011921,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      }
+    ]
+  },
+  {
+    "scope": "Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance",
+    "variants": [
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 54,
+        "name": "secret",
+        "programs": 64,
+        "state": {
+          "action": "idle",
+          "camera": [
+            5898,
+            2.107078066180053,
+            -923.918,
+            0,
+            0.9998000066665778,
+            0.01999866669333336,
+            0
+          ],
+          "disposed": false,
+          "eyeY": 2.107078066180053,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.04,
+            "x": 5898,
+            "yaw": 3.141592653589793,
+            "z": -923.918
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 5168652,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 7371.800000011921,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 1,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 40,
+        "name": "secret",
+        "programs": 64,
+        "state": {
+          "action": "idle",
+          "camera": [
+            5898,
+            2.107078066180053,
+            -923.918,
+            0,
+            0.9998000066665778,
+            0.01999866669333336,
+            0
+          ],
+          "disposed": false,
+          "eyeY": 2.107078066180053,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.04,
+            "x": 5898,
+            "yaw": 3.141592653589793,
+            "z": -923.918
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 3546994,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 7371.800000011921,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      {
+        "blend": 0,
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 40,
+        "name": "secret",
+        "programs": 64,
+        "state": {
+          "action": "idle",
+          "camera": [
+            5898,
+            2.107078066180053,
+            -923.918,
+            0,
+            0.9998000066665778,
+            0.01999866669333336,
+            0
+          ],
+          "disposed": false,
+          "eyeY": 2.107078066180053,
+          "height": 720,
+          "hidden": false,
+          "locked": true,
+          "oxygen": 1,
+          "paused": true,
+          "pose": {
+            "depth": 0,
+            "mode": "walk",
+            "pitch": -0.04,
+            "x": 5898,
+            "yaw": 3.141592653589793,
+            "z": -923.918
+          },
+          "preset": "day",
+          "quality": "high",
+          "stamina": 1,
+          "swell": 1,
+          "width": 1280,
+          "wind": 8.5
+        },
+        "time": 34,
+        "triangles": 3546994,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 7371.800000011921,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      }
+    ]
+  }
+]

@@ -188,6 +188,22 @@ try {
   // as the touch controls; bookmarks are QA starts, never normal travel actions.
   let crestSeriesBusy=false;
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
+    async captureSandComparison(name:string){
+      const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown sand comparison view');
+      await ocean.ready;const before=captureHost.readState(),original=ocean.world.sandAppearance.value,clock=ocean.diagnostics.time,variants=[];
+      try{
+        captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        const p=profile.pose;captureHost.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);ocean.setObservationClock(34);
+        for(const blend of [0,1,0]){
+          ocean.world.sandAppearance.value=blend;
+          for(let i=0;i<24;i++)await captureHost.nextFrame();
+          const png=await capturePNG();if(!png)throw new Error('Sand comparison capture failed');
+          const d=ocean.diagnostics;
+          variants.push({png,metadata:{name,blend,state:captureHost.readState(),time:d.time,draws:d.draws,triangles:d.triangles,collision:d.collision,worldSolids:d.worldSolids,programs:d.programs}});
+        }
+        return {variants,scope:'Same camera/time/sun/sky and meshes; shared sand reflectance only; authored palette target, no field measurement or Human acceptance'};
+      }finally{ocean.world.sandAppearance.value=original;try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
+    },
     viewpoint:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>ocean.adventure.viewpoint(x,z,yaw,pitch,mode,depth),
     async moveFor(x:number,forward:number,vertical:number,milliseconds:number){
       ocean.adventure.setMove(x,forward);ocean.adventure.setVertical(vertical);
@@ -520,7 +536,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle']){
+    for(const name of ['captureSandComparison','captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

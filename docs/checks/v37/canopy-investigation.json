@@ -1,0 +1,116 @@
+[
+  {
+    "material": 0,
+    "name": "island_tree_01",
+    "sourceTriangles": 34787,
+    "components": 35,
+    "levels": [
+      {
+        "level": "near",
+        "triangles": 1199,
+        "crossed": 46,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 1200,
+        "strictCrossed": 0,
+        "error": 0.012914958409965038
+      },
+      {
+        "level": "mid",
+        "triangles": 234,
+        "crossed": 60,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 688,
+        "strictCrossed": 0,
+        "error": 0.07277795672416687
+      },
+      {
+        "level": "far",
+        "triangles": 79,
+        "crossed": 37,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 688,
+        "strictCrossed": 0,
+        "error": 0.07372765988111496
+      }
+    ]
+  },
+  {
+    "material": 1,
+    "name": "island_tree_01_leaves",
+    "sourceTriangles": 1060032,
+    "components": 44168,
+    "levels": [
+      {
+        "level": "near",
+        "triangles": 18000,
+        "crossed": 0,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 18000,
+        "strictCrossed": 0,
+        "error": 0.0027621330227702856
+      },
+      {
+        "level": "mid",
+        "triangles": 3200,
+        "crossed": 0,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 3200,
+        "strictCrossed": 0,
+        "error": 0.004025389906018972
+      },
+      {
+        "level": "far",
+        "triangles": 720,
+        "crossed": 0,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 720,
+        "strictCrossed": 0,
+        "error": 0.004683227743953466
+      }
+    ]
+  },
+  {
+    "material": 2,
+    "name": "island_tree_01_branches",
+    "sourceTriangles": 504584,
+    "components": 8357,
+    "levels": [
+      {
+        "level": "near",
+        "triangles": 2464,
+        "crossed": 0,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 2542,
+        "strictCrossed": 0,
+        "error": 0.0033122035674750805
+      },
+      {
+        "level": "mid",
+        "triangles": 461,
+        "crossed": 0,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 740,
+        "strictCrossed": 0,
+        "error": 0.02546001225709915
+      },
+      {
+        "level": "far",
+        "triangles": 116,
+        "crossed": 0,
+        "missing": 0,
+        "ambiguous": 0,
+        "strictTriangles": 740,
+        "strictCrossed": 0,
+        "error": 0.026458345353603363
+      }
+    ]
+  }
+]
