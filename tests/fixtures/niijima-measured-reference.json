@@ -1,0 +1,46 @@
+{
+  "sourceSha256": "517493120bf9952d641968a7e5dbd577eacbd9d5d9140c00133c10bb8185bf23",
+  "method": "Native provider GeoTIFF queried directly at pixel centres; pyproj EPSG6677. Numerical registration fixture, not physical centimetre accuracy.",
+  "samples": [
+    {
+      "x": 5867.738,
+      "z": -986.716,
+      "height": 11.231650352478027
+    },
+    {
+      "x": 5878,
+      "z": -1130,
+      "height": 2.350426197052002
+    },
+    {
+      "x": 5890,
+      "z": -1125,
+      "height": 0.26919862627983093
+    },
+    {
+      "x": 5898,
+      "z": -923.918,
+      "height": 0.7980424761772156
+    },
+    {
+      "x": 5907,
+      "z": -923.918,
+      "height": -0.3377343416213989
+    },
+    {
+      "x": 5840,
+      "z": -1100,
+      "height": 51.99839782714844
+    },
+    {
+      "x": 5790,
+      "z": -1130,
+      "height": 109.6668472290039
+    },
+    {
+      "x": 5814.954,
+      "z": -907.91,
+      "height": 52.65333557128906
+    }
+  ]
+}

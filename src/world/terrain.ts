@@ -103,10 +103,11 @@ export class IslandWorld {
     const volume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('volume')==='1';
     const coastConfidence=typeof location==='undefined'||new URLSearchParams(location.search).get('coastconfidence')!=='0';
     const cliffDetail=typeof location==='undefined'||new URLSearchParams(location.search).get('cliffdetail')!=='0';
-    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume,coastConfidence,cliffDetail});this.group.add(this.niijimaCoast.group);
+    const measured=typeof location==='undefined'||new URLSearchParams(location.search).get('measuredcoast')!=='0';
+    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume,coastConfidence,cliffDetail,measured});this.group.add(this.niijimaCoast.group);
     const cliffMaterial=(this.niijimaCoast.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
     const cliffMeso=typeof location==='undefined'||new URLSearchParams(location.search).get('cliffmeso')!=='0';
-    this.niijimaCliffSkin=cliffDetail?createNiijimaCliffSkin({heightAt:(x,z)=>this.niijimaCoast.baseHeightAt(x,z)},cliffMaterial,{faceSteps:144,meso:cliffMeso}):null;
+    this.niijimaCliffSkin=cliffDetail&&!measured?createNiijimaCliffSkin({heightAt:(x,z)=>this.niijimaCoast.baseHeightAt(x,z)},cliffMaterial,{faceSteps:144,meso:cliffMeso}):null;
     if(this.niijimaCliffSkin){
       const c=new THREE.Color();for(const g of this.niijimaCliffSkin.geometries){const p=g.getAttribute('position'),colors=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){this.niijimaCoast.colorAt(p.getX(i),p.getY(i),p.getZ(i),c);colors.set([c.r,c.g,c.b],i*3);}g.setAttribute('color',new THREE.BufferAttribute(colors,3));}
       this.niijimaCliffSkin.group.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});this.group.add(this.niijimaCliffSkin.group);

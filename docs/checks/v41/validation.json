@@ -1,0 +1,199 @@
+{
+  "scope": "V41 one measured Niijima cliff/strand tile and coherent shallow-water contact",
+  "source": {
+    "catalogue": "https://www.geospatial.jp/ckan/dataset/tokyopc-shima-2023",
+    "sourceURL": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/17/09QC1711.zip",
+    "sourceZipSha256": "89fefd0cfcd4484ea477bec98c6c4919a767b37a15d1220de389205447a77f47",
+    "sourceTiffSha256": "517493120bf9952d641968a7e5dbd577eacbd9d5d9140c00133c10bb8185bf23",
+    "license": "CC BY4.0",
+    "nativeSamples": 1920000,
+    "nativeGridSpacingMetres": 0.25,
+    "numericalComparison": {
+      "vertices": 1920000,
+      "maximumHorizontalErrorMetres": 0.0035038420815800644,
+      "maximumHeightEncodingErrorMetres": 0.0050097656250045475,
+      "maximumVertexErrorMetres": 0.006095945995726977,
+      "scope": "Against the declared transform of the provider grid, before seam blending or LOD. This excludes field survey and datum uncertainty and does NOT establish centimetre correspondence to reality."
+    },
+    "datumTransformAccuracyMetres": 1,
+    "centimetreSurveyAccuracyEstablished": false
+  },
+  "geometry": {
+    "chunks": 130,
+    "triangles": 3834402,
+    "renderVerticesWithChunkDuplicates": 1948908,
+    "retainedNativeSamples": 1920000,
+    "sourceTrianglesRemoved": 55498,
+    "unknownSamples": 0,
+    "allLODs": "full resolution, frustum culling only"
+  },
+  "independentGeometryReview": {
+    "visibleFloorRaySamples": 114,
+    "maxHeightDifferenceMetres": 9.302e-05,
+    "cutoutQuerySamples": 7928,
+    "nullQueries": 0,
+    "scope": "finite boundary/chunk/removed-cell probe; excludes source surveying accuracy"
+  },
+  "browserRoute": {
+    "state": "done",
+    "samples": 541,
+    "modes": [
+      "dive",
+      "swim",
+      "walk"
+    ],
+    "start": {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.8716314485623047,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.1151000000002094,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.42878530029191,
+        "pitch": -0.12,
+        "x": 5898.07895052,
+        "yaw": 1.5707963267948966,
+        "z": -923.918
+      },
+      "fps": 56.6,
+      "ground": 0.7887853002919103,
+      "time": 46.4202666666668
+    },
+    "finish": {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.42431549008854097,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.85,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.672105719081721,
+        "pitch": -0.12,
+        "x": 5896.763186758976,
+        "yaw": 1.5707963267948966,
+        "z": -923.918
+      },
+      "fps": 56.7,
+      "ground": 1.0321057190817209,
+      "time": 111.18996666666536
+    },
+    "scope": "developer start at the Secret beach followed by65seconds continuous normal controller inputs with waves running; not native held OS input or whole-island travel"
+  },
+  "strongWave": {
+    "windSetting": 12,
+    "swellSetting": 1.25,
+    "wallStopsSeconds": [
+      0,
+      4,
+      8,
+      12
+    ],
+    "simulatedSeconds": 12.033400000000022,
+    "droppedSeconds": 0,
+    "sprayBirths": 488,
+    "whitewaterBirths": 242,
+    "scope": "authored weather scenario; not observed everyday wave height or measured fluid validation"
+  },
+  "visualReview": {
+    "status": "limited improvement accepted after required fixes",
+    "removedProblems": [
+      "giant water spikes",
+      "small isolated water blades",
+      "white triangle material facets"
+    ],
+    "remaining": [
+      "angular thin water film",
+      "shape-density difference at survey perimeter",
+      "generic grey material",
+      "flat broad foam patches"
+    ]
+  },
+  "validation": {
+    "typecheck": "PASS",
+    "targetedTests": "PASS",
+    "fullSuite": {
+      "passed": 374,
+      "failed": 0,
+      "durationMs": 154076.684
+    },
+    "build": "PASS TypeScript / Vite / standalone",
+    "staticHttp": {
+      "developerQA": "undefined",
+      "consoleErrors": 0,
+      "externalResources": 0,
+      "measuredPatch": "default enabled,1920000 native samples",
+      "fpsSnapshot": 56.5,
+      "scope": "Single whole-scene browser snapshot, not GPU benchmark or worst-case guarantee"
+    },
+    "publicMain": "pending commit/push after verified checkpoint"
+  },
+  "wholeGoal": "ACTIVE_UNMET",
+  "images": [
+    {
+      "file": "final-along-coast.png",
+      "sha256": "adff83abca6288bc0ff452cd9bffe1a82ceb2f78682a45b7d3acdd626c0f8d2e",
+      "bytes": 1438396
+    },
+    {
+      "file": "final-offshore-wide.png",
+      "sha256": "26c0929d1d79700feffa7305afe25e94a649a596e4b22fa1cdca365da97d94b3",
+      "bytes": 1406900
+    },
+    {
+      "file": "final-secret-south.png",
+      "sha256": "fd441a83706cef32421d9409a9ee3abe22e8ecbba92a4489472f4019ed3649fc",
+      "bytes": 1272619
+    },
+    {
+      "file": "final-user-north.png",
+      "sha256": "629295e99002c826436b4131c036b887229d08b6d6af13ac8be58758703f7330",
+      "bytes": 1206401
+    },
+    {
+      "file": "native-route-return.jpg",
+      "sha256": "b8700b8022c9009dfafec45d0eaaab4e5ff9f8a118b941d48df996a0c6af8d3f",
+      "bytes": 76826
+    },
+    {
+      "file": "strong-surf-3.png",
+      "sha256": "82c9a02c16ba3d8c81e3c1b8837ac65fec988980bb86d28bd6ca35ef9a10afac",
+      "bytes": 1265764
+    },
+    {
+      "file": "standalone-secret.jpg",
+      "sha256": "e96d39b538d257332ca58b5a4697c769ba1d97a50c77d4246b318dc6c7b4c9fb",
+      "bytes": 76917
+    }
+  ]
+}

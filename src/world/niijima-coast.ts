@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import type { GroundSampler } from './contracts.ts';
 import type {CliffSkin} from './niijima-cliff-skin.ts';
+import {MeasuredNiijimaTile} from './niijima-measured.ts';
+import {createMeasuredGridPatch,type MeasuredGridPatch} from './measured-grid-patch.ts';
+type ReconstructedSurface=Pick<CliffSkin,'group'|'geometries'|'surfaceHeightAt'|'coversOriginalTriangle'>;
 import { NiijimaDEM, NiijimaSurface, NIIJIMA_DETAIL_PROVENANCE, NIIJIMA_SEDIMENT_PROVENANCE, ease, noise, type SurfaceBounds } from './niijima-detail.ts';
 import { ELEVATION_RASTERS } from './geodata.generated.ts';
 import { NIIJIMA_NORTH_RASTER, NIIJIMA_NORTH_PROVENANCE } from './niijima-north.generated.ts';
@@ -57,10 +60,10 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
     if(detail)Object.assign(shader.uniforms,{uCliffAlbedo:{value:detail.albedo},uCliffNormal:{value:detail.normal},uCliffARM:{value:detail.arm},uCliffReady:detail.available,uCliffDetail:detailAmount});
     if(sand&&water)Object.assign(shader.uniforms,water);
     if(sand)Object.assign(shader.uniforms,{uNiiSandAlbedo:{value:sand.albedo},uNiiSandNormal:{value:sand.normalGL},uNiiSandARM:{value:sand.arm}});
-    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNiijimaPoint;');
-    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvNiijimaPoint = position - vec3(5500.0, 0.0, -2000.0);');
+    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNiijimaPoint;varying vec3 vNiijimaSurfaceNormal;');
+    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvNiijimaPoint = (modelMatrix * vec4(transformed, 1.0)).xyz - vec3(5500.0, 0.0, -2000.0);vNiijimaSurfaceNormal=normalize(mat3(modelMatrix)*normal);');
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
-      varying vec3 vNiijimaPoint;
+      varying vec3 vNiijimaPoint;varying vec3 vNiijimaSurfaceNormal;
       uniform sampler2D uPumicePhoto;uniform float uPumiceReady;
       ${detail?cliffMaterialCommon:''}
       ${sand?'uniform sampler2D uNiiSandAlbedo,uNiiSandNormal,uNiiSandARM;':''}
@@ -124,7 +127,9 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       }
       ${detail?cliffMaterialColour:''}
       ${sand?`
-      vec3 niiGeometricNormal=normalize(cross(dFdx(vNiijimaPoint),dFdy(vNiijimaPoint)));
+      // Material identity must not switch from sand to white rock on every
+      // individual survey triangle. Use the continuous shading normal.
+      vec3 niiGeometricNormal=normalize(vNiijimaSurfaceNormal);
       float niiSandMask=(1.0-smoothstep(4.0,8.0,vNiijimaPoint.y))*smoothstep(.6,.92,abs(niiGeometricNormal.y));
       vec2 niiSandUV=vNiijimaPoint.xz/2.14;
       vec3 niiSandPhoto=texture2D(uNiiSandAlbedo,niiSandUV).rgb;
@@ -175,6 +180,8 @@ export class NiijimaCoast implements GroundSampler {
   readonly group = new THREE.Group();
   readonly bounds: SurfaceBounds = BASE_BOUNDS;
   readonly dem:NiijimaDEM;
+  readonly measured:MeasuredNiijimaTile|null;
+  readonly measuredPatch:MeasuredGridPatch|null=null;
   readonly northDem = new NiijimaDEM(NIIJIMA_NORTH_RASTER);
   readonly southDem = new NiijimaDEM(NIIJIMA_SOUTH_RASTER);
   readonly surfaces: readonly NiijimaSurface[];
@@ -188,14 +195,15 @@ export class NiijimaCoast implements GroundSampler {
   private readonly material: THREE.MeshStandardMaterial;
   private readonly waterUniforms=wetSandUniforms();
   private readonly baseGround: GroundSampler;
-  private cliffSurface:CliffSkin|null=null;
+  private cliffSurface:ReconstructedSurface|null=null;
   private readonly cliffReplaced=new Map<NiijimaSurface,Uint8Array>();
   readonly cliffReplacement={removedTriangles:0,queriedTriangles:0};
   private readonly maps = new Map<string, { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 }>();
 
-  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;volume?:boolean;sand?:SandTextureSet;coastConfidence?:boolean;cliffDetail?:boolean}={}) {
+  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;volume?:boolean;sand?:SandTextureSet;coastConfidence?:boolean;cliffDetail?:boolean;measured?:boolean}={}) {
     this.dem=new NiijimaDEM(undefined,{scarp:options.scarp??false,coastConfidence:options.coastConfidence});
     this.baseGround = baseGround;
+    this.measured=options.measured?new MeasuredNiijimaTile():null;
     this.group.name = 'Niijima Horikiri, Shiromama and actual Secret surf region';
     this.group.userData = { source: NIIJIMA_DETAIL_PROVENANCE, northernSource: NIIJIMA_NORTH_PROVENANCE,southernSource:NIIJIMA_SOUTH_PROVENANCE, measuredMacroshape: 'GSI DEM5A/DEM10B', authoredMicrorelief: true, bathymetry: 'inferred',scarpCandidate:options.scarp??false };
     this.group.userData.sediment=NIIJIMA_SEDIMENT_PROVENANCE;
@@ -222,8 +230,19 @@ export class NiijimaCoast implements GroundSampler {
     fine.push(...hero);
     this.surfaces = [distant, ...fine];
     this.buildMesh(distant, fine, 'Niijima measured mountain and distant coast / 8m');
-    fine.forEach((surface, i) => this.buildMesh(surface,hero.includes(surface)?[]:hero.filter(h=>surface.contains(h.bounds.minX,h.bounds.minZ)&&surface.contains(h.bounds.maxX,h.bounds.maxZ)),PATCHES[i]?.name??'Secret connected close scarp / 0.5m x 1m authored surface'));
-    this.triangleCount = this.geometries.reduce((count, geometry) => count + geometry.index!.count / 3, 0);
+    fine.forEach((surface, i) => this.buildMesh(surface,hero.includes(surface)?[]:hero.filter(h=>surface.contains(h.bounds.minX,h.bounds.minZ)&&surface.contains(h.bounds.maxX,h.bounds.maxZ)),PATCHES[i]?.name??(this.measured?'Tokyo measured cliff / 0.5m lattice, 16m parent seam':'Secret connected close scarp / 0.5m x 1m authored surface')));
+    if(this.measured){
+      this.measuredPatch=createMeasuredGridPatch(this.measured.grid,{heightAt:(x,z)=>this.baseHeightAt(x,z)},this.material);
+      const color=new THREE.Color();
+      for(const object of this.measuredPatch.group.children){if(!(object instanceof THREE.Mesh))continue;
+        const geometry=object.geometry,p=geometry.getAttribute('position'),colors=new Float32Array(p.count*3);
+        for(let i=0;i<p.count;i++){this.colorAt(p.getX(i)+object.position.x,p.getY(i),p.getZ(i)+object.position.z,color);colors.set([color.r,color.g,color.b],i*3);}
+        geometry.setAttribute('color',new THREE.BufferAttribute(colors,3));object.castShadow=true;object.receiveShadow=true;
+      }
+      this.group.add(this.measuredPatch.group);
+      this.replaceCliffSurface(this.measuredPatch,-Infinity);
+    }
+    this.triangleCount = this.geometries.reduce((count, geometry) => count + geometry.index!.count / 3, 0)+(this.measuredPatch?.diagnostics.triangles??0);
   }
 
   contains(x: number, z: number): boolean { const b = this.bounds; return x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ; }
@@ -233,7 +252,8 @@ export class NiijimaCoast implements GroundSampler {
   }
   heightAt(x: number, z: number): number {
     if(this.cliffSurface)for(let i=this.surfaces.length-1;i>=0;i--){const s=this.surfaces[i];if(!s.contains(x,z))continue;const mask=this.cliffReplaced.get(s);if(mask){const px=Math.max(0,Math.min(s.width-1,(x-s.bounds.minX)/s.dx)),pz=Math.max(0,Math.min(s.height-1,(z-s.bounds.minZ)/s.dz)),ix=Math.min(s.width-2,Math.floor(px)),iz=Math.min(s.height-2,Math.floor(pz));const index=(iz*(s.width-1)+ix)*2+(px-ix+pz-iz>1?1:0);if(mask[index]){const y=this.cliffSurface.surfaceHeightAt(x,z);if(y!==null)return y;}}break;}
-    return this.baseHeightAt(x,z);
+    const base=this.baseHeightAt(x,z),measured=this.measuredPatch?.surfaceHeightAt(x,z);
+    return measured===undefined||measured===null?base:Math.max(base,measured);
   }
   baseHeightAt(x:number,z:number):number{
     if (!this.contains(x, z)) return this.baseGround.heightAt(x, z);
@@ -242,16 +262,16 @@ export class NiijimaCoast implements GroundSampler {
   }
   /** Replace only proven interior source triangles; the render and floor choose
    * the same projected triangle mask. The source DEM and base field remain intact. */
-  replaceCliffSurface(skin:CliffSkin):void{
+  replaceCliffSurface(skin:ReconstructedSurface,minimumHeight=6):void{
     if(this.cliffSurface)throw new Error('Cliff surface already attached');
-    const bounds=new THREE.Box3();for(const g of skin.geometries)if(g.boundingBox)bounds.union(g.boundingBox);
+    skin.group.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(skin.group);
     for(const object of this.group.children){if(!(object instanceof THREE.Mesh)||!object.userData.surface)continue;
       const s=object.userData.surface as NiijimaSurface,g=object.geometry,p=g.getAttribute('position'),idx=g.index!;
       if(s.bounds.maxX<bounds.min.x||s.bounds.minX>bounds.max.x||s.bounds.maxZ<bounds.min.z||s.bounds.minZ>bounds.max.z)continue;
       const mask=new Uint8Array((s.width-1)*(s.height-1)*2),kept=new Uint32Array(idx.count);let count=0;
       for(let i=0;i<idx.count;i+=3){const ids=[idx.getX(i),idx.getX(i+1),idx.getX(i+2)] as const;
         const points=ids.map(j=>({x:p.getX(j),y:p.getY(j),z:p.getZ(j)})) as [{x:number;y:number;z:number},{x:number;y:number;z:number},{x:number;y:number;z:number}];
-        const inside=points.every(v=>v.x>bounds.min.x&&v.x<bounds.max.x&&v.z>bounds.min.z&&v.z<bounds.max.z&&v.y>6);
+        const inside=points.every(v=>v.x>bounds.min.x&&v.x<bounds.max.x&&v.z>bounds.min.z&&v.z<bounds.max.z&&v.y>minimumHeight);
         if(inside)this.cliffReplacement.queriedTriangles++;
         if(inside&&skin.coversOriginalTriangle(points)){
           const row=Math.floor(Math.min(...ids)/s.width),col=Math.min(...ids.map(j=>j%s.width)),a=row*s.width+col;
@@ -301,10 +321,17 @@ export class NiijimaCoast implements GroundSampler {
     return target.copy(pumiceWhite).lerp(pumiceShade,noise(x*.017,z*.017)*.17).lerp(pumiceSand,beach).lerp(pumiceGreen,canopy).multiplyScalar(.96+noise(x*.15,z*.15)*.06);
   }
   waterMap(x = 5990, z = -1600): { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 } {
-    const dx = step.x / 8, dz = step.z / 8, span = 2048, stride = 1536;
-    const tileX = Math.round((x - this.bounds.minX) / dx / stride), tileZ = Math.round((z - this.bounds.minZ) / dz / stride), key = `${tileX}:${tileZ}`;
+    const measuredBounds=this.measured?.bounds,nearSurvey=measuredBounds&&x>measuredBounds.minX-64&&x<measuredBounds.maxX+64&&z>measuredBounds.minZ-64&&z<measuredBounds.maxZ+64;
+    const divisor=nearSurvey?32:8,dx = step.x / divisor, dz = step.z / divisor, span = 2048;
+    // Keep the entire 192m SWE domain and its neighbor stencil inside every
+    // map even just before a tile switches. The former 1536 stride gave only
+    // 63m guard at 25cm spacing, incorrectly initializing cliff cells as sea.
+    const stride=nearSurvey?1024:1536;
+    const tileX = Math.round((x - this.bounds.minX) / dx / stride), tileZ = Math.round((z - this.bounds.minZ) / dz / stride), key = `${divisor}:${tileX}:${tileZ}`;
     const cached = this.maps.get(key); if (cached) return cached;
-    // Overlapping ~2km tiles share the same global sample lattice and remain below 4096 texture limits.
+    // Close to the survey, sample the actual native-triangle floor at ~0.25m
+    // for water contact. Farther views retain the wider original map extent.
+    // Overlapping tiles remain below 4096 texture limits.
     const b = { minX: this.bounds.minX + (tileX * stride - span / 2) * dx, minZ: this.bounds.minZ + (tileZ * stride - span / 2) * dz };
     const width = span + 1, height = span + 1;
     const bytes = new Uint16Array(width * height * 4);
@@ -325,7 +352,7 @@ export class NiijimaCoast implements GroundSampler {
     return map;
   }
 
-  dispose(): void { this.geometries.forEach(geometry => geometry.dispose()); this.material.dispose();this.pumiceTexture.dispose();this.detailTextures?.textures.forEach(t=>t.dispose()); this.maps.forEach(map => map.texture.dispose()); this.maps.clear(); this.group.clear(); }
+  dispose(): void { this.measuredPatch?.dispose();this.geometries.forEach(geometry => geometry.dispose()); this.material.dispose();this.pumiceTexture.dispose();this.detailTextures?.textures.forEach(t=>t.dispose()); this.maps.forEach(map => map.texture.dispose()); this.maps.clear(); this.group.clear(); }
 
   private demAt(z: number): NiijimaDEM { return z < -3340 ? this.northDem : z>-200?this.southDem:this.dem; }
 

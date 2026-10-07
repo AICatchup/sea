@@ -27,12 +27,13 @@ vec2 shoreSolvedSurface(vec2 world,float fallbackHeight,float fallbackFoam){
   vec2 base=min(floor(node),vec2(uShoreResolution-2.)),f=node-base;
   vec2 a=(base+.5)/uShoreResolution,e=vec2(1./uShoreResolution,0);
   vec3 weighted=mix(mix(shoreNode(a),shoreNode(a+e),f.x),mix(shoreNode(a+e.yx),shoreNode(a+e+e.yx),f.x),f.y);
-  if(weighted.z<.00001)return vec2(fallbackHeight,fallbackFoam);
-  vec2 surface=weighted.xy/weighted.z;
+  vec2 wetSurface=weighted.xy/max(weighted.z,.00001);
+  vec2 drySurface=vec2(min(fallbackHeight,bed-.015),0.);
+  vec2 surface=mix(drySurface,wetSurface,shoreWetSupport(weighted.z));
   float edge=min(min(uv.x,uv.y),min(1.-uv.x,1.-uv.y));
   // Keep a valid bore elevation through the wet contact. Using local depth
   // here previously pulled the advancing crest into the sand before contact.
-  float blend=shoreSurfaceBlend(edge,bed,weighted.z);
+  float blend=shoreSurfaceBlend(edge,bed,1.);
   return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);
 }
 `;
@@ -163,6 +164,11 @@ export class ShoreSolver {
   private readonly quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2));
   private index=0;
   private ready=false;
+  private bathymetry:THREE.Texture|null=null;
+  private bathymetryVersion=-1;
+  private readonly bathymetryBounds=new THREE.Vector4();
+  private readonly bathymetryResolution=new THREE.Vector2();
+  private bathymetryTriangulated=-1;
   private disposed=false;
   private readonly maxSubsteps:number;
   private readonly secondOrder:boolean;
@@ -204,6 +210,15 @@ export class ShoreSolver {
     if(!this.renderer.extensions.has('EXT_color_buffer_float')||!u.uBathymetry.value||!u.uLongWaves.value||!u.uShortWaves.value){this.uniforms.uShoreReady.value=0;return;}
     const previous=this.renderer.getRenderTarget(),xr=this.renderer.xr.enabled;this.renderer.xr.enabled=false;
     try{
+      // Stored h is depth above its original bed. Reusing that depth after
+      // changing the bed/window can lift water onto a newly visible cliff.
+      // Reinitialize from the incident free surface whenever the bed contract
+      // changes; ordinary motion within one depth map still reprojects state.
+      const bathymetry=u.uBathymetry.value as THREE.Texture,bathyBounds=u.uBathyBounds.value as THREE.Vector4,bathyResolution=u.uBathyResolution.value as THREE.Vector2;
+      if(this.bathymetry!==bathymetry||this.bathymetryVersion!==bathymetry.version||!this.bathymetryBounds.equals(bathyBounds)||!this.bathymetryResolution.equals(bathyResolution)||this.bathymetryTriangulated!==u.uBathyTriangulated.value){
+        this.ready=false;this.bathymetry=bathymetry;this.bathymetryVersion=bathymetry.version;
+        this.bathymetryBounds.copy(bathyBounds);this.bathymetryResolution.copy(bathyResolution);this.bathymetryTriangulated=u.uBathyTriangulated.value;
+      }
       const bounds=this.uniforms.uShoreBounds.value as THREE.Vector4,dx=this.span/this.resolution;
       const bx=Math.floor((x-this.span/2)/dx)*dx,bz=Math.floor((z-this.span/2)/dx)*dx;
       if(!this.ready||bounds.x!==bx||bounds.y!==bz){(u.uOldBounds.value as THREE.Vector4).copy(bounds);bounds.set(bx,bz,this.span,this.span);this.pass(this.ready?1:2,0);this.ready=true;}

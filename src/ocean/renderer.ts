@@ -579,6 +579,9 @@ export class Ocean {
   setObservationClock(time:number):void{
     if(!this.visualCaptureLocked||!this.paused||!Number.isFinite(time)||time<0||time>86400)throw new Error('Finite 0..86400 observation clock requires paused, locked QA state');
     this.time=time;this.simulation.advance(time,0,this.swell,this.uniforms.uChoppiness.value);
+    // A discontinuous QA clock change invalidates the previous SWE depth/flow
+    // history. Start it from this same FFT phase on the next normal frame.
+    this.shoreSolver?.reset();
   }
   setLeafAlphaThreshold(value:number){
     if(!Number.isFinite(value)||value<.05||value>.6)throw new Error('Leaf threshold .05..6 required');
@@ -594,6 +597,7 @@ export class Ocean {
   }
   restoreLeafColourMips(before:Map<THREE.MeshStandardMaterial,THREE.Texture|null>){for(const [material,map] of before)material.map=map;}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
+  getShoreCandidateEnabled():boolean{return this.shoreCandidateEnabled;}
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
   setReflectionSampling(enabled:boolean):boolean{const before=this.reflectionSamplingEnabled;this.reflectionSamplingEnabled=enabled;this.uniforms.uHasReflection.value=enabled&&!this.reflectionNeedsUpdate?1:0;return before;}
@@ -666,7 +670,7 @@ export class Ocean {
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
-      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,strandProfile:this.world.elevation.beach?.strandDiagnostics??null,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null,niijimaCoastConfidence:this.world.niijimaCoast.dem.coastConfidence,niijimaCliffSkin:this.world.niijimaCliffSkin?.diagnostics??null,niijimaCliffReplacement:this.world.niijimaCoast.cliffReplacement},
+      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,strandProfile:this.world.elevation.beach?.strandDiagnostics??null,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null,niijimaCoastConfidence:this.world.niijimaCoast.dem.coastConfidence,niijimaCliffSkin:this.world.niijimaCliffSkin?.diagnostics??null,niijimaCliffReplacement:this.world.niijimaCoast.cliffReplacement,niijimaMeasured:this.world.niijimaCoast.measured?.diagnostics??null,niijimaMeasuredPatch:this.world.niijimaCoast.measuredPatch?.diagnostics??null},
       geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       expedition:{...this.expedition.snapshot,credits:this.expedition.credits,capacity:this.expedition.capacity,rank:this.expedition.rank,race:this.expedition.race?{next:this.expedition.race.next,elapsed:this.expedition.race.elapsed}:null,target:this.expedition.target(state),save:this.expedition.saveStatus},

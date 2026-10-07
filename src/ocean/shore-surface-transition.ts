@@ -7,6 +7,16 @@ export function shoreSurfaceBlend(edge:number,bed:number,wetWeight:number):numbe
   if(![edge,bed,wetWeight].every(Number.isFinite))return 0;
   return smooth(transition.edgeStart,transition.edgeEnd,edge)*(1-smooth(transition.deepStart,transition.deepEnd,-bed))*smooth(transition.wetStart,transition.wetEnd,wetWeight);
 }
+/** In the solved domain, a dry cell exposes its bed. Falling back to the FFT
+ * there resurrects an isolated water peak next to a drained trough. Domain
+ * blending still preserves the offshore FFT and wet bore elevations. */
+export function reconstructShoreSurface(edge:number,bed:number,wetWeight:number,wetElevation:number,fallbackHeight:number):number{
+  if(![edge,bed,wetWeight,wetElevation,fallbackHeight].every(Number.isFinite))return fallbackHeight;
+  const wet=smooth(transition.wetStart,transition.wetEnd,wetWeight);
+  const dry=Math.min(fallbackHeight,bed-.015);
+  const local=dry+(wetElevation-dry)*wet;
+  return fallbackHeight+(local-fallbackHeight)*shoreSurfaceBlend(edge,bed,1);
+}
 const gl=(value:number)=>Number.isInteger(value)?value.toFixed(1):String(value);
 /** A raster triangle can bridge a dry cell between wet vertices. Contact must
  * satisfy both its actual geometry and the pointwise Eulerian surface. */
@@ -38,4 +48,5 @@ float shoreSurfaceBlend(float edge,float bed,float wetWeight){
     *(1.-smoothstep(${gl(transition.deepStart)},${gl(transition.deepEnd)},-bed))
     *smoothstep(${gl(transition.wetStart)},${gl(transition.wetEnd)},wetWeight);
 }
+float shoreWetSupport(float weight){return smoothstep(${gl(transition.wetStart)},${gl(transition.wetEnd)},weight);}
 `;
