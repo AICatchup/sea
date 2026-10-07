@@ -4,6 +4,7 @@ export interface SurfVector { x: number; z: number }
 export interface SurfState {
   phase: SurfPhase; yaw: number; speed: number; balance: number;
   catchWindow: number; movingWave: number; previousWaterHeight: number | null;
+  previousPlayerX: number | null; previousPlayerZ: number | null;
   wipeoutTime: number; eyeBlend: number; rideDistance: number; rideTime: number;
   bestDistance: number; bestTime: number;
 }
@@ -26,7 +27,7 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, finit
 const angle = (v: number) => Math.atan2(Math.sin(finite(v)), Math.cos(finite(v)));
 export function createSurfState(yaw = 0): SurfState {
   return {phase: 'absent', yaw: angle(yaw), speed: 0, balance: 1, catchWindow: 0,
-    movingWave: 0, previousWaterHeight: null, wipeoutTime: 0, eyeBlend: 0,
+    movingWave: 0, previousWaterHeight: null, previousPlayerX:null, previousPlayerZ:null, wipeoutTime: 0, eyeBlend: 0,
     rideDistance: 0, rideTime: 0, bestDistance: 0, bestTime: 0};
 }
 /** Pure step: caller applies displacement only while paddling/riding; never sets camera position. */
@@ -40,10 +41,17 @@ export function stepSurfing(previous: SurfState, input: SurfInput): SurfOutput {
   const water = finite(input.waterHeight);
   const waterValid = input.waveReady && Number.isFinite(input.waterHeight) && Number.isFinite(input.waterGradient.x) && Number.isFinite(input.waterGradient.z);
   // Height difference includes board advection: subtract grad dot last board velocity.
-  const sampledDerivative = dt > 0 && s.previousWaterHeight !== null && Number.isFinite(s.previousWaterHeight)
-    ? (water - s.previousWaterHeight) / dt - (gx * Math.sin(s.yaw) + gz * -Math.cos(s.yaw)) * s.speed : 0;
+  const playerX=finite(input.playerPosition.x),playerZ=finite(input.playerPosition.z);
+  const hasPosition=Number.isFinite(s.previousPlayerX)&&Number.isFinite(s.previousPlayerZ);
+  const travelledX=hasPosition?playerX-s.previousPlayerX!:0,travelledZ=hasPosition?playerZ-s.previousPlayerZ!:0;
+  const continuous=hasPosition&&Math.hypot(travelledX,travelledZ)<=Math.max(.5,dt*12);
+  // Remove motion through the spatial wave using the displacement the world
+  // actually accepted. A paused/colliding body may retain nominal board speed.
+  const sampledDerivative = dt > 0 && continuous && s.previousWaterHeight !== null && Number.isFinite(s.previousWaterHeight)
+    ? (water - s.previousWaterHeight - gx*travelledX - gz*travelledZ) / dt : 0;
   const derivative = clamp(input.waterVerticalVelocity ?? sampledDerivative, -4, 4);
   s.previousWaterHeight = waterValid ? water : null;
+  s.previousPlayerX=waterValid?playerX:null;s.previousPlayerZ=waterValid?playerZ:null;
   const slope = Math.hypot(gx, gz);
   const sx = finite(input.shoreward.x), sz = finite(input.shoreward.z), sl = Math.hypot(sx, sz);
   const shore = sl > .001 ? {x: sx / sl, z: sz / sl} : {x: -1, z: 0};
@@ -91,7 +99,11 @@ export function stepSurfing(previous: SurfState, input: SurfInput): SurfOutput {
         if (s.phase === 'riding') s.rideDistance += travel;
       }
     }
-    if (s.phase === 'wipeout') s.wipeoutTime += h;
+    if (s.phase === 'wipeout') {
+      if(Number.isFinite(input.groundDepth)&&depth<.3){
+        s.phase='carried';s.speed=0;s.catchWindow=0;s.movingWave=0;s.wipeoutTime=0;
+      }else s.wipeoutTime += h;
+    }
     s.bestDistance = Math.max(s.bestDistance, s.rideDistance); s.bestTime = Math.max(s.bestTime, s.rideTime);
     s.eyeBlend += ((s.phase === 'riding' ? 1 : 0) - s.eyeBlend) * (1 - Math.exp(-8 * h));
   }

@@ -52,6 +52,14 @@ export class ActivitySession{
   this.bestRide=Math.max(this.bestRide,this.surf.bestDistance);
   if(this.wasRiding&&this.surf.phase!=='riding')this.save();this.wasRiding=this.surf.phase==='riding';
  }
+ syncPausedFrame(s:AdventureState):void{
+  this.actionPending=false;
+  if(this.tool!=='board')return;
+  const water=this.water(s.position.x,s.position.z),valid=this.ready()&&Number.isFinite(water);
+  this.surf.previousWaterHeight=valid?water:null;
+  this.surf.previousPlayerX=valid?s.position.x:null;this.surf.previousPlayerZ=valid?s.position.z:null;
+  this.surf.catchWindow=0;this.surf.movingWave=0;
+ }
  private surfInput(s:AdventureState,dt:number,forward:number,steer:number):SurfInput{
   const p=s.position,w=this.water(p.x,p.z),gx=(this.water(p.x+1,p.z)-this.water(p.x-1,p.z))*.5,gz=(this.water(p.x,p.z+1)-this.water(p.x,p.z-1))*.5;
   return{dt,playerPosition:p,boardPosition:this.board,waterHeight:w,waterGradient:{x:gx,z:gz},waveReady:this.ready(),groundDepth:w-this.ground.heightAt(p.x,p.z),shoreward:{x:-1,z:0},forward,steer,yaw:s.yaw};

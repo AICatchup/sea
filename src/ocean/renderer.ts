@@ -398,6 +398,7 @@ export class Ocean {
       this.adventure.update(delta,this.time,this.paused);
       if(!this.adventure.inputBlocked)this.expedition.update(delta,this.adventure.state);
       if(!this.adventure.inputBlocked)this.activities.update(delta,this.adventure.state);
+      else this.activities.syncPausedFrame(this.adventure.state);
     }
     const state=this.adventure.state;
     const nextFov=approachCameraFov(this.camera.fov,targetCameraFov(state,this.adventure.settings.value.boatFov),delta);

@@ -22,6 +22,12 @@ test('flat water and static slope cannot power surfing',()=>{
  const a=run(paddle(),10,{stand:true}).state;assert.equal(a.phase,'paddling');assert.ok(a.speed<=2);
  const b=run(paddle(),10,{stand:true,waterGradient:{x:0,z:.15},waterVerticalVelocity:0}).state;assert.equal(b.phase,'paddling');
 });
+
+test('a stopped body cannot turn stored board speed into motion of a static wave',()=>{
+ let s={...paddle(),speed:1.6,previousWaterHeight:0,previousPlayerX:0,previousPlayerZ:0};
+ for(let i=0;i<20;i++)s=stepSurfing(s,{...base,forward:0,stand:true,waterGradient:{x:0,z:.15},waterHeight:0,playerPosition:{x:0,z:0}}).state as typeof s;
+ assert.equal(s.phase,'paddling');assert.equal(s.movingWave,0);assert.equal(s.catchWindow,0);
+});
 test('moving wave opens stand window and accelerates, readiness loss is recoverable',()=>{
  const s=riding();assert.equal(s.phase,'riding');assert.ok(run(s,2,wave).state.speed>s.speed);
  const o=stepSurfing(s,{...base,waveReady:false});assert.equal(o.state.phase,'wipeout');assert.deepEqual(o.displacement,{x:0,z:0});
@@ -33,6 +39,14 @@ test('sustained hard turning loses balance, gentle turning remains viable',()=>{
 });
 test('shallow water ends ride without displacement or teleport',()=>{
  const o=stepSurfing(riding(),{...base,...wave,groundDepth:.1});assert.equal(o.state.phase,'carried');assert.equal(o.state.speed,0);assert.deepEqual(o.displacement,{x:0,z:0});
+});
+
+test('walking a wiped-out board onto the beach restores carrying',()=>{
+ const wiped=stepSurfing(riding(),{...base,waveReady:false}).state;
+ assert.equal(wiped.phase,'wipeout');
+ const landed=stepSurfing(wiped,{...base,groundDepth:0,forward:1});
+ assert.equal(landed.state.phase,'carried');assert.equal(landed.state.speed,0);
+ assert.equal(landed.state.catchWindow,0);assert.deepEqual(landed.displacement,{x:0,z:0});
 });
 test('invalid numeric inputs and oversized frames stay finite and bounded',()=>{
  const corrupt={...riding(),speed:Infinity,yaw:NaN,balance:NaN,rideTime:Infinity};

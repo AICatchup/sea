@@ -17,3 +17,13 @@ test('physical board pickup, carrying and launch preserve east-positive movement
  for(let i=0;i<100;i++){const step=a.motion(.02,{x:0,forward:1},s);assert.ok(step);assert.ok(step.dx>=0);distance+=step.dx;s.position.x+=step.dx;}
  assert.ok(distance>1);assert.equal(a.surf.phase,'paddling');assert.equal(a.stow(s),true);assert.ok(Math.hypot(a.board.x-s.position.x,a.board.z-s.position.z)<=.81);assert.equal(a.surf.phase,'absent');
 });
+
+test('map pause keeps current water references without queuing a stale stand action',()=>{
+ let level=0;const a=new ActivitySession({heightAt:()=>-4},(x:number)=>level+.1*x,()=>true),s=traveller();
+ s.mode='swim';s.position.set(0,.4,0);s.yaw=-Math.PI/2;a.tool='board';a.surf.phase='paddling';a.surf.yaw=s.yaw;a.surf.speed=1.5;
+ a.motion(.02,{x:0,forward:0},s);a.surf.catchWindow=.6;a.surf.movingWave=.6;a.activate(s);
+ level=.8;a.syncPausedFrame(s);
+ assert.equal(a.surf.previousWaterHeight,.8);assert.equal(a.surf.catchWindow,0);assert.equal(a.surf.movingWave,0);
+ a.motion(.02,{x:0,forward:0},s);
+ assert.equal(a.surf.phase,'paddling');assert.equal(a.surf.movingWave,0);
+});
