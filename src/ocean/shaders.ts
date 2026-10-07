@@ -473,7 +473,7 @@ export const oceanFragment = /* glsl */ `
       if(uUnderwaterReflectionTrace>.5&&uHasReflection>.5){
         float tracedDistance;vec2 tracedUV;
         bool hit=traceUnderwaterReflection(vWorld+reflectedDirection*.025,reflectedDirection,tracedDistance,tracedUV);
-        reflectedPath=hit?tracedDistance:10000.0;
+        reflectedPath=hit?tracedDistance+.025:10000.0;
         reflectedRadiance=hit?texture2D(uReflection,tracedUV).rgb:vec3(0);
         reflectedTrans=exp(-sigma*reflectedPath);
       }
