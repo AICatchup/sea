@@ -1,3 +1,4 @@
+import {BOAT_FOV,clampBoatFov} from '../world/camera-lens.ts';
 export const CONTROL_ACTIONS = {
   forward: '前進 / 船の加速', back: '後退 / 船の減速', left: '左へ / 左に舵を切る', right: '右へ / 右に舵を切る',
   rise: 'ジャンプ / 浮上', descend: '潜降', sprint: '走る', interact: '調べる / 船の乗り降り',
@@ -6,7 +7,7 @@ export const CONTROL_ACTIONS = {
 export type ControlAction = keyof typeof CONTROL_ACTIONS;
 export const ACTIONS = Object.keys(CONTROL_ACTIONS) as ControlAction[];
 export type KeyBindings = Record<ControlAction, readonly [string, string]>;
-export interface ControlPreferences { sensitivity: number; invertX: boolean; invertY: boolean; bindings: KeyBindings; }
+export interface ControlPreferences { sensitivity: number; invertX: boolean; invertY: boolean; boatFov:number; bindings: KeyBindings; }
 export interface SettingsStorage { getItem(key: string): string | null; setItem(key: string, value: string): void; }
 export const CONTROLS_STORAGE_KEY = 'sea.controls.v1';
 const DEFAULT_BINDINGS: KeyBindings = {
@@ -26,7 +27,7 @@ function snapshot(value: ControlPreferences): ControlPreferences {
   const bindings = Object.fromEntries(ACTIONS.map(a => [a, Object.freeze([...value.bindings[a]])])) as KeyBindings;
   return Object.freeze({ ...value, bindings: Object.freeze(bindings) });
 }
-export function defaultControls(): ControlPreferences { return snapshot({ sensitivity: 1, invertX: false, invertY: false, bindings: DEFAULT_BINDINGS }); }
+export function defaultControls(): ControlPreferences { return snapshot({ sensitivity: 1, invertX: false, invertY: false, boatFov:BOAT_FOV.default, bindings: DEFAULT_BINDINGS }); }
 /** Old, corrupt or conflicting saves cannot steal another action's binding. */
 export function parseControls(raw: string | null): ControlPreferences {
   const fallback = defaultControls();
@@ -50,7 +51,7 @@ export function parseControls(raw: string | null): ControlPreferences {
       bindings[action] = keys;
     }
     return snapshot({ bindings, sensitivity: typeof data.sensitivity === 'number' && Number.isFinite(data.sensitivity) ? Math.max(.2, Math.min(3, data.sensitivity)) : 1,
-      invertX: data.invertX === true, invertY: data.invertY === true });
+      invertX: data.invertX === true, invertY: data.invertY === true, boatFov:clampBoatFov(data.boatFov) });
   } catch { return fallback; }
 }
 export function isTextInput(target: EventTarget | null): boolean {
@@ -85,6 +86,10 @@ export class ControlSettings {
     const next = { ...this.current, ...patch };
     next.sensitivity = Number.isFinite(next.sensitivity) ? Math.max(.2, Math.min(3, next.sensitivity)) : this.current.sensitivity;
     this.commit(next);
+  }
+  setBoatFov(value:number):void {
+    const boatFov=clampBoatFov(value,this.current.boatFov);
+    if(boatFov!==this.current.boatFov)this.commit({...this.current,boatFov});
   }
   rebind(action: ControlAction, slot: 0 | 1, rawCode: string): string | null {
     const code = normalizeKey(rawCode), pair = [...this.current.bindings[action]] as [string, string];

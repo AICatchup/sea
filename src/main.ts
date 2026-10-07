@@ -158,7 +158,7 @@ try {
       const d=ocean.diagnostics,s=ocean.adventure.state;
       if(!captureOnly||s.mode==='boat'||s.voyageTarget||s.speed>.01||(s.boardingProgress??0)>0)throw new Error('Use a dedicated idle QA instance with capture=1');
       return {pose:{x:s.position.x,z:s.position.z,yaw:s.yaw,pitch:s.pitch,mode:s.mode,depth:s.depth},
-        camera:[...ocean.camera.position.toArray(),...ocean.camera.quaternion.toArray()],width:d.resolution[0],height:d.resolution[1],
+        camera:[...ocean.camera.position.toArray(),...ocean.camera.quaternion.toArray()],fov:ocean.camera.fov,width:d.resolution[0],height:d.resolution[1],
         quality:d.quality,preset:d.preset,paused:d.paused,locked:d.visualCaptureLocked,hidden:document.hidden,disposed,
         wind:d.wind,swell:d.swell,eyeY:s.position.y,oxygen:s.oxygen,stamina:s.stamina??1,action:s.avatarAction} as SavedCapture;
     },
@@ -167,6 +167,7 @@ try {
       ocean.setPreset(s.preset as PresetName);ocean.setWind(s.wind);ocean.setSwell(s.swell);ocean.setQuality(s.quality as Quality);ocean.paused=s.paused;
       ocean.adventure.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);
       ocean.adventure.state.position.y=s.eyeY;ocean.adventure.state.oxygen=s.oxygen;ocean.adventure.state.stamina=s.stamina;ocean.adventure.state.avatarAction=s.action;
+      if(s.fov!==undefined){ocean.camera.fov=s.fov;ocean.camera.updateProjectionMatrix();}
       ocean.visualCaptureLocked=s.locked;
     },
     setQuality:q=>ocean.setQuality(q as Quality),setPreset:p=>{if(!(p in presets))throw new Error('Unknown capture preset');ocean.setPreset(p as PresetName);},

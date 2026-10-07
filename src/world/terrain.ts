@@ -84,8 +84,8 @@ export class IslandWorld {
   private readonly materials: THREE.Material[] = [];
   private readonly geometries: THREE.BufferGeometry[] = [];
 
-  constructor(coherentRock=false,dryToe=false,connectedForm=false,forestGround=false,joinedCliffSkin=false) {
-    this.elevation=new IslandElevation(coherentRock,dryToe,connectedForm);
+  constructor(coherentRock=false,dryToe=false,connectedForm=false,forestGround=false,joinedCliffSkin=false,photoStrand=false) {
+    this.elevation=new IslandElevation(coherentRock,dryToe,connectedForm,photoStrand);
     this.group.name = '式根島・泊 / GSI land DEM with inferred seabed';
     const grain = detailTexture(); this.textures.push(grain);
     let atlas=new THREE.Texture();let atlasReady=Promise.resolve();

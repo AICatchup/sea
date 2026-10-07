@@ -1,0 +1,20 @@
+{
+  "version": "V38",
+  "tests": {
+    "passed": 345,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "standaloneBytes": 268914632,
+  "standaloneSha256": "4e0778b7965c99b5e397d42e53a864a944f600cf7fabb2f8b70d3c72e7ec5b41",
+  "staticHTTP": {
+    "loaded": true,
+    "developmentQA": "undefined",
+    "externalHTTPResources": 0,
+    "consoleErrors": 0
+  },
+  "fileURLStartup": "UNVERIFIED",
+  "globalGoal": "ACTIVE / UNMET",
+  "finalVideo": "PENDING AFTER COMPLETION"
+}

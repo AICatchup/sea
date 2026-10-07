@@ -14,6 +14,7 @@ import { WaveCaustics } from './caustics';
 import { loadPhotographicSky } from './photographic-sky';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { FirstPersonBody } from '../world/player-body';
+import {targetCameraFov,approachCameraFov} from '../world/camera-lens.ts';
 import { LocalWaterHeights, cameraSubmersion } from './local-water-heights.ts';
 import { WorldCollision, withWorldCollision } from '../world/world-collision';
 import { WorldSolidBinding } from '../world/world-solid-binding';
@@ -148,7 +149,7 @@ export class Ocean {
     const experience=experienceOptions(location.search);
     this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2}):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
-    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0');
+    this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0',new URLSearchParams(location.search).get('strandprofile')!=='0');
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
     // Surface spray/foam must blend AFTER the water inside the water target.
@@ -385,6 +386,8 @@ export class Ocean {
       if(!this.adventure.inputBlocked)this.expedition.update(delta,this.adventure.state);
     }
     const state=this.adventure.state;
+    const nextFov=approachCameraFov(this.camera.fov,targetCameraFov(state,this.adventure.settings.value.boatFov),delta);
+    if(nextFov!==this.camera.fov){this.camera.fov=nextFov;this.camera.updateProjectionMatrix();this.reflectionNeedsUpdate=true;}
     this.camera.position.copy(state.position);
     if(state.viewOffset)this.camera.position.add(state.viewOffset);
     this.direction.set(Math.sin(state.yaw)*Math.cos(state.pitch),Math.sin(state.pitch),-Math.cos(state.yaw)*Math.cos(state.pitch));
@@ -655,13 +658,13 @@ export class Ocean {
   get diagnostics(){
     const state=this.adventure.state;
     return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,preset:this.currentPreset,
-      visualCaptureLocked:this.visualCaptureLocked,sandAppearance:this.world.sandAppearance.value,
+      visualCaptureLocked:this.visualCaptureLocked,sandAppearance:this.world.sandAppearance.value,fieldOfView:this.camera.fov,
       resolution:[this.canvas.width,this.canvas.height],camera:{yaw:state.yaw,pitch:state.pitch,height:state.position.y,x:state.position.x,z:state.position.z},
       adventure:{mode:state.mode,depth:state.depth,oxygen:state.oxygen,speed:state.speed,placed:this.assets.placedCount,
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
-      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null},
+      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,strandProfile:this.world.elevation.beach?.strandDiagnostics??null,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null},
       geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       expedition:{...this.expedition.snapshot,credits:this.expedition.credits,capacity:this.expedition.capacity,rank:this.expedition.rank,race:this.expedition.race?{next:this.expedition.race.next,elapsed:this.expedition.race.elapsed}:null,target:this.expedition.target(state),save:this.expedition.saveStatus},

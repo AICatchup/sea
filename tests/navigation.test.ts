@@ -8,6 +8,7 @@ import { BOAT_MIN_DEPTH, WORLD_LIMIT, findNearbyWater, footSegmentClear, isNavig
   planWaterRoute, pointDistance, waterSegmentClear, ROUTE_MIN_DEPTH, ROUTE_RADIUS } from '../src/world/navigation.ts';
 import type { GroundSampler, WorldDestination } from '../src/world/contracts.ts';
 import { BOAT_ACCESS } from '../src/world/contracts.ts';
+import {targetCameraFov} from '../src/world/camera-lens.ts';
 import { WorldCollision, withWorldCollision } from '../src/world/world-collision.ts';
 
 class TestDocument extends EventTarget {
@@ -430,6 +431,40 @@ test('world bounds and invalid requests stay finite', () => {
   const { controls, state } = setup({ heightAt: () => -50 }, new THREE.Vector3(WORLD_LIMIT - 5, .34, 0));
   controls.setMove(1, 0); advance(controls, 5); assert.ok(state.position.x < WORLD_LIMIT); assert.ok(Number.isFinite(state.position.y));
   controls.navigate('unknown'); assert.ok(state.message.includes('見つかりません')); controls.dispose();
+});
+
+test('real ladder animations keep the lens monotonic through walking and helm poses in both directions',()=>{
+  const {controls,state}=setup({heightAt:()=>-20});
+  state.boatYaw=0;
+  controls.viewpoint(state.boatPosition.x-.75,state.boatPosition.z+3.35,0,0,'swim');
+  try{
+    for(const direction of [1,-1]){
+      controls.interact();let previous=targetCameraFov(state,78),sawSeated=false;
+      for(let frame=0;frame<330;frame++){
+        controls.update(1/60,frame/60);
+        const next=targetCameraFov(state,78);
+        assert.ok((next-previous)*direction>=-1e-8,`${state.avatarAction}: ${previous} -> ${next}`);
+        if(state.avatarAction==='helm'&&state.seatingBlend!==undefined)sawSeated=true;
+        previous=next;
+      }
+      assert.ok(sawSeated);assert.equal(previous,direction===1?78:62);
+    }
+  }finally{controls.dispose();}
+});
+
+test('boat wheel changes the lens without releasing held propulsion and ignores menus/browser zoom/walking',()=>{
+ const {controls,canvas,state}=setup({heightAt:()=>-12});
+ const wheel=(deltaY:number,extra={})=>{const e=Object.assign(new Event('wheel',{cancelable:true}),{deltaY,deltaMode:0,ctrlKey:false,metaKey:false,altKey:false,...extra});canvas.dispatchEvent(e);return e;};
+ try{
+  assert.equal(wheel(100).defaultPrevented,false);
+  controls.viewpoint(state.boatPosition.x+1.7,state.boatPosition.z,0,0,'swim');controls.interact();advance(controls,4);assert.equal(state.mode,'boat');
+  key(canvas,'keydown','KeyW');advance(controls,1);const before=state.speed;
+  assert.equal(wheel(100).defaultPrevented,true);assert.equal(controls.settings.value.boatFov,80);
+  advance(controls,.5);assert.ok(state.speed>before,'wheel must retain W and engine momentum');
+  assert.equal(wheel(100,{ctrlKey:true}).defaultPrevented,false);assert.equal(controls.settings.value.boatFov,80);
+  assert.equal(wheel(100,{shiftKey:true}).defaultPrevented,false);assert.equal(controls.settings.value.boatFov,80);
+  controls.setInputBlocked(true);assert.equal(wheel(100).defaultPrevented,false);assert.equal(controls.settings.value.boatFov,80);
+ }finally{controls.dispose();}
 });
 
 test('rightward drag turns the actual FPS forward vector right; sensitivity and both inversion axes apply', () => {

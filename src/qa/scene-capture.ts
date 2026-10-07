@@ -2,6 +2,7 @@
 export type CapturePose = { x: number; z: number; yaw: number; pitch: number; mode: 'walk' | 'swim' | 'dive'; depth?: number; eyeY?:number };
 export type CaptureState = {
   pose: CapturePose; camera: readonly number[]; width: number; height: number;
+  fov?: number;
   quality: string; preset: string; paused: boolean; locked: boolean;
   hidden: boolean; disposed: boolean;
 };
@@ -30,7 +31,7 @@ export const CAPTURE_PROFILES: readonly CaptureProfile[] = [
   { name: 'secret', pose: { x: 5898, z: -923.918, yaw: Math.PI, pitch: -.04, mode: 'walk' }, provenance: 'South-facing QA bookmark near the Niijima municipal Secret surf marker; beach offset authored from the current DEM sampler' },
 ];
 export type CaptureOptions = { quality: string; preset: string; width: number; height: number; timeoutMs?: number; maxFrames?: number; warmupFrames?: number };
-export type CaptureResult = { png: string; metadata: { name: string; provenance: string; evidence: 'visual-only'; movementVerified: false; humanAccepted: false; width: number; height: number; camera: number[]; pose: CapturePose; quality: string; preset: string; paused: boolean; locked: boolean; runtime?:unknown } };
+export type CaptureResult = { png: string; metadata: { name: string; provenance: string; evidence: 'visual-only'; movementVerified: false; humanAccepted: false; width: number; height: number; camera: number[]; fov?:number; pose: CapturePose; quality: string; preset: string; paused: boolean; locked: boolean; runtime?:unknown } };
 const busy = new WeakSet<SceneCaptureHost>();
 function live(s: CaptureState): void {
   if (s.hidden || s.disposed) throw new Error('Capture host hidden or disposed');
@@ -38,7 +39,7 @@ function live(s: CaptureState): void {
 }
 function clone(s: CaptureState): CaptureState { return { ...s, pose: { ...s.pose }, camera: [...s.camera] }; }
 function same(a: CaptureState, b: CaptureState): boolean {
-  return a.width === b.width && a.height === b.height && JSON.stringify(a.camera) === JSON.stringify(b.camera) && JSON.stringify(a.pose) === JSON.stringify(b.pose);
+  return a.width === b.width && a.height === b.height && a.fov === b.fov && JSON.stringify(a.camera) === JSON.stringify(b.camera) && JSON.stringify(a.pose) === JSON.stringify(b.pose);
 }
 async function execute(host: SceneCaptureHost, profiles: readonly CaptureProfile[], options: CaptureOptions, progress?: (result: CaptureResult, index: number) => void | Promise<void>): Promise<CaptureResult[]> {
   if (busy.has(host)) throw new Error('Capture already in flight');
@@ -78,7 +79,7 @@ async function execute(host: SceneCaptureHost, profiles: readonly CaptureProfile
       const after = host.readState(); live(after);
       if (!same(last, after)) throw new Error('Camera or resolution changed during capture');
       if (!png?.startsWith('data:image/png;base64,')) throw new Error('Capture returned no PNG');
-      const result: CaptureResult = { png, metadata: { name: profile.name, provenance: profile.provenance, evidence: 'visual-only', movementVerified: false, humanAccepted: false, width: last.width, height: last.height, camera: [...last.camera], pose: { ...last.pose }, quality: last.quality, preset: last.preset, paused: last.paused, locked: last.locked, runtime:host.readDiagnostics?.() } };
+      const result: CaptureResult = { png, metadata: { name: profile.name, provenance: profile.provenance, evidence: 'visual-only', movementVerified: false, humanAccepted: false, width: last.width, height: last.height, camera: [...last.camera], ...(last.fov===undefined?{}:{fov:last.fov}), pose: { ...last.pose }, quality: last.quality, preset: last.preset, paused: last.paused, locked: last.locked, runtime:host.readDiagnostics?.() } };
       results.push(result);
       if (progress) await bounded(Promise.resolve(progress(result, results.length - 1)));
     }

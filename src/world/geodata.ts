@@ -1,5 +1,6 @@
 import { ELEVATION_RASTERS, GEODATA_PROVENANCE } from './geodata.generated.ts';
 import { structuralCoastHeight } from './coast-structure.ts';
+import { refineTomariStrand } from './tomari-strand.ts';
 export { GEODATA_PROVENANCE };
 
 export const NODATA = -32768;
@@ -161,8 +162,9 @@ export class TomariCoastSurface {
   readonly ground: Float32Array;
 
   private readonly referenceGround?:Float32Array;
+  readonly strandDiagnostics?:ReturnType<typeof refineTomariStrand>;
   constructor(field: ElevationField, baseHeightAt: (x: number, z: number) => number,
-    options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean;dryToe?:boolean;connectedForm?:boolean;referenceBase?:(x:number,z:number)=>number} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
+    options:{subdivision:number;minX:number;maxX:number;minZ:number;maxZ:number;coherentRock?:boolean;dryToe?:boolean;connectedForm?:boolean;photoStrand?:boolean;referenceBase?:(x:number,z:number)=>number} = { subdivision: 4, minX: 40, maxX: 190, minZ: 50, maxZ: 168 }) {
     this.subdivision = options.subdivision;
     this.sourceMinX = options.minX; this.sourceMaxX = options.maxX;
     this.sourceMinZ = options.minZ; this.sourceMaxZ = options.maxZ;
@@ -216,6 +218,7 @@ export class TomariCoastSurface {
         }
       }
     }
+    if(options.photoStrand)this.strandDiagnostics=refineTomariStrand({ground:this.ground,width:this.width,height:this.height,dx:this.dx,dz:this.dz,minX:this.minX,minZ:this.minZ});
   }
 
   contains(x: number, z: number): boolean { return x >= this.minX && x <= this.maxX && z >= this.minZ && z <= this.maxZ; }
@@ -241,14 +244,16 @@ export class IslandElevation {
   readonly coherentRock:boolean;
   readonly dryToe:boolean;
   readonly connectedForm:boolean;
-  constructor(coherentRock=false,dryToe=false,connectedForm=false){
+  readonly photoStrand:boolean;
+  constructor(coherentRock=false,dryToe=false,connectedForm=false,photoStrand=false){
     this.coherentRock=coherentRock;
     this.dryToe=coherentRock&&dryToe;
     this.connectedForm=coherentRock&&connectedForm;
+    this.photoStrand=photoStrand;
     this.coast=this.tomari?new TomariCoastSurface(this.tomari,(x,z)=>this.baseHeightAt(x,z),
       {subdivision:4,minX:40,maxX:190,minZ:50,maxZ:168,coherentRock,dryToe:this.dryToe,connectedForm:this.connectedForm}):undefined;
     this.beach=this.tomari&&this.coast?new TomariCoastSurface(this.tomari,(x,z)=>this.coast!.heightAt(x,z),
-      {subdivision:8,minX:80,maxX:139,minZ:95,maxZ:143,dryToe:this.dryToe,referenceBase:this.dryToe?(x,z)=>this.coast!.referenceHeightAt(x,z):undefined}):undefined;
+      {subdivision:8,minX:80,maxX:139,minZ:95,maxZ:143,dryToe:this.dryToe,photoStrand,referenceBase:this.dryToe?(x,z)=>this.coast!.referenceHeightAt(x,z):undefined}):undefined;
   }
 
   fieldAt(x: number, z: number): ElevationField | undefined {

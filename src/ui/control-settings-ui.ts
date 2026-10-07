@@ -1,5 +1,6 @@
 import './control-settings.css';
 import { ACTIONS, CONTROL_ACTIONS, ControlSettings, isTextInput, keyLabel, type ControlAction } from '../input/control-settings.ts';
+import {BOAT_FOV} from '../world/camera-lens.ts';
 
 /** Native modal focus and Escape handling keep binding keys out of the world. */
 export class ControlSettingsUI {
@@ -20,6 +21,10 @@ export class ControlSettingsUI {
           <label class="invert-option"><input type="checkbox" data-invert="invertX" />左右を反転</label>
           <label class="invert-option"><input type="checkbox" data-invert="invertY" />上下を反転</label>
           <p>通常は、右に動かすと右を向きます。クリックして見回し、Escでマウスを解放。タッチでは画面をドラッグ。</p>
+          <label class="sensitivity-label" for="boat-fov">船上の視野角 <output data-boat-fov for="boat-fov"></output></label>
+          <input id="boat-fov" type="range" min="${BOAT_FOV.min}" max="${BOAT_FOV.max}" step="1" />
+          <div class="sensitivity-scale"><span>標準に近い</span><span>広く見渡す</span></div>
+          <p>船上ではマウスホイールでも調整できます。乗り降りに合わせて視野が滑らかに変わります。</p>
         </section>
         <section aria-labelledby="binding-settings-title"><h3 id="binding-settings-title">キー割り当て</h3>
           <p>変更するキーを押して、新しいキーを入力。Escで取消、Backspace / Deleteで解除。Shiftは左右共通。Ctrl・Alt・⌘はブラウザ操作用です。</p>
@@ -47,6 +52,8 @@ export class ControlSettingsUI {
     }
     const sensitivity = this.dialog.querySelector<HTMLInputElement>('#look-sensitivity')!;
     sensitivity.addEventListener('input', () => { this.waiting = null; this.settings.setLook({ sensitivity: Number(sensitivity.value) }); }, events);
+    const boatFov=this.dialog.querySelector<HTMLInputElement>('#boat-fov')!;
+    boatFov.addEventListener('input',()=>{this.waiting=null;this.settings.setBoatFov(Number(boatFov.value));},events);
     this.dialog.querySelectorAll<HTMLInputElement>('[data-invert]').forEach(input => input.addEventListener('change', () => {
       this.waiting = null; this.settings.setLook({ [input.dataset.invert!]: input.checked });
     }, events));
@@ -91,6 +98,9 @@ export class ControlSettingsUI {
     const value = this.settings.value, range = this.dialog.querySelector<HTMLInputElement>('#look-sensitivity')!;
     range.value = String(value.sensitivity); range.style.setProperty('--fill', `${(value.sensitivity - .2) / 2.8 * 100}%`);
     this.dialog.querySelector('output')!.textContent = `${value.sensitivity.toFixed(2)} ×`;
+    const boatFov=this.dialog.querySelector<HTMLInputElement>('#boat-fov')!;
+    boatFov.value=String(value.boatFov);boatFov.style.setProperty('--fill',`${(value.boatFov-BOAT_FOV.min)/(BOAT_FOV.max-BOAT_FOV.min)*100}%`);
+    this.dialog.querySelector('[data-boat-fov]')!.textContent=`${Math.round(value.boatFov)}°`;
     this.dialog.querySelectorAll<HTMLInputElement>('[data-invert]').forEach(i => { i.checked = value[i.dataset.invert as 'invertX' | 'invertY']; });
     this.dialog.querySelectorAll<HTMLButtonElement>('[data-binding]').forEach(button => {
       const action = button.dataset.binding as ControlAction, slot = Number(button.dataset.slot) as 0 | 1;

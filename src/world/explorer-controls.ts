@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { ControlSettings, type ControlAction } from '../input/control-settings.ts';
+import {boatWheelFov} from './camera-lens.ts';
 import type { AdventureState, BodyPoint, BodyPose, GroundSampler, TravelMode, WorldDestination } from './contracts.ts';
 import { PLAYER_DIMENSIONS,BOAT_ACCESS } from './contracts.ts';
 import { ROUTE_MIN_DEPTH, ROUTE_RADIUS, clampWorld, findNearbyWater, footSegmentClear, groundHeight,
@@ -108,11 +109,16 @@ export class ExplorerControls {
       gaitPhase: 0, viewOffset: new THREE.Vector3(), velocity: this.velocity, interactionLabel: '',
       boardingProgress: 0, avatarAction: 'idle', boatPitch: 0, boatRoll: 0,
       message: '浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。' };
-    this.unsubscribeSettings = settings.subscribe(() => this.resetInput(new Event('settings')));
+    let previousBindings=JSON.stringify(settings.value.bindings);
+    this.unsubscribeSettings = settings.subscribe(() => {
+      const nextBindings=JSON.stringify(settings.value.bindings);
+      if(nextBindings!==previousBindings){previousBindings=nextBindings;this.resetInput(new Event('settings'));}
+    });
     this.originalTouchAction = canvas.style.touchAction; this.originalTabIndex = canvas.tabIndex;
     canvas.style.touchAction = 'none'; if (canvas.tabIndex < 0) canvas.tabIndex = 0;
     this.bind(canvas, 'pointerdown', this.onPointerDown);
     this.bind(canvas, 'pointermove', this.onPointerMove);
+    this.bind(canvas, 'wheel', this.onWheel);
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) this.bind(canvas, type, this.onPointerUp);
     const window = this.doc.defaultView;
     if (window) {
@@ -128,8 +134,15 @@ export class ExplorerControls {
   }
 
   private bind(target: EventTarget, type: string, listener: EventListener): void {
-    target.addEventListener(type, listener); this.listeners.push([target, type, listener]);
+    target.addEventListener(type, listener, type==='wheel'?{passive:false}:undefined); this.listeners.push([target, type, listener]);
   }
+  private onWheel:EventListener=event=>{
+    const wheel=event as WheelEvent;
+    if(this.disposed||this.blocked||this.boarding||this.state.mode!=='boat'||wheel.ctrlKey||wheel.metaKey||wheel.altKey||wheel.shiftKey||wheel.defaultPrevented)return;
+    if(!Number.isFinite(wheel.deltaY)||wheel.deltaY===0||![0,1,2].includes(wheel.deltaMode))return;
+    this.settings.setBoatFov(boatWheelFov(this.settings.value.boatFov,wheel.deltaY,wheel.deltaMode));
+    wheel.preventDefault();
+  };
   private onPointerDown: EventListener = event => {
     const pointer = event as PointerEvent;
     if (this.disposed || this.blocked || pointer.button !== 0 || this.pointerId !== null) return;

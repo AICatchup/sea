@@ -1,0 +1,365 @@
+{
+  "shoreComparison": [
+    {
+      "name": "spawn",
+      "camera": [
+        -36,
+        3.119820126211253,
+        27,
+        -0.0143295099661545,
+        0.29548696126144947,
+        0.004432636871673969,
+        0.9552290157857268
+      ],
+      "time": 34,
+      "fov": 62,
+      "strand": {
+        "changed": 17846,
+        "maximumDelta": 0.8011924102902412,
+        "meanAbsoluteDelta": 0.1647245723231761,
+        "westernJoinVertices": 990
+      }
+    },
+    {
+      "name": "shore",
+      "camera": [
+        -42,
+        1.3518743337820132,
+        9,
+        -0.11505006784720222,
+        0.2743682744614488,
+        0.03308314468637099,
+        0.9541441386892556
+      ],
+      "time": 34,
+      "fov": 62,
+      "strand": {
+        "changed": 17846,
+        "maximumDelta": 0.8011924102902412,
+        "meanAbsoluteDelta": 0.1647245723231761,
+        "westernJoinVertices": 990
+      }
+    },
+    {
+      "name": "lookout",
+      "camera": [
+        -25,
+        13.50407012014893,
+        36,
+        -0.12048441287007682,
+        0.2550747238774246,
+        0.0320514492656817,
+        0.9588498819388662
+      ],
+      "time": 34,
+      "fov": 62,
+      "strand": {
+        "changed": 17846,
+        "maximumDelta": 0.8011924102902412,
+        "meanAbsoluteDelta": 0.1647245723231761,
+        "westernJoinVertices": 990
+      }
+    },
+    {
+      "name": "reef",
+      "camera": [
+        -145,
+        -5,
+        -113,
+        -0.20197938638944213,
+        0.24196872057608015,
+        0.0515738045677269,
+        0.947626302093251
+      ],
+      "time": 34,
+      "fov": 62,
+      "strand": {
+        "changed": 17846,
+        "maximumDelta": 0.8011924102902412,
+        "meanAbsoluteDelta": 0.1647245723231761,
+        "westernJoinVertices": 990
+      }
+    },
+    {
+      "name": "cliff",
+      "camera": [
+        -86,
+        1.5154619036711725,
+        -22,
+        0.03482082255847939,
+        0.7164595825818137,
+        -0.035852861494419526,
+        0.6958360073794011
+      ],
+      "time": 34,
+      "fov": 62,
+      "strand": {
+        "changed": 17846,
+        "maximumDelta": 0.8011924102902412,
+        "meanAbsoluteDelta": 0.1647245723231761,
+        "westernJoinVertices": 990
+      }
+    }
+  ],
+  "walk": {
+    "samples": 771,
+    "allPositionsFinite": true,
+    "modes": [
+      "walk"
+    ],
+    "first": {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.1395600067648101,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.2125562984246391,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 3.1163570491861665,
+        "pitch": -0.035,
+        "x": -36.00251001,
+        "yaw": -0.6,
+        "z": 26.99748999
+      },
+      "fov": 62,
+      "wall": 41083.1
+    },
+    "last": {
+      "adventure": {
+        "avatarAction": "walk",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.07956224981582549,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.2608629718647817,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.4838713826899883,
+        "pitch": -0.035,
+        "x": -110.3919167153448,
+        "yaw": -0.6,
+        "z": -81.6959565285718
+      },
+      "fov": 62,
+      "wall": 252257.4
+    },
+    "maxHorizontalSampleStep": 0.21589500000003284
+  },
+  "boarding": {
+    "samples": 7516,
+    "allPositionsFinite": true,
+    "modes": [
+      "boat",
+      "swim"
+    ],
+    "first": {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.01541403913490437,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "船に乗る",
+        "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3117350064270102,
+        "pitch": -0.035,
+        "x": -116.35301871579486,
+        "yaw": -0.6,
+        "z": -90.52996897411568
+      },
+      "fov": 62,
+      "wall": 348532.200000003
+    },
+    "last": {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.054475707279504466,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "船から降りる",
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.4001877413006587,
+        "pitch": -0.035,
+        "x": -117.77458502403616,
+        "yaw": -0.6,
+        "z": -90.60952344857954
+      },
+      "fov": 78,
+      "wall": 473801.5
+    },
+    "maxHorizontalSampleStep": 0.021414556194130872
+  },
+  "disembark": {
+    "samples": 450,
+    "allPositionsFinite": true,
+    "modes": [
+      "boat",
+      "swim"
+    ],
+    "first": {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0.003772727272721981,
+        "boat": [
+          -125.81255769361556,
+          -0.06454365494893458,
+          -101.50775921614007
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "はしごを移動中",
+        "message": "船尾のはしごを降りて、すぐそばの海へ。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.03492950696492901,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3729713266304755,
+        "pitch": -0.035,
+        "x": -124.9651471637017,
+        "yaw": -0.6,
+        "z": -101.15058307797813
+      },
+      "fov": 77.98917866977614
+    },
+    "last": {
+      "adventure": {
+        "avatarAction": "swim",
+        "boarding": 0,
+        "boat": [
+          -125.81255769361556,
+          0.026351883853099327,
+          -101.50775921614007
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "船に乗る",
+        "message": "船のすぐそばへ下りました。泳いで浜へ進めます。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.3830671281886822,
+        "pitch": -0.035,
+        "x": -124.34237373269232,
+        "yaw": -0.6,
+        "z": -98.03062698233084
+      },
+      "fov": 62
+    },
+    "maxHorizontalSampleStep": 0.043097803298358106
+  },
+  "wheel": {
+    "ctrlPrevented": false,
+    "samples": [
+      {
+        "fov": 78,
+        "label": "default",
+        "mode": "boat",
+        "speed": 0
+      },
+      {
+        "fov": 78,
+        "label": "accelerating",
+        "mode": "boat",
+        "speed": 2.631882877619309
+      },
+      {
+        "fov": 80,
+        "label": "wheel-80-while-W",
+        "mode": "boat",
+        "speed": 5.143229532079616
+      },
+      {
+        "fov": 95,
+        "label": "maximum95",
+        "mode": "boat",
+        "speed": 2.1334410567940787
+      },
+      {
+        "fov": 95,
+        "label": "ctrl-unchanged",
+        "mode": "boat",
+        "speed": 1.438507612253452
+      },
+      {
+        "fov": 65,
+        "label": "minimum65",
+        "mode": "boat",
+        "speed": 0.591245586318009
+      }
+    ],
+    "state": "done",
+    "wheelPrevented": true
+  },
+  "movementScope": "Continuous from normal spawn, controller moveFor input then actual DOM E boarding; synthetic DOM wheel and held W. Not native OS wheel/held-key acceptance. Trace gap includes separate final 5-second approach; raw observation stored locally. No teleport in this sequence.",
+  "review": "Independent visual reviewer permits limited shoreline improvement. Western join still has a pointed transition; whole scene photoreality unmet."
+}
