@@ -4,18 +4,60 @@ import type {GroundSampler} from './contracts.ts';
 export interface CliffSkinOptions {
   zMin?:number; zMax?:number; eastX?:number; westX?:number;
   sampleX?:number; alongZ?:number; faceSteps?:number; chunkLength?:number;
+  /** Requires replacing original render triangles and routing ground queries to this surface. */
+  meso?:boolean;
 }
 export interface CliffSkinDiagnostics {
   sampledProfiles:number; rejectedProfiles:number; meshes:number; frontTriangles:number;
-  triangles:number; maxRelief:number; buriedBoundaryVertices:number; backVertices:number;
+  triangles:number; maxRelief:number; maxCarving:number; buriedBoundaryVertices:number; backVertices:number;
   /** All depths verified by the provided DEM at the actual vertex coordinates. */
   minBackBurial:number; minBoundaryBurial:number;
 }
 export interface CliffSkin {
   group:THREE.Group; geometries:THREE.BufferGeometry[]; diagnostics:CliffSkinDiagnostics;
+  surfaceHeightAt(x:number,z:number):number|null;
+  coversOriginalTriangle(points:readonly [CliffPoint,CliffPoint,CliffPoint]):boolean;
   dispose():void;
 }
 interface Profile {z:number; heights:number[]; top:number}
+export interface CliffPoint {x:number;y:number;z:number}
+/** Indexed XZ barycentric query over front triangles. No Raycaster or monotonic-height assumption.
+ * Input geometry must use frontTriangleCount and queryStrips metadata from this builder.
+ */
+export function createCliffSurfaceQuery(geometries:readonly THREE.BufferGeometry[]) {
+  type Strip={z0:number;z1:number;start:number;end:number;minX:number;maxX:number;coreMinX:number;coreMaxX:number;top:number;g:THREE.BufferGeometry};
+  const strips:Strip[]=geometries.flatMap(g=>(g.userData.queryStrips??[]).map((s:Omit<Strip,'g'>)=>({...s,g})));
+  strips.sort((a,b)=>a.z0-b.z0);
+  const bins=new Map<number,Strip[]>();for(const s of strips)for(let k=Math.floor(s.z0/4);k<=Math.floor(s.z1/4);k++){const a=bins.get(k)??[];a.push(s);bins.set(k,a);}
+  const surfaceHeightAt=(x:number,z:number):number|null=>{
+    if(!Number.isFinite(x)||!Number.isFinite(z))return null;let best=-Infinity,bestInside=false;
+    for(const s of bins.get(Math.floor(z/4))??[]){if(z<s.z0||z>s.z1||x<s.minX||x>s.maxX)continue;
+      const p=s.g.getAttribute('position'),idx=s.g.index!,source=s.g.userData.sourcePoints as number[];
+      for(let i=s.start;i<s.end;i+=3){const a=idx.getX(i),b=idx.getX(i+1),c=idx.getX(i+2),ax=p.getX(a),az=p.getZ(a),bx=p.getX(b),bz=p.getZ(b),cx=p.getX(c),cz=p.getZ(c);
+        const det=(bz-cz)*(ax-cx)+(cx-bx)*(az-cz);if(Math.abs(det)<1e-10)continue;
+        const wa=((bz-cz)*(x-cx)+(cx-bx)*(z-cz))/det,wb=((cz-az)*(x-cx)+(ax-cx)*(z-cz))/det,wc=1-wa-wb;
+        if(wa< -1e-7||wb< -1e-7||wc< -1e-7)continue;
+        const sourceY=wa*source[a*3+1]+wb*source[b*3+1]+wc*source[c*3+1];
+        const height=wa*p.getY(a)+wb*p.getY(b)+wc*p.getY(c);
+        if(height>best){best=height;bestInside=sourceY>6&&sourceY<s.top-5&&x>s.coreMinX&&x<s.coreMaxX;}
+      }
+    }return best===-Infinity||!bestInside?null:best;
+  };
+  const coversOriginalTriangle=(points:readonly [CliffPoint,CliffPoint,CliffPoint])=>{
+    if(points.some(p=>![p.x,p.y,p.z].every(Number.isFinite)))return false;
+    const low=Math.min(...points.map(p=>p.z)),high=Math.max(...points.map(p=>p.z));let covered=low;
+    // Each triangle/slab intersection is convex. Its vertices are original vertices or
+    // edge/slab intersections; checking them against one inner rectangle proves coverage.
+    for(const s of strips){if(s.z1<low||s.z0>high)continue;
+      const lo=Math.max(low,s.z0),hi=Math.min(high,s.z1);if(lo>covered+1e-6)return false;
+      const checks:CliffPoint[]=points.filter(p=>p.z>=lo&&p.z<=hi);
+      for(let k=0;k<3;k++){const a=points[k],b=points[(k+1)%3];if(Math.abs(b.z-a.z)<1e-9)continue;for(const z of [lo,hi]){const t=(z-a.z)/(b.z-a.z);if(t>=0&&t<=1)checks.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z});}}
+      if(!checks.length||checks.some(p=>p.x<=s.coreMinX+.01||p.x>=s.coreMaxX-.01||p.y<=6||p.y>=s.top-5))return false;
+      covered=Math.max(covered,hi);
+    }return covered>=high&&points.every(p=>surfaceHeightAt(p.x,p.z)!==null);
+  };
+  return {surfaceHeightAt,coversOriginalTriangle};
+}
 const cap=(v:number|undefined,d:number,lo:number,hi:number)=>Number.isFinite(v)?Math.max(lo,Math.min(hi,v!)):d;
 const smooth=(v:number)=>{const t=Math.max(0,Math.min(1,v));return t*t*(3-2*t);};
 function hash(n:number){const a=Math.sin(n*127.1+311.7)*43758.5453;return a-Math.floor(a);}
@@ -31,7 +73,7 @@ export function createNiijimaCliffSkin(ground:GroundSampler,material:THREE.MeshS
   const faceSteps=Math.floor(cap(options.faceSteps,144,16,180)),chunkLength=cap(options.chunkLength,100,64,120);
   const group=new THREE.Group();group.name='shiromama-cliff-detail';group.userData.recon_part='shiromama-cliff-detail';
   const geometries:THREE.BufferGeometry[]=[];
-  const diagnostics:CliffSkinDiagnostics={sampledProfiles:0,rejectedProfiles:0,meshes:0,frontTriangles:0,triangles:0,maxRelief:0,buriedBoundaryVertices:0,backVertices:0,minBackBurial:Infinity,minBoundaryBurial:Infinity};
+  const diagnostics:CliffSkinDiagnostics={sampledProfiles:0,rejectedProfiles:0,meshes:0,frontTriangles:0,triangles:0,maxRelief:0,maxCarving:0,buriedBoundaryVertices:0,backVertices:0,minBackBurial:Infinity,minBoundaryBurial:Infinity};
   const xs:number[]=[];for(let x=east;x>west;x-=sample)xs.push(x);xs.push(west);
   const profile=(z:number):Profile|null=>{
     diagnostics.sampledProfiles++;
@@ -47,7 +89,7 @@ export function createNiijimaCliffSkin(ground:GroundSampler,material:THREE.MeshS
   };
   const build=(rows:Profile[])=>{
     if(rows.length<2||geometries.length>=16||diagnostics.frontTriangles+2*(rows.length-1)*faceSteps>260000)return;
-    let minBoundary=Infinity,minBack=Infinity,boundaryCount=0,maxRelief=0;
+    let minBoundary=Infinity,minBack=Infinity,boundaryCount=0,maxRelief=0,maxCarving=0;
     const positions:number[]=[],uvs:number[]=[],sources:number[]=[],burials:number[]=[],front:number[]=[];
     const stride=faceSteps+1;
     for(let r=0;r<rows.length;r++){
@@ -63,23 +105,33 @@ export function createNiijimaCliffSkin(ground:GroundSampler,material:THREE.MeshS
         const bedPhase=y/(.65+noise(p.z/31,51)*.35)+noise(p.z/9,71)*.45+noise(y/6.7,83)*.7;
         const bed= Math.exp(-Math.pow((bedPhase-Math.floor(bedPhase)-.18)/.11,2));
         const groove=Math.pow(noise(p.z/1.7+noise(y/13,11)*.6,97),8)*(.5+.5*noise(y/4,39));
-        const relief=fade*(.045+.14*bed-.07*groove+.025*(noise(y/2.1+p.z/4.3,29)-.5));
+        // Irregular branching grooves have slow vertical drift, variable widths and envelopes.
+        let rain=0;
+        if(options.meso){for(let cell=Math.floor(p.z/11)-1;cell<=Math.floor(p.z/11)+1;cell++){
+          const center=cell*11+hash(cell+501)*9+noise(y/17,cell+701)*2.5;
+          const width=.65+hash(cell+811)*1.4+noise(y/12,cell+919)*.5;
+          const envelope=smooth((y-(5+hash(cell+111)*18))/5)*smooth((p.top-(3+hash(cell+213)*15)-y)/7);
+          rain=Math.max(rain,Math.exp(-Math.pow((p.z-center)/width,2))*envelope);
+        }}
+        const relief=options.meso?fade*Math.max(-1.4,Math.min(.22,.035+.18*bed-1.2*rain-.22*groove*(.3+.7*noise(y/8,301)))):fade*(.045+.14*bed-.07*groove+.025*(noise(y/2.1+p.z/4.3,29)-.5));
         const offset=boundary?-.35:relief-.025*(1-fade);
         // Keep adjacent vertical samples ordered even on a low cliff with many face steps.
         const yLimit=(p.top-3)/faceSteps*.2;
-        let fx=x+nx*offset;const fy=y+Math.max(-yLimit,Math.min(yLimit,ny*offset));
+        // Meso cuts are horizontal into the DEM bank at fixed absolute bed heights.
+        // This avoids flattening their visible depth on gently sloped macro faces.
+        let fx=x+(options.meso?offset:nx*offset);const fy=options.meso?y:y+Math.max(-yLimit,Math.min(yLimit,ny*offset));
         if(boundary){ // Validate actual DEM burial rather than trusting interpolation.
-          for(let n=0;n<8&&ground.heightAt(fx,p.z)-fy<.015;n++)fx-=.25;
+          for(let n=0;n<(options.meso?4:8)&&ground.heightAt(fx,p.z)-fy<.015;n++)fx-=.25;
           const burial=ground.heightAt(fx,p.z)-fy;if(!Number.isFinite(burial)||burial<.015)return;
           minBoundary=Math.min(minBoundary,burial);boundaryCount++;
         }
-        let bx=x-1.5;
+        let bx=options.meso?Math.min(x-1.5,fx-.8):x-1.5;
         while(bx>west&&ground.heightAt(bx,p.z)-y<.08)bx-=.5;
         const backBurial=ground.heightAt(bx,p.z)-y;
         if(!Number.isFinite(backBurial)||backBurial<.08||bx>=fx-.1)return;
         if(j)arc+=Math.hypot(fx-lastX,fy-lastY);lastX=fx;lastY=fy;
         positions.push(fx,fy,p.z);sources.push(x,y,p.z);burials.push(bx,y,p.z);
-        uvs.push(p.z/2.7,arc/2.7);maxRelief=Math.max(maxRelief,Math.max(0,offset));
+        uvs.push(p.z/2.7,arc/2.7);maxRelief=Math.max(maxRelief,Math.max(0,offset));maxCarving=Math.max(maxCarving,Math.max(0,-offset));
         minBack=Math.min(minBack,backBurial);
       }
     }
@@ -91,9 +143,22 @@ export function createNiijimaCliffSkin(ground:GroundSampler,material:THREE.MeshS
     for(const [a,b,n]of edges.values())if(n===1)indices.push(b,a,a+count,b,a+count,b+count);
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.computeVertexNormals();geometry.computeBoundingBox();geometry.computeBoundingSphere();
     geometry.userData.frontVertexCount=count;geometry.userData.frontTriangleCount=front.length/3;geometry.userData.sourcePoints=sources;
+    const queryStrips=[];
+    if(options.meso)for(let r=0;r<rows.length-1;r++){
+      if(rows[r].z<rows[0].z+4||rows[r+1].z>rows[rows.length-1].z-4)continue;
+      const top=Math.min(rows[r].top,rows[r+1].top),p=geometry.getAttribute('position');
+      const lower=Math.max(...[r,r+1].map(q=>Math.ceil((6-3)/(rows[q].top-3)*faceSteps)));
+      const upper=Math.min(...[r,r+1].map(q=>Math.floor((top-5-3)/(rows[q].top-3)*faceSteps)));
+      if(lower>=upper)continue;
+      // Additional carving-sized guard keeps removal away from faded upper/lower bands.
+      const coreMinX=Math.max(p.getX(r*stride+upper),p.getX((r+1)*stride+upper))+1.5,coreMaxX=Math.min(p.getX(r*stride+lower),p.getX((r+1)*stride+lower))-1.5;
+      const rowXs=[];for(let q=r*stride;q<(r+2)*stride;q++)rowXs.push(p.getX(q));
+      queryStrips.push({z0:p.getZ(r*stride),z1:p.getZ((r+1)*stride),start:r*faceSteps*6,end:(r+1)*faceSteps*6,minX:Math.min(...rowXs),maxX:Math.max(...rowXs),coreMinX,coreMaxX,top});
+    }
+    geometry.userData.queryStrips=queryStrips;
     const mesh=new THREE.Mesh(geometry,material);mesh.name=`shiromama-cliff-detail-${geometries.length}`;mesh.userData.worldSolid=true;mesh.userData.recon_part='shiromama-cliff-detail';group.add(mesh);geometries.push(geometry);
     diagnostics.frontTriangles+=front.length/3;diagnostics.triangles+=indices.length/3;
-    diagnostics.minBoundaryBurial=Math.min(diagnostics.minBoundaryBurial,minBoundary);diagnostics.minBackBurial=Math.min(diagnostics.minBackBurial,minBack);diagnostics.buriedBoundaryVertices+=boundaryCount;diagnostics.backVertices+=count;diagnostics.maxRelief=Math.max(diagnostics.maxRelief,maxRelief);
+    diagnostics.minBoundaryBurial=Math.min(diagnostics.minBoundaryBurial,minBoundary);diagnostics.minBackBurial=Math.min(diagnostics.minBackBurial,minBack);diagnostics.buriedBoundaryVertices+=boundaryCount;diagnostics.backVertices+=count;diagnostics.maxRelief=Math.max(diagnostics.maxRelief,maxRelief);diagnostics.maxCarving=Math.max(diagnostics.maxCarving,maxCarving);
   };
   let rows:Profile[]=[];
   const n=Math.ceil((zMax-zMin)/stepZ),actual=n?(zMax-zMin)/n:stepZ;
@@ -106,5 +171,6 @@ export function createNiijimaCliffSkin(ground:GroundSampler,material:THREE.MeshS
   build(rows);diagnostics.meshes=geometries.length;
   if(!geometries.length){diagnostics.minBackBurial=0;diagnostics.minBoundaryBurial=0;}
   let disposed=false;
-  return {group,geometries,diagnostics,dispose(){if(disposed)return;disposed=true;for(const geometry of geometries)geometry.dispose();group.clear();}};
+  const query=createCliffSurfaceQuery(geometries);
+  return {group,geometries,diagnostics,surfaceHeightAt(x,z){return disposed?null:query.surfaceHeightAt(x,z);},coversOriginalTriangle(points){return !disposed&&query.coversOriginalTriangle(points);},dispose(){if(disposed)return;disposed=true;for(const geometry of geometries)geometry.dispose();group.clear();}};
 }

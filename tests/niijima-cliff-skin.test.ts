@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import {createNiijimaCliffSkin} from '../src/world/niijima-cliff-skin.ts';
+import {createNiijimaCliffSkin,createCliffSurfaceQuery} from '../src/world/niijima-cliff-skin.ts';
 const ground={heightAt(x:number,z:number){return 1+Math.max(0,Math.min(65,(6000-x)*1.8))+Math.sin(z/37)*.15;}};
 const options={zMin:-100,zMax:20,eastX:6030,westX:5900,alongZ:1.25,faceSteps:64,chunkLength:64};
 function make(){const material=new THREE.MeshStandardMaterial();return {...createNiijimaCliffSkin(ground,material,options),material};}
@@ -46,4 +46,32 @@ test('full default coastline fits the budget and short steep cliffs keep positiv
  assert.ok(short.geometries.length>0);
  for(const g of short.geometries){const p=g.getAttribute('position'),idx=g.index!;for(let i=0;i<g.userData.frontTriangleCount*3;i+=3){const a=idx.getX(i),b=idx.getX(i+1),c=idx.getX(i+2);assert.ok((p.getY(b)-p.getY(a))*(p.getZ(c)-p.getZ(a))-(p.getZ(b)-p.getZ(a))*(p.getY(c)-p.getY(a))>0);}}
  short.dispose();material.dispose();
+});
+test('meso carving is bounded, solid and buried with no borrowed-resource changes',()=>{
+ const material=new THREE.MeshStandardMaterial(),skin=createNiijimaCliffSkin(ground,material,{...options,meso:true});
+ assert.ok(skin.geometries.length>0);assert.ok(skin.diagnostics.maxCarving>.7);assert.ok(skin.diagnostics.maxCarving<=1.4);assert.ok(skin.diagnostics.maxRelief<=.22);assert.ok(skin.diagnostics.frontTriangles<=260000);assert.ok(skin.diagnostics.minBackBurial>=.08);
+ for(const g of skin.geometries){const p=g.getAttribute('position'),n=g.userData.frontVertexCount,source=g.userData.sourcePoints as number[];for(let i=0;i<n;i++){assert.ok(source[i*3]-p.getX(i)<=1.401);assert.ok(p.getX(i)-source[i*3]<=.221);assert.ok(p.getX(i+ n)<p.getX(i)-.1);assert.ok(ground.heightAt(p.getX(i+n),p.getZ(i+n))-p.getY(i+n)>=.079);}const edges=new Map<string,number>(),idx=g.index!;for(let i=0;i<idx.count;i+=3)for(let k=0;k<3;k++){const a=idx.getX(i+k),b=idx.getX(i+(k+1)%3),key=a<b?`${a},${b}`:`${b},${a}`;edges.set(key,(edges.get(key)??0)+1);}assert.ok([...edges.values()].every(n=>n===2));}
+ skin.dispose();material.dispose();
+});
+test('meso default coastline stays bounded and legacy default has no replacement mask',()=>{
+ const material=new THREE.MeshStandardMaterial(),skin=createNiijimaCliffSkin(ground,material,{meso:true});assert.ok(skin.diagnostics.meshes>0);assert.ok(skin.diagnostics.meshes<=16);assert.ok(skin.diagnostics.frontTriangles<=260000);assert.ok(skin.diagnostics.maxCarving<=1.4);skin.dispose();
+ const legacy=createNiijimaCliffSkin(ground,material,options);assert.equal(legacy.surfaceHeightAt(5985,-70),null);assert.equal(legacy.coversOriginalTriangle([{x:5985,y:28,z:-70},{x:5986,y:26,z:-69},{x:5984,y:30,z:-69}]),false);legacy.dispose();material.dispose();
+});
+test('meso query matches actual front triangles independently via downward ray hits',()=>{
+ const material=new THREE.MeshStandardMaterial(),skin=createNiijimaCliffSkin(ground,material,{...options,meso:true}),rayMaterial=new THREE.MeshBasicMaterial({side:THREE.DoubleSide}),ray=new THREE.Raycaster();let compared=0;
+ for(const g of skin.geometries){const clone=g.clone();clone.setIndex(Array.from(g.index!.array).slice(0,g.userData.frontTriangleCount*3));const mesh=new THREE.Mesh(clone,rayMaterial);mesh.updateMatrixWorld();const p=g.getAttribute('position'),idx=g.index!;
+ for(let i=0;i<g.userData.frontTriangleCount*3;i+=129){const a=idx.getX(i),b=idx.getX(i+1),c=idx.getX(i+2),x=(p.getX(a)+p.getX(b)+p.getX(c))/3,z=(p.getZ(a)+p.getZ(b)+p.getZ(c))/3,h=skin.surfaceHeightAt(x,z);if(h===null)continue;
+ ray.set(new THREE.Vector3(x,1000,z),new THREE.Vector3(0,-1,0));const hits=ray.intersectObject(mesh,false);assert.ok(hits.length);assert.ok(Math.abs(h-hits[0].point.y)<1e-5);compared++;if(compared>=12)break;}
+ clone.dispose();if(compared>=12)break;}assert.ok(compared>=12);skin.dispose();material.dispose();rayMaterial.dispose();
+});
+test('barycentric query chooses the highest overhang and excludes vertical degenerate faces',()=>{
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([0,10,0,2,12,0,0,14,2,0,20,0,2,22,0,0,24,2,1,90,0,1,91,1,1,92,2],3));g.setIndex([0,1,2,3,4,5,6,7,8]);g.userData.sourcePoints=Array.from({length:9},()=>[0,10,0]).flat();g.userData.queryStrips=[{z0:0,z1:2,start:0,end:9,minX:0,maxX:2,coreMinX:-1,coreMaxX:3,top:40}];
+ const query=createCliffSurfaceQuery([g]);assert.ok(Math.abs(query.surfaceHeightAt(.5,.5)!-21.5)<1e-9);assert.equal(query.surfaceHeightAt(4,.5),null);assert.ok(query.surfaceHeightAt(1,.25)!<30);g.dispose();
+});
+test('patch borders and low strand return null; mask only accepts wholly interior original triangles',()=>{
+ const material=new THREE.MeshStandardMaterial(),skin=createNiijimaCliffSkin(ground,material,{...options,meso:true});
+ assert.equal(skin.surfaceHeightAt(5990,options.zMin),null);assert.equal(skin.surfaceHeightAt(5990,options.zMax),null);assert.equal(skin.surfaceHeightAt(6010,-70),null);assert.equal(skin.surfaceHeightAt(NaN,-70),null);
+ const tri=[{x:5985,y:28,z:-70},{x:5986,y:26.2,z:-69},{x:5984,y:29.8,z:-69}] as const;assert.equal(skin.coversOriginalTriangle(tri),true);
+ assert.equal(skin.coversOriginalTriangle([{...tri[0],z:options.zMin},tri[1],tri[2]]),false);assert.equal(skin.coversOriginalTriangle([{...tri[0],y:2},tri[1],tri[2]]),false);
+ skin.dispose();assert.equal(skin.surfaceHeightAt(5985,-70),null);assert.equal(skin.coversOriginalTriangle(tri),false);material.dispose();
 });
