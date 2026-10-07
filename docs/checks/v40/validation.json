@@ -1,0 +1,105 @@
+{
+  "scope": "V40 bounded source-seam and cliff-detail improvement; not photoreal completion",
+  "fullTests": {
+    "passed": 361,
+    "failed": 0,
+    "durationMs": 114428.4961
+  },
+  "build": {
+    "typescript": "PASS",
+    "vite": "PASS",
+    "standalone": "PASS",
+    "note": "npm wrapper was unavailable; exact package build sequence ran with the bundled Node binary"
+  },
+  "sourceRepair": {
+    "cells": 1968,
+    "rows": 196,
+    "originalSha256": "f863dd071cf3fb960d9af929e477463da517b122de4b001e7c4bda1761bc8338",
+    "reproducer": "scripts/build-niijima-coast-confidence.py --verify",
+    "originalBytesPreserved": true
+  },
+  "cliff": {
+    "meshes": 8,
+    "triangles": 375808,
+    "originalTrianglesRemoved": 56832,
+    "fineGeometry": "authored meso detail over GSI source, not a Niijima scan"
+  },
+  "independentCodeReview": {
+    "deletedTriangles": 56832,
+    "querySamples": 227328,
+    "nullSamples": 0,
+    "maxFloorQueryDifferenceMetres": 0,
+    "independentVisibleRaySamples": 189,
+    "maxRayErrorMetres": 8.53e-14,
+    "scope": "Reported by the independent read-only reviewer; finite CPU evidence, not continuous proof"
+  },
+  "visualReview": {
+    "status": "limited improvement accepted",
+    "views": 6,
+    "remaining": [
+      "small foot steps/spikes",
+      "over-regular broad layers",
+      "angular shoreline",
+      "incomplete geological/material correspondence"
+    ],
+    "pixelEquality": "not evaluated; viewport sizes differed"
+  },
+  "browser": {
+    "route": "developer checkpoint on Secret beach, then continuous controller forward/swim/dive/surface/back inputs",
+    "samples": 500,
+    "modes": [
+      "dive",
+      "swim",
+      "walk"
+    ],
+    "start": {
+      "height": 2.0965652422909833,
+      "pitch": -0.12,
+      "x": 5898.07004007,
+      "yaw": 1.5707963267948966,
+      "z": -923.918
+    },
+    "finish": {
+      "height": 2.004923257608683,
+      "pitch": -0.12,
+      "x": 5898.724716435477,
+      "yaw": 1.5707963267948966,
+      "z": -923.918
+    },
+    "groundedAtFinish": true,
+    "nativeHeldInput": "not tested; QA input uses the same game controller",
+    "staticHtml": {
+      "urlPath": "/sea.html?capture=1",
+      "externalResources": 0,
+      "consoleErrors": 0,
+      "developerQA": "undefined",
+      "defaultCoastConfidence": true,
+      "defaultCliffDetail": true
+    }
+  },
+  "images": [
+    {
+      "file": "standalone-spawn.jpg",
+      "sha256": "83ea7750a3db07f94a99de23c5b6b63691a1f3b2af0e5e51146ad3111da4b955",
+      "bytes": 89361
+    },
+    {
+      "file": "west-final-cliff-close.png",
+      "sha256": "07cec29d2001249f3930b96de7a537df2097d9d22dc1ca23f8ef1b1a60a4630b",
+      "bytes": 1734306
+    },
+    {
+      "file": "west-final-sea-facing-cliff.png",
+      "sha256": "9de98c2db358515ac488bafaf84076b3e046fc08e1fa88e9fc593a6ed4de0e11",
+      "bytes": 2151799
+    },
+    {
+      "file": "west-final-user-north.png",
+      "sha256": "d5b9ba934fce75b99d7cf3caa63e1bd1fe22f9cb84550e07eaf3993e06aedde1",
+      "bytes": 1913048
+    }
+  ],
+  "globalGoal": "ACTIVE_UNMET",
+  "centimetreAccuracy": "NOT_ESTABLISHED",
+  "finalMaterialCapture": "Recaptured after final bounded reflectance/roughness adjustment; all six final cameras in release.json in local archive"
+}

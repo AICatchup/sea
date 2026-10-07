@@ -104,6 +104,7 @@ try {
   if(view==='cliff')ocean.adventure.viewpoint(-86,-22,-1.6,.10);
   const coastalView=CAPTURE_PROFILES.find(profile=>profile.name===view&&(view==='habushi-front'||view==='secret'));
   if(coastalView){const p=coastalView.pose;ocean.adventure.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);}
+  if(import.meta.env.DEV&&new URLSearchParams(location.search).get('view')==='secret-north')ocean.adventure.viewpoint(5867.738324909292,-986.7159855658878,.2470509620848015,-.049045010375976736);
   const focus = () => element('ocean').focus({ preventScroll: true });
   const openPanels = new Set<string>();
   const modal = (name:string,open:boolean) => {
@@ -189,6 +190,15 @@ try {
   // as the touch controls; bookmarks are QA starts, never normal travel actions.
   let crestSeriesBusy=false;
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
+    async captureCoastPose(pose:{x:number;z:number;yaw:number;pitch:number;eyeY:number},name='coast'){
+      if(!captureOnly||![pose.x,pose.z,pose.yaw,pose.pitch,pose.eyeY].every(Number.isFinite)||pose.x<5400||pose.x>6500||pose.z< -3500||pose.z>200)throw new Error('Dedicated bounded coast QA pose required');
+      await ocean.ready;const before=captureHost.readState(),clock=ocean.diagnostics.time;
+      try{captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        captureHost.viewpoint(pose.x,pose.z,pose.yaw,pose.pitch,'walk',0,pose.eyeY);ocean.setObservationClock(34);
+        for(let i=0;i<28;i++)await captureHost.nextFrame();const png=await capturePNG();if(!png)throw new Error('Coast capture failed');
+        return{png,metadata:{name,pose,state:captureHost.readState(),time:ocean.diagnostics.time,coastConfidence:ocean.world.niijimaCoast.dem.coastConfidence,collision:ocean.diagnostics.collision,scope:'Developer camera checkpoint, identical frozen FFT time; visual comparison, not travel or a surveyed camera pose'}};
+      }finally{try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
+    },
     async captureSandComparison(name:string){
       const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown sand comparison view');
       await ocean.ready;const before=captureHost.readState(),original=ocean.world.sandAppearance.value,clock=ocean.diagnostics.time,variants=[];

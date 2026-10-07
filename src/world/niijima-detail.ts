@@ -1,6 +1,7 @@
 import { NIIJIMA_DETAIL_RASTER as raster, NIIJIMA_DETAIL_PROVENANCE } from './niijima-detail-repaired.generated.ts';
 import type { GroundSampler } from './contracts.ts';
 import { niijimaScarpHeight } from './niijima-scarp.ts';
+import {reconcileNiijimaCoast} from './niijima-coast-confidence.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };
 
 const NODATA = -32768;
@@ -58,13 +59,15 @@ export class NiijimaDEM {
   readonly heights: Float32Array;
   readonly shore: Float32Array;
   readonly scarp: boolean;
-  constructor(source = raster as NiijimaDEM['raster'], options: { scarp?: boolean } = {}) {
+  readonly coastConfidence:{compatible:boolean;removed:number}|null;
+  constructor(source = raster as NiijimaDEM['raster'], options: { scarp?: boolean;coastConfidence?:boolean } = {}) {
     this.scarp = options.scarp ?? false;
     this.raster = source; const raster = source;
     this.dx = (raster.maxX - raster.minX) / (raster.width - 1); this.dz = (raster.maxZ - raster.minZ) / (raster.height - 1);
     const encoded = atob(raster.elevations), buffer = new ArrayBuffer(encoded.length), bytes = new Uint8Array(buffer);
     for (let i = 0; i < encoded.length; i++) bytes[i] = encoded.charCodeAt(i);
     const view = new DataView(buffer), values = Int16Array.from({ length: encoded.length / 2 }, (_, i) => view.getInt16(i * 2, true));
+    this.coastConfidence=options.coastConfidence?reconcileNiijimaCoast(values,source):null;
     this.land = Uint8Array.from(values, v => v === NODATA ? 0 : 1);
     const sea = distances(this.land, raster.width, raster.height, this.dx, this.dz, 0);
     const land = distances(this.land, raster.width, raster.height, this.dx, this.dz, 1);

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {createNiijimaCliffSkin,type CliffSkin} from './niijima-cliff-skin.ts';
 import { PLAYER_DIMENSIONS, type MapOutline, type WorldDestination } from './contracts.ts';
 import { ElevationField, IslandElevation, sandAt, shelterAt, smoothstep } from './geodata.ts';
 import { DESTINATION_SEEDS } from './locations.ts';
@@ -78,6 +79,7 @@ export class IslandWorld {
   readonly habushiGround:HabushiGround;
   readonly scarpVolume:NiijimaScarpVolume|null;
   readonly cliffVolume:TomariCliffVolume|null;
+  readonly niijimaCliffSkin:CliffSkin|null;
   private readonly maps = new Map<string, WaterMap>();
   private readonly niijimaShaderMaps = new WeakMap<THREE.Texture, WaterMap>();
   private readonly textures: THREE.Texture[] = [];
@@ -99,8 +101,17 @@ export class IslandWorld {
     if(this.cliffVolume)this.group.add(this.cliffVolume.group);
     const scarp=typeof location!=='undefined'&&new URLSearchParams(location.search).get('scarp')==='1';
     const volume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('volume')==='1';
-    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume});this.group.add(this.niijimaCoast.group);
+    const coastConfidence=typeof location==='undefined'||new URLSearchParams(location.search).get('coastconfidence')!=='0';
+    const cliffDetail=typeof location==='undefined'||new URLSearchParams(location.search).get('cliffdetail')!=='0';
+    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume,coastConfidence,cliffDetail});this.group.add(this.niijimaCoast.group);
     const cliffMaterial=(this.niijimaCoast.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
+    const cliffMeso=typeof location==='undefined'||new URLSearchParams(location.search).get('cliffmeso')!=='0';
+    this.niijimaCliffSkin=cliffDetail?createNiijimaCliffSkin({heightAt:(x,z)=>this.niijimaCoast.baseHeightAt(x,z)},cliffMaterial,{faceSteps:144,meso:cliffMeso}):null;
+    if(this.niijimaCliffSkin){
+      const c=new THREE.Color();for(const g of this.niijimaCliffSkin.geometries){const p=g.getAttribute('position'),colors=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){this.niijimaCoast.colorAt(p.getX(i),p.getY(i),p.getZ(i),c);colors.set([c.r,c.g,c.b],i*3);}g.setAttribute('color',new THREE.BufferAttribute(colors,3));}
+      this.niijimaCliffSkin.group.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});this.group.add(this.niijimaCliffSkin.group);
+      if(cliffMeso)this.niijimaCoast.replaceCliffSurface(this.niijimaCliffSkin);
+    }
     this.scarpVolume=volume?new NiijimaScarpVolume(this.niijimaCoast,this.niijimaCoast.dem,cliffMaterial):null;
     if(this.scarpVolume)this.group.add(this.scarpVolume.group);
     this.habushiGate=new HabushiMainGate(this.niijimaCoast);
@@ -181,6 +192,7 @@ export class IslandWorld {
   }
 
   dispose(): void {
+    this.niijimaCliffSkin?.dispose();
     this.cliffVolume?.dispose();
     this.scarpVolume?.dispose();
     this.habushiGround.dispose();

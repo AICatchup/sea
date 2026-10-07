@@ -75,3 +75,16 @@ test('patch borders and low strand return null; mask only accepts wholly interio
  assert.equal(skin.coversOriginalTriangle([{...tri[0],z:options.zMin},tri[1],tri[2]]),false);assert.equal(skin.coversOriginalTriangle([{...tri[0],y:2},tri[1],tri[2]]),false);
  skin.dispose();assert.equal(skin.surfaceHeightAt(5985,-70),null);assert.equal(skin.coversOriginalTriangle(tri),false);material.dispose();
 });
+test('meso vanishes before lower and chunk cutout guards; talus is strongly attenuated',()=>{
+ const material=new THREE.MeshStandardMaterial();
+ const steep=createNiijimaCliffSkin(ground,material,{...options,faceSteps:144,meso:true});
+ let deep=0,ledge=0,guardChecks=0;
+ for(const g of steep.geometries){const p=g.getAttribute('position'),s=g.userData.sourcePoints as number[],n=g.userData.frontVertexCount,stride=145,z0=p.getZ(0),z1=p.getZ(n-1);
+ for(let i=0;i<n;i++){const row=Math.floor(i/stride),j=i%stride,y=s[i*3+1],z=s[i*3+2],delta=p.getX(i)-s[i*3];if(row===0||row===n/stride-1||j===0||j===144)continue;
+ if(y<=10||z<=z0+5||z>=z1-5){assert.ok(Math.abs(delta+.025)<.001);guardChecks++;}
+ if(y>18&&y<50&&z>z0+12&&z<z1-12){deep=Math.max(deep,-delta);ledge=Math.max(ledge,delta);}}
+ }assert.ok(guardChecks>100);assert.ok(deep>.5);assert.ok(ledge>.025);
+ const talus=createNiijimaCliffSkin({heightAt(x){return 1+Math.max(0,Math.min(65,(6000-x)*.5));}},material,{...options,westX:5800,faceSteps:144,meso:true});assert.ok(talus.geometries.length>0);let maxTalus=0;
+ for(const g of talus.geometries){const p=g.getAttribute('position'),s=g.userData.sourcePoints as number[],n=g.userData.frontVertexCount,stride=145,z0=p.getZ(0),z1=p.getZ(n-1);for(let i=0;i<n;i++){const y=s[i*3+1],z=s[i*3+2];if(y>18&&y<50&&z>z0+12&&z<z1-12&&i%stride>0&&i%stride<144)maxTalus=Math.max(maxTalus,Math.abs(p.getX(i)-s[i*3]));}}
+ assert.ok(maxTalus<.01);assert.ok(maxTalus<deep*.05);steep.dispose();talus.dispose();material.dispose();
+});

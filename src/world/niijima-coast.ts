@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { GroundSampler } from './contracts.ts';
+import type {CliffSkin} from './niijima-cliff-skin.ts';
 import { NiijimaDEM, NiijimaSurface, NIIJIMA_DETAIL_PROVENANCE, NIIJIMA_SEDIMENT_PROVENANCE, ease, noise, type SurfaceBounds } from './niijima-detail.ts';
 import { ELEVATION_RASTERS } from './geodata.generated.ts';
 import { NIIJIMA_NORTH_RASTER, NIIJIMA_NORTH_PROVENANCE } from './niijima-north.generated.ts';
@@ -7,10 +8,12 @@ import { NIIJIMA_SOUTH_RASTER, NIIJIMA_SOUTH_PROVENANCE } from './niijima-south.
 import type { SandTextureSet } from './sand-material.ts';
 import { niijimaScarpApronHeight } from './niijima-scarp.ts';
 import {wetSandUniforms,wetSandSampling} from './coastal-wet-sand.ts';
+import {loadCliffTextures,cliffMaterialCommon,cliffMaterialColour,cliffMaterialNormal,type CliffTextureSet} from './niijima-rock-material.ts';
 export { NIIJIMA_DETAIL_PROVENANCE };
 export { NIIJIMA_NORTH_PROVENANCE };
 export { NIIJIMA_SOUTH_PROVENANCE };
 const pumiceURL=new URL('../assets/niijima/pumice-albedo-generated-v9.png',import.meta.url).href;
+const pumiceWhite=new THREE.Color('#e5e1d8'),pumiceSand=new THREE.Color('#dedbce'),pumiceGreen=new THREE.Color('#506346'),pumiceShade=new THREE.Color('#c8c5b9');
 
 // Edges coincide with complete existing 64m renderer cells. This prevents a crack when
 // IslandWorld omits coarse cells whose centres are in bounds. Internal grids divide those cells.
@@ -44,13 +47,14 @@ export const NIIJIMA_COAST_BOOKMARKS = [
 ] as const;
 
 /** Niijima's chalk-white pumice and talus, distinct from Tomari's darker jointed rocks. */
-function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pumice?:THREE.Texture,ready?:THREE.IUniform,water?:Record<string,THREE.IUniform>): THREE.MeshStandardMaterial {
+function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pumice?:THREE.Texture,ready?:THREE.IUniform,water?:Record<string,THREE.IUniform>,detail?:CliffTextureSet,detailAmount?:THREE.IUniform): THREE.MeshStandardMaterial {
   const material = base.clone();
   material.name = 'Niijima white layered pumice, pale strand and talus';
   material.vertexColors = true; material.color.set(0xffffff); material.roughness = .96; material.metalness = 0;
   material.map = material.normalMap = material.bumpMap = material.roughnessMap = material.metalnessMap = material.aoMap = null;
   material.onBeforeCompile = shader => {
     Object.assign(shader.uniforms,{uPumicePhoto:{value:pumice},uPumiceReady:ready??{value:0}});
+    if(detail)Object.assign(shader.uniforms,{uCliffAlbedo:{value:detail.albedo},uCliffNormal:{value:detail.normal},uCliffARM:{value:detail.arm},uCliffReady:detail.available,uCliffDetail:detailAmount});
     if(sand&&water)Object.assign(shader.uniforms,water);
     if(sand)Object.assign(shader.uniforms,{uNiiSandAlbedo:{value:sand.albedo},uNiiSandNormal:{value:sand.normalGL},uNiiSandARM:{value:sand.arm}});
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNiijimaPoint;');
@@ -58,6 +62,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       varying vec3 vNiijimaPoint;
       uniform sampler2D uPumicePhoto;uniform float uPumiceReady;
+      ${detail?cliffMaterialCommon:''}
       ${sand?'uniform sampler2D uNiiSandAlbedo,uNiiSandNormal,uNiiSandARM;':''}
       ${sand?wetSandSampling:''}
       float niiHash(vec3 p) { p=fract(p*.1031); p+=dot(p,p.yzx+33.33); return fract((p.x+p.y)*p.z); }
@@ -65,6 +70,24 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
         vec3 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
         return mix(mix(mix(niiHash(i),niiHash(i+vec3(1,0,0)),f.x),mix(niiHash(i+vec3(0,1,0)),niiHash(i+vec3(1,1,0)),f.x),f.y),
           mix(mix(niiHash(i+vec3(0,0,1)),niiHash(i+vec3(1,0,1)),f.x),mix(niiHash(i+vec3(0,1,1)),niiHash(i+vec3(1,1,1)),f.x),f.y),f.z);
+      }
+      // Thin ash beds follow absolute elevation, with slow lateral warping.
+      // Colour and relief share a field; loose talus is softened by actual slope.
+      vec3 niiStrata(vec3 p) {
+        float elevation=p.y+(niiNoise(vec3(p.x*.031,0.,p.z*.043))-.5)*1.1+(niiNoise(vec3(0.,p.y*.14,2.))-.5)*1.2;
+        float unit=elevation/1.8;
+        float layer=floor(unit),phase=fract(unit);
+        float seamAt=.23+.39*niiNoise(vec3(layer,17.,4.));
+        float width=.035+.043*niiNoise(vec3(layer,2.,9.));
+        float seam=exp(-pow((phase-seamAt)/width,2.));
+        float continuity=smoothstep(.15,.55,niiNoise(vec3(p.x*.06,layer*.37,p.z*.045)));
+        float thin=sin(elevation*16.5+niiNoise(vec3(0.,elevation*.25,p.z*.045))*1.8);
+        float footprint=max(length(dFdx(p)),length(dFdy(p)));
+        float fineFilter=1.-smoothstep(.06,.22,footprint);
+        float seamFilter=1.-smoothstep(.55,1.5,footprint/max(.01,width*1.8));
+        float relief=-.012*seam*continuity*seamFilter+.0018*thin*fineFilter;
+        float tint=.985+.030*niiNoise(vec3(layer,5.,9.))-.036*seam*continuity*seamFilter;
+        return vec3(relief,tint,seam*continuity);
       }
       float niiRelief(vec3 p) {
         // Filter procedural relief by its WORLD footprint, so distant steep
@@ -89,7 +112,9 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       vec2 niiUVX=vNiijimaPoint.zy/2.0,niiUVY=vNiijimaPoint.xz/2.0,niiUVZ=vNiijimaPoint.xy/2.0;
       vec2 niiDXx=dFdx(niiUVX),niiDYx=dFdy(niiUVX),niiDXy=dFdx(niiUVY),niiDYy=dFdy(niiUVY),niiDXz=dFdx(niiUVZ),niiDYz=dFdy(niiUVZ);
       float niiRockPhotoMask=smoothstep(3.0,9.0,vNiijimaPoint.y)*(1.0-smoothstep(.66,.92,niiFaceAxis.y));
-      if(uPumiceReady>.5&&niiRockPhotoMask>.001){
+      float niiExposedFace=smoothstep(5.,12.,vNiijimaPoint.y)*(1.-smoothstep(.48,.79,niiFaceAxis.y));
+      vec3 niiBedding=niiStrata(vNiijimaPoint);
+      if(uPumiceReady>.5&&niiRockPhotoMask>.001${detail?'&&uCliffDetail*uCliffReady<.01':''}){
         // Generated intrinsic surface variation, registered in world metres.
         // Explicit gradients retain mip filtering at the branch boundary.
         vec3 niiPhoto=textureGrad(uPumicePhoto,niiUVX,niiDXx,niiDYx).rgb*niiWeights.x
@@ -97,6 +122,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
           +textureGrad(uPumicePhoto,niiUVZ,niiDXz,niiDYz).rgb*niiWeights.z;
         diffuseColor.rgb*=mix(vec3(1),clamp(niiPhoto/.69,vec3(.45),vec3(1.18)),niiRockPhotoMask*.85);
       }
+      ${detail?cliffMaterialColour:''}
       ${sand?`
       vec3 niiGeometricNormal=normalize(cross(dFdx(vNiijimaPoint),dFdy(vNiijimaPoint)));
       float niiSandMask=(1.0-smoothstep(4.0,8.0,vNiijimaPoint.y))*smoothstep(.6,.92,abs(niiGeometricNormal.y));
@@ -121,13 +147,15 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
     if(sand)shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
       float niiSandR=texture2D(uNiiSandARM,niiSandUV).g;
       roughnessFactor=mix(roughnessFactor,mix(.80+.16*niiSandR,.30+.16*niiSandR,niiWet),niiSandMask);
+      ${detail?'roughnessFactor=mix(roughnessFactor,clamp(.84+.12*cliffARM.g,.84,.98),cliffAmount);':''}
     `);
     shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
-      float niiBump=niiRelief(vNiijimaPoint);
+      float niiBump=niiRelief(vNiijimaPoint)${detail?'+niiBedding.x*niiExposedFace*uCliffReady*uCliffDetail':''};
       vec3 niiQ0=dFdx(-vViewPosition), niiQ1=dFdy(-vViewPosition);
       vec3 niiR0=cross(niiQ1,normal), niiR1=cross(normal,niiQ0);
       float niiDet=dot(niiQ0,niiR0);
       normal=normalize(abs(niiDet)*normal-sign(niiDet)*(dFdx(niiBump)*niiR0+dFdy(niiBump)*niiR1));
+      ${detail?cliffMaterialNormal:''}
       ${sand?`
       vec3 niiWorldNormal=inverseTransformDirection(normal,viewMatrix);
       vec3 niiTx=normalize(vec3(1,-niiWorldNormal.x/max(.2,niiWorldNormal.y),0));
@@ -138,7 +166,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       `:''}
     `);
   };
-  material.customProgramCacheKey = () => 'niijima-pumice-irregular-beds-v13';
+  material.customProgramCacheKey = () => 'niijima-pumice-irregular-beds-v40-'+!!detail;
   return material;
 }
 
@@ -152,29 +180,37 @@ export class NiijimaCoast implements GroundSampler {
   readonly surfaces: readonly NiijimaSurface[];
   readonly triangleCount: number;
   readonly ready:Promise<void>;
+  readonly detailAmount={value:1};
+  private readonly detailTextures:CliffTextureSet|null;
   readonly materialDiagnostics:{pumice:'loading'|'ready'|'failed'|'not-loaded'}={pumice:'loading'};
   private readonly pumiceTexture:THREE.Texture;
   private readonly geometries: THREE.BufferGeometry[] = [];
   private readonly material: THREE.MeshStandardMaterial;
   private readonly waterUniforms=wetSandUniforms();
   private readonly baseGround: GroundSampler;
+  private cliffSurface:CliffSkin|null=null;
+  private readonly cliffReplaced=new Map<NiijimaSurface,Uint8Array>();
+  readonly cliffReplacement={removedTriangles:0,queriedTriangles:0};
   private readonly maps = new Map<string, { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 }>();
 
-  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;volume?:boolean;sand?:SandTextureSet}={}) {
-    this.dem=new NiijimaDEM(undefined,{scarp:options.scarp??false});
+  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;volume?:boolean;sand?:SandTextureSet;coastConfidence?:boolean;cliffDetail?:boolean}={}) {
+    this.dem=new NiijimaDEM(undefined,{scarp:options.scarp??false,coastConfidence:options.coastConfidence});
     this.baseGround = baseGround;
     this.group.name = 'Niijima Horikiri, Shiromama and actual Secret surf region';
     this.group.userData = { source: NIIJIMA_DETAIL_PROVENANCE, northernSource: NIIJIMA_NORTH_PROVENANCE,southernSource:NIIJIMA_SOUTH_PROVENANCE, measuredMacroshape: 'GSI DEM5A/DEM10B', authoredMicrorelief: true, bathymetry: 'inferred',scarpCandidate:options.scarp??false };
     this.group.userData.sediment=NIIJIMA_SEDIMENT_PROVENANCE;
+    this.group.userData.coastConfidence=this.dem.coastConfidence;
     this.group.userData.wetSand='Live shared wave contact over an authored damp band; no measured moisture or drying history';
     const pumiceReady={value:0};
     let resolvePumice:()=>void=()=>{};
-    this.ready=new Promise<void>(resolve=>{resolvePumice=resolve;});
+    const pumicePending=new Promise<void>(resolve=>{resolvePumice=resolve;});
+    this.detailTextures=options.cliffDetail?loadCliffTextures():null;
+    this.ready=Promise.all([pumicePending,...(this.detailTextures?[this.detailTextures.ready]:[])]).then(()=>{});
     this.pumiceTexture=typeof document!=='undefined'?new THREE.TextureLoader().load(pumiceURL,()=>{pumiceReady.value=1;this.materialDiagnostics.pumice='ready';resolvePumice();},undefined,()=>{this.materialDiagnostics.pumice='failed';console.warn('Niijima pumice image unavailable; procedural fallback retained');resolvePumice();}):new THREE.Texture();
     if(typeof document==='undefined'){this.materialDiagnostics.pumice='not-loaded';resolvePumice();}
     this.pumiceTexture.colorSpace=THREE.SRGBColorSpace;this.pumiceTexture.wrapS=this.pumiceTexture.wrapT=THREE.RepeatWrapping;
     this.pumiceTexture.anisotropy=8;this.pumiceTexture.minFilter=THREE.LinearMipmapLinearFilter;
-    this.material = pumiceMaterial(material,options.sand,this.pumiceTexture,pumiceReady,this.waterUniforms);
+    this.material = pumiceMaterial(material,options.sand,this.pumiceTexture,pumiceReady,this.waterUniforms,this.detailTextures??undefined,this.detailAmount);
     const authored = { heightAt: (x: number, z: number) => {
       if(z>=-300&&z<=-100){const w=ease(-300,-100,z);return this.dem.refinedHeightAt(x,z)*(1-w)+this.southDem.refinedHeightAt(x,z)*w;}
       const y=this.demAt(z).refinedHeightAt(x,z);
@@ -196,9 +232,35 @@ export class NiijimaCoast implements GroundSampler {
     for(const key of Object.keys(this.waterUniforms))if(uniforms[key])this.waterUniforms[key]=uniforms[key];
   }
   heightAt(x: number, z: number): number {
+    if(this.cliffSurface)for(let i=this.surfaces.length-1;i>=0;i--){const s=this.surfaces[i];if(!s.contains(x,z))continue;const mask=this.cliffReplaced.get(s);if(mask){const px=Math.max(0,Math.min(s.width-1,(x-s.bounds.minX)/s.dx)),pz=Math.max(0,Math.min(s.height-1,(z-s.bounds.minZ)/s.dz)),ix=Math.min(s.width-2,Math.floor(px)),iz=Math.min(s.height-2,Math.floor(pz));const index=(iz*(s.width-1)+ix)*2+(px-ix+pz-iz>1?1:0);if(mask[index]){const y=this.cliffSurface.surfaceHeightAt(x,z);if(y!==null)return y;}}break;}
+    return this.baseHeightAt(x,z);
+  }
+  baseHeightAt(x:number,z:number):number{
     if (!this.contains(x, z)) return this.baseGround.heightAt(x, z);
     for (let i = this.surfaces.length - 1; i > 0; i--) if (this.surfaces[i].contains(x, z)) return this.surfaces[i].heightAt(x, z);
     return this.surfaces[0].heightAt(x, z);
+  }
+  /** Replace only proven interior source triangles; the render and floor choose
+   * the same projected triangle mask. The source DEM and base field remain intact. */
+  replaceCliffSurface(skin:CliffSkin):void{
+    if(this.cliffSurface)throw new Error('Cliff surface already attached');
+    const bounds=new THREE.Box3();for(const g of skin.geometries)if(g.boundingBox)bounds.union(g.boundingBox);
+    for(const object of this.group.children){if(!(object instanceof THREE.Mesh)||!object.userData.surface)continue;
+      const s=object.userData.surface as NiijimaSurface,g=object.geometry,p=g.getAttribute('position'),idx=g.index!;
+      if(s.bounds.maxX<bounds.min.x||s.bounds.minX>bounds.max.x||s.bounds.maxZ<bounds.min.z||s.bounds.minZ>bounds.max.z)continue;
+      const mask=new Uint8Array((s.width-1)*(s.height-1)*2),kept=new Uint32Array(idx.count);let count=0;
+      for(let i=0;i<idx.count;i+=3){const ids=[idx.getX(i),idx.getX(i+1),idx.getX(i+2)] as const;
+        const points=ids.map(j=>({x:p.getX(j),y:p.getY(j),z:p.getZ(j)})) as [{x:number;y:number;z:number},{x:number;y:number;z:number},{x:number;y:number;z:number}];
+        const inside=points.every(v=>v.x>bounds.min.x&&v.x<bounds.max.x&&v.z>bounds.min.z&&v.z<bounds.max.z&&v.y>6);
+        if(inside)this.cliffReplacement.queriedTriangles++;
+        if(inside&&skin.coversOriginalTriangle(points)){
+          const row=Math.floor(Math.min(...ids)/s.width),col=Math.min(...ids.map(j=>j%s.width)),a=row*s.width+col;
+          mask[(row*(s.width-1)+col)*2+(ids.includes(a)?0:1)]=1;this.cliffReplacement.removedTriangles++;
+        }else{kept[count++]=ids[0];kept[count++]=ids[1];kept[count++]=ids[2];}
+      }
+      this.cliffReplaced.set(s,mask);g.setIndex(new THREE.BufferAttribute(kept.slice(0,count),1));
+    }
+    this.cliffSurface=skin;for(const map of this.maps.values())map.texture.dispose();this.maps.clear();
   }
 
   /** Flatten only a built landmark's finite footprint, including its rendered
@@ -233,6 +295,11 @@ export class NiijimaCoast implements GroundSampler {
     this.group.userData.landmarkGrading={...grade,provenance:'Authored bounded foundation level; not a surveyed elevation'};
   }
 
+  colorAt(x:number,y:number,z:number,target:THREE.Color):THREE.Color{
+    const dem=this.demAt(z),slope=Math.hypot(dem.heightAt(x+3,z)-dem.heightAt(x-3,z),dem.heightAt(x,z+3)-dem.heightAt(x,z-3))/6;
+    const d=dem.shoreAt(x,z),beach=(1-ease(3,9,y))*(1-ease(.3,.85,slope)),canopy=ease(25,45,y)*(1-ease(.22,.75,slope))*ease(75,160,d);
+    return target.copy(pumiceWhite).lerp(pumiceShade,noise(x*.017,z*.017)*.17).lerp(pumiceSand,beach).lerp(pumiceGreen,canopy).multiplyScalar(.96+noise(x*.15,z*.15)*.06);
+  }
   waterMap(x = 5990, z = -1600): { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 } {
     const dx = step.x / 8, dz = step.z / 8, span = 2048, stride = 1536;
     const tileX = Math.round((x - this.bounds.minX) / dx / stride), tileZ = Math.round((z - this.bounds.minZ) / dz / stride), key = `${tileX}:${tileZ}`;
@@ -258,21 +325,17 @@ export class NiijimaCoast implements GroundSampler {
     return map;
   }
 
-  dispose(): void { this.geometries.forEach(geometry => geometry.dispose()); this.material.dispose();this.pumiceTexture.dispose(); this.maps.forEach(map => map.texture.dispose()); this.maps.clear(); this.group.clear(); }
+  dispose(): void { this.geometries.forEach(geometry => geometry.dispose()); this.material.dispose();this.pumiceTexture.dispose();this.detailTextures?.textures.forEach(t=>t.dispose()); this.maps.forEach(map => map.texture.dispose()); this.maps.clear(); this.group.clear(); }
 
   private demAt(z: number): NiijimaDEM { return z < -3340 ? this.northDem : z>-200?this.southDem:this.dem; }
 
   private buildMesh(surface: NiijimaSurface, holes: readonly NiijimaSurface[], name: string): void {
     const b = surface.bounds, width = surface.width, height = surface.height;
     const positions = new Float32Array(width * height * 3), colors = new Float32Array(width * height * 3), uvs = new Float32Array(width * height * 2), indices: number[] = [];
-    const white = new THREE.Color('#e5e1d8'), sand = new THREE.Color('#dedbce'), greenery = new THREE.Color('#506346'), cliffShadow = new THREE.Color('#c8c5b9'), c = new THREE.Color();
+    const c = new THREE.Color();
     for (let z = 0; z < height; z++) for (let x = 0; x < width; x++) {
       const px = b.minX + x * surface.dx, pz = b.minZ + z * surface.dz, i = z * width + x, y = surface.ground[i];
-      const dem = this.demAt(pz), slope = Math.hypot(dem.heightAt(px + 3, pz) - dem.heightAt(px - 3, pz), dem.heightAt(px, pz + 3) - dem.heightAt(px, pz - 3)) / 6;
-      const shoreline = dem.shoreAt(px, pz), beach = (1 - ease(3, 9, y)) * (1 - ease(.3, .85, slope));
-      const canopy = ease(25, 45, y) * (1 - ease(.22, .75, slope)) * ease(75, 160, shoreline);
-      c.copy(white).lerp(cliffShadow, noise(px * .017, pz * .017) * .17).lerp(sand, beach).lerp(greenery, canopy);
-      c.multiplyScalar(.96 + noise(px * .15, pz * .15) * .06);
+      this.colorAt(px,y,pz,c);
       positions.set([px, y, pz], i * 3); colors.set([c.r, c.g, c.b], i * 3); uvs.set([px * .18, pz * .18], i * 2);
     }
     for (let z = 0; z + 1 < height; z++) for (let x = 0; x + 1 < width; x++) {

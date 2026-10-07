@@ -48,7 +48,8 @@ export function createCliffSurfaceQuery(geometries:readonly THREE.BufferGeometry
     const low=Math.min(...points.map(p=>p.z)),high=Math.max(...points.map(p=>p.z));let covered=low;
     // Each triangle/slab intersection is convex. Its vertices are original vertices or
     // edge/slab intersections; checking them against one inner rectangle proves coverage.
-    for(const s of strips){if(s.z1<low||s.z0>high)continue;
+    const candidates=new Set<Strip>();for(let k=Math.floor(low/4);k<=Math.floor(high/4);k++)for(const s of bins.get(k)??[])candidates.add(s);
+    for(const s of [...candidates].sort((a,b)=>a.z0-b.z0)){if(s.z1<low||s.z0>high)continue;
       const lo=Math.max(low,s.z0),hi=Math.min(high,s.z1);if(lo>covered+1e-6)return false;
       const checks:CliffPoint[]=points.filter(p=>p.z>=lo&&p.z<=hi);
       for(let k=0;k<3;k++){const a=points[k],b=points[(k+1)%3];if(Math.abs(b.z-a.z)<1e-9)continue;for(const z of [lo,hi]){const t=(z-a.z)/(b.z-a.z);if(t>=0&&t<=1)checks.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z});}}
@@ -105,16 +106,39 @@ export function createNiijimaCliffSkin(ground:GroundSampler,material:THREE.MeshS
         const bedPhase=y/(.65+noise(p.z/31,51)*.35)+noise(p.z/9,71)*.45+noise(y/6.7,83)*.7;
         const bed= Math.exp(-Math.pow((bedPhase-Math.floor(bedPhase)-.18)/.11,2));
         const groove=Math.pow(noise(p.z/1.7+noise(y/13,11)*.6,97),8)*(.5+.5*noise(y/4,39));
-        // Irregular branching grooves have slow vertical drift, variable widths and envelopes.
-        let rain=0;
-        if(options.meso){for(let cell=Math.floor(p.z/11)-1;cell<=Math.floor(p.z/11)+1;cell++){
-          const center=cell*11+hash(cell+501)*9+noise(y/17,cell+701)*2.5;
-          const width=.65+hash(cell+811)*1.4+noise(y/12,cell+919)*.5;
-          const envelope=smooth((y-(5+hash(cell+111)*18))/5)*smooth((p.top-(3+hash(cell+213)*15)-y)/7);
-          rain=Math.max(rain,Math.exp(-Math.pow((p.z-center)/width,2))*envelope);
-        }}
-        const relief=options.meso?fade*Math.max(-1.4,Math.min(.22,.035+.18*bed-1.2*rain-.22*groove*(.3+.7*noise(y/8,301)))):fade*(.045+.14*bed-.07*groove+.025*(noise(y/2.1+p.z/4.3,29)-.5));
-        const offset=boundary?-.35:relief-.025*(1-fade);
+        // Sparse multi-scale channels: unequal gaps, width/depth, branching drift and ends.
+        let rain=0,ledge=0;
+        if(options.meso){
+          for(const [scale,seed] of [[7.3,501],[19.7,1501],[43.1,2501]]){
+            let level=0;
+            for(let cell=Math.floor(p.z/scale)-1;cell<=Math.floor(p.z/scale)+1;cell++){
+              if(hash(cell+seed+31)<.28)continue;
+              const center=cell*scale+hash(cell+seed)*scale*.92+(noise(y/(13+hash(cell+seed+9)*24),cell+seed+71)-.5)*scale*.29;
+              const width=(.035+hash(cell+seed+81)**2*.12)*scale*(.55+noise(y/11,cell+seed+19));
+              const start=10+hash(cell+seed+11)*Math.min(35,p.top*.36),end=p.top-7-hash(cell+seed+13)*Math.min(26,p.top*.25);
+              const envelope=smooth((y-start)/(3+hash(cell+seed+15)*8))*smooth((end-y)/(4+hash(cell+seed+17)*12));
+              const depth=.16+hash(cell+seed+23)**2*(scale<10?.55:1.05);
+              level=Math.max(level,Math.exp(-Math.pow((p.z-center)/Math.max(.25,width),2))*envelope*depth);
+            }
+            rain+=level;
+          }
+          // Local absolute-height beds: broken protruding lips with a recessed underside.
+          // Centers remain stable along Z; gaps and slight wandering prevent sinusoidal shelves.
+          for(const [scale,seed] of [[3.7,3901],[8.9,4901]])for(let cell=Math.floor(y/scale)-1;cell<=Math.floor(y/scale)+1;cell++){
+            if(hash(cell+seed+7)<.25)continue;
+            const center=cell*scale+hash(cell+seed)*scale*.88+(noise(p.z/23,cell+seed+13)-.5)*.35;
+            const width=.2+hash(cell+seed+17)*.42,delta=y-center;
+            const continuity=smooth((noise(p.z/(9+hash(cell+seed+19)*18),cell+seed+23)-.2)/.45);
+            ledge+=continuity*(.08+.12*hash(cell+seed+29))*(Math.exp(-((delta/width)**2))-.65*Math.exp(-(((delta+width*1.2)/(width*.75))**2)));
+          }
+        }
+        const mesoFade=smooth((y-10)/6)*smooth((p.top-6-y)/8)*smooth((p.z-rows[0].z-5)/6)*smooth((rows[rows.length-1].z-p.z-5)/6);
+        // nx is the horizontal component of the original DEM face normal: talus tends
+        // toward an upward normal and gets almost no channel cutting or bed protrusion.
+        const cliffWeight=smooth((nx-.45)/.35)**2;
+        const relief=options.meso?mesoFade*cliffWeight*Math.max(-1.4,Math.min(.22,ledge-rain-.06*groove)):
+          fade*(.045+.14*bed-.07*groove+.025*(noise(y/2.1+p.z/4.3,29)-.5));
+        const offset=boundary?-.35:relief-.025*(1-(options.meso?mesoFade:fade));
         // Keep adjacent vertical samples ordered even on a low cliff with many face steps.
         const yLimit=(p.top-3)/faceSteps*.2;
         // Meso cuts are horizontal into the DEM bank at fixed absolute bed heights.

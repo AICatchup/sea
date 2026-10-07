@@ -1,0 +1,52 @@
+{
+  "asset": "Rock Face 03",
+  "authors": {
+    "Dario Barresi": "Photography",
+    "Rico Cilliers": "Processing"
+  },
+  "license": "CC0-1.0",
+  "licenseUrl": "https://polyhaven.com/license",
+  "source": "https://polyhaven.com/a/rock_face_03",
+  "metadata": "https://api.polyhaven.com/info/rock_face_03",
+  "fileMetadata": "https://api.polyhaven.com/files/rock_face_03",
+  "tileMetres": 2.7,
+  "files": [
+    {
+      "file": "rock_face_03_arm_2k.jpg",
+      "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_face_03/rock_face_03_arm_2k.jpg",
+      "apiMd5": "f7999b2d14ebbea91e1a5adfb7beabc3",
+      "sha256": "1921303981d12bccf72dd29d8a8daf823f1d9bb60400b447c64757203c1e2dad",
+      "bytes": 3215097,
+      "dimensions": [
+        2048,
+        2048
+      ],
+      "colorSpace": "linear-data"
+    },
+    {
+      "file": "rock_face_03_diff_2k.jpg",
+      "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_face_03/rock_face_03_diff_2k.jpg",
+      "apiMd5": "657add9e8a8dffaeed19bdfc58078b59",
+      "sha256": "644ee79df7ffbf5f6afc330b64dd3f33794bab8820915fe61ffe0c88ecfd7ece",
+      "bytes": 3814362,
+      "dimensions": [
+        2048,
+        2048
+      ],
+      "colorSpace": "sRGB"
+    },
+    {
+      "file": "rock_face_03_nor_gl_2k.jpg",
+      "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_face_03/rock_face_03_nor_gl_2k.jpg",
+      "apiMd5": "279b33e71ae6275cafa24e6597024c98",
+      "sha256": "a498cef4ba6191f6959b6d03fb835263c77271948264a289af24497ab7111dec",
+      "bytes": 4473242,
+      "dimensions": [
+        2048,
+        2048
+      ],
+      "colorSpace": "linear-data"
+    }
+  ],
+  "usage": "Unmodified scan inputs; neutralized in shader as an analogue for pumice microstructure, not a Niijima field scan. Macro geology comes from GSI and authored erosion. World-space projection, no camera-facing cards."
+}
