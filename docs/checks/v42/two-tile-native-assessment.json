@@ -1,0 +1,29 @@
+{
+  "width": 1600,
+  "height": 2400,
+  "nativeVertices": 3840000,
+  "basisX": [
+    5579.552887560167,
+    0.24977864690876175,
+    0.0013742104423706825
+  ],
+  "basisZ": [
+    -1456.5887732721694,
+    -0.0013803528100720386,
+    0.2508950931106526
+  ],
+  "maximumHorizontalFitErrorMetres": 0.006630673760028973,
+  "maximumHeightQuantizationMetres": 0.005000000000009663,
+  "maximumNumericalVertexErrorMetres": 0.008285493951898815,
+  "joinSamples": 1600,
+  "joinHeightDifferences": {
+    "median": 0.04400634765625,
+    "p95": 0.22910022735595703,
+    "maximum": 1.7059993743896484
+  },
+  "adjacentRowDifferenceP95": {
+    "north": 0.2090003937482834,
+    "south": 0.2526988983154297
+  },
+  "scope": "Native adjacent pixel centres have25cm spacing. Different last/first-row heights are terrain slope, not automatically gaps. Comparison measures coordinate approximation/storage, not survey precision."
+}

@@ -1,0 +1,43 @@
+{
+  "MESH_NO": "09QC1701",
+  "URL": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/17/09QC1701.zip",
+  "indexURL": "https://gic-tokyo.s3.ap-northeast-1.amazonaws.com/2023/dig/Vectortile2026/tousyobu/grd25/14/14530/6525.pbf",
+  "indexSha256": "fb88962c0749f1804502944c452d869616e4eefedde572b0bc85d072b55d2caf",
+  "zipBytes": 6285839,
+  "zipSha256": "0a82fad30bb148c54a990874b2bd535f6c5595c4e01177380348c00e8aef2909",
+  "tiffSha256": "f0046ebf015834b00b4889fa9cd2e11dfe6f9dce66f172aa7da0b65c6dcb24cb",
+  "shape": [
+    1200,
+    1600
+  ],
+  "validPixels": 1920000,
+  "range": [
+    -2.944000005722046,
+    287.43701171875
+  ],
+  "geotiff": {
+    "KeyDirectoryVersion": 1,
+    "KeyRevision": 1,
+    "KeyRevisionMinor": 0,
+    "GTModelTypeGeoKey": 1,
+    "GTRasterTypeGeoKey": 1,
+    "GTCitationGeoKey": "JGD2011 / Japan Plane Rectangular CS IX",
+    "GeogCitationGeoKey": "JGD2000",
+    "GeogAngularUnitsGeoKey": 9102,
+    "ProjectedCSTypeGeoKey": 6677,
+    "ProjLinearUnitsGeoKey": 9001,
+    "ModelPixelScale": [
+      0.25,
+      0.25,
+      0.0
+    ],
+    "ModelTiepoint": [
+      0.0,
+      0.0,
+      0.0,
+      -51600.0,
+      -183000.0,
+      0.0
+    ]
+  }
+}

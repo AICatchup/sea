@@ -12,20 +12,26 @@ test('native provider samples are pinned and remain on their unresampled coordin
   const raw=Buffer.from(source.heightsCentimetres,'base64');
   assert.equal(createHash('sha256').update(raw).digest('hex'),source.heightsSha256);
   const tile=new MeasuredNiijimaTile(),grid=tile.grid;
-  assert.equal(grid.width*grid.height,1920000);
+  assert.equal(grid.width*grid.height,3840000);
   for(let i=0;i<grid.heights.length;i+=97)assert.ok(Math.abs(grid.heights[i]-raw.readInt16LE(i*2)*.01)<.00002);
   assert.equal(source.centimetreSurveyAccuracyEstablished,false);
   assert.equal(source.datumTransformAccuracyMetres,1);
-  assert.ok(source.numericalComparison.maximumVertexErrorMetres<.007);
+  assert.ok(source.numericalComparison.maximumVertexErrorMetres<.01);
   // Registration checks use the pure survey interior, without the production
   // 32m join into a different dataset. The separate integration test covers it.
   const material=new THREE.MeshStandardMaterial(),patch=createMeasuredGridPatch(grid,{heightAt:()=>-30},material,{blendStartMetres:0,blendEndMetres:1});
   try{
     const fixture=JSON.parse(readFileSync(new URL('./fixtures/niijima-measured-reference.json',import.meta.url),'utf8'));
-    assert.equal(fixture.sourceSha256,source.sourceTiffSha256);
+    assert.ok(source.sourceTiles.some(tile=>tile.tiffSha256===fixture.sourceSha256));
     for(const p of fixture.samples){const h=patch.surfaceHeightAt(p.x,p.z);assert.notEqual(h,null);assert.ok(Math.abs(h!-p.height)<.025,`native sample registration at ${p.x},${p.z}`);}
+    const join=JSON.parse(readFileSync(new URL('./fixtures/niijima-native-join.json',import.meta.url),'utf8'));
+    assert.deepEqual(join.sourceTiffSha256,source.sourceTiles.map(t=>t.tiffSha256));
+    for(const p of join.points){
+      assert.ok(Math.abs(grid.heights[p.j*grid.width+p.i]-p.sourceHeight)<.00502,'preserve original sample across the native tile join');
+      assert.ok(Math.abs(patch.surfaceHeightAt(p.x,p.z)!-p.sourceHeight)<.0052,'render at original joined native sample');
+    }
     assert.equal(patch.diagnostics.maxUnblendedHeightError,0);
-    assert.equal(patch.diagnostics.nativeSamples,1920000);
+    assert.equal(patch.diagnostics.nativeSamples,3840000);
   }finally{patch.dispose();material.dispose();}
 });
 

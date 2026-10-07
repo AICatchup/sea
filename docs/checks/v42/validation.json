@@ -1,0 +1,80 @@
+{
+  "version": "V42",
+  "globalGoal": "ACTIVE_UNMET",
+  "tests": {
+    "passed": 42,
+    "scope": [
+      "niijima-measured",
+      "measured-grid-patch",
+      "navigation"
+    ],
+    "durationMs": 14543.4571
+  },
+  "typecheck": "PASS",
+  "vite": "PASS",
+  "standaloneBuild": "PASS",
+  "providerReproduction": "PASS",
+  "nativeSamples": 3840000,
+  "triangles": 7672002,
+  "chunks": 247,
+  "route": {
+    "state": "done",
+    "sampleCount": 402,
+    "modes": [
+      "dive",
+      "swim",
+      "walk"
+    ],
+    "first": {
+      "time": 34.35206666666662,
+      "camera": {
+        "yaw": 1.5707963267948966,
+        "pitch": -0.12,
+        "height": 2.6950159870481283,
+        "x": 5900.02609349,
+        "z": -1300
+      },
+      "ground": 1.0550159870481286,
+      "mode": "walk",
+      "grounded": true,
+      "oxygen": 1,
+      "fps": 43.2
+    },
+    "last": {
+      "time": 98.28256666666664,
+      "camera": {
+        "yaw": 1.5707963267948966,
+        "pitch": -0.12,
+        "height": 2.3941362180760026,
+        "x": 5901.610273449799,
+        "z": -1300
+      },
+      "ground": 0.7541362180760027,
+      "mode": "walk",
+      "grounded": true,
+      "oxygen": 1,
+      "fps": 56.3
+    },
+    "scope": "QA start pose and normal controller input, not native OS held keys or full island voyage"
+  },
+  "standalone": {
+    "qa": "undefined",
+    "externalResources": 0,
+    "consoleErrors": 0,
+    "scope": "In-app browser static HTTP, file:// not checked"
+  },
+  "visualReview": {
+    "reviewer": "v38_strand_visual_review",
+    "verdict": "limited adoption",
+    "views": [
+      "along-coast",
+      "offshore-wide"
+    ],
+    "reference": "official offshore photograph 2022 plus V41 renders",
+    "remaining": [
+      "coarse outer terrain transition",
+      "uniform grey material",
+      "flat foam"
+    ]
+  }
+}

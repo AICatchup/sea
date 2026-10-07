@@ -6,8 +6,7 @@ import type {MeasuredGrid} from './measured-grid-patch.ts';
 export class MeasuredNiijimaTile {
   readonly grid:MeasuredGrid;
   readonly bounds:{minX:number;maxX:number;minZ:number;maxZ:number};
-  readonly diagnostics={id:data.id,source:data.catalogue,heightSource:data.sourceURL,
-    sourceTiffSha256:data.sourceTiffSha256,nativeGridSpacingMetres:.25,
+  readonly diagnostics={id:data.id,source:data.catalogue,sourceTiles:data.sourceTiles,nativeGridSpacingMetres:.25,
     nativeSamples:data.width*data.height,numericalComparison:data.numericalComparison,
     datumTransformAccuracyMetres:data.datumTransformAccuracyMetres,centimetreAccuracyEstablished:false};
   constructor(){

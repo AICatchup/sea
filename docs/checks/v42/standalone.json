@@ -1,0 +1,83 @@
+{
+  "topography": {
+    "coherentRock": true,
+    "dryToe": true,
+    "connectedForm": false,
+    "strandProfile": {
+      "changed": 17846,
+      "maximumDelta": 0.8011924102902412,
+      "meanAbsoluteDelta": 0.1647245723231761,
+      "westernJoinVertices": 990
+    },
+    "canopyContinuity": true,
+    "cliffVolume": {
+      "status": "ready",
+      "source": "CC0 scan geometry / inferred placement",
+      "triangles": 124760
+    },
+    "niijimaCoastConfidence": {
+      "compatible": true,
+      "removed": 1968
+    },
+    "niijimaCliffSkin": null,
+    "niijimaCliffReplacement": {
+      "removedTriangles": 114586,
+      "queriedTriangles": 123220
+    },
+    "niijimaMeasured": {
+      "id": "tokyo-09QC1701-1711-native",
+      "source": "https://www.geospatial.jp/ckan/dataset/tokyopc-shima-2023",
+      "sourceTiles": [
+        {
+          "id": "09QC1701",
+          "url": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/17/09QC1701.zip",
+          "zipSha256": "0a82fad30bb148c54a990874b2bd535f6c5595c4e01177380348c00e8aef2909",
+          "tiffSha256": "f0046ebf015834b00b4889fa9cd2e11dfe6f9dce66f172aa7da0b65c6dcb24cb",
+          "nativeNorthing": -183000,
+          "rows": 1200,
+          "columns": 1600,
+          "nativePixelMetres": 0.25
+        },
+        {
+          "id": "09QC1711",
+          "url": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/17/09QC1711.zip",
+          "zipSha256": "89fefd0cfcd4484ea477bec98c6c4919a767b37a15d1220de389205447a77f47",
+          "tiffSha256": "517493120bf9952d641968a7e5dbd577eacbd9d5d9140c00133c10bb8185bf23",
+          "nativeNorthing": -183300,
+          "rows": 1200,
+          "columns": 1600,
+          "nativePixelMetres": 0.25
+        }
+      ],
+      "nativeGridSpacingMetres": 0.25,
+      "nativeSamples": 3840000,
+      "numericalComparison": {
+        "vertices": 3840000,
+        "maximumHorizontalErrorMetres": 0.006630673760028973,
+        "maximumHeightEncodingErrorMetres": 0.005000000000009663,
+        "maximumVertexErrorMetres": 0.008285493951898815,
+        "scope": "Against the declared transform of both provider grids, before outer-boundary blending. Excludes source survey and datum uncertainty; NOT physical centimetre accuracy."
+      },
+      "datumTransformAccuracyMetres": 1,
+      "centimetreAccuracyEstablished": false
+    },
+    "niijimaMeasuredPatch": {
+      "vertices": 3897816,
+      "triangles": 7672002,
+      "chunks": 247,
+      "unknownSamples": 0,
+      "nativeSamples": 3840000,
+      "fullResolutionOnly": true,
+      "maxUnblendedHeightError": 0,
+      "kind": "measured-heightfield"
+    }
+  },
+  "qa": "undefined",
+  "external": [],
+  "fps": 56.3,
+  "resolution": [
+    1433,
+    806
+  ],
+  "errors": []
+}

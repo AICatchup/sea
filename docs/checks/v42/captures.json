@@ -1,0 +1,132 @@
+[
+  {
+    "coastConfidence": {
+      "compatible": true,
+      "removed": 1968
+    },
+    "collision": {
+      "colliders": 3241,
+      "hashCells": 1273,
+      "largeColliders": 1,
+      "lastCandidates": 0,
+      "lastIterations": 0,
+      "lastTransformedTriangles": 0,
+      "lastTriangleTests": 0,
+      "storedTriangles": 489224,
+      "triangles": 3492816,
+      "uniqueBVHs": 29
+    },
+    "name": "along-coast",
+    "pose": {
+      "eyeY": 3,
+      "name": "along-coast",
+      "pitch": 0,
+      "x": 5940,
+      "yaw": -0.6,
+      "z": -950
+    },
+    "scope": "Developer camera checkpoint, identical frozen FFT time; visual comparison, not travel or a surveyed camera pose",
+    "state": {
+      "action": "idle",
+      "camera": [
+        5940,
+        3,
+        -950,
+        0,
+        0.2955202066613174,
+        0,
+        0.955336489125613
+      ],
+      "disposed": false,
+      "eyeY": 3,
+      "fov": 62,
+      "height": 720,
+      "hidden": false,
+      "locked": true,
+      "oxygen": 1,
+      "paused": true,
+      "pose": {
+        "depth": 0,
+        "mode": "walk",
+        "pitch": 0,
+        "x": 5940,
+        "yaw": -0.6,
+        "z": -950
+      },
+      "preset": "day",
+      "quality": "high",
+      "stamina": 1,
+      "swell": 1,
+      "width": 1280,
+      "wind": 8.5
+    },
+    "terrain": [],
+    "time": 34,
+    "water": null
+  },
+  {
+    "coastConfidence": {
+      "compatible": true,
+      "removed": 1968
+    },
+    "collision": {
+      "colliders": 3241,
+      "hashCells": 1273,
+      "largeColliders": 1,
+      "lastCandidates": 0,
+      "lastIterations": 0,
+      "lastTransformedTriangles": 0,
+      "lastTriangleTests": 0,
+      "storedTriangles": 489224,
+      "triangles": 3492816,
+      "uniqueBVHs": 29
+    },
+    "name": "offshore-wide",
+    "pose": {
+      "eyeY": 3.4,
+      "name": "offshore-wide",
+      "pitch": 0.1,
+      "x": 6380,
+      "yaw": -1.5707963267948966,
+      "z": -1090
+    },
+    "scope": "Developer camera checkpoint, identical frozen FFT time; visual comparison, not travel or a surveyed camera pose",
+    "state": {
+      "action": "idle",
+      "camera": [
+        6380,
+        3.4,
+        -1090,
+        0.03534060950935864,
+        0.7062230818371112,
+        -0.03534060950935864,
+        0.7062230818371111
+      ],
+      "disposed": false,
+      "eyeY": 3.4,
+      "fov": 62,
+      "height": 720,
+      "hidden": false,
+      "locked": true,
+      "oxygen": 1,
+      "paused": true,
+      "pose": {
+        "depth": 59.597200911969125,
+        "mode": "walk",
+        "pitch": 0.1,
+        "x": 6380,
+        "yaw": -1.5707963267948966,
+        "z": -1090
+      },
+      "preset": "day",
+      "quality": "high",
+      "stamina": 1,
+      "swell": 1,
+      "width": 1280,
+      "wind": 8.5
+    },
+    "terrain": [],
+    "time": 34,
+    "water": null
+  }
+]

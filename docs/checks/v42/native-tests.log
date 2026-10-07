@@ -1,0 +1,10 @@
+✔ native provider samples are pinned and remain on their unresampled coordinate lattice (1324.6926ms)
+✔ measured coast cutout and map handoff keep the visible floor and whole shore-solver domain (5969.0829ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7826.9755

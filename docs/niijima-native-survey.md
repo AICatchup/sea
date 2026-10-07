@@ -1,4 +1,12 @@
-# 東京都の実測地形 V41
+# 東京都の実測地形 V42
+
+現在は北側 **09QC1701** と南側 **09QC1711** の隣接する2区画、約400×600mを使用する。同じEPSG6677の25cm標本中心を南北に連結し、1600×2400、384万標本を保持した。区画間の平滑化・重複行・一律間引きはない。外周だけ従来の12〜32m接続帯を使う。
+
+描画は247区画、7,672,002三角形。全384万点で元標本から局所座標・cm整数標高への数値変換誤差は最大約8.29mm。座標変換の公称精度1mや元測量の不確実性を含まないため、現地との1cm一致は証明していない。両ZIP/TIFFのSHA256と行列位置は生成ファイルの `sourceTiles` に保存する。著作・ライセンス・色・高さ場に関する境界は下記と同じ。
+
+再現: `python scripts/build-niijima-native-span.py --north <09QC1701-grid25.zip> --south <09QC1711-grid25.zip> --verify`。NumPy、tifffile、pyprojが必要。元のZIP、TIFF、GeoKey、PixelIsArea、25cm間隔、標本数と座標を検査してから生成結果を比較する。旧1区画用スクリプトはV41の再現用で、V42の検証には使用しない。
+
+## V41で確立した出典と表現の境界
 
 [東京都デジタルツイン・島しょ地域点群データ](https://www.geospatial.jp/ckan/dataset/tokyopc-shima-2023) の **09QC1711** 区画を加工して作成。著作者は東京都デジタルサービス局、表示ライセンスは **CC BY4.0**。[ライセンス](https://creativecommons.org/licenses/by/4.0/)と[配布元利用規約](https://gic-tokyo.s3.ap-northeast-1.amazonaws.com/2023/dig/doc/license.pdf)を参照。計測期間はカタログ記載の2022年7月〜2023年1月で、現在の浜の形を保証するものではない。
 
