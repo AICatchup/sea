@@ -1,4 +1,5 @@
 import './expedition.css';
+import {ControlSettings} from '../input/control-settings.ts';
 import type {AdventureState} from '../world/contracts.ts';
 import {Expedition,GEAR,type Gear} from '../game/expedition.ts';
 
@@ -16,8 +17,9 @@ export class ExpeditionUI {
  private section='journey';
  private disposed=false;
  private mapAfterClose=false;
+ private unsubscribeSettings:()=>void;
  private find=(selector:string)=>this.root.querySelector<HTMLElement>(selector)!;
- constructor(private game:Expedition,private callbacks:{map:()=>void;cue:()=>void}){
+ constructor(private game:Expedition,private callbacks:{map:()=>void;cue:()=>void;modal:(open:boolean)=>void},private settings:ControlSettings){
   const events={signal:this.abort.signal};
   this.root.className='expedition-ui';this.root.setAttribute('aria-label','海の調査');
   this.root.innerHTML=`<aside class="expedition-hud">
@@ -33,21 +35,23 @@ export class ExpeditionUI {
    <nav aria-label="調査ノートのページ"><button type="button" data-page="journey">冒険</button><button type="button" data-page="finds">発見</button><button type="button" data-page="gear">装備</button><button type="button" data-page="sailing">操船</button></nav>
    <div class="expedition-pages"></div><footer><span data-save></span><button type="button" data-map>航海の地図を開く ↗</button></footer>`;
   this.root.append(this.dialog);document.body.append(this.root);
+  const syncKeys=()=>{
+   setText(this.find('.expedition-open kbd'),settings.primary('journal'));
+   setText(this.find('.expedition-air-warning'),`空気が少なくなっています。${settings.primary('rise')}で水面へ。`);
+   this.lastUpdate=-Infinity;if(this.state)this.update(this.state);
+  };
+  this.unsubscribeSettings=settings.subscribe(syncKeys);syncKeys();
   this.find('.expedition-open').addEventListener('click',()=>this.open(),events);
   this.dialog.querySelector('[data-close]')!.addEventListener('click',()=>this.dialog.close(),events);
   this.dialog.querySelector('[data-map]')!.addEventListener('click',()=>{this.mapAfterClose=true;this.dialog.close();},events);
-  this.dialog.addEventListener('close',()=>{document.body.classList.remove('expedition-journal-open');if(this.mapAfterClose){this.mapAfterClose=false;this.callbacks.map();}else document.getElementById('ocean')?.focus({preventScroll:true});},events);
-  this.dialog.addEventListener('keydown',event=>{if(event.code==='KeyJ'){event.preventDefault();this.dialog.close();}event.stopPropagation();},events);
+  this.dialog.addEventListener('close',()=>{this.callbacks.modal(false);document.body.classList.remove('expedition-journal-open');if(this.mapAfterClose){this.mapAfterClose=false;this.callbacks.map();}else document.getElementById('ocean')?.focus({preventScroll:true});},events);
+  this.dialog.addEventListener('keydown',event=>event.stopPropagation(),events);
   this.dialog.addEventListener('click',event=>{
    const button=(event.target as HTMLElement).closest<HTMLButtonElement>('button');if(!button||!this.state)return;
    if(button.dataset.page){this.section=button.dataset.page;this.renderJournal();}
    if(button.dataset.track){this.game.track(button.dataset.track);this.dialog.close();}
    if(button.dataset.gear){this.game.buy(button.dataset.gear as Gear,this.state);this.renderJournal();}
    if(button.dataset.race!==undefined){if(this.game.startRace(this.state))this.dialog.close();}
-  },events);
-  window.addEventListener('keydown',event=>{
-   if(event.code!=='KeyJ'||event.repeat||event.ctrlKey||event.metaKey||event.altKey||this.root.inert||(event.target as HTMLElement)?.closest?.('input,textarea,select,[contenteditable=true]'))return;
-   event.preventDefault();this.dialog.open?this.dialog.close():this.open();
   },events);
   this.root.addEventListener('pointerdown',event=>event.stopPropagation(),events);
   const sync=()=>{const hidden=document.body.classList.contains('immersed')||document.getElementById('unsupported')?.hidden===false;this.root.inert=hidden;this.root.classList.toggle('is-hidden',hidden);if(hidden&&this.dialog.open)this.dialog.close();};
@@ -56,13 +60,15 @@ export class ExpeditionUI {
  open():void{
   if(this.disposed||this.root.inert||this.dialog.open)return;
   if(document.pointerLockElement)document.exitPointerLock?.();
-  document.body.classList.add('expedition-journal-open');this.renderJournal();this.dialog.showModal();
+  this.callbacks.modal(true);document.body.classList.add('expedition-journal-open');this.renderJournal();this.dialog.showModal();
  }
+ get isOpen():boolean{return this.dialog.open;}
+ close():void{this.dialog.close();}
  update(state:AdventureState):void{
   if(this.disposed)return;this.state=state;const now=performance.now();if(now-this.lastUpdate<160&&this.lastRevision===this.game.revision)return;this.lastUpdate=now;
   const chapter=this.game.objective(state),target=chapter.target,race=this.game.race;
   setText(this.find('[data-chapter]'),race?'入り江の操船チャレンジ':chapter.title);setText(this.find('[data-target]'),target?.name??'海の探検を続けよう');
-  setText(this.find('[data-hint]'),race?'黄色いブイの間を順番に通ろう。曲がる手前で減速すると操船しやすくなります。':chapter.detail);
+  setText(this.find('[data-hint]'),race?'黄色いブイの間を順番に通ろう。曲がる手前で減速すると操船しやすくなります。':this.settings.hint(chapter.detail));
   setText(this.find('[data-cargo]'),`持ち物 ${this.game.cargo.length}/${this.game.capacity}`);setText(this.find('[data-points]'),`${this.game.credits} pt`);
   if(target){
    const dx=target.x-state.position.x,dz=target.z-state.position.z,distance=Math.hypot(dx,dz);
@@ -76,7 +82,7 @@ export class ExpeditionUI {
   if(race){setText(this.find('[data-time]'),`${race.elapsed.toFixed(1)} s`);setText(this.find('[data-race-gates]'),`${race.next-1}/${this.game.map.course.length-1} ブイ`);}
   const notice=this.game.notice;
   if(notice&&notice.serial!==this.noticeSerial){
-   this.noticeSerial=notice.serial;const toast=this.find('.expedition-toast');setText(toast.querySelector('strong')!,notice.title);setText(toast.querySelector('span')!,notice.detail);toast.hidden=false;
+   this.noticeSerial=notice.serial;const toast=this.find('.expedition-toast');setText(toast.querySelector('strong')!,notice.title);setText(toast.querySelector('span')!,this.settings.hint(notice.detail));toast.hidden=false;
    clearTimeout(this.toastTimer);this.toastTimer=window.setTimeout(()=>{toast.hidden=true;},6500);
    if(['find','bank','gear','stamp','race'].includes(notice.kind))this.callbacks.cue();
    if(notice.kind==='camp'){this.section='gear';this.open();}
@@ -92,7 +98,7 @@ export class ExpeditionUI {
   const card=(title:string,body:string,tag?:string)=>{
    const article=document.createElement('article');article.className='expedition-card';
    if(tag){const small=document.createElement('small');small.textContent=tag;article.append(small);}
-   const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=body;article.append(h,p);container.append(article);return article;
+   const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=this.settings.hint(body);article.append(h,p);container.append(article);return article;
   };
   const action=(parent:Element,label:string,attribute:string,value='',disabled=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset[attribute]=value;b.disabled=disabled;parent.append(b);return b;};
   if(this.section==='journey'){
@@ -113,9 +119,9 @@ export class ExpeditionUI {
    const c=card('入り江の操船チャレンジ','船でスタートの2本のブイの間へ。黄色く示されたブイを順番に5つ通過し、スタートへ戻ろう。自動航海を切り、手動で挑戦します。',g.bestRace===null?'初回完走 +2 pt':`自己ベスト ${g.bestRace.toFixed(1)} 秒`);
    action(c,'スタートを目印にする','track','race-start',!g.map.course.length);
    action(c,g.race?'最初から挑戦する':'チャレンジ開始','race','',!g.notebook||!g.map.course.length);
-   card('操作のコツ','Wで加速、Sで減速・後退。A/Dで舵取り。手前で少し減速すると、ブイを曲がりやすくなります。泳いで通過しても記録にはなりません。');
+   card('操作のコツ',`${this.settings.primary('forward')}で加速、${this.settings.primary('back')}で減速・後退。${this.settings.primary('left')}/${this.settings.primary('right')}で舵取り。手前で少し減速すると、ブイを曲がりやすくなります。泳いで通過しても記録にはなりません。`);
   }
   if(restoreFocus)this.dialog.querySelector<HTMLButtonElement>(`[data-page="${this.section}"]`)?.focus({preventScroll:true});
  }
- dispose():void{if(this.disposed)return;this.disposed=true;clearTimeout(this.toastTimer);this.abort.abort();this.visibility.disconnect();if(this.dialog.open)this.dialog.close();this.root.remove();document.body.classList.remove('expedition-journal-open');}
+ dispose():void{if(this.disposed)return;this.disposed=true;clearTimeout(this.toastTimer);this.unsubscribeSettings();this.callbacks.modal(false);this.abort.abort();this.visibility.disconnect();if(this.dialog.open)this.dialog.close();this.root.remove();document.body.classList.remove('expedition-journal-open');}
 }

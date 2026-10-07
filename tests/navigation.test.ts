@@ -410,7 +410,7 @@ test('pointer lock is requested only by canvas gesture, locked relative look and
   pointer(canvas, 'pointerdown', 100, 100, 2); assert.equal(requests, 0);
   pointer(canvas, 'pointerdown', 100, 100); assert.equal(requests, 1); assert.equal(canvas.captured, null);
   canvas.ownerDocument.dispatchEvent(Object.assign(new Event('mousemove'), { movementX: 80, movementY: -40 }));
-  advance(controls, .5); assert.ok(state.yaw < -.22 && state.pitch > .07);
+  advance(controls, .5); assert.ok(state.yaw > .22 && state.pitch > .07);
   key(canvas, 'keydown', 'Escape'); assert.equal(canvas.ownerDocument.pointerLockElement, null);
   const yaw = state.yaw; canvas.ownerDocument.dispatchEvent(Object.assign(new Event('mousemove'), { movementX: 500, movementY: 0 }));
   advance(controls, 1); assert.ok(Math.abs(state.yaw - yaw) < .001); controls.dispose();
@@ -420,7 +420,7 @@ test('denied pointer lock retains drag fallback and touch never requests lock', 
   const { controls, canvas, state } = setup({ heightAt: () => 0 }); let requests = 0;
   canvas.requestPointerLock = () => { requests++; return Promise.reject(new Error('Denied')); };
   pointer(canvas, 'pointerdown', 100, 100); pointer(canvas, 'pointermove', 180, 70);
-  await Promise.resolve(); advance(controls, .5); assert.ok(state.yaw < -.22); assert.equal(canvas.captured, 7);
+  await Promise.resolve(); advance(controls, .5); assert.ok(state.yaw > .22); assert.equal(canvas.captured, 7);
   canvas.ownerDocument.defaultView.dispatchEvent(new Event('blur')); assert.equal(canvas.captured, null);
   const yaw = state.yaw; pointer(canvas, 'pointermove', 300, 100); advance(controls, 1); assert.ok(Math.abs(state.yaw - yaw) < .001);
   pointer(canvas, 'pointerdown', 100, 100, 0, 'touch'); assert.equal(requests, 1); controls.dispose();
@@ -430,6 +430,40 @@ test('world bounds and invalid requests stay finite', () => {
   const { controls, state } = setup({ heightAt: () => -50 }, new THREE.Vector3(WORLD_LIMIT - 5, .34, 0));
   controls.setMove(1, 0); advance(controls, 5); assert.ok(state.position.x < WORLD_LIMIT); assert.ok(Number.isFinite(state.position.y));
   controls.navigate('unknown'); assert.ok(state.message.includes('見つかりません')); controls.dispose();
+});
+
+test('rightward drag turns the actual FPS forward vector right; sensitivity and both inversion axes apply', () => {
+  const results: {yaw:number;pitch:number}[] = [];
+  for (const preferences of [{sensitivity:1,invertX:false,invertY:false},{sensitivity:.5,invertX:false,invertY:false},{sensitivity:1,invertX:true,invertY:true}]) {
+    const {controls,canvas,state}=setup({heightAt:()=>0});
+    try {
+      controls.settings.setLook(preferences); controls.viewpoint(0,0,0,0);
+      pointer(canvas,'pointerdown',100,100,0,'touch'); pointer(canvas,'pointermove',200,140); advance(controls,1);
+      const camera=new THREE.PerspectiveCamera();camera.lookAt(new THREE.Vector3(Math.sin(state.yaw)*Math.cos(state.pitch),Math.sin(state.pitch),-Math.cos(state.yaw)*Math.cos(state.pitch)));
+      const forward=camera.getWorldDirection(new THREE.Vector3());
+      assert.equal(Math.sign(forward.x),preferences.invertX?-1:1);assert.equal(Math.sign(forward.y),preferences.invertY?1:-1);
+      results.push({yaw:state.yaw,pitch:state.pitch});
+    } finally {controls.dispose();}
+  }
+  assert.ok(Math.abs(results[0].yaw/results[1].yaw-2)<1e-6);assert.ok(Math.abs(results[0].pitch/results[1].pitch-2)<1e-6);
+});
+
+test('remapped movement, jump and interaction use new keys; menus freeze inputs and release held movement', () => {
+  const {controls,canvas,state}=setup({heightAt:()=>0}); let interactions=0;
+  try {
+    controls.setContextInteraction({label:()=> '調べる',activate:()=>{interactions++;return true;}});
+    controls.settings.rebind('forward',0,'KeyI');controls.settings.rebind('rise',0,'KeyR');controls.settings.rebind('interact',0,'KeyF');
+    key(canvas,'keydown','KeyW');advance(controls,1);assert.equal(state.position.z,0);
+    key(canvas,'keydown','KeyI');advance(controls,1);assert.ok(state.position.z<-1.5);
+    controls.setInputBlocked(true);const before=state.position.clone(),yaw=state.yaw;
+    controls.setMove(1,1);controls.setVertical(1);key(canvas,'keydown','KeyI');key(canvas,'keydown','KeyF');
+    pointer(canvas,'pointerdown',100,100);pointer(canvas,'pointermove',300,100);advance(controls,2);
+    assert.ok(state.position.equals(before));assert.equal(state.yaw,yaw);assert.equal(interactions,0);
+    controls.setInputBlocked(false);advance(controls,1);assert.ok(state.position.equals(before));
+    key(canvas,'keydown','KeyE');assert.equal(interactions,0);key(canvas,'keydown','KeyF');assert.equal(interactions,1);
+    key(canvas,'keydown','Space');advance(controls,.1);assert.equal(state.grounded,true);
+    key(canvas,'keydown','KeyR');advance(controls,.1);assert.equal(state.grounded,false);assert.ok(state.position.y>1.8);
+  } finally {controls.dispose();}
 });
 test('integrated GSI terrain supports the actual coves and neighbour-island voyages', async context => {
   if (!existsSync(new URL('../src/world/geodata.ts', import.meta.url))) {

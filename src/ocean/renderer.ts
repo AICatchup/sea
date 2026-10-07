@@ -133,7 +133,7 @@ export class Ocean {
   frames=0;
   fps=60;
 
-  constructor(private readonly canvas:HTMLCanvasElement){
+  constructor(private readonly canvas:HTMLCanvasElement, controlSettings?: import('../input/control-settings.ts').ControlSettings){
     const context=canvas.getContext('webgl2',{antialias:false,alpha:false,powerPreference:'high-performance'});
     if(!context||!context.getExtension('EXT_color_buffer_float')){
       throw new Error('WebGL 2と浮動小数点テクスチャに対応したGPUが必要です。ブラウザのハードウェアアクセラレーションを確認してください。');
@@ -160,7 +160,7 @@ export class Ocean {
     const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),
       bodySegmentBlocked:(from:Parameters<IslandWorld['bodySegmentBlocked']>[0],to:Parameters<IslandWorld['bodySegmentBlocked']>[1],radius?:number,height?:number)=>
         this.solidContactReady?false:this.world.bodySegmentBlocked(from,to,radius,height)};
-    this.adventure=new ExplorerControls(canvas,withWorldCollision(ground,this.collision),this.world.destinations,this.world.spawnPoint);
+    this.adventure=new ExplorerControls(canvas,withWorldCollision(ground,this.collision),this.world.destinations,this.world.spawnPoint,controlSettings);
     (this.adventure as ExplorerControls&{setWaterHeightSampler?:(sample:(x:number,z:number)=>number)=>void})
       .setWaterHeightSampler?.(this.waterHeights.sample);
     this.assets.setWaterHeightSampler(this.waterHeights.sample);
@@ -380,7 +380,7 @@ export class Ocean {
     if(!this.visualCaptureLocked){
       this.adventure.setEquipment(this.expedition.hasGear('air')?1.45:1,this.expedition.hasGear('fins')?1.18:1);
       this.adventure.update(delta,this.time,this.paused);
-      this.expedition.update(delta,this.adventure.state);
+      if(!this.adventure.inputBlocked)this.expedition.update(delta,this.adventure.state);
     }
     const state=this.adventure.state;
     this.camera.position.copy(state.position);

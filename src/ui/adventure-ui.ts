@@ -1,4 +1,5 @@
 import './adventure.css';
+import { ControlSettings } from '../input/control-settings.ts';
 import type { AdventureCallbacks, AdventureState, MapOutline, PlaceableKind, TravelMode, WorldDestination } from '../world/contracts';
 
 const icons = {
@@ -72,11 +73,13 @@ export class AdventureUI {
   private lastMessage = '';
   private messageTimer = 0;
   private disposed = false;
+  private readonly unsubscribeSettings: () => void;
 
   constructor(
     private readonly callbacks: AdventureCallbacks,
     destinations: WorldDestination[],
     private readonly mapOutlines: MapOutline[],
+    settings: ControlSettings,
   ) {
     this.destinationById = new Map(destinations.map(destination => [destination.id, destination]));
     const points = [[0, 0], ...mapOutlines.flatMap(outline => outline.points), ...destinations.map(destination => [destination.x, destination.z])];
@@ -91,7 +94,7 @@ export class AdventureUI {
         <div class="adventure-location"><span>式根島</span><h1>泊海水浴場</h1></div>
         <div class="adventure-actions">
           <button type="button" data-action="place" aria-expanded="false" aria-controls="adventure-place-panel">${icon('place')}<span>ものを置く</span></button>
-          <button type="button" data-action="voyage" aria-expanded="false" aria-controls="adventure-voyage-panel">${icon('map')}<span>地図</span></button>
+          <button type="button" data-action="voyage" aria-expanded="false" aria-controls="adventure-voyage-panel">${icon('map')}<span>地図</span><kbd>M</kbd></button>
 
         </div>
       </div>
@@ -127,6 +130,12 @@ export class AdventureUI {
     this.voyagePanel = find('#adventure-voyage-panel');
     this.placeToggle = find('[data-action="place"]');
     this.voyageToggle = find('[data-action="voyage"]');
+    const syncKeys = () => {
+      text(this.interaction.querySelector('kbd')!, settings.primary('interact'));
+      text(this.voyageToggle.querySelector('kbd')!, settings.primary('map'));
+      this.voyageToggle.title = `地図 · ${settings.label('map')}`;
+    };
+    this.unsubscribeSettings = settings.subscribe(syncKeys); syncKeys();
     this.undo = find('[data-action="undo"]');
     this.count = find('[data-count]');
     this.diveHud = find('.adventure-dive-hud');
@@ -318,13 +327,19 @@ export class AdventureUI {
   }
 
   openMap():void{if(this.voyagePanel.hidden)this.togglePanel('voyage');}
+  toggleMap():void{this.togglePanel('voyage');}
+  get isPanelOpen():boolean{return !this.voyagePanel.hidden||!this.placePanel.hidden;}
+  close():void{this.closePanels(false);document.getElementById('ocean')?.focus({preventScroll:true});}
 
   private togglePanel(panel: 'place' | 'voyage'): void {
+    if(this.root.inert)return;
     const target = panel === 'place' ? this.placePanel : this.voyagePanel;
     const show = target.hidden;
     this.closePanels(false);
-    if (!show) return;
+    if (!show) {document.getElementById('ocean')?.focus({preventScroll:true});return;}
     this.clearHeld();
+    if(document.pointerLockElement)document.exitPointerLock?.();
+    this.callbacks.panel?.(true);
     target.hidden = false;
     (panel === 'place' ? this.placeToggle : this.voyageToggle).setAttribute('aria-expanded', 'true');
     this.root.classList.add('has-panel');
@@ -341,6 +356,7 @@ export class AdventureUI {
     this.placeToggle.setAttribute('aria-expanded', 'false');
     this.voyageToggle.setAttribute('aria-expanded', 'false');
     this.root.classList.remove('has-panel');
+    this.callbacks.panel?.(false);
     if (returnFocus) opener?.focus({ preventScroll: true });
   }
 
@@ -429,6 +445,7 @@ export class AdventureUI {
     this.clearHeld();
     clearTimeout(this.messageTimer);
     this.abort.abort();
+    this.unsubscribeSettings();this.callbacks.panel?.(false);
     this.visibilityObserver.disconnect();
     this.root.remove();
     document.body.classList.remove('adventure-ready');

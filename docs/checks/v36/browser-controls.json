@@ -1,0 +1,164 @@
+{
+  "modal": {
+    "result": {
+      "type": "object",
+      "value": {
+        "after": {
+          "height": 3.119820126211253,
+          "pitch": -0.035,
+          "x": -36,
+          "yaw": -0.6,
+          "z": 27
+        },
+        "before": {
+          "height": 3.119820126211253,
+          "pitch": -0.035,
+          "x": -36,
+          "yaw": -0.6,
+          "z": 27
+        },
+        "modal": true
+      }
+    }
+  },
+  "movement": {
+    "result": {
+      "type": "object",
+      "value": {
+        "newI": {
+          "after": {
+            "height": 2.9141185510313576,
+            "pitch": -0.035,
+            "x": -36.85317720333602,
+            "yaw": -0.6,
+            "z": 25.79395284578072
+          },
+          "before": {
+            "height": 3.119820126211253,
+            "pitch": -0.035,
+            "x": -36,
+            "yaw": -0.6,
+            "z": 27
+          }
+        },
+        "oldW": {
+          "after": {
+            "height": 3.119820126211253,
+            "pitch": -0.035,
+            "x": -36,
+            "yaw": -0.6,
+            "z": 27
+          },
+          "before": {
+            "height": 3.119820126211253,
+            "pitch": -0.035,
+            "x": -36,
+            "yaw": -0.6,
+            "z": 27
+          }
+        }
+      }
+    }
+  },
+  "lookDefault": {
+    "result": {
+      "type": "object",
+      "value": {
+        "after": {
+          "height": 2.89620026824759,
+          "pitch": -0.146994905028106,
+          "x": -36.90513467862926,
+          "yaw": -0.3200127374297351,
+          "z": 25.676991121731895
+        },
+        "before": {
+          "height": 2.89620026824759,
+          "pitch": -0.035,
+          "x": -36.90513467862926,
+          "yaw": -0.6,
+          "z": 25.676991121731895
+        }
+      }
+    }
+  },
+  "lookHalf": {
+    "result": {
+      "type": "object",
+      "value": {
+        "after": {
+          "height": 2.89620026824759,
+          "pitch": -0.20299556350273135,
+          "x": -36.90513467862926,
+          "yaw": -0.18001109124317172,
+          "z": 25.676991121731895
+        },
+        "before": {
+          "height": 2.89620026824759,
+          "pitch": -0.14699738763967887,
+          "x": -36.90513467862926,
+          "yaw": -0.3200065309008029,
+          "z": 25.676991121731895
+        }
+      }
+    }
+  },
+  "lookInverted": {
+    "result": {
+      "type": "object",
+      "value": {
+        "after": {
+          "height": 2.89620026824759,
+          "pitch": -0.14699921177662637,
+          "x": -36.90513467862926,
+          "yaw": -0.32000197055843405,
+          "z": 25.676991121731895
+        },
+        "before": {
+          "height": 2.89620026824759,
+          "pitch": -0.20299738763967884,
+          "x": -36.90513467862926,
+          "yaw": -0.18000653090080293,
+          "z": 25.676991121731895
+        }
+      }
+    }
+  },
+  "mapHeld": {
+    "result": {
+      "type": "object",
+      "value": {
+        "after": {
+          "height": 2.89620026824759,
+          "pitch": -0.14699869643481384,
+          "x": -36.90513467862926,
+          "yaw": -0.3200032589129654,
+          "z": 25.676991121731895
+        },
+        "before": {
+          "height": 2.89620026824759,
+          "pitch": -0.14699869643481384,
+          "x": -36.90513467862926,
+          "yaw": -0.3200032589129654,
+          "z": 25.676991121731895
+        },
+        "mapOpen": true
+      }
+    }
+  },
+  "meta": {
+    "mode": "capture=1; isolated preferences",
+    "keyboard": "Playwright locator.press",
+    "heldMovement": "synthetic DOM KeyboardEvent into normal controller",
+    "look": "synthetic touch PointerEvent into normal drag handler",
+    "nativePointerLock": "not verified"
+  },
+  "mapFromImmersive": true,
+  "journalFromImmersive": true,
+  "persisted": {
+    "sensitivity": "0.95 ×",
+    "invertY": true,
+    "mapKey": "N",
+    "save": "このブラウザに自動保存",
+    "newKeyWorks": true
+  }
+}

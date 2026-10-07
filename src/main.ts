@@ -12,6 +12,8 @@ import { SurfAudio } from './audio';
 import { AdventureUI } from './ui/adventure-ui';
 import { captureNamed, captureMatrix, CAPTURE_PROFILES, type CaptureState, type SceneCaptureHost } from './qa/scene-capture';
 import { experienceOptions } from './qa/experience-options';
+import { ControlSettings, isTextInput, type SettingsStorage } from './input/control-settings.ts';
+import { ControlSettingsUI } from './ui/control-settings-ui.ts';
 
 function element<T extends HTMLElement>(id: string): T {
   const result = document.getElementById(id);
@@ -26,6 +28,7 @@ let ocean: Ocean;
 let activePreset: PresetName = 'day';
 let adventureUI: AdventureUI;
 let expeditionUI:ExpeditionUI;
+let controlSettingsUI: ControlSettingsUI;
 let uiFrame = 0;
 let windTimer = 0;
 let toastTimer = 0;
@@ -86,7 +89,13 @@ function toggleImmersive(): void {
 }
 
 try {
-  ocean = new Ocean(element<HTMLCanvasElement>('ocean'));
+  // Capture sessions must never overwrite the player's preferences.
+  let controlsStorage: SettingsStorage | undefined;
+  if(new URLSearchParams(location.search).get('capture')!=='1') {
+    controlsStorage={getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)};
+  }
+  const controls = new ControlSettings(controlsStorage);
+  ocean = new Ocean(element<HTMLCanvasElement>('ocean'),controls);
   const view=experienceOptions(location.search).view;
   if(view==='dive')ocean.adventure.viewpoint(-145,-113,-.45,-.28,'dive',4.5);
   if(view==='reef')ocean.adventure.viewpoint(-140,-110,-.5,-.42,'dive',5);
@@ -96,15 +105,36 @@ try {
   const coastalView=CAPTURE_PROFILES.find(profile=>profile.name===view&&(view==='habushi-front'||view==='secret'));
   if(coastalView){const p=coastalView.pose;ocean.adventure.viewpoint(p.x,p.z,p.yaw,p.pitch,p.mode,p.depth);}
   const focus = () => element('ocean').focus({ preventScroll: true });
+  const openPanels = new Set<string>();
+  const modal = (name:string,open:boolean) => {
+    const wasBlocked=openPanels.size>0;
+    if(open)openPanels.add(name);else openPanels.delete(name);
+    if(wasBlocked!==(openPanels.size>0))ocean.adventure.setInputBlocked(openPanels.size>0);
+  };
   adventureUI = new AdventureUI({
+    panel:open=>modal('map',open),
     interact: () => { ocean.adventure.interact(); focus(); },
     navigate: id => { ocean.adventure.navigate(id); focus(); },
     place: kind => { ocean.place(kind); focus(); },
     undo: () => { ocean.undoPlacement(); focus(); },
     move: (x, forward) => ocean.adventure.setMove(x, forward),
     vertical: direction => ocean.adventure.setVertical(direction),
-  }, ocean.world.destinations, ocean.world.mapOutlines);
-  expeditionUI=new ExpeditionUI(ocean.expedition,{map:()=>adventureUI.openMap(),cue:()=>sound.cue()});
+  }, ocean.world.destinations, ocean.world.mapOutlines,controls);
+  expeditionUI=new ExpeditionUI(ocean.expedition,{map:()=>adventureUI.openMap(),cue:()=>sound.cue(),modal:open=>{if(open)adventureUI.close();modal('journal',open);}},controls);
+  controlSettingsUI=new ControlSettingsUI(controls,open=>modal('settings',open));
+  const revealUI=()=>{if(document.body.classList.contains('immersed'))toggleImmersive();};
+  const openControls=()=>{revealUI();adventureUI.close();expeditionUI.close();controlSettingsUI.open();};
+  element('controls-open').addEventListener('click',openControls,events);
+  const syncControlHints=()=>{
+    const move=['forward','left','back','right'].map(a=>controls.primary(a as 'forward'|'left'|'back'|'right')).join(' / ');
+    const hint=`${move} で移動 · ${controls.primary('rise')} 跳ぶ・浮上 / ${controls.primary('descend')} 潜る · ${controls.primary('interact')} 調べる · ${controls.primary('map')} 地図`;
+    document.querySelector<HTMLElement>('.interaction-hint')!.textContent=hint;
+    element('ocean').setAttribute('aria-label',`式根島の泊海水浴場。クリックで見回す、Escでマウスを解放。${hint}。${controls.primary('settings')}で操作設定。`);
+    element('controls-open').title=`操作設定 · ${controls.label('settings')}`;
+    element('immersive').title=`画面の表示 / 非表示 · ${controls.label('immersive')}`;
+    element('leave-immersive').querySelector('span')!.textContent=controls.primary('immersive');
+  };
+  const unsubscribeHints=controls.subscribe(syncControlHints);syncControlHints();
   const updateUI = () => {
     if (disposed) return;
     adventureUI.update(ocean.adventure.state, ocean.assets.placedCount);
@@ -596,24 +626,32 @@ try {
     }
   }, events);
   document.addEventListener('keydown', event => {
-    if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
-    const target = event.target as HTMLElement;
+    if (event.defaultPrevented || event.repeat || event.isComposing || event.ctrlKey || event.metaKey || event.altKey || !available) return;
+    if(controlSettingsUI.isOpen)return;
+    if(expeditionUI.isOpen){
+      if(controls.matches('journal',event.code)&&!isTextInput(event.target)){event.preventDefault();expeditionUI.close();}
+      return;
+    }
+    if(event.code==='Escape'&&adventureUI.isPanelOpen){event.preventDefault();adventureUI.close();return;}
     if (event.key === 'Escape' && document.body.classList.contains('immersed')) {
       event.preventDefault();
       toggleImmersive();
       return;
     }
-    if (target.closest('input,select,textarea') || target.isContentEditable) return;
-    if (event.key.toLowerCase() === 'h') { event.preventDefault(); toggleImmersive(); }
-    if (event.code === 'KeyP' && !target.closest('button,a')) { event.preventDefault(); togglePause(); }
-  }, events);
+    if (isTextInput(event.target)) return;
+    if(controls.matches('settings',event.code)){event.preventDefault();openControls();}
+    else if(controls.matches('map',event.code)){event.preventDefault();revealUI();queueMicrotask(()=>adventureUI.toggleMap());}
+    else if(controls.matches('journal',event.code)){event.preventDefault();revealUI();queueMicrotask(()=>expeditionUI.open());}
+    else if(controls.matches('immersive',event.code)){event.preventDefault();toggleImmersive();}
+    else if(controls.matches('pause',event.code)){event.preventDefault();togglePause();}
+  }, { ...events, capture: true });
   document.addEventListener('visibilitychange', () => void sound.setVisible(!document.hidden && available).catch(() => {}), events);
   window.addEventListener('ocean-error', event => showError((event as CustomEvent<string>).detail), events);
   if (import.meta.hot) {
     import.meta.hot.dispose(() => {
       disposed = true;
       clearTimeout(windTimer); clearTimeout(toastTimer);
-      cancelAnimationFrame(uiFrame); adventureUI.dispose();expeditionUI.dispose();
+      cancelAnimationFrame(uiFrame); controlSettingsUI.dispose();unsubscribeHints();adventureUI.dispose();expeditionUI.dispose();
       abort.abort(); ocean.dispose(); sound.dispose();
       photoUrls.forEach((timer, url) => { clearTimeout(timer); URL.revokeObjectURL(url); });
       photoUrls.clear();

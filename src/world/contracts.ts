@@ -65,6 +65,7 @@ export interface AdventureState {
 }
 export interface MapOutline { id: string; label: string; points: [number, number][]; }
 export interface AdventureCallbacks {
+  panel?(open: boolean): void;
   /** Optional legacy/developer hooks; the playing interface has no mode or teleport buttons. */
   mode?(mode: TravelMode): void;
   home?(): void;

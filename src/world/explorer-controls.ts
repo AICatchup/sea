@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { ControlSettings, type ControlAction } from '../input/control-settings.ts';
 import type { AdventureState, BodyPoint, BodyPose, GroundSampler, TravelMode, WorldDestination } from './contracts.ts';
 import { PLAYER_DIMENSIONS,BOAT_ACCESS } from './contracts.ts';
 import { ROUTE_MIN_DEPTH, ROUTE_RADIUS, clampWorld, findNearbyWater, footSegmentClear, groundHeight,
@@ -42,6 +43,7 @@ function boardingBody(point:THREE.Vector3,blend:number):{feet:BodyPoint;height:n
 /** One embodied traveller: movement state follows the local ground, water and vessel. */
 export class ExplorerControls {
   readonly state: AdventureState;
+  readonly settings: ControlSettings;
   private readonly canvas: HTMLCanvasElement;
   private readonly ground: GroundSampler;
   private readonly destinations: WorldDestination[];
@@ -74,6 +76,16 @@ export class ExplorerControls {
   private contextInteraction:{label:(state:AdventureState)=>string;activate:(state:AdventureState)=>boolean}|null=null;
   private airCapacity=1;
   private swimmingPower=1;
+  private blocked = false;
+  private readonly unsubscribeSettings: () => void;
+
+  get inputBlocked(): boolean { return this.blocked; }
+  setInputBlocked(blocked: boolean): void {
+    this.blocked = blocked;
+    this.resetInput(new Event('panel'));
+    this.targetYaw = this.state.yaw; this.targetPitch = this.state.pitch;
+    if (blocked && this.doc.pointerLockElement === this.canvas) this.doc.exitPointerLock?.();
+  }
 
   setContextInteraction(hook:{label:(state:AdventureState)=>string;activate:(state:AdventureState)=>boolean}):void{this.contextInteraction=hook;}
   setEquipment(airCapacity:number,swimmingPower:number):void{
@@ -81,7 +93,8 @@ export class ExplorerControls {
     this.swimmingPower=Number.isFinite(swimmingPower)?clamp(swimmingPower,1,1.18):1;
   }
 
-  constructor(canvas: HTMLCanvasElement, ground: GroundSampler, destinations: WorldDestination[], spawn: THREE.Vector3) {
+  constructor(canvas: HTMLCanvasElement, ground: GroundSampler, destinations: WorldDestination[], spawn: THREE.Vector3, settings = new ControlSettings()) {
+    this.settings = settings;
     this.canvas = canvas; this.ground = ground; this.destinations = destinations; this.spawn = spawn.clone();
     this.doc = canvas.ownerDocument;
     const tomari = destinations.find(destination => destination.id === 'tomari');
@@ -94,7 +107,8 @@ export class ExplorerControls {
       voyageTarget: null, voyageRemaining: 0, stamina: 1, grounded: true, immersion: 0,
       gaitPhase: 0, viewOffset: new THREE.Vector3(), velocity: this.velocity, interactionLabel: '',
       boardingProgress: 0, avatarAction: 'idle', boatPitch: 0, boatRoll: 0,
-      message: '浜から歩いて海へ。画面をクリックして見回し、WASDで歩く、Spaceでジャンプ。' };
+      message: '浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。' };
+    this.unsubscribeSettings = settings.subscribe(() => this.resetInput(new Event('settings')));
     this.originalTouchAction = canvas.style.touchAction; this.originalTabIndex = canvas.tabIndex;
     canvas.style.touchAction = 'none'; if (canvas.tabIndex < 0) canvas.tabIndex = 0;
     this.bind(canvas, 'pointerdown', this.onPointerDown);
@@ -109,6 +123,7 @@ export class ExplorerControls {
     this.bind(this.doc, 'mousemove', this.onLockedMove);
     this.bind(this.doc, 'pointerlockchange', this.onPointerLockChange);
     this.bind(this.doc, 'visibilitychange', this.onVisibilityChange);
+    this.bind(this.doc, 'focusin', event => { if (editable(event.target)) this.resetInput(event); });
     this.updateInteraction();
   }
 
@@ -117,7 +132,7 @@ export class ExplorerControls {
   }
   private onPointerDown: EventListener = event => {
     const pointer = event as PointerEvent;
-    if (this.disposed || pointer.button !== 0 || this.pointerId !== null) return;
+    if (this.disposed || this.blocked || pointer.button !== 0 || this.pointerId !== null) return;
     this.canvas.focus({ preventScroll: true });
     if (this.doc.pointerLockElement === this.canvas) return;
     this.pointerId = pointer.pointerId; this.pointerX = pointer.clientX; this.pointerY = pointer.clientY;
@@ -132,9 +147,10 @@ export class ExplorerControls {
     pointer.preventDefault();
   };
   private look(dx: number, dy: number): void {
-    if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
-    this.targetYaw -= dx * 0.0028;
-    this.targetPitch = clamp(this.targetPitch - dy * 0.0028, -1.4, 1.4);
+    if (this.blocked || !Number.isFinite(dx) || !Number.isFinite(dy)) return;
+    const delta = this.settings.look(dx, dy);
+    this.targetYaw += delta.yaw;
+    this.targetPitch = clamp(this.targetPitch + delta.pitch, -1.4, 1.4);
     this.lastLookTime = this.lastTime;
   }
   private onPointerMove: EventListener = event => {
@@ -162,16 +178,16 @@ export class ExplorerControls {
   }
   private onKeyDown: EventListener = event => {
     const key = event as KeyboardEvent;
-    if (this.disposed) return;
+    if (this.disposed || this.blocked || key.defaultPrevented || key.isComposing) return;
     if (key.code === 'Escape') {
       this.resetInput(event);
       if (this.doc.pointerLockElement === this.canvas) this.doc.exitPointerLock?.();
       return;
     }
     if (editable(key.target) || key.metaKey || key.altKey || (key.ctrlKey && !key.code.startsWith('Control'))) return;
-    if (!/^(Key[WASDCE]|Arrow(Up|Down|Left|Right)|Space|Shift(Left|Right)|Control(Left|Right))$/.test(key.code)) return;
-    if (key.code === 'KeyE' && !key.repeat) this.interact();
-    if (key.code === 'Space' && !key.repeat && this.state.grounded && this.state.mode === 'walk') this.jumpRequested = true;
+    if (!(['forward', 'back', 'left', 'right', 'rise', 'descend', 'sprint', 'interact'] as ControlAction[]).some(action => this.settings.matches(action, key.code))) return;
+    if (this.settings.matches('interact', key.code) && !key.repeat) this.interact();
+    if (this.settings.matches('rise', key.code) && !key.repeat && this.state.grounded && this.state.mode === 'walk') this.jumpRequested = true;
     this.keys.add(key.code); key.preventDefault();
   };
   private onKeyUp: EventListener = event => {
@@ -184,10 +200,12 @@ export class ExplorerControls {
     this.state.speed = 0;
   };
   setMove(x: number, forward: number): void {
+    if (this.blocked) return;
     this.padX = Number.isFinite(x) ? clamp(x, -1, 1) : 0;
     this.padForward = Number.isFinite(forward) ? clamp(forward, -1, 1) : 0;
   }
   setVertical(direction: number): void {
+    if (this.blocked) return;
     const previous = this.padVertical;
     this.padVertical = Number.isFinite(direction) ? clamp(direction, -1, 1) : 0;
     if (previous <= 0 && this.padVertical > 0 && this.state.grounded && this.state.mode === 'walk') this.jumpRequested = true;
@@ -198,12 +216,11 @@ export class ExplorerControls {
     const y = this.waterHeightSampler(x, z); return Number.isFinite(y) ? clamp(y, -4, 4) : 0;
   }
   private input(): MotionInput {
-    const held = (...codes: string[]): number => codes.some(code => this.keys.has(code)) ? 1 : 0;
-    let x = clamp(this.padX + held('KeyD', 'ArrowRight') - held('KeyA', 'ArrowLeft'), -1, 1);
-    let forward = clamp(this.padForward + held('KeyW', 'ArrowUp') - held('KeyS', 'ArrowDown'), -1, 1);
+    const held = (action: ControlAction): number => [...this.keys].some(code => this.settings.matches(action, code)) ? 1 : 0;
+    let x = clamp(this.padX + held('right') - held('left'), -1, 1);
+    let forward = clamp(this.padForward + held('forward') - held('back'), -1, 1);
     const length = Math.hypot(x, forward); if (length > 1) { x /= length; forward /= length; }
-    return { x, forward, vertical: clamp(this.padVertical + held('Space') - held('KeyC', 'ControlLeft', 'ControlRight'), -1, 1),
-      running: Boolean(held('ShiftLeft', 'ShiftRight')) };
+    return { x, forward, vertical: clamp(this.padVertical + held('rise') - held('descend'), -1, 1), running: Boolean(held('sprint')) };
   }
   private cancelVoyage(message?: string): void {
     this.route = []; this.waypoint = 0; this.state.voyageTarget = null; this.state.voyageRemaining = 0;
@@ -276,7 +293,7 @@ export class ExplorerControls {
   }
   /** E/touch interaction uses the vessel in this world, with a visible climbing interval. */
   interact(): void {
-    if (this.disposed || this.boarding) return;
+    if (this.disposed || this.blocked || this.boarding) return;
     if(this.contextInteraction?.activate(this.state)){this.updateInteraction();return;}
     if (this.state.mode === 'boat') {
       if (this.state.voyageTarget || Math.abs(this.boatVelocity) > 0.9) {
@@ -304,7 +321,7 @@ export class ExplorerControls {
       this.boarding = { from: this.state.position.clone(), to: this.boatEye(),
         elapsed: 0, duration: entry.via?5:1.6, leaving: false,via:entry.via };
       this.state.message = entry.via?'船尾のはしごを登り、操船席へ移動しています。':'船の縁をつかんで乗船しています。';
-    } else this.state.message = '海に浮かぶ船の舷側へ近づいて、Eで乗船できます。';
+    } else this.state.message = `海に浮かぶ船の舷側へ近づいて、${this.settings.primary('interact')}で乗船できます。`;
     this.updateInteraction();
   }
   navigate(destinationId: string): void {
@@ -316,10 +333,10 @@ export class ExplorerControls {
     if (!target) { this.state.message = `${destination.label}付近に安全な到着水域がありません。`; return; }
     const route = planWaterRoute(this.ground, this.state.boatPosition, target);
     if (route.error) { this.cancelVoyage(`${destination.label}への出航を見送りました。${route.error}`); return; }
-    if (route.distance < 7) { this.cancelVoyage(`${destination.label}に到着しています。Eで下船できます。`); return; }
+    if (route.distance < 7) { this.cancelVoyage(`${destination.label}に到着しています。${this.settings.primary('interact')}で下船できます。`); return; }
     this.route = route.points; this.waypoint = 1; this.boatVelocity = Math.max(0, this.boatVelocity);
     this.state.voyageTarget = destination.id; this.state.voyageRemaining = route.distance;
-    this.state.message = `${destination.label}へ出航。WASDで手動操船に戻ります。`;
+    this.state.message = `${destination.label}へ出航。移動キーで手動操船に戻ります。`;
   }
   /** Reset/bookmarks exist for diagnostics; normal play never calls them. */
   home(): void {
@@ -349,7 +366,7 @@ export class ExplorerControls {
   }
 
   update(delta: number, time: number, ambientPaused = false): void {
-    if (this.disposed || this.doc.hidden || !Number.isFinite(delta) || delta <= 0) return;
+    if (this.disposed || this.blocked || this.doc.hidden || !Number.isFinite(delta) || delta <= 0) return;
     this.lastTime = Number.isFinite(time) ? time : this.lastTime;
     const dt = Math.min(delta, .12), smoothing = 1 - Math.exp(-dt * 20);
     this.state.yaw += angleDifference(this.targetYaw, this.state.yaw) * smoothing;
@@ -357,7 +374,7 @@ export class ExplorerControls {
     const input = this.input();
     if (this.state.voyageTarget && Math.abs(input.x) + Math.abs(input.forward) > .05) {
       this.boatVelocity = Math.min(this.boatVelocity, MANUAL_BOAT_SPEED);
-      this.cancelVoyage('手動操船に戻りました。W/Sで加減速、A/Dで舵取り。');
+      this.cancelVoyage(`手動操船に戻りました。${this.settings.primary('forward')}/${this.settings.primary('back')}で加減速、${this.settings.primary('left')}/${this.settings.primary('right')}で舵取り。`);
     }
     this.updateBoatFloat(dt);
     const steps = Math.ceil(dt / .02);
@@ -414,7 +431,7 @@ export class ExplorerControls {
       const floor = groundHeight(this.ground, motion.to.x, motion.to.z), water = this.waterAt(motion.to.x, motion.to.z);
       this.state.mode = motion.leaving ? floor >= water - 1.3 ? 'walk' : 'swim' : 'boat';
       this.state.message = motion.leaving ? '船のすぐそばへ下りました。泳いで浜へ進めます。'
-        : '乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。';
+        : this.settings.hint('乗船しました。{forward}/{back}で加減速、{left}/{right}で舵取り。地図から島へ出航できます。');
       this.state.avatarAction = motion.leaving ? 'swim' : 'helm'; this.targetYaw = this.state.boatYaw;
     }
   }
@@ -456,7 +473,7 @@ export class ExplorerControls {
       const next = clampWorld({ x: boat.x + Math.sin(this.state.boatYaw) * this.boatVelocity * dt,
         z: boat.z - Math.cos(this.state.boatYaw) * this.boatVelocity * dt });
       if (waterSegmentClear(this.ground, boat, next)) { boat.x = next.x; boat.z = next.z; }
-      else { this.boatVelocity = 0; this.state.message = '浅瀬で停船しました。W/SとA/Dで沖側へ向きを変えてください。'; }
+      else { this.boatVelocity = 0; this.state.message = this.settings.hint('浅瀬で停船しました。{forward}/{back}と{left}/{right}で沖側へ向きを変えてください。'); }
     }
     this.state.speed = Math.abs(this.boatVelocity); this.state.avatarAction = 'helm'; this.state.grounded = true;
     this.state.immersion = 0; this.state.viewOffset?.set(0, 0, 0);
@@ -466,7 +483,7 @@ export class ExplorerControls {
   private finishVoyage(): void {
     const label = this.destinations.find(destination => destination.id === this.state.voyageTarget)?.label ?? '目的地';
     this.boatVelocity = 0; this.state.speed = 0;
-    this.cancelVoyage(`${label}の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。`);
+    this.cancelVoyage(`${label}の海岸付近へ到着しました。${this.settings.primary('interact')}で船のそばへ下り、泳いで浜へ進めます。`);
   }
   private updatePerson(dt: number, input: MotionInput, resourceDelta: number): void {
     const p = this.state.position, water = this.waterAt(p.x, p.z);
@@ -559,8 +576,8 @@ export class ExplorerControls {
       this.state.oxygen = Math.min(1, this.state.oxygen + resourceDelta * .085); this.autoAscent = false;
     }
     if (previous !== this.state.mode) this.state.message = this.state.mode === 'walk' ? '足が浜に着きました。歩いて海岸を探検できます。'
-      : this.state.mode === 'dive' ? '水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。'
-      : '海に浮かんでいます。WASDで泳ぎ、Cでゆっくり潜れます。';
+      : this.state.mode === 'dive' ? `水中へ。見ている方向へ泳ぎ、${this.settings.primary('rise')}で浮上、${this.settings.primary('descend')}で潜降。`
+      : `海に浮かんでいます。移動キーで泳ぎ、${this.settings.primary('descend')}でゆっくり潜れます。`;
     this.state.immersion = clamp((surface - (p.y - EYE_HEIGHT)) / EYE_HEIGHT, 0, 1);
     this.state.speed = Math.hypot(this.velocity.x, this.velocity.z);
     this.state.stamina = (this.state.stamina ?? 1) + resourceDelta * (running ? -.08 : .055);
@@ -610,6 +627,7 @@ export class ExplorerControls {
     this.resetInput(new Event('reset'));
     if (this.doc.pointerLockElement === this.canvas) this.doc.exitPointerLock?.();
     this.disposed = true;
+    this.unsubscribeSettings();
     for (const [target, type, listener] of this.listeners) target.removeEventListener(type, listener);
     this.listeners.length = 0; this.canvas.style.touchAction = this.originalTouchAction; this.canvas.tabIndex = this.originalTabIndex;
   }

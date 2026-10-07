@@ -1,0 +1,15 @@
+{
+  "version": "V36",
+  "tests": 336,
+  "typecheck": "PASS",
+  "build": "PASS",
+  "browser": "Codex in-app browser",
+  "lookRatio": 1.9999741652656238,
+  "forwardDistanceM": 1.4773154972762903,
+  "modalAndMapMotion": "zero",
+  "persistence": "actual standalone reload PASS",
+  "standaloneBytes": 268907499,
+  "standaloneSha256": "f56d8e85cb125f14b9b182acb9350d439541e8c9445bff3aea8b9becf4c185aa",
+  "nativeHeldKeyboardAndPointerLock": "UNVERIFIED; synthetic DOM events exercised normal controller",
+  "photoGoal": "UNMET"
+}
