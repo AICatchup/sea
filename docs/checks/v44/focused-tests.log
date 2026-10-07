@@ -1,0 +1,17 @@
+✔ a drained shallow cell cannot resurrect its higher FFT wave as an isolated spike (1.5436ms)
+✔ wet runup, offshore waves and the domain edge retain their own free surface (0.4712ms)
+✔ a shallow advancing bore keeps its elevation until the actual sand contact (1.966ms)
+✔ runup and retreat traverse the contact without forcing every front back to mean sea level (0.491ms)
+✔ missing wet support, solver edges and deep-water handoff stay bounded and continuous (3.2944ms)
+✔ coarse wet vertices cannot paint a locally dry displaced sand contact (0.2789ms)
+✔ pointwise contact preserves a shallow positive bore and respects mesh depth (1.2233ms)
+✔ an emergent wet film does not differentiate through dry mean-sea-level fallback (0.2775ms)
+✔ wet-domain stencil preserves steep valid bores and ocean waves (1.1825ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 221.8977

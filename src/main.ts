@@ -502,7 +502,7 @@ try {
         return {png,pngWithoutWhitewater,pngWithoutSurfaceFoam,pngFoamFilm,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,lightComparison,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,foamComparison:compareFoam?'Frozen state: all foam, whitewater pool hidden, both pool and surface-shader foam hidden':null,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null,lightComparison:compareLight?'One frozen camera/FFT/solver/time/environment; legacy256->fine512->legacy256, caustic history reset only':null}};
       }finally{try{ocean.setCausticResolution(previousLight);}finally{captureHost.restoreState(before);}}
     },
-    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},startClock?:number){
+    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},startClock?:number,probes:readonly{x:number;y:number}[]=[]){
       if(stops.length<1||stops.length>6||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown temporal capture view');
       if(startClock!==undefined&&(!Number.isFinite(startClock)||startClock<0||startClock>86400))throw new Error('Finite bounded QA clock required');
@@ -517,7 +517,7 @@ try {
           frames.push({png,metadata:{...captureHost.readState(),name,requestedSeconds:stops[i],time:ocean.diagnostics.time,spray:{...ocean.diagnostics.spray},shoreSolver:ocean.diagnostics.shoreSolver,provenance:'One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions',humanAccepted:false}});
         }
         const visible=ocean.setWhitewaterVisible(false);
-        try{await captureHost.nextFrame();await captureHost.nextFrame();const pngWithoutWhitewater=await capturePNG();return {frames,pngWithoutWhitewater,whitewaterComparison:'Frozen same solver, particles, camera and light; volume/legacy material visible vs hidden only'};}
+        try{await captureHost.nextFrame();await captureHost.nextFrame();const pngWithoutWhitewater=await capturePNG(),contactProbe=probes.length?ocean.probeWaterContact(probes):null;return {frames,pngWithoutWhitewater,contactProbe,whitewaterComparison:'Frozen same solver, particles, camera and light; volume/legacy material visible vs hidden only'};}
         finally{ocean.setWhitewaterVisible(visible);}
       }finally{try{if(startClock!==undefined){captureHost.setPaused(true);ocean.setObservationClock(clock);}}finally{captureHost.restoreState(before);}}
     },

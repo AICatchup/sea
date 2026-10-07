@@ -1,0 +1,149 @@
+{
+  "version": "V44",
+  "globalGoal": "ACTIVE_UNMET",
+  "focusedTests": 9,
+  "typecheck": "PASS",
+  "viteBuild": "PASS",
+  "standaloneBuild": "PASS",
+  "gpuComparison": {
+    "scope": "Same QA pose, high/day, start34,12s dynamic integration; no exact pixel-clock identity claim",
+    "beforeTime": 46.01130000000028,
+    "afterTime": 46.017200000000294,
+    "maximumHeightDifference": 0.0003066062927246094,
+    "highBedProbes": 7,
+    "lowBedControls": 3,
+    "rows": [
+      {
+        "point": {
+          "x": 0.06,
+          "y": 0.365
+        },
+        "bed": 3.463989496231079,
+        "aboveTwo": true,
+        "depth": 0.33667802810668945,
+        "beforeFresnel": 0.9937204718589783,
+        "afterFresnel": 0.18429529666900635,
+        "maximumHeightDifference": 0.0003066062927246094
+      },
+      {
+        "point": {
+          "x": 0.06,
+          "y": 0.385
+        },
+        "bed": 2.8328981399536133,
+        "aboveTwo": true,
+        "depth": 0.27781033515930176,
+        "beforeFresnel": 0.9937204718589783,
+        "afterFresnel": 0.24261125922203064,
+        "maximumHeightDifference": 5.7220458984375e-06
+      },
+      {
+        "point": {
+          "x": 0.06,
+          "y": 0.405
+        },
+        "bed": 2.3605473041534424,
+        "aboveTwo": true,
+        "depth": 0.27198290824890137,
+        "beforeFresnel": 0.9937204718589783,
+        "afterFresnel": 0.30812305212020874,
+        "maximumHeightDifference": 2.1457672119140625e-06
+      },
+      {
+        "point": {
+          "x": 0.06,
+          "y": 0.425
+        },
+        "bed": 1.8901554346084595,
+        "aboveTwo": false,
+        "depth": 0.19544970989227295,
+        "beforeFresnel": 0.4691695272922516,
+        "afterFresnel": 0.4693601429462433,
+        "maximumHeightDifference": 6.67572021484375e-06
+      },
+      {
+        "point": {
+          "x": 0.13,
+          "y": 0.385
+        },
+        "bed": 3.2768962383270264,
+        "aboveTwo": true,
+        "depth": 0.35381293296813965,
+        "beforeFresnel": 0.9937204718589783,
+        "afterFresnel": 0.23207825422286987,
+        "maximumHeightDifference": 4.792213439941406e-05
+      },
+      {
+        "point": {
+          "x": 0.13,
+          "y": 0.4
+        },
+        "bed": 2.793872356414795,
+        "aboveTwo": true,
+        "depth": 0.3224313259124756,
+        "beforeFresnel": 0.9937204718589783,
+        "afterFresnel": 0.28073424100875854,
+        "maximumHeightDifference": 6.365776062011719e-05
+      },
+      {
+        "point": {
+          "x": 0.13,
+          "y": 0.415
+        },
+        "bed": 2.45225191116333,
+        "aboveTwo": true,
+        "depth": 0.15169143676757812,
+        "beforeFresnel": 0.9937204718589783,
+        "afterFresnel": 0.3956965208053589,
+        "maximumHeightDifference": 1.3589859008789062e-05
+      },
+      {
+        "point": {
+          "x": 0.13,
+          "y": 0.43
+        },
+        "bed": 1.9748640060424805,
+        "aboveTwo": false,
+        "depth": 0.16320323944091797,
+        "beforeFresnel": 0.5371973514556885,
+        "afterFresnel": 0.5371973514556885,
+        "maximumHeightDifference": 2.4080276489257812e-05
+      },
+      {
+        "point": {
+          "x": 0.2,
+          "y": 0.43
+        },
+        "bed": 2.2216405868530273,
+        "aboveTwo": true,
+        "depth": 0.15742731094360352,
+        "beforeFresnel": 0.9937204718589783,
+        "afterFresnel": 0.4939426779747009,
+        "maximumHeightDifference": 1.430511474609375e-06
+      },
+      {
+        "point": {
+          "x": 0.2,
+          "y": 0.445
+        },
+        "bed": 1.7146501541137695,
+        "aboveTwo": false,
+        "depth": 0.10970413684844971,
+        "beforeFresnel": 0.6004191637039185,
+        "afterFresnel": 0.6005061268806458,
+        "maximumHeightDifference": 3.6954879760742188e-06
+      }
+    ]
+  },
+  "staticHTTP": {
+    "qa": "undefined",
+    "frames": 589,
+    "fps": 56.3,
+    "measured": 3840000,
+    "flow": 576,
+    "external": [],
+    "errors": []
+  },
+  "visualReview": "Limited adoption: black reflection edge removed; high white film and jagged upper edge remain",
+  "physicsChange": false
+}

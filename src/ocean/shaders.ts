@@ -373,7 +373,10 @@ export const oceanFragment = /* glsl */ `
     vec3 normal=normalize(cross(tangentZ,tangentX));
     #ifndef CURVED_SURFACE
     vec2 shoreUV=(vWorld.xz-uShoreBounds.xy)/uShoreBounds.zw;
-    if(uShoreReady>.5&&coast.x> -11.&&coast.x<2.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))){
+    // The solved surface can run above 2m on a sloping beach. Its geometry
+    // already uses SWE there; reverting only the optical normal to a flat
+    // FFT face produced a black reflection seam at that arbitrary elevation.
+    if(uShoreReady>.5&&coast.x> -11.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))){
       float step=max(1.5,footprint*.65);
       vec2 nx=vWorld.xz-vec2(step,0),px=vWorld.xz+vec2(step,0);
       vec2 nz=vWorld.xz-vec2(0,step),pz=vWorld.xz+vec2(0,step);
