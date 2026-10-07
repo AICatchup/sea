@@ -1,3 +1,13 @@
+/** CPU reference for the shared finite-depth incident-wave envelope. This
+ * scales the incoming FFT, never the already-solved runup surface. */
+export function coastalWaveScale(ground:number,exposure:number,swell:number,wind:number):number{
+  if(![ground,exposure,swell,wind].every(Number.isFinite))return 0;
+  const depth=Math.max(0,-ground),transport=Math.pow(Math.max(1,Math.min(8,18/Math.max(depth,1))),.125);
+  const nominalAmplitude=Math.max(.08,swell*(.1+wind*wind*.013)),cap=Math.min(1,depth*.38/nominalAmplitude);
+  const f=Math.max(0,Math.min(1,(depth-.015)/(.22-.015)));
+  return transport*cap*f*f*(3-2*f)*Math.max(.08,Math.min(1,exposure));
+}
+
 /** Stochastic metric height derivatives shared by water and photon refraction.
  * Unresolved bands contribute slope variance to the reflection BRDF. */
 export const capillarySampling=/* glsl */`

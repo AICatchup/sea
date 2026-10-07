@@ -44,7 +44,7 @@ precision highp float;
 uniform sampler2D uInput,uOriginal,uBathymetry,uLongWaves,uShortWaves;
 uniform vec4 uBathyBounds,uBounds,uOldBounds;
 uniform vec2 uBathyResolution;
-uniform float uSize,uDx,uDt,uMode,uSwell,uChoppiness,uMaxDepth,uMaxSpeed,uMaxHeight,uSecondOrder,uStage,uIncidentDirection;
+uniform float uSize,uDx,uDt,uMode,uSwell,uChoppiness,uWind,uMaxDepth,uMaxSpeed,uMaxHeight,uSecondOrder,uStage,uIncidentDirection,uMatchedIncident;
 ${shoreWaveSampling}
 ${shoreBoreGLSL}
 ${shoreIncidentDirectionGLSL}
@@ -58,10 +58,16 @@ float bed(vec2 p){
   return max(-uMaxDepth,sampleCoastalGround(uBathymetry,uv,uBathyResolution).r);
   #endif
 }
+float incidentScale(vec2 p){
+  if(uMatchedIncident<.5)return 1.;
+  vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
+  if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return 1.;
+  return shoreWaveScale(sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg,uSwell,uWind);
+}
 float fft(vec2 p){vec2 q=p;for(int i=0;i<3;i++){
-  vec3 d=(texture2D(uLongWaves,q/384.).xyz+texture2D(uShortWaves,q/24.).xyz)*uSwell;
+  vec3 d=(texture2D(uLongWaves,q/384.).xyz+texture2D(uShortWaves,q/24.).xyz)*uSwell*incidentScale(q);
   q=p-d.xz*uChoppiness;
-}return clamp((texture2D(uLongWaves,q/384.).y+texture2D(uShortWaves,q/24.).y)*uSwell,-uMaxHeight,uMaxHeight);}
+}return clamp((texture2D(uLongWaves,q/384.).y+texture2D(uShortWaves,q/24.).y)*uSwell*incidentScale(q),-uMaxHeight,uMaxHeight);}
 vec4 incident(vec2 p){float b=bed(p),h=max(0.,fft(p)-b);
   // Match the offshore spectrum's dominant travel direction. A local
   // shallow-water refraction approximation turns incoming rays shoreward.
@@ -138,7 +144,8 @@ void main(){vec2 uv=gl_FragCoord.xy/uSize,p=world(uv);
   // Four-cell sponge keeps open boundary forcing out of the interior update.
   float edge=min(min(gl_FragCoord.x,gl_FragCoord.y),min(uSize-gl_FragCoord.x,uSize-gl_FragCoord.y));
   float relaxation=(1.-smoothstep(1.,6.,edge))*(1.-exp(-uDt*3.));
-  gl_FragColor=mix(vec4(next,clamp(foam,0.,1.)),incident(p),relaxation);
+  vec4 interior=vec4(next,clamp(foam,0.,1.));
+  gl_FragColor=relaxation>0.?mix(interior,incident(p),relaxation):interior;
 }
 `;
 
@@ -148,7 +155,7 @@ export function createShoreSolverUniforms():Record<string,THREE.IUniform> {
 
 const finiteOption=(value:number|undefined,fallback:number,min:number,max:number):number=>Number.isFinite(value)?Math.max(min,Math.min(max,value!)):fallback;
 
-export interface ShoreSolverOptions { resolution?: number; span?: number; maxDepth?: number; maxSpeed?: number; maxHeight?: number; maxSubsteps?: number; order?:1|2; incidentDirection?:boolean }
+export interface ShoreSolverOptions { resolution?: number; span?: number; maxDepth?: number; maxSpeed?: number; maxHeight?: number; maxSubsteps?: number; order?:1|2; incidentDirection?:boolean; matchedIncident?:boolean }
 /** Depth-integrated SWE candidate with optional MUSCL/RK2. Opt-in; RGBA32F.
  * Iterated half-float storage loses small depth updates and can drain water. */
 export class ShoreSolver {
@@ -186,7 +193,7 @@ export class ShoreSolver {
     // the piecewise-constant operator, especially beside newly wet cells.
     this.stableDelta=(this.secondOrder?.10:.20)*(this.span/this.resolution)/(maxSpeed+Math.sqrt(9.81*(maxDepth+maxHeight)));
     this.targets=Array.from({length:this.secondOrder?3:2},()=>new THREE.WebGLRenderTarget(this.resolution,this.resolution,{type:THREE.FloatType,format:THREE.RGBAFormat,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter,depthBuffer:false,stencilBuffer:false}));
-    this.material=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:shoreTransportFragment,uniforms:{uInput:{value:null},uOriginal:{value:null},uIncidentDirection:{value:options.incidentDirection===false?0:1},uSecondOrder:{value:this.secondOrder?1:0},uStage:{value:0},uBathymetry:{value:null},uLongWaves:{value:null},uShortWaves:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uBathyTriangulated:{value:0},uBounds:this.uniforms.uShoreBounds,uOldBounds:{value:new THREE.Vector4()},uSize:{value:this.resolution},uDx:{value:this.span/this.resolution},uDt:{value:0},uMode:{value:2},uSwell:{value:1},uChoppiness:{value:1},uMaxDepth:{value:maxDepth},uMaxSpeed:{value:maxSpeed},uMaxHeight:{value:maxHeight}}});
+    this.material=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:shoreTransportFragment,uniforms:{uInput:{value:null},uOriginal:{value:null},uIncidentDirection:{value:options.incidentDirection===false?0:1},uMatchedIncident:{value:options.matchedIncident===false?0:1},uWind:{value:8.5},uSecondOrder:{value:this.secondOrder?1:0},uStage:{value:0},uBathymetry:{value:null},uLongWaves:{value:null},uShortWaves:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uBathyTriangulated:{value:0},uBounds:this.uniforms.uShoreBounds,uOldBounds:{value:new THREE.Vector4()},uSize:{value:this.resolution},uDx:{value:this.span/this.resolution},uDt:{value:0},uMode:{value:2},uSwell:{value:1},uChoppiness:{value:1},uMaxDepth:{value:maxDepth},uMaxSpeed:{value:maxSpeed},uMaxHeight:{value:maxHeight}}});
     this.quad.material=this.material;this.quad.frustumCulled=false;this.scene.add(this.quad);
   }
   get diagnostics():{order:number;precision:'float32';substeps:number;simulationElapsed:number;droppedSeconds:number;stableDelta:number;bounds:THREE.Vector4} {
@@ -204,7 +211,7 @@ export class ShoreSolver {
     }
     return {minDepth,maxDepth,maxSpeed,maxFoam,nonfinite,cells:pixels.length/4,readbackBytes:pixels.byteLength,...this.diagnostics};
   }
-  bindUniforms(shared:Record<string,THREE.IUniform>):void {for(const name of ['uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uLongWaves','uShortWaves','uSwell','uChoppiness'])if(shared[name])this.material.uniforms[name]=shared[name];}
+  bindUniforms(shared:Record<string,THREE.IUniform>):void {for(const name of ['uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uLongWaves','uShortWaves','uSwell','uChoppiness','uWind'])if(shared[name])this.material.uniforms[name]=shared[name];}
   private pass(mode:number,dt:number,stage=0,original?:THREE.Texture):void {const u=this.material.uniforms;u.uInput.value=this.targets[this.index].texture;u.uOriginal.value=original??u.uInput.value;u.uStage.value=stage;u.uMode.value=mode;u.uDt.value=dt;this.index=(this.index+1)%this.targets.length;this.renderer.setRenderTarget(this.targets[this.index]);this.renderer.render(this.scene,this.camera);this.uniforms.uShoreState.value=this.targets[this.index].texture;}
   update(deltaSeconds:number,x:number,z:number):void {
     if(this.disposed||![deltaSeconds,x,z].every(Number.isFinite)||deltaSeconds<0)return;

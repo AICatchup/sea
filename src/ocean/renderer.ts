@@ -147,7 +147,7 @@ export class Ocean {
     this.renderer.info.autoReset=false;
     this.simulation=new OceanSimulation(this.renderer,this.wind);
     const experience=experienceOptions(location.search);
-    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2,incidentDirection:new URLSearchParams(location.search).get('shoreincident')!=='0'}):null;
+    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2,incidentDirection:new URLSearchParams(location.search).get('shoreincident')!=='0',matchedIncident:new URLSearchParams(location.search).get('shoreforcing')!=='0'}):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0',new URLSearchParams(location.search).get('strandprofile')!=='0');
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;

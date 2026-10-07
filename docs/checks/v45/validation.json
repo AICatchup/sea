@@ -1,0 +1,45 @@
+{
+  "version": "V45",
+  "globalGoal": "ACTIVE_UNMET",
+  "tests": {
+    "passed": 382,
+    "durationMs": 86696.8956
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "gpuCases": 16,
+  "gpuMaximumError": 2.760244687927127e-06,
+  "route": {
+    "samples": 301,
+    "last": {
+      "time": 88.29236666666762,
+      "camera": {
+        "yaw": 1.5707963267948966,
+        "pitch": -0.12,
+        "height": 3.0094436049777347,
+        "x": 5898.532679333373,
+        "z": -1300
+      },
+      "mode": "walk",
+      "grounded": true,
+      "ground": 1.3694436049777348,
+      "oxygen": 1
+    }
+  },
+  "staticHTTP": {
+    "qa": "undefined",
+    "frames": 2127,
+    "fps": 56.2,
+    "measured": 3840000,
+    "flow": 576,
+    "external": [],
+    "errors": []
+  },
+  "review": "Limited adoption from four actual images",
+  "remaining": [
+    "flat broad foam pattern",
+    "hard foam contour",
+    "grey sea bands",
+    "full photoreal quality"
+  ]
+}

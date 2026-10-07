@@ -292,6 +292,7 @@ try {
     shoreEnabled:(enabled:boolean)=>ocean.setShoreCandidateEnabled(enabled),
     reflectionOverscan:(scale:number)=>ocean.setReflectionOverscan(scale),
     inspectShoreIncident:()=>inspectShoreIncident(ocean.renderer),
+    inspectShoreForcing:()=>inspectShoreIncident(ocean.renderer,true),
     shoreState:()=>ocean.probeShoreState(),
     whitewaterSites:()=>ocean.probeWhitewaterSites(),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},

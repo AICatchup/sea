@@ -1,0 +1,1163 @@
+{
+  "frames": [
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 0,
+      "time": 34,
+      "spray": {
+        "active": 0,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 0,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 0,
+        "maxSampleEnergy": 0,
+        "maxSampleCrest": 0.04553292133974196,
+        "maxEstimatedHeightDepthRatio": 0.07667658503089925,
+        "sampleEnergyPositiveCount": 0,
+        "sampleWetEligibleCount": 121,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 0,
+        "updateMs": 4.4000000059604645,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 0,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    },
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 5,
+      "time": 39.01390000000016,
+      "spray": {
+        "active": 6,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 6,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 7,
+        "maxSampleEnergy": 0.12941176470588237,
+        "maxSampleCrest": 1.2589303425650424,
+        "maxEstimatedHeightDepthRatio": 0.3304882640893687,
+        "sampleEnergyPositiveCount": 9,
+        "sampleWetEligibleCount": 226,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 15,
+        "updateMs": 2,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 5.013900000000004,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    },
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 10,
+      "time": 44.02880000000025,
+      "spray": {
+        "active": 6,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 9,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 16,
+        "maxSampleEnergy": 0.3568627450980392,
+        "maxSampleCrest": 1.896879530022126,
+        "maxEstimatedHeightDepthRatio": 1.2154669260700417,
+        "sampleEnergyPositiveCount": 12,
+        "sampleWetEligibleCount": 218,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 41,
+        "updateMs": 2,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 10.02880000000003,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    },
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 15,
+      "time": 49.042400000000384,
+      "spray": {
+        "active": 18,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 56,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 82,
+        "maxSampleEnergy": 0.6274509803921569,
+        "maxSampleCrest": 1.3141069657434965,
+        "maxEstimatedHeightDepthRatio": 2.9966648137854337,
+        "sampleEnergyPositiveCount": 18,
+        "sampleWetEligibleCount": 256,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 180,
+        "updateMs": 2.2000000178813934,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 15.042400000000088,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    },
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 20,
+      "time": 54.06190000000051,
+      "spray": {
+        "active": 53,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 127,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 224,
+        "maxSampleEnergy": 1,
+        "maxSampleCrest": 1.5624017700465398,
+        "maxEstimatedHeightDepthRatio": 2.217342968315731,
+        "sampleEnergyPositiveCount": 27,
+        "sampleWetEligibleCount": 224,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 572,
+        "updateMs": 3.800000011920929,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 20.06190000000009,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    }
+  ],
+  "probe": {
+    "available": true,
+    "time": 54.06190000000051,
+    "layout": [
+      "fresnel,skyVisibility,visibleBottom",
+      "normalXYZ",
+      "opticalPath,bottomContact,nV",
+      "meshHeight,pointHeight,bed",
+      "worldX,worldZ,reflectedY",
+      "straightPath,acceptedPath,snellUsed",
+      "snellHitXYZ",
+      "receiverNormalXYZ,kind",
+      "receiverUV,materialId,kind",
+      "reflectionUV,lod,valid",
+      "reflectionLod0RGB",
+      "reflectionFilteredRGB",
+      "footprint,longStep,roughnessAlpha",
+      "refractedRGB",
+      "waterBodyRGB",
+      "reflectionRGB",
+      "transmissionRGB",
+      "waterOutputRGB",
+      "screenReceiverRGB"
+    ],
+    "result": [
+      {
+        "point": {
+          "x": 0.06,
+          "y": 0.365
+        },
+        "values": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.06,
+          "y": 0.405
+        },
+        "values": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.13,
+          "y": 0.415
+        },
+        "values": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.13,
+          "y": 0.43
+        },
+        "values": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.3,
+          "y": 0.52
+        },
+        "values": [
+          [
+            0.46192115545272827,
+            1,
+            1,
+            1
+          ],
+          [
+            0.11072834581136703,
+            0.9934441447257996,
+            0.028422661125659943,
+            1
+          ],
+          [
+            0.8517407774925232,
+            0.947113037109375,
+            0.12591390311717987,
+            1
+          ],
+          [
+            0.4443187117576599,
+            0.44429346919059753,
+            0.3573419451713562,
+            1
+          ],
+          [
+            5905.76904296875,
+            -1314.49658203125,
+            0.18198730051517487,
+            1
+          ],
+          [
+            0.8517407774925232,
+            0.8517407774925232,
+            0,
+            1
+          ],
+          [
+            5905.76904296875,
+            0.4443187117576599,
+            -1314.49658203125,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            0.6900343298912048,
+            0.45336559414863586,
+            2.667470932006836,
+            1
+          ],
+          [
+            0.12313754111528397,
+            0.14140279591083527,
+            0.1757117211818695,
+            1
+          ],
+          [
+            0.1643536388874054,
+            0.18272186815738678,
+            0.2293229103088379,
+            1
+          ],
+          [
+            0.21472732722759247,
+            1.5,
+            0.07438980042934418,
+            1
+          ],
+          [
+            0.06294197589159012,
+            0.07601840049028397,
+            0.09505055844783783,
+            1
+          ],
+          [
+            0.06294197589159012,
+            0.07601840049028397,
+            0.09505055844783783,
+            1
+          ],
+          [
+            0.1643536388874054,
+            0.18272186815738678,
+            0.2293229103088379,
+            1
+          ],
+          [
+            0.9144497513771057,
+            0.9822724461555481,
+            0.9898311495780945,
+            1
+          ],
+          [
+            0.10987988859415054,
+            0.12540225684642792,
+            0.1571926325559616,
+            1
+          ],
+          [
+            0.07244873046875,
+            0.0811767578125,
+            0.10089111328125,
+            1
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.65,
+          "y": 0.56
+        },
+        "values": [
+          [
+            0.3120676279067993,
+            1,
+            1,
+            1
+          ],
+          [
+            -0.14232636988162994,
+            0.9896224141120911,
+            0.01976640895009041,
+            1
+          ],
+          [
+            17.58513641357422,
+            0.8272534608840942,
+            0.19217821955680847,
+            1
+          ],
+          [
+            0.896062970161438,
+            0.8960758447647095,
+            -0.3308296203613281,
+            1
+          ],
+          [
+            5912.07568359375,
+            -1304.499267578125,
+            0.2640255391597748,
+            1
+          ],
+          [
+            17.58513641357422,
+            17.58513641357422,
+            0,
+            1
+          ],
+          [
+            5912.07568359375,
+            0.896062970161438,
+            -1304.499267578125,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            0.34218788146972656,
+            0.2232324630022049,
+            2.2706596851348877,
+            1
+          ],
+          [
+            0.08099453151226044,
+            0.12856583297252655,
+            0.29217958450317383,
+            1
+          ],
+          [
+            0.08148543536663055,
+            0.12793909013271332,
+            0.292178750038147,
+            1
+          ],
+          [
+            0.03551071137189865,
+            1.5,
+            0.06014192849397659,
+            1
+          ],
+          [
+            0.024987760931253433,
+            0.11714133620262146,
+            0.1314517706632614,
+            1
+          ],
+          [
+            0.024987760931253433,
+            0.11714133620262146,
+            0.1314517706632614,
+            1
+          ],
+          [
+            0.08148545026779175,
+            0.12793907523155212,
+            0.292178750038147,
+            1
+          ],
+          [
+            0.15779805183410645,
+            0.6912263631820679,
+            0.8097565174102783,
+            1
+          ],
+          [
+            0.042841535061597824,
+            0.12071020901203156,
+            0.18179550766944885,
+            1
+          ],
+          [
+            0.17670997977256775,
+            0.18969444930553436,
+            0.18319237232208252,
+            1
+          ]
+        ]
+      }
+    ]
+  }
+}

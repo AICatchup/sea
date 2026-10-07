@@ -1,0 +1,20 @@
+✔ stored water depth is reinitialized when its bathymetry contract changes (4.0081ms)
+✔ incident closure preserves rest, zero dry momentum and the small-amplitude limit (1.2331ms)
+✔ nonlinear crest and trough have unequal velocities and crest characteristics travel faster (0.2041ms)
+✔ weak swell compression stays unbroken, while shallower sections of the same crest can break (0.2642ms)
+✔ breaker onset is continuous, bounded and quiet in dry or deep water (1.8273ms)
+✔ nonlinear incident packet evolves conservatively without negative depth (5.7859ms)
+✔ incident forcing cannot create water directly above dry sand or cliffs (1.6653ms)
+✔ open deep water retains its input while shallow and sheltered boundaries match the wave envelope (0.2426ms)
+✔ shore envelope stays finite and continuous to the dry shoreline (2.0863ms)
+✔ propagation sign matches positive temporal phase and the actual asymmetric spectrum (3.6405ms)
+✔ flat shelves retain travelling incident flux and trough velocity reverses (1.3652ms)
+✔ refraction retains tangential motion and approaches the shore normal as water shallows (1.2761ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 173.2793

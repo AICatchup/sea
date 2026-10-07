@@ -1,0 +1,1163 @@
+{
+  "frames": [
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 0,
+      "time": 34,
+      "spray": {
+        "active": 0,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 0,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 0,
+        "maxSampleEnergy": 0,
+        "maxSampleCrest": 0.04553292133974196,
+        "maxEstimatedHeightDepthRatio": 0.07667658503089925,
+        "sampleEnergyPositiveCount": 0,
+        "sampleWetEligibleCount": 121,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 0,
+        "updateMs": 4.4000000059604645,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 0,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    },
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 5,
+      "time": 39.003000000000114,
+      "spray": {
+        "active": 25,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 46,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 52,
+        "maxSampleEnergy": 0.9215686274509803,
+        "maxSampleCrest": 3.668879224841687,
+        "maxEstimatedHeightDepthRatio": 11.198929961089497,
+        "sampleEnergyPositiveCount": 26,
+        "sampleWetEligibleCount": 250,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 118,
+        "updateMs": 2.2999999821186066,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 5.002999999999991,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    },
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 10,
+      "time": 44.01950000000025,
+      "spray": {
+        "active": 22,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 152,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 221,
+        "maxSampleEnergy": 1,
+        "maxSampleCrest": 3.4852826733806364,
+        "maxEstimatedHeightDepthRatio": 14.533073929961086,
+        "sampleEnergyPositiveCount": 39,
+        "sampleWetEligibleCount": 230,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 385,
+        "updateMs": 2.9000000059604645,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 10.01950000000003,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    },
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 15,
+      "time": 49.035400000000465,
+      "spray": {
+        "active": 32,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 169,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 387,
+        "maxSampleEnergy": 0.9882352941176471,
+        "maxSampleCrest": 3.409109636072328,
+        "maxEstimatedHeightDepthRatio": 14.58866036687048,
+        "sampleEnergyPositiveCount": 53,
+        "sampleWetEligibleCount": 266,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 666,
+        "updateMs": 3,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 15.035400000000084,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    },
+    {
+      "pose": {
+        "x": 5910,
+        "z": -1300,
+        "yaw": 0.12,
+        "pitch": -0.05,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5910,
+        1.4764781565931169,
+        -1300,
+        -0.024952414099041868,
+        -0.05994526870315134,
+        -0.0014989440105935288,
+        0.9978886185129029
+      ],
+      "fov": 62,
+      "width": 1280,
+      "height": 720,
+      "quality": "high",
+      "preset": "day",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 12,
+      "swell": 1.25,
+      "eyeY": 1.4764781565931169,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle",
+      "name": "secret",
+      "requestedSeconds": 20,
+      "time": 54.03920000000062,
+      "spray": {
+        "active": 62,
+        "capacity": 1500,
+        "drawCalls": 2,
+        "whitewaterActive": 222,
+        "whitewaterCapacity": 1024,
+        "whitewaterTriangles": 2048,
+        "whitewaterMode": "legacy",
+        "whitewaterEmitted": 619,
+        "maxSampleEnergy": 1,
+        "maxSampleCrest": 3.4025177386129553,
+        "maxEstimatedHeightDepthRatio": 14.570872707059474,
+        "sampleEnergyPositiveCount": 55,
+        "sampleWetEligibleCount": 233,
+        "samples": 576,
+        "readbackBytes": 4608,
+        "flowSamples": 576,
+        "interval": 0.2,
+        "pending": false,
+        "ready": true,
+        "failed": false,
+        "emitted": 1215,
+        "updateMs": 3.7999999821186066,
+        "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+        "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback"
+      },
+      "shoreSolver": {
+        "order": 2,
+        "precision": "float32",
+        "substeps": 0,
+        "simulationElapsed": 20.039200000000083,
+        "droppedSeconds": 0,
+        "stableDelta": 0.0061153681793131975,
+        "bounds": {
+          "x": 5814,
+          "y": -1396.5,
+          "z": 192,
+          "w": 192
+        },
+        "ready": 1
+      },
+      "provenance": "One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions",
+      "humanAccepted": false
+    }
+  ],
+  "probe": {
+    "available": true,
+    "time": 54.03920000000062,
+    "layout": [
+      "fresnel,skyVisibility,visibleBottom",
+      "normalXYZ",
+      "opticalPath,bottomContact,nV",
+      "meshHeight,pointHeight,bed",
+      "worldX,worldZ,reflectedY",
+      "straightPath,acceptedPath,snellUsed",
+      "snellHitXYZ",
+      "receiverNormalXYZ,kind",
+      "receiverUV,materialId,kind",
+      "reflectionUV,lod,valid",
+      "reflectionLod0RGB",
+      "reflectionFilteredRGB",
+      "footprint,longStep,roughnessAlpha",
+      "refractedRGB",
+      "waterBodyRGB",
+      "reflectionRGB",
+      "transmissionRGB",
+      "waterOutputRGB",
+      "screenReceiverRGB"
+    ],
+    "result": [
+      {
+        "point": {
+          "x": 0.06,
+          "y": 0.365
+        },
+        "values": [
+          [
+            0.1717345416545868,
+            1,
+            1,
+            1
+          ],
+          [
+            0.5874744057655334,
+            0.8089764714241028,
+            0.020756227895617485,
+            1
+          ],
+          [
+            0.9242144823074341,
+            0.9168701171875,
+            0.296425461769104,
+            1
+          ],
+          [
+            3.807321786880493,
+            3.806035041809082,
+            3.496028423309326,
+            1
+          ],
+          [
+            5893.15869140625,
+            -1323.03369140625,
+            0.5610182285308838,
+            1
+          ],
+          [
+            0.9242144823074341,
+            0.9242144823074341,
+            0,
+            1
+          ],
+          [
+            5893.15869140625,
+            3.807321786880493,
+            -1323.03369140625,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            0.994392991065979,
+            0.3771769404411316,
+            2.305950880050659,
+            0
+          ],
+          [
+            0.22403079271316528,
+            0.3012123107910156,
+            0.46517419815063477,
+            1
+          ],
+          [
+            0.2250128835439682,
+            0.30218470096588135,
+            0.4646281599998474,
+            1
+          ],
+          [
+            0.1062864437699318,
+            1.5,
+            0.06858261674642563,
+            1
+          ],
+          [
+            0.06785763055086136,
+            0.08429525047540665,
+            0.10975570976734161,
+            1
+          ],
+          [
+            0.06785763055086136,
+            0.08429525047540665,
+            0.10975570976734161,
+            1
+          ],
+          [
+            0.06024601310491562,
+            0.09444822371006012,
+            0.23309475183486938,
+            1
+          ],
+          [
+            0.9075174331665039,
+            0.9807786345481873,
+            0.9889706969261169,
+            1
+          ],
+          [
+            0.25364789366722107,
+            0.2874396741390228,
+            0.3213880956172943,
+            1
+          ],
+          [
+            0.081298828125,
+            0.0931396484375,
+            0.1204833984375,
+            1
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.06,
+          "y": 0.405
+        },
+        "values": [
+          [
+            0.33863478899002075,
+            1,
+            1,
+            1
+          ],
+          [
+            0.3517381250858307,
+            0.9359336495399475,
+            0.017565308138728142,
+            1
+          ],
+          [
+            1.6078317165374756,
+            0.897735595703125,
+            0.178244486451149,
+            1
+          ],
+          [
+            2.6355948448181152,
+            2.6340548992156982,
+            2.363081693649292,
+            1
+          ],
+          [
+            5895.314453125,
+            -1320.0347900390625,
+            0.3802613914012909,
+            1
+          ],
+          [
+            1.6078317165374756,
+            1.6078317165374756,
+            0,
+            1
+          ],
+          [
+            5895.314453125,
+            2.6355948448181152,
+            -1320.0347900390625,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            0.9449329972267151,
+            0.3936898708343506,
+            2.5624282360076904,
+            1
+          ],
+          [
+            0.5348778963088989,
+            0.5201940536499023,
+            0.5729973316192627,
+            1
+          ],
+          [
+            0.5309460163116455,
+            0.5155471563339233,
+            0.5696788430213928,
+            1
+          ],
+          [
+            0.17482922971248627,
+            1.5,
+            0.07263806462287903,
+            1
+          ],
+          [
+            0.046450816094875336,
+            0.062276460230350494,
+            0.08251824229955673,
+            1
+          ],
+          [
+            0.046450816094875336,
+            0.062276460230350494,
+            0.08251824229955673,
+            1
+          ],
+          [
+            0.5309460163116455,
+            0.5155471563339233,
+            0.5696788430213928,
+            1
+          ],
+          [
+            0.8446589708328247,
+            0.9667991995811462,
+            0.9808909296989441,
+            1
+          ],
+          [
+            0.2767561674118042,
+            0.3086114525794983,
+            0.3407497704029083,
+            1
+          ],
+          [
+            0.060791015625,
+            0.0706787109375,
+            0.09271240234375,
+            1
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.13,
+          "y": 0.415
+        },
+        "values": [
+          [
+            0.4570472836494446,
+            1,
+            1,
+            1
+          ],
+          [
+            0.33215534687042236,
+            0.9431970715522766,
+            -0.007210001349449158,
+            1
+          ],
+          [
+            1.7951319217681885,
+            0.621429443359375,
+            0.1276860237121582,
+            1
+          ],
+          [
+            2.622215986251831,
+            2.6050899028778076,
+            2.4457755088806152,
+            1
+          ],
+          [
+            5895.51025390625,
+            -1323.7979736328125,
+            0.28195318579673767,
+            1
+          ],
+          [
+            1.7951319217681885,
+            1.7951319217681885,
+            0,
+            1
+          ],
+          [
+            5895.51025390625,
+            2.622215986251831,
+            -1323.7979736328125,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            0.8919016122817993,
+            0.4105972349643707,
+            2.6493258476257324,
+            1
+          ],
+          [
+            0.4449005126953125,
+            0.44319915771484375,
+            0.5103759765625,
+            1
+          ],
+          [
+            0.4385102689266205,
+            0.4383952021598816,
+            0.5103594064712524,
+            1
+          ],
+          [
+            0.20618773996829987,
+            1.5,
+            0.07357914000749588,
+            1
+          ],
+          [
+            0.03777339309453964,
+            0.051006168127059937,
+            0.06712774932384491,
+            1
+          ],
+          [
+            0.03777339309453964,
+            0.051006168127059937,
+            0.06712774932384491,
+            1
+          ],
+          [
+            0.4385102689266205,
+            0.4383952021598816,
+            0.5103594064712524,
+            1
+          ],
+          [
+            0.8282097578048706,
+            0.963003933429718,
+            0.9786887764930725,
+            1
+          ],
+          [
+            0.29608964920043945,
+            0.33047348260879517,
+            0.3660767376422882,
+            1
+          ],
+          [
+            0.0726318359375,
+            0.08349609375,
+            0.1087646484375,
+            1
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.13,
+          "y": 0.43
+        },
+        "values": [
+          [
+            0.6066854000091553,
+            1,
+            1,
+            1
+          ],
+          [
+            0.23171482980251312,
+            0.9726502299308777,
+            -0.016112912446260452,
+            1
+          ],
+          [
+            1.3551844358444214,
+            0.86029052734375,
+            0.08075297623872757,
+            1
+          ],
+          [
+            2.1394100189208984,
+            2.1375648975372314,
+            1.97128427028656,
+            1
+          ],
+          [
+            5897.11962890625,
+            -1321.1329345703125,
+            0.18386559188365936,
+            1
+          ],
+          [
+            1.3551844358444214,
+            1.3551844358444214,
+            0,
+            1
+          ],
+          [
+            5897.11962890625,
+            2.1394100189208984,
+            -1321.1329345703125,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            0.8624322414398193,
+            0.40813693404197693,
+            2.770475387573242,
+            1
+          ],
+          [
+            0.334511935710907,
+            0.3656713366508484,
+            0.4677049517631531,
+            1
+          ],
+          [
+            0.3832302391529083,
+            0.39804524183273315,
+            0.48019424080848694,
+            1
+          ],
+          [
+            0.2999153137207031,
+            1.5,
+            0.07673000544309616,
+            1
+          ],
+          [
+            0.0521310456097126,
+            0.06800057739019394,
+            0.08959760516881943,
+            1
+          ],
+          [
+            0.0521310456097126,
+            0.06800057739019394,
+            0.08959760516881943,
+            1
+          ],
+          [
+            0.3832302391529083,
+            0.39804524183273315,
+            0.48019424080848694,
+            1
+          ],
+          [
+            0.8673658967018127,
+            0.9719422459602356,
+            0.9838693141937256,
+            1
+          ],
+          [
+            0.2633793354034424,
+            0.2831301689147949,
+            0.3369017541408539,
+            1
+          ],
+          [
+            0.0694580078125,
+            0.08038330078125,
+            0.10498046875,
+            1
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.3,
+          "y": 0.52
+        },
+        "values": [
+          [
+            0.5798048973083496,
+            1,
+            1,
+            1
+          ],
+          [
+            0.12270188331604004,
+            0.9923396706581116,
+            -0.014363600872457027,
+            1
+          ],
+          [
+            1.1605184078216553,
+            0.947113037109375,
+            0.08820877224206924,
+            1
+          ],
+          [
+            0.4649806320667267,
+            0.464643657207489,
+            0.3468819558620453,
+            1
+          ],
+          [
+            5905.853515625,
+            -1314.20654296875,
+            0.10687754303216934,
+            1
+          ],
+          [
+            1.1605184078216553,
+            1.1605184078216553,
+            0,
+            1
+          ],
+          [
+            5905.853515625,
+            0.4649806320667267,
+            -1314.20654296875,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            0.6955962181091309,
+            0.4361467957496643,
+            2.70170259475708,
+            1
+          ],
+          [
+            0.11220952123403549,
+            0.12857773900032043,
+            0.16271944344043732,
+            1
+          ],
+          [
+            0.10830257833003998,
+            0.12412659078836441,
+            0.15735174715518951,
+            1
+          ],
+          [
+            0.2076178789138794,
+            1.5,
+            0.07363976538181305,
+            1
+          ],
+          [
+            0.061006754636764526,
+            0.07570856064558029,
+            0.09486884623765945,
+            1
+          ],
+          [
+            0.061006754636764526,
+            0.07570856064558029,
+            0.09486884623765945,
+            1
+          ],
+          [
+            0.10830259323120117,
+            0.12412658333778381,
+            0.1573517620563507,
+            1
+          ],
+          [
+            0.8852772116661072,
+            0.9759236574172974,
+            0.9861702919006348,
+            1
+          ],
+          [
+            0.08853518217802048,
+            0.10388925671577454,
+            0.13123050332069397,
+            1
+          ],
+          [
+            0.07244873046875,
+            0.0811767578125,
+            0.10089111328125,
+            1
+          ]
+        ]
+      },
+      {
+        "point": {
+          "x": 0.65,
+          "y": 0.56
+        },
+        "values": [
+          [
+            0.3788352906703949,
+            1,
+            1,
+            1
+          ],
+          [
+            -0.07168254256248474,
+            0.997317373752594,
+            0.014820551499724388,
+            1
+          ],
+          [
+            18.302566528320312,
+            0.8306616544723511,
+            0.1592252105474472,
+            1
+          ],
+          [
+            0.9794243574142456,
+            0.979396402835846,
+            -0.2991762161254883,
+            1
+          ],
+          [
+            5911.77734375,
+            -1303.8529052734375,
+            0.20124749839305878,
+            1
+          ],
+          [
+            18.302566528320312,
+            18.302566528320312,
+            0,
+            1
+          ],
+          [
+            5911.77734375,
+            0.9794243574142456,
+            -1303.8529052734375,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            0.3639649450778961,
+            0.15804649889469147,
+            2.3505001068115234,
+            1
+          ],
+          [
+            0.06620696187019348,
+            0.10612356662750244,
+            0.2544856071472168,
+            1
+          ],
+          [
+            0.06664974242448807,
+            0.10659407824277878,
+            0.2551731765270233,
+            1
+          ],
+          [
+            0.044018663465976715,
+            1.5,
+            0.06159072741866112,
+            1
+          ],
+          [
+            0.0234091617166996,
+            0.11614879965782166,
+            0.13111157715320587,
+            1
+          ],
+          [
+            0.0234091617166996,
+            0.11614879965782166,
+            0.13111157715320587,
+            1
+          ],
+          [
+            0.06664974242448807,
+            0.10659407079219818,
+            0.2551731765270233,
+            1
+          ],
+          [
+            0.146347776055336,
+            0.6808904409408569,
+            0.8028151392936707,
+            1
+          ],
+          [
+            0.04003136232495308,
+            0.1127484068274498,
+            0.1783130019903183,
+            1
+          ],
+          [
+            0.17655369639396667,
+            0.1895158737897873,
+            0.18303006887435913,
+            1
+          ]
+        ]
+      }
+    ]
+  }
+}
