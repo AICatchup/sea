@@ -1,0 +1,92 @@
+[
+  {
+    "name": "custom",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -122,
+      0.46466456700717496,
+      -97.2,
+      -0.009924371073045639,
+      0.9679402313622709,
+      -0.0387382718702684,
+      -0.24797693776168617
+    ],
+    "pose": {
+      "x": -122,
+      "z": -97.2,
+      "yaw": 2.64,
+      "pitch": 0.08,
+      "mode": "swim",
+      "depth": 0
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true,
+    "time": 34.016666666666666
+  },
+  {
+    "name": "custom",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -122.7,
+      0.42294166459614113,
+      -88.1,
+      0.026466015439108637,
+      -0.4704141224046294,
+      0.0141166589239378,
+      0.881935838601587
+    ],
+    "pose": {
+      "x": -122.7,
+      "z": -88.1,
+      "yaw": 0.98,
+      "pitch": 0.06,
+      "mode": "swim",
+      "depth": 0
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true,
+    "time": 34.016666666666666
+  },
+  {
+    "name": "custom",
+    "evidence": "visual-only",
+    "movementVerified": false,
+    "humanAccepted": false,
+    "width": 1280,
+    "height": 720,
+    "camera": [
+      -114.5,
+      0.28060588910257295,
+      -94.1,
+      0.013337844615467827,
+      0.895295651500416,
+      -0.026866930107690912,
+      0.4444614340660479
+    ],
+    "pose": {
+      "x": -114.5,
+      "z": -94.1,
+      "yaw": -2.22,
+      "pitch": 0.06,
+      "mode": "swim",
+      "depth": 0
+    },
+    "quality": "high",
+    "preset": "day",
+    "paused": true,
+    "locked": true,
+    "time": 34.016666666666666
+  }
+]

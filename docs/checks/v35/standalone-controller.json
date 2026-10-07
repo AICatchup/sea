@@ -1,0 +1,24 @@
+{
+  "before": {
+    "camera": {
+      "yaw": -0.6,
+      "pitch": -0.035,
+      "height": 3.119820126211253,
+      "x": -36,
+      "z": 27
+    },
+    "frames": 18528
+  },
+  "after": {
+    "camera": {
+      "yaw": -0.6,
+      "pitch": -0.035,
+      "height": 2.8346753674895746,
+      "x": -37.218782993716964,
+      "z": 25.25954785512669
+    },
+    "frames": 18601,
+    "mode": "walk"
+  },
+  "input": "Synthetic DOM KeyW down/up held 1200ms through the production controller; not a native held-key receipt"
+}

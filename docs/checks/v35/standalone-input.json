@@ -1,0 +1,27 @@
+{
+  "method": "Playwright keyboard J and 20 W taps through the normal canvas event handlers; no movement developer seam",
+  "notebookOpened": true,
+  "before": {
+    "camera": {
+      "yaw": -0.6,
+      "pitch": -0.035,
+      "height": 3.119820126211253,
+      "x": -36,
+      "z": 27
+    },
+    "frames": 10397,
+    "paused": true
+  },
+  "after": {
+    "camera": {
+      "yaw": -0.6,
+      "pitch": -0.035,
+      "height": 3.119820126211253,
+      "x": -36,
+      "z": 27
+    },
+    "frames": 10433,
+    "mode": "walk",
+    "save": "session"
+  }
+}

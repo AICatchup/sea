@@ -1,0 +1,18 @@
+{
+  "status": "adopt",
+  "scope": "independent review of six saved images and metadata, not independent GPU replay or source/hash audit",
+  "model": "gpt-6.1-sol",
+  "runtimeModelVerified": true,
+  "views": {
+    "bow": "large triangle lighting boundaries reduced, centre fold and rim retained",
+    "brightSide": "faceting reduced; angular light patches remain",
+    "darkSide": "front boundaries smoother, rim and stern silhouette retained"
+  },
+  "conditions": "camera, pose, high, day, 1280x720, paused, locked and runtime time match in all three pairs",
+  "remaining": [
+    "angular bright patches on the side",
+    "uniform hull material",
+    "simple fittings and rails",
+    "full photographic quality"
+  ]
+}

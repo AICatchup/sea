@@ -1,0 +1,49 @@
+{
+  "url": "http://127.0.0.1:5199/sea.html?capture=1",
+  "readyState": "complete",
+  "qa": "undefined",
+  "frames": 94,
+  "sky": true,
+  "marine": {
+    "status": "ready",
+    "assets": [
+      "boulder_01",
+      "namaqualand_boulder_02",
+      "namaqualand_boulder_03"
+    ],
+    "license": "CC0-1.0",
+    "capacity": 32,
+    "uniqueVariants": 3,
+    "instances": 0,
+    "maxDistance": 29,
+    "instancesPerVariant": [
+      0,
+      0,
+      0
+    ],
+    "draws": 3,
+    "trianglesPerVariant": [
+      54106,
+      17995,
+      18000
+    ]
+  },
+  "foliage": "ready",
+  "cliff": "ready",
+  "camera": {
+    "yaw": -0.6,
+    "pitch": -0.035,
+    "height": 3.119820126211253,
+    "x": -36,
+    "z": 27
+  },
+  "resolution": [
+    716,
+    403
+  ],
+  "networkResources": [],
+  "resourceCount": 0,
+  "htmlBytes": 268889899,
+  "htmlSha256": "998f0bececaa0887bf7722d3bf2bfb0a28570b939dbb154303914532c2eb4df2",
+  "scope": "Rendered V35 single HTML through loopback static HTTP, no Vite transformation; J dialog opened via Playwright keyboard. Timed synthetic DOM keydown/up exercised the production walking controller. Native held-key and file URL startup are not verified."
+}
