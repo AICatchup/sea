@@ -570,7 +570,7 @@ try {
         finally{ocean.setWhitewaterVisible(visible);}
       }finally{try{if(startClock!==undefined){captureHost.setPaused(true);ocean.setObservationClock(clock);}}finally{captureHost.restoreState(before);}}
     },
-    async captureCrestSeries(name:string,seconds=12,interval=.2,wind=14,swell=1.3,look?:{x:number;z:number;yaw:number;pitch:number;mode?:'walk'|'swim'|'dive';depth?:number}){
+    async captureCrestSeries(name:string,seconds=12,interval=.2,wind=14,swell=1.3,look?:{x:number;z:number;yaw:number;pitch:number;mode?:'walk'|'swim'|'dive';depth?:number},compareTracked=false,compareBackfaces=false){
       if(crestSeriesBusy)throw new Error('Crest series already in flight');
       if(!Number.isFinite(seconds)||seconds<=0||seconds>12||!Number.isFinite(interval)||interval<.2||interval>2||Math.ceil(seconds/interval)+1>64)throw new Error('Bounded crest series: 0..12 seconds, interval .2..2 seconds, at most64 samples');
       if(!Number.isFinite(wind)||!Number.isFinite(swell)||wind<0||wind>18||swell<.5||swell>1.5)throw new Error('Finite bounded wind/swell required');
@@ -578,6 +578,7 @@ try {
       const profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown crest series view');
       let before:CaptureState|undefined;const samples=[];
       let initialPNG:string|null=null,finalPNG:string|null=null;
+      const activeComparisons=[];let largestRadius=0;
       crestSeriesBusy=true;
       try{
         // Acquire before the first await, including an already-resolved ready.
@@ -593,10 +594,31 @@ try {
           captureHost.setPaused(true);await captureHost.nextFrame();
           const probe=ocean.probeCrestDriver(true);if(!probe?.available)throw new Error('Expanded crest probe requires the opt-in breaker and float render-target support');
           samples.push({requestedSeconds,wallSeconds:(performance.now()-started)/1000,time:ocean.diagnostics.time,state:captureHost.readState(),probe});
+          if(compareTracked&&'fronts' in probe&&Array.isArray(probe.fronts)&&activeComparisons.length<3){
+            const radius=Math.max(...probe.fronts.map(p=>p.shape[1]));
+            if(radius>largestRadius+.02){
+              largestRadius=radius;const enabled=ocean.getBreakerCandidateEnabled(),bodyVisible=ocean.body.group.visible;
+              const frames=[];
+              try{
+                ocean.body.group.visible=false;
+                for(const show of [false,true,false]){
+                  ocean.setBreakerCandidateEnabled(show);await captureHost.nextFrame();await captureHost.nextFrame();
+                  frames.push({enabled:show,png:await capturePNG()});
+                }
+              }finally{ocean.body.group.visible=bodyVisible;ocean.setBreakerCandidateEnabled(enabled);}
+              let backfacesPNG:string|null=null;
+              if(compareBackfaces){
+                const previous=ocean.setBreakerBackfaces(true);ocean.body.group.visible=false;ocean.setBreakerCandidateEnabled(true);
+                try{await captureHost.nextFrame();await captureHost.nextFrame();backfacesPNG=await capturePNG();}
+                finally{ocean.setBreakerBackfaces(previous);ocean.body.group.visible=bodyVisible;ocean.setBreakerCandidateEnabled(enabled);}
+              }
+              activeComparisons.push({sampleIndex:i,time:ocean.diagnostics.time,radius,frames,backfacesPNG,scope:'Frozen same FFT/SWE/front state/camera/light; only sheet visibility changes. Body hidden for this diagnostic and restored. Optional fourth image enables backfaces of the same closed geometry.'});
+            }
+          }
           if(i===0)initialPNG=await capturePNG();if(i===count-1)finalPNG=await capturePNG();
           captureHost.setPaused(false);
         }
-        return {samples,initialPNG,finalPNG,provenance:'One QA pose/preset/spectrum initialization; continuous solved history, paused only for observations; actual simulation/wall timestamps recorded. No travel, surveyed conditions or Human proof.',compressionEvidence:'Named GPU channels; interpret only valid domain/stencil samples. Invalid samples are not physical zeros.'};
+        return {samples,initialPNG,finalPNG,activeComparisons,provenance:'One QA pose/preset/spectrum initialization; continuous solved history, paused only for observations; actual simulation/wall timestamps recorded. No travel, surveyed conditions or Human proof.',compressionEvidence:'Named GPU channels; interpret only valid domain/stencil samples. Invalid samples are not physical zeros.'};
       }finally{try{if(before)captureHost.restoreState(before);}finally{crestSeriesBusy=false;}}
     },
     captureMatrix:()=>captureMatrix(captureHost,{quality:'high',preset:'day',width:1280,height:720,timeoutMs:45000,warmupFrames:30}),

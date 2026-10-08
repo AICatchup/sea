@@ -1,5 +1,7 @@
 # v13 instantaneous rolling crest ribbon
 
+Historical driver documentation. The current `?breaker=1` candidate uses the [V52 persistent front](verification-v52.md); `breakertrack=0` selects this older driver. The no-history and triangle-budget statements below describe the older implementation. Both remain outside the default experience.
+
 This opt-in candidate replaces the constant cyan crest sheet with a metric 3D curl and the existing ocean optics. It remains OFF by default in root configuration until front/side/underwater GPU review.
 
 ## Geometry and driver

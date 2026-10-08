@@ -3,6 +3,7 @@ import { shoreWaveSampling, shoreBreakerDissipationSampling } from './surface-de
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { oceanFragment } from './shaders.ts';
 import {whitewaterFlowSampling} from './whitewater-flow.ts';
+import {ShoreFront} from './shore-front.ts';
 
 const SEGMENTS=96, SPAN=32;
 const smooth=(a:number,b:number,x:number)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
@@ -12,8 +13,8 @@ export function breakerSheetEnvelope(depth:number,energy:number,crest:number,slo
   return smooth(.2,.6,depth)*(1-smooth(2.8,3.8,depth))*smooth(.02,.25,energy)*smooth(.02,.2,crest)*smooth(.0001,.003,slope)*smooth(.00002,.001,-curvature)*Math.min(1,shelter);
 }
 
-/** Mirror of the bounded instantaneous upstream maximum search (metres).
- * Exposes sampling counterexamples without a GPU/readback. */
+/** Historical 4m upstream-search diagnostic, not either current GPU driver.
+ * This CPU helper does not establish production front identity or continuity. */
 export function breakerTrackedCrest(sample:(x:number)=>number,source:number):{peak:number;curvature:number;interior:boolean} {
   let best=-Infinity,offset=0;
   for(let i=0;i<9;i++){const t=i*.5,h=sample(source-t);if(h>best){best=h;offset=t;}}
@@ -34,29 +35,43 @@ export function breakerCurlSection(q:number,radius:number,base:number,crest:numb
     nx:-Math.cos(theta),ny:Math.sin(theta),active:true};
 }
 
-/** Bounded instantaneous FFT-driven kinematic bilayer, with shared SWE base.
- * No clock, readback, new texture, persistent breaker IDs, or fluid closure. */
+/** Kinematic bilayer over the shared SWE base. The renderer-backed candidate
+ * uses persistent GPU front descriptors; the legacy driver remains for A/B. */
 export class ShoreBreaker {
   readonly group=new THREE.Group();
   readonly material:THREE.ShaderMaterial;
-  readonly triangleCount=SEGMENTS*SEGMENTS*4;
+  readonly triangleCount:number;
   private readonly geometry:THREE.BufferGeometry;
+  private readonly front:ShoreFront|null;
   private disposed=false;
-  constructor(){
+  constructor(renderer?:THREE.WebGLRenderer,tracked=true){
+    const closed=!!renderer&&tracked;
+    this.triangleCount=SEGMENTS*SEGMENTS*4+(closed?SEGMENTS*8:0);
     const plane=new THREE.PlaneGeometry(SPAN,SPAN,SEGMENTS,SEGMENTS);plane.rotateX(-Math.PI/2);
     const a=plane.getAttribute('position'),count=a.count;
     const positions=new Float32Array(count*6),sides=new Float32Array(count*2);
     for(let i=0;i<count;i++)for(let j=0;j<2;j++){
       const k=i+j*count;positions[k*3]=a.getX(i);positions[k*3+2]=a.getZ(i);sides[k]=j===0?.5:-.5;
     }
-    const original=plane.index!,indices=new Uint32Array(original.count*2);
+    const original=plane.index!,indices=new Uint32Array(this.triangleCount*3);
     for(let i=0;i<original.count;i+=3){
       indices.set([original.getX(i),original.getX(i+1),original.getX(i+2)],i);
       indices.set([original.getX(i+2)+count,original.getX(i+1)+count,original.getX(i)+count],original.count+i);
     }
+    if(closed){
+      const stride=SEGMENTS+1,boundary:number[]=[];
+      for(let x=0;x<SEGMENTS;x++)boundary.push(x);
+      for(let z=0;z<SEGMENTS;z++)boundary.push(z*stride+SEGMENTS);
+      for(let x=SEGMENTS;x>0;x--)boundary.push(SEGMENTS*stride+x);
+      for(let z=SEGMENTS;z>0;z--)boundary.push(z*stride);
+      for(let i=0;i<boundary.length;i++){
+        const a=boundary[i],b=boundary[(i+1)%boundary.length];
+        indices.set([a,b,b+count,a,b+count,a+count],original.count*2+i*6);
+      }
+    }
     this.geometry=new THREE.BufferGeometry();this.geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
     this.geometry.setAttribute('sheetSide',new THREE.BufferAttribute(sides,1));this.geometry.setIndex(new THREE.BufferAttribute(indices,1));plane.dispose();
-    this.material=new THREE.ShaderMaterial({depthWrite:true,depthTest:true,side:THREE.DoubleSide,defines:{CURVED_SURFACE:1},
+    this.material=new THREE.ShaderMaterial({depthWrite:true,depthTest:true,side:closed?THREE.FrontSide:THREE.DoubleSide,defines:{CURVED_SURFACE:1},
       uniforms:{...createShoreSolverUniforms(),uOrigin:{value:new THREE.Vector2()},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`uniform vec2 uOrigin;uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
       attribute float sheetSide;
@@ -127,20 +142,60 @@ export class ShoreBreaker {
       }`.replaceAll('SPAN',SPAN.toFixed(1)),
       fragmentShader:oceanFragment});
     const mesh=new THREE.Mesh(this.geometry,this.material);mesh.frustumCulled=false;mesh.renderOrder=1;this.group.add(mesh);
+    const code=this.material.vertexShader,start=code.indexOf('void main(){'),end=code.indexOf('float angle=',start);
+    const sampling=code.slice(0,start).replace(/attribute[^;]+;/g,'').replace(/varying[^;]+;/g,'');
+    this.front=renderer&&tracked?new ShoreFront(renderer,sampling,this.material.uniforms,SEGMENTS+1,SPAN,true):null;
+    if(this.front){
+      Object.assign(this.material.uniforms,this.front.uniforms);
+      this.material.vertexShader=code.slice(0,start)+`
+        uniform sampler2D uFrontPosition,uFrontMotion,uFrontShape;
+        uniform float uFrontCount,uFrontReady;
+        void main(){
+          float index=(position.z/${SPAN.toFixed(1)}+.5)*(uFrontCount-1.);
+          vec2 uv=vec2((index+.5)/uFrontCount,.5);
+          vec4 point=texture2D(uFrontPosition,uv),motion=texture2D(uFrontMotion,uv),shape=texture2D(uFrontShape,uv);
+          vec2 peak=point.xy,n=length(motion.xy)>.5?normalize(motion.xy):vec2(1,0),source=peak,world=peak;
+          float terrainGradient=1.,gate=shape.x*shape.w*uFrontReady,radius=shape.y*uFrontReady;
+          // Reconstruct a connected line, not independent sharp per-row fins.
+          // Never smooth across a different wave identity or a large spatial gap.
+          vec2 positionSum=vec2(0),normalSum=vec2(0);float weightSum=0.,radiusSum=0.,strengthSum=0.;
+          for(int j=-2;j<=2;j++){
+            float k=clamp(index+float(j),0.,uFrontCount-1.);vec2 tap=vec2((k+.5)/uFrontCount,.5);
+            vec4 p=texture2D(uFrontPosition,tap),m=texture2D(uFrontMotion,tap),s=texture2D(uFrontShape,tap);
+            if(point.w>.5&&p.w==point.w&&s.w>.5&&distance(p.xy,point.xy)<2.){
+              float weight=3.-abs(float(j));weightSum+=weight;positionSum+=p.xy*weight;normalSum+=m.xy*weight;
+              radiusSum+=s.y*weight;strengthSum+=s.x*weight;
+            }
+          }
+          if(weightSum>0.){
+            peak=positionSum/weightSum;n=normalize(normalSum);radius=radiusSum/weightSum;
+            gate=strengthSum/weightSum*min(1.,weightSum/9.)*uFrontReady;
+          }
+          float resolved=smoothstep(.006,.018,radius);
+          radius*=resolved*(1.-smoothstep(13.,16.,abs(position.z)));gate*=resolved;
+          // Never connect different front identities or bridge a retired row.
+          float adjacent=index<uFrontCount-1.?index+1.:index-1.;
+          vec4 neighbor=texture2D(uFrontPosition,vec2((adjacent+.5)/uFrontCount,.5));
+          if(point.w<.5||neighbor.w!=point.w||distance(neighbor.xy,point.xy)>1.5){gate=0.;radius=0.;}
+      `+code.slice(end).replace('float blend=smoothstep(0.,.18,theta);','float blend=smoothstep(0.,.18,theta)*(1.-smoothstep(.80,1.,theta/angle));');
+    }
   }
   /** Root MUST supply the entire ocean material uniform dictionary, including
    * scene depth/color, reflection, sky, solar shadow, solver and atmosphere.
    * Borrow objects, never copy textures or dispose renderer-owned resources. */
   bindUniforms(uniforms:Record<string,THREE.IUniform>):void {
-    for(const [name,uniform] of Object.entries(uniforms))if(name!=='uOrigin')this.material.uniforms[name]=uniform;
+    for(const [name,uniform] of Object.entries(uniforms))if(name!=='uOrigin'&&!name.startsWith('uFront'))this.material.uniforms[name]=uniform;
+    this.front?.bindUniforms(uniforms);
   }
-  update(x:number,z:number,_underwater:boolean):void {
+  update(x:number,z:number,_underwater:boolean,seconds=0,time=0):void {
     if(this.disposed)return;
     this.group.visible=Number.isFinite(x)&&Number.isFinite(z);
     if(this.group.visible)(this.material.uniforms.uOrigin.value as THREE.Vector2).set(x,z);
+    this.front?.update(seconds,time,x,z);
   }
   /** On-demand float probe reuses the exact current vertex driver text. */
   probeDriver(renderer:THREE.WebGLRenderer,expanded=false){
+    if(this.front)return this.front.probe();
     if(!renderer.extensions.has('EXT_color_buffer_float'))return {available:false};
     const code=this.material.vertexShader,start=code.indexOf('void main(){'),end=code.indexOf('float angle=',start);
     const prefix=code.slice(0,start).replace(/attribute[^;]+;/g,'').replace(/varying[^;]+;/g,'');
@@ -220,5 +275,6 @@ export class ShoreBreaker {
     finally{renderer.setRenderTarget(saved.target);renderer.setViewport(saved.viewport);renderer.setScissor(saved.scissor);renderer.setScissorTest(saved.scissorTest);renderer.autoClear=saved.auto;renderer.setClearColor(saved.clear,saved.alpha);target.dispose();material.dispose();geometry.dispose();profileTarget?.dispose();profileMaterial?.dispose();}
   }
 
-  dispose():void {if(this.disposed)return;this.disposed=true;this.geometry.dispose();this.material.dispose();this.group.clear();}
+  get diagnostics(){return {tracked:!!this.front,triangles:this.triangleCount,front:this.front?.diagnostics??null,scope:'Opt-in kinematic sheet; visual acceptance pending'};}
+  dispose():void {if(this.disposed)return;this.disposed=true;this.front?.dispose();this.geometry.dispose();this.material.dispose();this.group.clear();}
 }

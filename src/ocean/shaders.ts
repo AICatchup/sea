@@ -372,6 +372,7 @@ export const oceanFragment = /* glsl */ `
     #ifdef CURVED_SURFACE
     if(vEnvelope<.006)discard;
     vec3 coast=coastAt(vWorld.xz);
+    float sheetDetached=smoothstep(.015,.10,abs(vWorld.y-renderedSurface(vWorld.xz)));
     #else
     vec3 coast=coastAt(uPointwiseContact>.5?vWorld.xz:vOcean);
     #endif
@@ -561,7 +562,7 @@ export const oceanFragment = /* glsl */ `
     #endif
     #ifdef CURVED_SURFACE
     vec3 throughWave=refract(-view,normal,1.0/1.333);
-    opticalPath=min(opticalPath,min(6.,vWaterThickness/max(.08,abs(dot(normal,throughWave)))));
+    opticalPath=mix(opticalPath,min(opticalPath,min(6.,vWaterThickness/max(.08,abs(dot(normal,throughWave))))),sheetDetached);
     #endif
     vec3 absorption=vec3(.105,.021,.012);
     vec3 transmission=exp(-absorption*opticalPath);
@@ -584,7 +585,7 @@ export const oceanFragment = /* glsl */ `
     // The base ocean's no-bottom case is deep water. A raised lip can instead
     // exit into air and transmit sky, so it must not inherit that opaque tint.
     if(visibleBottom<.5&&throughWave.y>0.)refractedColor=skyRadiance(normalize(throughWave),true)*transmission+waterScatter*(1.-transmission);
-    body=refractedColor;
+    body=mix(mix(body,refractedColor,visibleBottom),refractedColor,sheetDetached);
     #else
     body=mix(body,refractedColor,visibleBottom);
     #endif
@@ -633,6 +634,9 @@ export const oceanFragment = /* glsl */ `
     float solvedCoverage=uFoamStructure>.5?structuredFoamCoverage(solvedFoam,smoothstep(.25,.75,foamPattern),smoothstep(.25,.75,pocketField),footprint):surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern));
     foam=max(foam,solvedCoverage);
     #ifdef CURVED_SURFACE
+    // Foam on the underlying heightfield is not a coating of the lifted face.
+    // Retain it at the join; the separate lip term describes local aeration.
+    foam*=1.-smoothstep(.015,.14,vLip)*(1.-smoothstep(.86,.985,vLip));
     // Aeration remains a narrow lip detail; the rolling face keeps optics.
     foam=max(foam,smoothstep(.88,1.,vLip)*vEnvelope*pores*.35);
     #endif

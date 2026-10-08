@@ -1,0 +1,11 @@
+{
+  "mapOpenedWithM": true,
+  "mapClosedWithM": true,
+  "method": "Browser Use key presses on the current focusable map buttons",
+  "unsupportedHidden": true,
+  "renderFramesObserved": [
+    22300,
+    22302
+  ],
+  "correction": "Locator body-text diagnostics included the hidden GPU fallback. This was not a GPU failure; body-targeted key dispatch failed while the map close button owned focus."
+}

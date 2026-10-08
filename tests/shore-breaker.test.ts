@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { breakerSheetEnvelope, breakerCurlSection, breakerTrackedCrest, ShoreBreaker } from '../src/ocean/shore-breaker.ts';
+import * as THREE from 'three';
 test('positive FFT shoulder gate requires shallow dissipating crest and convex incident front',()=>{
   assert.ok(breakerSheetEnvelope(1,.7,.4,.4,-.15,1)>.9);
   for(const s of [[0,.7,.4,.4,-.15,1],[4,.7,.4,.4,-.15,1],[1,0,.4,.4,-.15,1],[1,.7,-.4,.4,-.15,1],[1,.7,.4,-.4,-.15,1],[1,.7,.4,.4,.15,1],[1,.7,.4,.4,-.15,.1],[NaN,.7,.4,.4,-.15,1]])assert.equal(breakerSheetEnvelope(...s as [number,number,number,number,number,number]),0);
@@ -79,4 +80,24 @@ test('crest anchor tracks instantaneous input phase, excludes the far search bou
   }
   const c=breakerTrackedCrest(x=>-x,2.5);assert.equal(c.interior,false);
   assert.equal(breakerTrackedCrest(()=>NaN,0).interior,false);
+});
+
+test('tracked sheet has a closed, consistently wound index boundary and renders outward faces',()=>{
+  // No GPU calls occur in construction/disposal. Geometry closure is inspected
+  // independently from the dynamic vertex embedding and optical acceptance.
+  const b=new ShoreBreaker({} as THREE.WebGLRenderer,true);
+  const mesh=b.group.children[0] as THREE.Mesh,indices=mesh.geometry.index!;
+  assert.equal(b.triangleCount,37632);assert.equal(indices.count,b.triangleCount*3);
+  assert.equal(b.material.side,THREE.FrontSide);
+  const edges=new Map<string,{count:number;direction:number}>();
+  for(let i=0;i<indices.count;i+=3){
+    const tri=[indices.getX(i),indices.getX(i+1),indices.getX(i+2)];
+    assert.equal(new Set(tri).size,3);
+    for(let j=0;j<3;j++){
+      const a=tri[j],c=tri[(j+1)%3],key=`${Math.min(a,c)}:${Math.max(a,c)}`;
+      const edge=edges.get(key)??{count:0,direction:0};edge.count++;edge.direction+=a<c?1:-1;edges.set(key,edge);
+    }
+  }
+  for(const e of edges.values()){assert.equal(e.count,2);assert.equal(e.direction,0);}
+  b.dispose();b.dispose();
 });

@@ -1,0 +1,36 @@
+{
+  "execution": "local parent two-pass (source review); independent Sol visual review recorded separately",
+  "basis": "7095db78ab6e464b1bd0494dcca9dcd0acfd4420",
+  "reviewedAt": "2026-10-08T13:20:49.589671+00:00",
+  "inputs": {
+    "src/ocean/shore-front.ts": "b6f07f327b04c66cf4f431693c6eb2b8ed47a9cf723b0102ae788b3fec26c74a",
+    "src/ocean/shore-breaker.ts": "0b143fee2b25b3401b4f1b0c9887fbdc4faff2c872a4853c83771ec093450dc8",
+    "src/ocean/renderer.ts": "5b821e6c1d2cfb4c984fb82b58b4a7c74842777814135766eeeea1e5c1b4a347",
+    "src/ocean/shaders.ts": "02c36d6530fa8d463a761ea2b3fcfc8ae07d3a24f0811dcee2958426bf597858",
+    "src/main.ts": "161a30f48bb70a3e3e9f300446da60e61d7d49623f4342a75356f08f37b8e00a",
+    "tests/shore-front-gpu.html": "d67d0629ea7f38e9878238d41874738f6d4bf89a1535009401fb527a65e35ad2",
+    "tests/shore-front-gpu.ts": "f78a72796f0dde3693970eedd0395f230d40d0680c0082928be287508e30dc91",
+    "tests/shore-breaker.test.ts": "2c88c591b6dee8f4d9aca188e5412989b5ff450c197fe8acf0c555c8d3f5deb7"
+  },
+  "standards": {
+    "hardFindings": [],
+    "notes": [
+      "Bounds, disposal and borrowed uniforms follow existing GPU component conventions. Renderer target, cube face, mip, viewport, scissor, XR and auto-clear are restored.",
+      "The GPU probe records descriptors, not final vertices or fluid volume. Packing is documented in the implementation; public evidence must retain this scope.",
+      "Final pass includes the closed, consistently wound index boundary and outward-face rendering. The index test does not establish a self-intersection-free dynamic embedding."
+    ]
+  },
+  "spec": {
+    "implemented": [
+      "Persistent local front identity and bounded phase reprojection.",
+      "Actual wet breaking-water search replaces the failed authored two-metre contour condition.",
+      "Shared FFT/SWE field drives the cached tracker. Paused views, bathymetry/spectrum/clock changes have explicit lifecycle."
+    ],
+    "partial": [
+      "The visible surface is still a kinematic bilayer. Ballistic emission, volume exchange, air-cavity contacts and the full surf/boat/body coupling are not implemented.",
+      "The initial front view failed independent visual review for plate-like faces. Geometry smoothing and optical joins need multiview review; keep normal experience unchanged.",
+      "Later outward/backface snapshots are selective; they do not prove the earlier side fin cannot recur. Default adoption remains rejected."
+    ],
+    "defaultAdoption": "rejected; candidate-only"
+  }
+}

@@ -167,7 +167,7 @@ export class Ocean {
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);
-    this.breaker=new URLSearchParams(location.search).get('breaker')==='1'?new ShoreBreaker():null;
+    this.breaker=new URLSearchParams(location.search).get('breaker')==='1'?new ShoreBreaker(this.renderer,new URLSearchParams(location.search).get('breakertrack')!=='0'):null;
     if(this.breaker)this.waterScene.add(this.breaker.group);
     this.assets=new AssetWorld(this.world,{branchCanopy:new URLSearchParams(location.search).get('branches')!=='0',canopyContinuity:new URLSearchParams(location.search).get('canopy')!=='0',crownSupport:new URLSearchParams(location.search).get('crown')==='1',originalCanopy:new URLSearchParams(location.search).get('originaltree')==='1',leafVolumeRefinement:new URLSearchParams(location.search).get('leafvolume')==='1'?{pineTriangles:1440,shrubTriangles:320}:false});
     this.marine=new MarineLife(this.world,new URLSearchParams(location.search).get('marineplants')!=='0');
@@ -448,7 +448,7 @@ export class Ocean {
     this.spray.update(this.time,this.paused?0:delta,this.camera,this.uniforms);
     if(this.breaker){
       this.breaker.bindUniforms(this.uniforms);
-      this.breaker.update(this.camera.position.x,this.camera.position.z,underwater>.5);
+      this.breaker.update(this.camera.position.x,this.camera.position.z,underwater>.5,this.paused?0:delta,this.time);
       this.breaker.group.visible&&=this.breakerCandidateEnabled;
     }
     this.sun.position.copy(this.camera.position).addScaledVector(this.uniforms.uSunDirection.value,650);
@@ -617,6 +617,11 @@ export class Ocean {
   }
   restoreLeafColourMips(before:Map<THREE.MeshStandardMaterial,THREE.Texture|null>){for(const [material,map] of before)material.map=map;}
   setBreakerCandidateEnabled(enabled:boolean):void{this.breakerCandidateEnabled=enabled;}
+  setBreakerBackfaces(enabled:boolean):boolean {
+    if(!this.breaker)throw new Error('Breaker candidate is not enabled');
+    const previous=this.breaker.material.side===THREE.DoubleSide;
+    this.breaker.material.side=enabled?THREE.DoubleSide:THREE.FrontSide;this.breaker.material.needsUpdate=true;return previous;
+  }
   getShoreCandidateEnabled():boolean{return this.shoreCandidateEnabled;}
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
@@ -686,6 +691,7 @@ export class Ocean {
     const state=this.adventure.state;
     return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,preset:this.currentPreset,
       visualCaptureLocked:this.visualCaptureLocked,sandAppearance:this.world.sandAppearance.value,fieldOfView:this.camera.fov,
+      breaker:this.breaker?.diagnostics??null,
       resolution:[this.canvas.width,this.canvas.height],camera:{yaw:state.yaw,pitch:state.pitch,height:state.position.y,x:state.position.x,z:state.position.z},
       adventure:{mode:state.mode,depth:state.depth,oxygen:state.oxygen,speed:state.speed,placed:this.assets.placedCount,
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,

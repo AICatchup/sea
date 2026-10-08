@@ -1,0 +1,7 @@
+{
+  "rawLogSha256": "bf04f5d0ec13cd6a2ebee4bc1392fd2b0cf9fc444be15e6d33d3540918692d17",
+  "publishedLogSha256": "eb2c3848d7da2541bc102fc1ac1857ba095e9df678fc432720599bf95a4e59a8",
+  "redaction": "Absolute local workspace prefix replaced with <repo>; test statements and outcomes unchanged; raw log retained in task workspace.",
+  "buildLogNormalization": "Trailing horizontal whitespace removed; raw log retained locally",
+  "publishedBuildLogSha256": "568b710852ddafb58647aebf799c4f667a0fdbba52f83a6f359feca298d158d9"
+}
