@@ -16,7 +16,8 @@ export function inspectSandMoisture(renderer:THREE.WebGLRenderer){
   const history=new SandMoisture(renderer,16,16);history.bindUniforms(uniforms);
   const previous=renderer.getRenderTarget(),xr=renderer.xr.enabled;
   const target=new THREE.WebGLRenderTarget(1,1,{type:THREE.FloatType,depthBuffer:false,stencilBuffer:false});
-  const material=new THREE.ShaderMaterial({uniforms,depthTest:false,depthWrite:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:`${wetSandSampling}\nvoid main(){gl_FragColor=vec4(sandWaterFilm(vec3(.5,0.,.5)),0.,0.,1.);}`});
+  uniforms.uProbeMode={value:0};uniforms.uProbePoint={value:new THREE.Vector3()};
+  const material=new THREE.ShaderMaterial({uniforms,depthTest:false,depthWrite:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:`${wetSandSampling}\nuniform float uProbeMode;uniform vec3 uProbePoint;void main(){gl_FragColor=uProbeMode>.5?vec4(sandWetState(uProbePoint),0.,1.):vec4(sandWaterFilm(vec3(.5,0.,.5)),0.,0.,1.);}`});
   const scene=new THREE.Scene(),quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),material);quad.frustumCulled=false;scene.add(quad);
   const results:Record<string,unknown>={};
   const read=(x:number,z:number)=>{
@@ -37,6 +38,15 @@ export function inspectSandMoisture(renderer:THREE.WebGLRenderer){
     history.update(129.2,4,0);results.after130Seconds=read(-3.5,.5);
     bed.needsUpdate=true;history.update(0,4,0);results.changedBedContract=read(-3.5,.5);
     history.update(1,1000,1000);results.outsideBathymetry=read(1000.5,1000.5);results.diagnostics=history.diagnostics;
+    // Test the actual receiving fragment as well as the history generator.
+    const patch=texture(2,()=>[1,1,0,1]);uniforms.uSandMoisture.value=patch;uniforms.uSandMoistureReady.value=1;
+    uniforms.uSandMoistureResolution.value=2;uniforms.uSandMoistureBounds.value.set(-1,-1,2,2);uniforms.uProbeMode.value=1;
+    const receiver=(height:number,x=0)=>{
+      uniforms.uProbePoint.value.set(x,height,0);renderer.setRenderTarget(target);renderer.render(scene,new THREE.Camera());
+      const pixel=new Float32Array(4);renderer.readRenderTargetPixels(target,0,0,1,1,pixel);return Array.from(pixel.slice(0,2));
+    };
+    results.receiverFlat=receiver(0);results.receiverSlope=receiver(.3);results.receiverScarp=receiver(.5);results.receiverOutside=receiver(.3,3);
+    (patch.image.data as Float32Array).fill(0);(patch.image.data as Float32Array).set([1,1,0,1]);patch.needsUpdate=true;results.receiverSingleCorner=receiver(0);
     const pair=(v:unknown)=>v as number[],failures:string[]=[];
     if(Math.abs(Number(results.legacyDryContact)-.9752807617)>1e-5||Number(results.correctedDryContact)!==0)failures.push('dry-contact regression');
     for(const key of ['initialDry','dryRight','newDryRegion','changedBedContract','outsideBathymetry'])if(pair(results[key]).slice(0,2).some(v=>v!==0))failures.push(key);
@@ -45,6 +55,10 @@ export function inspectSandMoisture(renderer:THREE.WebGLRenderer){
     if(JSON.stringify(results.shifted)!==JSON.stringify(results.drained))failures.push('world reprojection');
     if(Math.abs(pair(results.after130Seconds)[0]-Math.exp(-1))>1e-5)failures.push('long damp decay');
     if(!(results.pause as {passesUnchanged:boolean}).passesUnchanged)failures.push('paused redraw');
+    const slopeT=(.3-.12)/(.45-.12),slopeSupport=1-slopeT*slopeT*(3-2*slopeT);
+    for(const [key,expected] of [['receiverFlat',1],['receiverSlope',slopeSupport],['receiverScarp',0],['receiverOutside',0],['receiverSingleCorner',.25]] as const){
+      if(pair(results[key]).some(v=>Math.abs(v-expected)>1e-5))failures.push(key);
+    }
     return {pass:failures.length===0,failures,results,scope:'Real GPU: synthetic dry/wet/recede/pause/window shift/new region/bed-version reset. Optical response only.'};
   }finally{history.dispose();textures.forEach(t=>t.dispose());target.dispose();material.dispose();quad.geometry.dispose();renderer.setRenderTarget(previous);renderer.xr.enabled=xr;}
 }

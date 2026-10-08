@@ -55,6 +55,8 @@ vec2 sandWetState(vec3 world){
   vec2 base=min(floor(node),vec2(uSandMoistureResolution-2.)),f=node-base;
   vec2 a=(base+.5)/uSandMoistureResolution,e=vec2(1./uSandMoistureResolution,0);
   vec3 history=mix(mix(sandMoistureNode(a,world.y),sandMoistureNode(a+e,world.y),f.x),mix(sandMoistureNode(a+e.yx,world.y),sandMoistureNode(a+e+e.yx,world.y),f.x),f.y);
-  return max(vec2(contact),history.xy/max(history.z,.00001));
+  // Keep fractional support: renormalizing by history.z would turn one weak
+  // low-lying wet sample into full saturation on the neighbouring high sand.
+  return max(vec2(contact),history.xy);
 }
 `;
