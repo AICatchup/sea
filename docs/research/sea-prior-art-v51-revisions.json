@@ -1,0 +1,17 @@
+{
+  "method": "git ls-remote public GitHub HEAD; selected pinned code/LICENSE separately read; ref discovery alone is not source review",
+  "observed_at": "2026-10-08T05:01:00.481220+00:00",
+  "repos": {
+    "booherbg/clean-room-fft-ocean": "213c5800141ecb8099842df516004bfb3f0a8483",
+    "BarthPaleologue/WebTide": "a60d603288a88a7f6091af7aa375a7e0b018f42a",
+    "owenyuwono/poseidon": "671053b812fcbffe8ecc4668eaa6ab7ffeb63287",
+    "aeplay/WebFlood": "31569ef5d7bdd188f2b395950973c748a645241e",
+    "Unity-Technologies/BoatAttack": "6acf5f773a440030489cb5e2b3c009fb5fe1e8ce",
+    "Unity-Technologies/boat-attack-water": "45d6e8c52a9f615fd6b83a91cdd0e9fda9ea86d3",
+    "dgreenheck/tidewater": "4811ba48d795197de5621985f404e765c0b7c0ef",
+    "ebruneton/precomputed_atmospheric_scattering": "34f14e745cff948f4ca3157d1b62a445ffa7286f",
+    "makehumancommunity/makehuman": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+    "openearth/xbeach": "6f1dd9626f57cdc0a5b306f5975ba4ce0d7a5a29"
+  },
+  "additional_observed_at": "2026-10-08T06:03:00Z"
+}

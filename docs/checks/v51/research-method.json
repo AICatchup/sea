@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "kind": "prior-art-and-adoption-research",
+  "date": "2026-10-08",
+  "basisCommit": "8a77a2548293cce8cdf4fa50fe6d1321b617fb26",
+  "gameRuntimeChanged": false,
+  "fullGoal": "active_unmet",
+  "researchModel": "gpt-6.1-sol",
+  "researchEffort": "low",
+  "attemptsStarted": 15,
+  "unusedAttempts": 1,
+  "maxParallelWidth": 4,
+  "sourceAccess": "public web, prompt-only no-mutation boundary in writable runtime",
+  "runtimeReceipts": "15 exact completed turns and parent spawn edges checked; not evidence of source correctness",
+  "readScope": "Root re-opened selected conclusion-grade primary sources and code; raw scout packets contain additional unadopted leads.",
+  "sourceIndependence": "Three.js, Bruneton and common FFT lineages deduplicated conceptually; packet count is not corroboration count.",
+  "cells": [
+    {
+      "id": "R-01",
+      "scope": "Breaking-wave hybrid methods",
+      "quota": "primary",
+      "sourceFamily": "eth-ageia-thurey-breaking-2007",
+      "packetSha256": "a07a75ab78936783b23b013e58b619aab80b83a0dceb783dd6a999aec34c35fd",
+      "runtimeReceiptSha256": "0359ef707bc73790104ed26b3dfc73bed66cef13e91285ebaee466662f6c8105",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-02",
+      "scope": "Browser ocean and fluid code",
+      "quota": "primary",
+      "sourceFamily": "booherbg-clean-room-fft-ocean",
+      "packetSha256": "fb79b39ab172942b7832a969e1bb583e41fb36a58200c8545e4a06f94b4172dc",
+      "runtimeReceiptSha256": "c473e464a5ad48cd6c44581b12f67f574ad223dfc3f634a5c90f7014662c2b5f",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-03",
+      "scope": "Cost and measurement comparability",
+      "quota": "measurement_gap",
+      "sourceFamily": "nvidia-chentanez-hffluid-2010",
+      "packetSha256": "aaf79bc8424f2062c1fd64b243c5452d7f522b46dcf5460ea9063f776c72e11f",
+      "runtimeReceiptSha256": "1835cd4899bd3f45e76d02967c1d888779e83bbcb102a3620b846a375a06ad3c",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-04",
+      "scope": "Heightfield and overlay limitations",
+      "quota": "adversarial",
+      "sourceFamily": "nvidia-chentanez-hffluid-2010",
+      "packetSha256": "04d4eb0e08c3196ec6ecf335d3279df0b0c288433c32c3cb6c328ecb12d1ce8c",
+      "runtimeReceiptSha256": "b66e37841149cc2f86545a5df4389237802212a20c0440b37f2b438669e9496e",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-05",
+      "scope": "Reuse rights and source completeness",
+      "quota": "adversarial",
+      "sourceFamily": "unity-boatattack",
+      "packetSha256": "69e48c1a5dac6194a68bed143d50b6af8cf38416adbc7c09b794723358a908f3",
+      "runtimeReceiptSha256": "91508356490c09986d84ae2ae29a8a2245d029e4effe79f801af301a5341e5bb",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-06",
+      "scope": "Underwater optics and interaction",
+      "quota": "primary",
+      "sourceFamily": "crest-water-official",
+      "packetSha256": "7ea942639a06c3842cb8e22331d22e5d36f72f684cb0b7a6f1962d0aa6dcee9c",
+      "runtimeReceiptSha256": "86c1c8e7c3fedd684df56696b74cd72fedc4d5719108e5f9b1258f091437cbff",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-07",
+      "scope": "Measured terrain into walkable coast",
+      "quota": "primary",
+      "sourceFamily": "open3d-reconstruction",
+      "packetSha256": "e294864dac3896b80ba705e6671c946fc188286bc66b22dcfcf94ef9d1f9b012",
+      "runtimeReceiptSha256": "07cb13cf88ce55687c84f5f75a68ab6e069fda30541e803a5ca84e7945870f48",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-09",
+      "scope": "Embodied FPS and continuous locomotion",
+      "quota": "primary",
+      "sourceFamily": "threejs",
+      "packetSha256": "f46c11fd76779b3d7f42618038ca15db76250fd72354d26c4b4002cd58cbdca3",
+      "runtimeReceiptSha256": "16c9d6b81529903c1ff6cf5a4fc358709ed914386d98330925d7fd86626fda89",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-10",
+      "scope": "Vessel access and seamless travel",
+      "quota": "primary",
+      "sourceFamily": "threejs",
+      "packetSha256": "68118115d44a42f1df207eeec0c805c80e5f888762b8ddf35c4e301b0bb16472",
+      "runtimeReceiptSha256": "515ed2044ced8a91e626f47899e819e12b87cb3a29c503ab4e0e764100a5f932",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-11",
+      "scope": "Fishing surfing discovery and progression",
+      "quota": "primary",
+      "sourceFamily": "dgreenheck-tidewater",
+      "packetSha256": "a67bf6b67063bffc524c90308610b77aec0bfd27b84fb07c4a30c0d225e03dce",
+      "runtimeReceiptSha256": "b74228fabbf85ce495226a96cca9e51b0f6fd1bcb580e339abe115398e0c5307",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-12",
+      "scope": "Marine life vegetation and irregular assets",
+      "quota": "primary",
+      "sourceFamily": "tokyo-natural-parks",
+      "packetSha256": "908c52c435ee0f30bb0fa79e8f537faba344bac1d9c31149a4a3336224043846",
+      "runtimeReceiptSha256": "7a96967b92e6cfd8212b089d2fa7bd42998fd6ac8c83a5a40be7f529a5679251",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-13",
+      "scope": "Sky clouds light and atmospheric coherence",
+      "quota": "primary",
+      "sourceFamily": "bruneton-atmosphere",
+      "packetSha256": "b21665b2597a673c4431f2575bf9465ea0f300e0d693b5deb60ab4e848e56496",
+      "runtimeReceiptSha256": "99f27c9b4676595f099bb59c2703d1cc4d9d4159c4beebfa4194dba99bab0ff9",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-14",
+      "scope": "Movement-driven natural sound",
+      "quota": "primary",
+      "sourceFamily": "w3c-webaudio",
+      "packetSha256": "5a8b3af8cdfcab29bd6bb05c804db44bbb1ed7a5d3b107db48973bbd9f31715b",
+      "runtimeReceiptSha256": "cdcec059e312d3c7673b588322e0131e09c1a7fc73223b21794750d8c9daf22c",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-15",
+      "scope": "Full-world assets and capture reuse constraints",
+      "quota": "adversarial",
+      "sourceFamily": "makehuman",
+      "packetSha256": "637d3e2646622d959cab4f58943bd7f389ab9113259f652b31e78db24a78a4bc",
+      "runtimeReceiptSha256": "08c59afa4b2350d612b4f69982b7772a08c4519ea2e2a1a9b62e9662790f67f8",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    },
+    {
+      "id": "R-16",
+      "scope": "Full experience acceptance and showcase evidence",
+      "quota": "adversarial",
+      "sourceFamily": "playwright",
+      "packetSha256": "5e7d0d24a304b6ad7287e52bee0e5740540e368f1e75822d49d2163a3c2e4d16",
+      "runtimeReceiptSha256": "c2654bc69d415868649b2c60f7b9feae90f3694d3130cbffe5fcde129dc38e99",
+      "rootScope": "Selected primary claims checked; see decision note for limits."
+    }
+  ],
+  "corrections": [
+    {
+      "evidence": "R01-1",
+      "claim": "grid size",
+      "source": "https://cgl.ethz.ch/Downloads/Publications/Papers/2007/Thue07b/Thue07b.pdf",
+      "locator": "Table2, PDF p5",
+      "correction": "160x100,150x80,200x100,140^2; examples 12000..20000 cells. Scout tenfold cell-count claim excluded.",
+      "verified": "2026-10-08"
+    },
+    {
+      "evidence": "R14-5,11",
+      "claim": "No inhalation while diving",
+      "correction": "Rejected for SEA scuba requirement. Preserve regulator breathing and exhalation bubbles; distinguish freediving, supplied gas and gear. Local graph already includes sea-scuba-breath. Not a medical or acoustic validation.",
+      "verified": "2026-10-08"
+    },
+    {
+      "evidence": "R16-7",
+      "claim": "Three novice participants as mandatory completion gate",
+      "correction": "Treat participant count as a proposed finite playtest, not a new mandatory user approval or permission gate. Human fun/photoreality remains unverified.",
+      "verified": "2026-10-08"
+    },
+    {
+      "evidence": "R05,R15",
+      "claim": "Public repository license covers all bundled assets",
+      "correction": "Code, source assets and output redistribution are separate. Unity Companion, FreeStylized terms and individual asset licenses cannot be treated as project MIT.",
+      "verified": "2026-10-08"
+    }
+  ],
+  "visualObservations": [
+    {
+      "name": "WebTide",
+      "url": "https://barthpaleologue.github.io/WebTide/",
+      "scope": "Open-water rendering screenshot observed; no coastline/contact/playthrough acceptance."
+    },
+    {
+      "name": "Tidewater",
+      "url": "https://dgreenheck.github.io/tidewater/",
+      "scope": "Loading completed, title and Walking entry scene observed in in-app browser; fishing/voyage performance not verified."
+    }
+  ],
+  "aggregateRuntimeRevalidation": {
+    "passed": true,
+    "completedReceipts": 15,
+    "sha256": "3f2cc31ee04dbfb6c276faa77067dcb596721e7c11912c2aa917bea4a9d88c9c"
+  }
+}

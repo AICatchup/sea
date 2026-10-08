@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-08T09:20:14.074139+00:00",
+  "publicSourceLinks": 32,
+  "adoptionAreas": 12,
+  "scoutPackets": 15,
+  "localTargetPathsExist": true,
+  "localDocLinksExist": true,
+  "runtimeCodeChanged": false,
+  "sourceNoteSha256": "8c580bbacb538fc014a66d638e34cfd1b0ff3c4918b2d1afc4e72dc34b0e2a68",
+  "performanceTestsRerun": false,
+  "reason": "Documentation-only adoption decisions; existing V50 tests and media retained as historical runtime evidence, not rerun or claimed current acceptance."
+}
