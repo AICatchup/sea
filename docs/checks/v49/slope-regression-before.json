@@ -1,0 +1,107 @@
+{
+  "status": "done",
+  "result": {
+    "pass": false,
+    "failures": [
+      "receiverSlope",
+      "receiverSingleCorner"
+    ],
+    "results": {
+      "legacyDryContact": 0.97528076171875,
+      "correctedDryContact": 0,
+      "initialDry": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "wetLeft": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "dryRight": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "drained": [
+        0.9938650727272034,
+        0.3678794503211975,
+        0,
+        1
+      ],
+      "pause": {
+        "state": [
+          0.9938650727272034,
+          0.3678794503211975,
+          0,
+          1
+        ],
+        "passesUnchanged": true
+      },
+      "shifted": [
+        0.9938650727272034,
+        0.3678794503211975,
+        0,
+        1
+      ],
+      "newDryRegion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "after130Seconds": [
+        0.3678794801235199,
+        0,
+        0,
+        1
+      ],
+      "changedBedContract": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "outsideBathymetry": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "diagnostics": {
+        "ready": true,
+        "resolution": 16,
+        "span": 16,
+        "elapsed": 131.1,
+        "passes": 7,
+        "bytes": 8192,
+        "scope": "Local ground-fixed optical dampness/film; authored decay, no soil hydrology, erosion or saved global sediment state"
+      },
+      "receiverFlat": [
+        1,
+        1
+      ],
+      "receiverSlope": [
+        1,
+        1
+      ],
+      "receiverScarp": [
+        0,
+        0
+      ],
+      "receiverOutside": [
+        0,
+        0
+      ],
+      "receiverSingleCorner": [
+        1,
+        1
+      ]
+    },
+    "scope": "Real GPU: synthetic dry/wet/recede/pause/window shift/new region/bed-version reset. Optical response only."
+  }
+}

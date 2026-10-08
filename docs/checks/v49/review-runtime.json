@@ -1,0 +1,46 @@
+[
+  {
+    "threadId": "01a1192e-64b1-79c1-bbe8-9c6d0ebee805",
+    "source": {
+      "parent_thread_id": "01a0eeb7-7548-7120-a943-323a68d702eb",
+      "depth": 1,
+      "agent_path": "/root/v49_sand_contact_audit",
+      "agent_nickname": "Hilbert the 2nd",
+      "agent_role": "default"
+    },
+    "turns": [
+      {
+        "turnId": "01a1192e-6556-7472-9115-c14aa28e88b3",
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "sandbox": {
+          "type": "danger-full-access"
+        }
+      }
+    ],
+    "completed": true,
+    "behavioralReadOnly": true
+  },
+  {
+    "threadId": "01a1193e-2212-7200-9242-1927a2a3bff1",
+    "source": {
+      "parent_thread_id": "01a0eeb7-7548-7120-a943-323a68d702eb",
+      "depth": 1,
+      "agent_path": "/root/v49_sand_visual_review",
+      "agent_nickname": "Schrodinger the 2nd",
+      "agent_role": "default"
+    },
+    "turns": [
+      {
+        "turnId": "01a1193e-235c-7b40-9b23-eb01861940f0",
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "sandbox": {
+          "type": "danger-full-access"
+        }
+      }
+    ],
+    "completed": true,
+    "behavioralReadOnly": true
+  }
+]

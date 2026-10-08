@@ -1,0 +1,126 @@
+{
+  "version": "V49",
+  "globalGoal": "ACTIVE_UNMET",
+  "fullSuiteRevision": "61c16c368dcabb7b45e2ae74c8be61f8a249038a",
+  "fullTests": 422,
+  "fullTestLogSha256": "6c6371a074bd8758a19ec7f0443f13795ce8ac804028e52bbb2e51029efd3b71",
+  "codeRevision": "e5ef0838ac209faaa34e199a2c60044abcf0ca07",
+  "finalFocusedTests": 13,
+  "typeAndBuild": "PASS",
+  "gpu": {
+    "pass": true,
+    "legacyDryContact": 0.97528076171875,
+    "correctedDryContact": 0,
+    "slope": [
+      0.4320058822631836,
+      0.4320058822631836
+    ],
+    "singleCorner": [
+      0.25,
+      0.25
+    ]
+  },
+  "movement": {
+    "samples": 272,
+    "frames": 1504,
+    "meanFrameMs": 18.079521276595738,
+    "p95FrameMs": 18.599999999998545,
+    "arrivalX": 5917.664729180391,
+    "finalX": 5898.035096595551,
+    "finalMode": "walk",
+    "input": "synthetic DOM on production key listeners; not OS input or whole island journey"
+  },
+  "review": "Independent conditional adoption at 61c16c3; root reproduced and repaired terrain-support P2 on GPU at e5ef083. No photoreal/Human acceptance.",
+  "limitations": [
+    "Authored optical response, not hydrology or erosion/deposition",
+    "Local history resets when ground contract changes and is not saved",
+    "Foam, uniform sand, cliff repetition and full game acceptance remain unmet"
+  ],
+  "files": [
+    {
+      "path": "accepted-0.png",
+      "bytes": 1398147,
+      "sha256": "3af0b2e3b4014b9fd277a58b2cd0f1fcf6208eaabe6e5bb6b16a42b0de90f741"
+    },
+    {
+      "path": "accepted-1.png",
+      "bytes": 1398207,
+      "sha256": "46883a1efb047827c9206c1dcb109c6fd1326d1cdc1aeff4924e745be3b8c38a"
+    },
+    {
+      "path": "accepted-2.png",
+      "bytes": 1403170,
+      "sha256": "fdd69014afa90ec59333f102d48d7486b02fcbb1b48e911fd4d8cc823036fd48"
+    },
+    {
+      "path": "accepted-3.png",
+      "bytes": 1421635,
+      "sha256": "b1e8990f0f83db60f36ec426961d5e1e175d5e875c0b705f0d385125847131ba"
+    },
+    {
+      "path": "accepted-legacy.png",
+      "bytes": 1420141,
+      "sha256": "f6540bf3b081683fefa032db19063946ca2538cadff5ff5c764a28bba0bd93e7"
+    },
+    {
+      "path": "accepted.json",
+      "bytes": 12173,
+      "sha256": "b569a1d0ce46ce47e9a30bc548ddb153820f87e769f8531464258da1fe462616"
+    },
+    {
+      "path": "close-final-0.png",
+      "bytes": 1526530,
+      "sha256": "2eda5458e3abe832a7eda4ee2eaf710480e9506b4e00d9a3efb2ce52f175767c"
+    },
+    {
+      "path": "close-final-1.png",
+      "bytes": 1527495,
+      "sha256": "859793a9d2cedeba93e17e2510fc40996d8031657348c389c960df720d5f55b8"
+    },
+    {
+      "path": "close-final-2.png",
+      "bytes": 1538629,
+      "sha256": "b3e5ebfd9c4c007c21ac81dd2e72fd451d58f6447d1c222ca91cb2ba64d5168f"
+    },
+    {
+      "path": "close-final-legacy.png",
+      "bytes": 1530698,
+      "sha256": "46608a3a76bf14688488f957f521ce4f4195a80821f214427274700f19f6ab14"
+    },
+    {
+      "path": "close-final.json",
+      "bytes": 9210,
+      "sha256": "cc13a242dc90223168e7b7931559a713407f456c381af08c451501bc0e7eebc5"
+    },
+    {
+      "path": "gpu-final.json",
+      "bytes": 1628,
+      "sha256": "0998fef23af015080a40e5d747a30920513d10a3b73f5c5e8d5e3495349bf802"
+    },
+    {
+      "path": "review-runtime.json",
+      "bytes": 1201,
+      "sha256": "f2c141dd3d49bb9226d66969044258f381d84818b41ad15f4131dfd1c009b5db"
+    },
+    {
+      "path": "slope-regression-before.json",
+      "bytes": 1882,
+      "sha256": "0f3a9c030784ce783b39e85f04d995c14ce541759045926938cdeb1ae718c413"
+    },
+    {
+      "path": "standalone-route.js",
+      "bytes": 2167,
+      "sha256": "1255a8d162bce0f2121eb55b87ab99dd1a685bf0323f303fe00718aea789cc9e"
+    },
+    {
+      "path": "standalone.json",
+      "bytes": 392140,
+      "sha256": "8c34f7aa96b6db7cab841a7edb29d2c7729a9eebb515a208c8ce1d8a842962a1"
+    },
+    {
+      "path": "standalone.png",
+      "bytes": 38619,
+      "sha256": "96dbd73f813ab66a401315973b47d5ad158dec7e105335d1a01cc06a223984ca"
+    }
+  ]
+}
