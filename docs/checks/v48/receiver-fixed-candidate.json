@@ -1,0 +1,129 @@
+{
+  "result": {
+    "collision": {
+      "colliders": 3241,
+      "hashCells": 1273,
+      "largeColliders": 1,
+      "lastCandidates": 1,
+      "lastIterations": 0,
+      "lastTransformedTriangles": 0,
+      "lastTriangleTests": 0,
+      "storedTriangles": 489224,
+      "triangles": 3492816,
+      "uniqueBVHs": 29
+    },
+    "diagnostics": {
+      "bridge": {
+        "atlasRebuilds": 1,
+        "available": true,
+        "bytes": 178257920,
+        "dynamicBackend": "cpu",
+        "materials": 72,
+        "parameterUpdates": 1,
+        "reason": "",
+        "rebuilds": 1,
+        "refits": 2
+      },
+      "enabled": false,
+      "geometry": {
+        "available": true,
+        "bytes": 114835456,
+        "coverage": "Opaque UV0 authored meshes; height-field bed separately.",
+        "excludedSurfaces": 0,
+        "instances": 1794,
+        "nodes": 173609,
+        "reason": "",
+        "rebuilds": 1,
+        "refits": 3,
+        "triangles": 553220,
+        "version": 3
+      },
+      "irradiance": {
+        "coefficients": [
+          [
+            0.8598632918522118,
+            1.0029369151453904,
+            1.3752555242182265
+          ],
+          [
+            0.6160492720042697,
+            0.6984216732548232,
+            1.0478145303316715
+          ],
+          [
+            0.29480475164209136,
+            0.35425995969251295,
+            0.48610961226741695
+          ],
+          [
+            -0.25307526416379106,
+            -0.2964329149170805,
+            -0.39071739020768925
+          ],
+          [
+            -0.26094870537032905,
+            -0.2919424912337042,
+            -0.3815555302085442
+          ],
+          [
+            0.29831165759289613,
+            0.34632996241988223,
+            0.4741700687857981
+          ],
+          [
+            -0.027970025408841578,
+            -0.009461031024678768,
+            0.021961542137902343
+          ],
+          [
+            -0.2080862577758216,
+            -0.23637104945880907,
+            -0.31132367815605816
+          ],
+          [
+            -0.005580786535956537,
+            0.004642003712827196,
+            0.01992467658487411
+          ]
+        ],
+        "intensity": 0.48,
+        "measured": true,
+        "preset": "day",
+        "scope": "Nine SH coefficients from the actual rendered solar-removed environment cube; diffuse only, specular hemisphere remains approximate"
+      },
+      "maxTextureSize": 16384,
+      "maxTextures": 16,
+      "skinned": {
+        "available": true,
+        "backend": "cpu",
+        "bytes": 10457648,
+        "excludedSurfaces": 0,
+        "gpu": null,
+        "maxDepth": 14,
+        "nodes": 16055,
+        "reason": "",
+        "rebuilds": 1,
+        "refits": 1,
+        "skipped": 1,
+        "timeMs": 0.10000002384185792,
+        "triangles": 36700,
+        "vertices": 19372
+      }
+    },
+    "enabled": false,
+    "native": {
+      "chunks": 247,
+      "fullResolutionOnly": true,
+      "kind": "measured-heightfield",
+      "maxUnblendedHeightError": 0,
+      "nativeSamples": 3840000,
+      "triangles": 7672002,
+      "unknownSamples": 0,
+      "vertices": 3897816
+    },
+    "ok": true,
+    "selectedNative": [],
+    "selectedPlants": []
+  },
+  "status": "done"
+}

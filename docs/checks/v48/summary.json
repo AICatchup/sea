@@ -1,0 +1,148 @@
+{
+  "version": "V48",
+  "globalGoal": "ACTIVE_UNMET",
+  "codeRevision": "c1e04c14733830d78fca42468688e79e9fe7f808",
+  "checks": {
+    "tests": 419,
+    "pass": 419,
+    "fail": 0,
+    "seconds": 82.7429147,
+    "fullTestLogSha256": "0669af4519737afab8639849cff49ca09eb6bb382e6eb2efb6e3d52f759a5a4e",
+    "type": 0,
+    "vite": 0,
+    "standaloneBuild": 0
+  },
+  "visual": "Three matched QA views before/dense; no Human or species/photoreal acceptance. Private source photos are not bundled.",
+  "receiver": {
+    "triangles": 553220,
+    "instances": 1794,
+    "selectedPlants": 0,
+    "selectedNativeHeightfields": 0,
+    "nativeSamples": 3840000,
+    "gpuRays": 4,
+    "maxGpuCpuPointDifferenceMetres": 1.0183695798968845e-05,
+    "scope": "4 selected actual triangle targets; not all-scene coverage"
+  },
+  "movement": {
+    "samples": 182,
+    "frames": 1088,
+    "meanFrameMs": 16.970312500016433,
+    "p95FrameMs": 18.599999994039536,
+    "finalMode": "swim",
+    "finalDepth": 0,
+    "scope": "Opt-in structured plants; developer start followed by normal controller swim/dive/strafe/surface inputs; fixed high quality, not a complete island route"
+  },
+  "standalone": {
+    "inputSamples": 296,
+    "goalDistanceMetres": 0.17719439755711308,
+    "developerQA": "undefined",
+    "externalRequests": 0,
+    "errors": 0,
+    "finalDepth": 0,
+    "scope": "Actual app keys via synthetic DOM, no QA mutation; dive bookmark start, not whole travel or OS input proof"
+  },
+  "limitations": [
+    "Artist-authored plant forms and distribution; no exact local biological census or specimen scale",
+    "Ground support only, not measured rock attachment",
+    "Sparse coverage, dark/twiggy backlit leaves and angular edges remain",
+    "Authored motion; no plant-fluid solver coupling",
+    "Full photoreal coastline/body/boat/gameplay acceptance and final film remain unmet"
+  ],
+  "files": [
+    {
+      "path": "before-above.png",
+      "bytes": 1577795,
+      "sha256": "c211dab1bb726bedfe9da31435038eb6523ae1506652fa5a24f97b5b8684e0d0"
+    },
+    {
+      "path": "before-front.png",
+      "bytes": 1432325,
+      "sha256": "daebdf6b847725ebd53d917124c069abb6ba6ca1180641c0003762c3d8b89293"
+    },
+    {
+      "path": "before-side.png",
+      "bytes": 1495659,
+      "sha256": "09de95d62104a59356005323102a3bf2321add917072fac1d2629ba957ac866c"
+    },
+    {
+      "path": "before.json",
+      "bytes": 3260,
+      "sha256": "6654411bd4f10b5e48361774b618cd97eaa1e0e0bfb91e9a830c0c4ebb64067c"
+    },
+    {
+      "path": "dense-above.png",
+      "bytes": 1623705,
+      "sha256": "b722b2df191eeb3ed4cc9760c1fa87956f70b5f36ad58d2c6ef8adccf11d8fae"
+    },
+    {
+      "path": "dense-front.png",
+      "bytes": 1443354,
+      "sha256": "3d66cab87b3037133a8647412391b415698b4074b809d4dc1af8b9781c4366f6"
+    },
+    {
+      "path": "dense-side.png",
+      "bytes": 1515309,
+      "sha256": "da8a1e5ebf8ca9ed280d2a60b41cebfbb145d45f0309f65f55fb54304d7f535c"
+    },
+    {
+      "path": "dense.json",
+      "bytes": 14342,
+      "sha256": "4077a2d5cf1c78723aecd5d1115472650975a96283c3efa434813e90e446120d"
+    },
+    {
+      "path": "gpu-receiver-rays.json",
+      "bytes": 5099,
+      "sha256": "016cdf1c22054206615ced5b45ce644690e02ce404f56867c809f90aeb668f6d"
+    },
+    {
+      "path": "receiver-before-fix.json",
+      "bytes": 616,
+      "sha256": "9cd18bcf994d31ee43dcc85628495db5b86c6c6efb86009f91d0251992433258"
+    },
+    {
+      "path": "receiver-fixed-candidate.json",
+      "bytes": 3235,
+      "sha256": "b445f45403fd41f58f4cb36a1979dc0acbc94a713e1ba04c40d0ee34495c142f"
+    },
+    {
+      "path": "review-runtime.json",
+      "bytes": 1378,
+      "sha256": "497d07190ab59cb11e898088d5fca4a4b8255fc9bc67ecab15a3ec55a510d940"
+    },
+    {
+      "path": "route-candidate.json",
+      "bytes": 191635,
+      "sha256": "91100530a4363d33c801bacc4258576d706a1827969ca13322b10b8d40ffeb25"
+    },
+    {
+      "path": "route-deep.png",
+      "bytes": 1315138,
+      "sha256": "1ad231386c727c3e8f43d2f5edf733a72d1ad8343a067bb65049fea2b4b3ccde"
+    },
+    {
+      "path": "route-return.png",
+      "bytes": 1290913,
+      "sha256": "ee337d815968706537d77823e9554aaf1ac4eb27bd3fd77c2142f8f8ff400e95"
+    },
+    {
+      "path": "route-surface.png",
+      "bytes": 1292711,
+      "sha256": "e899b50117934bcd7a2b1573f5a3ac35aeb8e1f6673dc9b4b6c6f202608e35a1"
+    },
+    {
+      "path": "standalone-input.js",
+      "bytes": 1893,
+      "sha256": "ac6f857944f32c0b7d18ff6e21507f24a5909e93878f26f46b9acc61844e8aa6"
+    },
+    {
+      "path": "standalone-plants.png",
+      "bytes": 105388,
+      "sha256": "88669581202941df10150dfb0cc62963f88b6ad78497583312d6296e48d65366"
+    },
+    {
+      "path": "standalone.json",
+      "bytes": 289991,
+      "sha256": "48c041aa7c9ddede723f16a223bbf40a39139bcdecf126aa6bd6c3b7befe0f17"
+    }
+  ]
+}

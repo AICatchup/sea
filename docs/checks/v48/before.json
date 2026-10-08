@@ -1,0 +1,125 @@
+{
+  "status": "done",
+  "variants": [
+    {
+      "meta": {
+        "camera": {
+          "height": -2.3692524819080933,
+          "pitch": -0.035,
+          "x": -118.401425,
+          "yaw": -0.6,
+          "z": -93.524357
+        },
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 91,
+        "plants": {
+          "structured": false,
+          "support": "Final ground sample; not a biological survey or rock-surface attachment",
+          "variantFamilies": 3
+        },
+        "time": 34,
+        "triangles": 7480433
+      },
+      "name": "front",
+      "pose": {
+        "eyeY": -2.3692524819080933,
+        "name": "front",
+        "pitch": -0.035,
+        "x": -118.401425,
+        "yaw": -0.6,
+        "z": -93.524357
+      }
+    },
+    {
+      "meta": {
+        "camera": {
+          "height": -2.848262882232666,
+          "pitch": -0.16,
+          "x": -118.16992645263672,
+          "yaw": -1.5707963267948966,
+          "z": -94.59151458740234
+        },
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 180,
+        "plants": {
+          "structured": false,
+          "support": "Final ground sample; not a biological survey or rock-surface attachment",
+          "variantFamilies": 3
+        },
+        "time": 34,
+        "triangles": 16407760
+      },
+      "name": "side",
+      "pose": {
+        "eyeY": -2.848262882232666,
+        "name": "side",
+        "pitch": -0.16,
+        "x": -118.16992645263672,
+        "yaw": -1.5707963267948966,
+        "z": -94.59151458740234
+      }
+    },
+    {
+      "meta": {
+        "camera": {
+          "height": -2.548262882232666,
+          "pitch": -0.82,
+          "x": -118.91992645263672,
+          "yaw": -0.7853981633974483,
+          "z": -94.14151458740234
+        },
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 1,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 80,
+        "plants": {
+          "structured": false,
+          "support": "Final ground sample; not a biological survey or rock-surface attachment",
+          "variantFamilies": 3
+        },
+        "time": 34,
+        "triangles": 7463456
+      },
+      "name": "above",
+      "pose": {
+        "eyeY": -2.548262882232666,
+        "name": "above",
+        "pitch": -0.82,
+        "x": -118.91992645263672,
+        "yaw": -0.7853981633974483,
+        "z": -94.14151458740234
+      }
+    }
+  ]
+}

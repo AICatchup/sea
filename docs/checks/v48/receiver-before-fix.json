@@ -1,0 +1,20 @@
+{
+  "diagnostics": {
+    "available": false,
+    "bytes": 0,
+    "coverage": "Opaque UV0 authored meshes; height-field bed separately.",
+    "excludedSurfaces": 0,
+    "instances": 0,
+    "nodes": 0,
+    "reason": "unique triangle budget overflow",
+    "rebuilds": 0,
+    "refits": 0,
+    "triangles": 0,
+    "version": 0
+  },
+  "error": "Error: unique triangle budget overflow",
+  "nativeMeshes": 247,
+  "nativeTriangles": 7672002,
+  "scope": "Observed optional packed receiver initialization failure before native height-field exclusion; current seaweed tags exclude all new plants.",
+  "selectedTaggedPlants": 0
+}
