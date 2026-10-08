@@ -138,7 +138,15 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       float niiSandGrain=clamp(dot(niiSandPhoto,vec3(.2126,.7152,.0722))/.1011,.60,1.35);
       float niiWash=pow(abs(sin(vNiijimaPoint.x*2.3+niiNoise(vNiijimaPoint*.09)*1.7)),4.0);
       float niiWet=1.0-smoothstep(.15,2.1,vNiijimaPoint.y+niiNoise(vNiijimaPoint*.035)*.35);
-      if(niiSandMask>.001&&vNiijimaPoint.y<4.)niiWet=max(niiWet*.78,sandWaterFilm(vNiijimaPoint+vec3(5500,0,-2000)));
+      float niiFilm=0.;
+      if(niiSandMask>.001&&vNiijimaPoint.y<4.){
+        if(uSandMemoryEnabled>.5){
+          vec2 wetState=sandWetState(vNiijimaPoint+vec3(5500,0,-2000));
+          // A faint pre-existing damp band is authored; dynamic darkening and
+          // gloss depend on actual contact and separate decay histories.
+          niiWet=max(niiWet*.28,wetState.x);niiFilm=wetState.y;
+        }else niiWet=max(niiWet*.78,sandWaterFilm(vNiijimaPoint+vec3(5500,0,-2000)));
+      }
       diffuseColor.rgb*=mix(vec3(1),vec3(niiSandGrain*(1.0-.10*niiWash)*mix(1.0,.45,niiWet)),niiSandMask);
       // The observed White Mama strand has dark, fine deposits and long
       // meandering wash lines. This bounded distribution is authored; the
@@ -151,7 +159,9 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
     `);
     if(sand)shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
       float niiSandR=texture2D(uNiiSandARM,niiSandUV).g;
-      roughnessFactor=mix(roughnessFactor,mix(.80+.16*niiSandR,.30+.16*niiSandR,niiWet),niiSandMask);
+      float niiRoughness=mix(.80+.16*niiSandR,.30+.16*niiSandR,niiWet);
+      if(uSandMemoryEnabled>.5)niiRoughness=mix(mix(.80+.16*niiSandR,.58+.14*niiSandR,niiWet),.18+.09*niiSandR,niiFilm);
+      roughnessFactor=mix(roughnessFactor,niiRoughness,niiSandMask);
       ${detail?'roughnessFactor=mix(roughnessFactor,clamp(.84+.12*cliffARM.g,.84,.98),cliffAmount);':''}
     `);
     shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
@@ -171,7 +181,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       `:''}
     `);
   };
-  material.customProgramCacheKey = () => 'niijima-pumice-irregular-beds-v40-'+!!detail;
+  material.customProgramCacheKey = () => 'niijima-pumice-swash-memory-v49-'+!!detail;
   return material;
 }
 
@@ -208,7 +218,7 @@ export class NiijimaCoast implements GroundSampler {
     this.group.userData = { source: NIIJIMA_DETAIL_PROVENANCE, northernSource: NIIJIMA_NORTH_PROVENANCE,southernSource:NIIJIMA_SOUTH_PROVENANCE, measuredMacroshape: 'GSI DEM5A/DEM10B', authoredMicrorelief: true, bathymetry: 'inferred',scarpCandidate:options.scarp??false };
     this.group.userData.sediment=NIIJIMA_SEDIMENT_PROVENANCE;
     this.group.userData.coastConfidence=this.dem.coastConfidence;
-    this.group.userData.wetSand='Live shared wave contact over an authored damp band; no measured moisture or drying history';
+    this.group.userData.wetSand='Actual wave contact with local ground-fixed optical damp/film memory; authored decay and baseline, not measured hydrology or sediment transport';
     const pumiceReady={value:0};
     let resolvePumice:()=>void=()=>{};
     const pumicePending=new Promise<void>(resolve=>{resolvePumice=resolve;});

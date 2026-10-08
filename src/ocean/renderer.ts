@@ -4,6 +4,7 @@ import {ActivitySession} from '../activities/session.ts';
 import {ActivityWorld} from '../activities/world.ts';
 import {OCEAN_PROPAGATION_DIRECTION} from './wave-direction.ts';
 import {isStaticOpticalReceiver} from './receiver-selection.ts';
+import {SandMoisture} from './sand-moisture.ts';
 import { OceanSimulation } from './fft';
 import { environmentFragment, environmentVertex, oceanVertex, oceanFragment, skyVertex, skyFragment } from './shaders';
 import { presets, type PresetName } from './presets';
@@ -82,6 +83,7 @@ export class Ocean {
   private readonly spray:ShoreSpray;
   private readonly breaker:ShoreBreaker|null;
   private readonly shoreSolver:ShoreSolver|null;
+  private readonly sandMoisture:SandMoisture|null;
   private shoreCandidateEnabled=true;
   private breakerCandidateEnabled=true;
   readonly renderer:THREE.WebGLRenderer;
@@ -157,6 +159,7 @@ export class Ocean {
     this.simulation=new OceanSimulation(this.renderer,this.wind);
     const experience=experienceOptions(location.search);
     this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2,incidentDirection:new URLSearchParams(location.search).get('shoreincident')!=='0',matchedIncident:new URLSearchParams(location.search).get('shoreforcing')!=='0'}):null;
+    this.sandMoisture=new URLSearchParams(location.search).get('sandmemory')!=='0'?new SandMoisture(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0',new URLSearchParams(location.search).get('strandprofile')!=='0');
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
@@ -214,6 +217,7 @@ export class Ocean {
     };
     this.caustics=new WaveCaustics(this.renderer,{span:32,photonResolution:new URLSearchParams(location.search).get('light')==='legacy'?256:512});
     if(this.shoreSolver){this.shoreSolver.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.shoreSolver.uniforms);}
+    if(this.sandMoisture){this.sandMoisture.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.sandMoisture.uniforms);}
     this.waterHeights.bindShore(this.uniforms);this.caustics.bindShore(this.uniforms);
     this.world.niijimaCoast.bindWaterSurface(this.uniforms);
     this.uniforms.uCaustics.value=this.caustics.texture;this.uniforms.uCausticBounds.value=this.caustics.bounds;
@@ -433,6 +437,10 @@ export class Ocean {
         else this.uniforms.uShoreReady.value=0;
       }else this.shoreSolver.reset();
     }
+    if(this.sandMoisture){
+      if(waterMap.triangulated)this.sandMoisture.update(this.paused?0:delta,this.camera.position.x,this.camera.position.z);
+      else this.sandMoisture.reset();
+    }
     this.waterHeights.update(stamp*.001,textures,waterMap,state.position,state.boatPosition,this.swell,this.uniforms.uChoppiness.value,this.wind);
     this.caustics.update(this.time,this.paused?0:delta,textures[0],textures[1],waterMap,this.camera.position,this.uniforms.uSunDirection.value,this.swell,this.wind,1.55);
     this.uniforms.uCaustics.value=this.caustics.texture;
@@ -593,6 +601,7 @@ export class Ocean {
     // A discontinuous QA clock change invalidates the previous SWE depth/flow
     // history. Start it from this same FFT phase on the next normal frame.
     this.shoreSolver?.reset();
+    this.sandMoisture?.reset();
   }
   setLeafAlphaThreshold(value:number){
     if(!Number.isFinite(value)||value<.05||value>.6)throw new Error('Leaf threshold .05..6 required');
@@ -623,6 +632,7 @@ export class Ocean {
     return {width:target.width,height:target.height,type:target.texture.type,minFilter:target.texture.minFilter,generateMipmaps:target.texture.generateMipmaps,status,depthImage:target.depthTexture?{width:target.depthTexture.image.width,height:target.depthTexture.image.height}:null,depthType:target.depthTexture?.type,colorImage:{width:colour.width,height:colour.height},initialError,framebuffer:!!(this.renderer.properties.get(target) as {__webglFramebuffer?:unknown}).__webglFramebuffer,normal:normal.toArray(),eye:eye.toArray(),facingDot:origin.sub(eye).dot(normal),underwater:this.uniforms.uUnderwater.value,samples};
   }
   probeShoreState(){return this.shoreSolver?.probeState()??null;}
+  setSandMemoryEnabled(enabled:boolean):boolean {const u=this.uniforms.uSandMemoryEnabled;if(!u)return false;const previous=u.value>.5;u.value=enabled?1:0;return previous;}
   probeCrestDriver(expanded=false){return this.breaker?.probeDriver(this.renderer,expanded)??null;}
   setWhitewaterVisible(visible:boolean):boolean{const material=this.spray.whitewater?.material;const before=material?.visible??false;if(material)material.visible=visible;return before;}
   probeWhitewaterSites(){return this.spray.probeWhitewaterSites().map(site=>({...site,distance:Math.hypot(site.x-this.camera.position.x,site.z-this.camera.position.z)}));}
@@ -689,6 +699,7 @@ export class Ocean {
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
       spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,habushiGround:this.world.habushiGround.diagnostics,
       shoreSolver:this.shoreSolver?{...this.shoreSolver.diagnostics,ready:this.uniforms.uShoreReady.value}:null,
+      sandMoisture:this.sandMoisture?.diagnostics??null,
       photoCoast:this.photoCoast?{instances:this.photoCoast.diagnostics.instances,triangles:this.photoCoast.diagnostics.triangles,draws:this.photoCoast.diagnostics.draws,roles:this.photoCoast.diagnostics.roles}:null,
       scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),
       reefShelves:this.scannedCoast.children.filter(m=>m.userData.groundedShelf).map(m=>({name:m.name,...m.userData.groundedShelf})),
@@ -722,6 +733,7 @@ export class Ocean {
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();
     this.shoreSolver?.dispose();
+    this.sandMoisture?.dispose();
     this.activityWorld.dispose();this.expeditionWorld.dispose();this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
     this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();
