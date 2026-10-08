@@ -1,0 +1,154 @@
+{
+  "source": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Original/LAS/09/QC/17/09QC1711.zip",
+  "sourceSha256": "731881a1d95cd52a475912edceec9892670fbd3ebb3d3ac2b7c173e54e6a3e25",
+  "sourceMember": "09QC1711.las",
+  "sourcePoints": 10853673,
+  "sourceLASVersion": "1.2",
+  "sourcePointFormat": 3,
+  "sourceCRS": "EPSG6677 per catalogue; not inferred from absent LAS VLR",
+  "transformAccuracyM": 1.0,
+  "coordinateTransform": {
+    "referenceLongitude": 139.2117451,
+    "referenceLatitude": 34.3359808,
+    "metersPerDegree": 111320,
+    "x": "(longitude-referenceLongitude)*metersPerDegree*cos(referenceLatitude)",
+    "y": "original LAS elevation",
+    "z": "(referenceLatitude-latitude)*metersPerDegree"
+  },
+  "roi": {
+    "x": [
+      5810,
+      5950
+    ],
+    "y": [
+      3,
+      85
+    ],
+    "z": [
+      -1070,
+      -960
+    ]
+  },
+  "roiPoints": 220015,
+  "uniquePoints": 219988,
+  "inputBBoxMin": [
+    5810.0001159201465,
+    3.0,
+    -1069.9983561826982
+  ],
+  "inputBBoxMax": [
+    5884.465703201052,
+    84.03,
+    -960.0007696002885
+  ],
+  "open3dVersion": "0.19.0",
+  "normalRadiusM": 2,
+  "normalMaxNN": 30,
+  "normalMSTNeighbors": 30,
+  "normalSign": "One global flip toward +Y using median Y of abs(normalY)>=0.7; no per-point forcing",
+  "normalAnchorCount": 174173,
+  "normalAnchorMedianBeforeFlip": 0.8262983754098245,
+  "globalNormalFlip": false,
+  "poissonDepth": 9,
+  "threads": 2,
+  "densityLabelQuantile": 0.05,
+  "densityThreshold": 7.275934314727783,
+  "densityRemoval": false,
+  "raw": {
+    "vertices": 304198,
+    "triangles": 608121,
+    "components": 1,
+    "bboxMin": [
+      5786.734375,
+      -16.983692169189453,
+      -1075.498291015625
+    ],
+    "bboxMax": [
+      5895.376953125,
+      104.01368713378906,
+      -954.5009155273438
+    ],
+    "watertight": false,
+    "boundaryEdges": 273,
+    "distanceP50P95P99MaxM": [
+      0.11770670820196226,
+      0.5917096310988426,
+      2.8206392531565,
+      32.154489825707486
+    ],
+    "distanceAbove1mFraction": 0.028642528879216825,
+    "lowDensityFraction": 0.050000328733259256
+  },
+  "croppedOnly": {
+    "vertices": 291349,
+    "triangles": 580589,
+    "components": 1,
+    "bboxMin": [
+      5810.00048828125,
+      3.000520706176758,
+      -1069.997314453125
+    ],
+    "bboxMax": [
+      5884.39794921875,
+      83.95271301269531,
+      -960.0017700195312
+    ],
+    "watertight": false,
+    "boundaryEdges": 2105,
+    "distanceP50P95P99MaxM": [
+      0.11376247342061206,
+      0.4251535217630448,
+      0.874216750066111,
+      9.778244099110829
+    ],
+    "distanceAbove1mFraction": 0.007533919800651452,
+    "lowDensityFraction": 0.027307456006370367
+  },
+  "caps": {
+    "source_points": 12000000,
+    "roi_points": 500000,
+    "output_vertices": 1000000,
+    "output_triangles": 2000000,
+    "member_bytes": 536870912,
+    "elapsed_seconds": 180
+  },
+  "elapsedSeconds": 30.447223999974085,
+  "credit": "Tokyo Metropolitan Government Digital Service Bureau",
+  "license": "CC-BY-4.0",
+  "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+  "methodReferences": [
+    "https://www.open3d.org/docs/release/tutorial/geometry/surface_reconstruction.html",
+    "https://github.com/isl-org/Open3D/blob/v0.19.0/cpp/open3d/geometry/SurfaceReconstructionPoisson.cpp"
+  ],
+  "scriptSha256": "e5cd21e3890ac0411f72188cdf61080a2cbd411a0ec632af046d66753cf1c1e3",
+  "artifacts": {
+    "poisson-raw-position.bin": "b859661b996108d2279204488b534941ec16f8f1884fdf6c75ef013f83f5f910",
+    "poisson-raw-index.bin": "b4d4a478dc5d4933282d2a1b8e5631e5d27e29a439e81285fd259d38026c04a2",
+    "poisson-raw-normal.bin": "a559bedbd4ee07f3b86fe877b4abfd23665422815352ac1e9900335f7478a2f9",
+    "poisson-raw-color.bin": "1c171e836b208416d1008b60b0d63f50d4254b689aa2b3d29cda766c56ff1025",
+    "poisson-raw-density.bin": "dded5be62a03f666f83205c499d6767087519f1b9a9b64ef9cc81cc22ca061ca",
+    "poisson-raw-observationDistance.bin": "22ceadc58781b1fe5890ef2fc560f98c29da7f917747dacef6db021e3ecf4e82",
+    "poisson-raw-inferredRegion.bin": "1c83badb5ab0bcf5ee807082eff159ed1329409e59c3fce9ea77f5bc66eabb89",
+    "poisson-raw-lowDensityRegion.bin": "8723da1a526bde3da55990c507ab35294fea01c93c7aaf8b3ca210507bbf83d1",
+    "poisson-raw-buffers.json": "46e94b138395b3d16b37954d3086dc0d3771ccb6dabc7ea4bdcf56d50ae8830a",
+    "poisson-raw.ply": "d9deeca903926aa4e9cb51c23774786a8642f46f0199344ebb81f1da5043b347",
+    "poisson-cropped-only-position.bin": "85dd5dd97e53a6707bccf6c0eb0e2fd2268889aff19b875587fcb5817e084c48",
+    "poisson-cropped-only-index.bin": "5c73ecb2136a13204e140f4fbd3ad1fd299d152394521f54b89ca21a2c95bd92",
+    "poisson-cropped-only-normal.bin": "882deb7bacaa66ae12526a5269641194e509fd5e3aae5d4f34a0bb90e911d24a",
+    "poisson-cropped-only-color.bin": "1592c2a6fc22362d8e014fc2d2fa245d13b6b9491c263cd3b493a2dfd8e13087",
+    "poisson-cropped-only-density.bin": "18c66223d72137e57863025c4907608a319da3aac5af724d7bb27b3414495a65",
+    "poisson-cropped-only-observationDistance.bin": "3e2e3ba314b7de48a3e8968a0612c5803aaff11456cf62b9aa4aa06e1023392d",
+    "poisson-cropped-only-inferredRegion.bin": "3a9d2e0ac3313359571f8cfa3155c1cbcb5c862c70caf15206b585d7523cc8a7",
+    "poisson-cropped-only-lowDensityRegion.bin": "78dd6a85a283c6f5dc646c967dd714b63eab62a20e5f570ea1330a8855df1d8a",
+    "poisson-cropped-only-buffers.json": "7d1267e4d3b27a63e27b51e55fd4696b395ef137ff868cc16b6a2669bfecc100",
+    "poisson-cropped-only.ply": "6aaa7c3755a3a91fa8f7231f4d33a1eb6196d90f63770d5c0a228b2d594c01a3"
+  },
+  "limits": [
+    "Poisson is inferred surface reconstruction, including unobserved sidewalls; not measured accuracy or photorealism",
+    "Global upward normal anchor does not verify sidewall outward normals",
+    "Distance>1m and bottom5% density are diagnostic labels, not a truth boundary",
+    "Crop removes out-of-ROI vertices and their triangles only; no density removal",
+    "No runtime integration, collision acceptance, or automatic downloads",
+    "Budgets bound input/output and check elapsed time between stages; native calls are not forcibly interrupted"
+  ]
+}

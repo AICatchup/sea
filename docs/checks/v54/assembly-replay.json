@@ -1,0 +1,67 @@
+{
+  "sourceSha256": "563483a3474de29bb445e338ba8d468b1ea2f377f1e860f082e91029e00d9a19",
+  "descriptor": {
+    "vertices": 551358,
+    "triangles": 799066,
+    "origin": [
+      5880,
+      0,
+      -1015
+    ],
+    "positionsBytes": 6616296,
+    "indicesBytes": 9588792,
+    "sha256": "7412c785684b004eaa1bf4d0ed9ecb67a6d63b9e97acb7344685ea470c9efcda"
+  },
+  "footprintSha256": "f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449",
+  "native": {
+    "checkedTriangles": 259623,
+    "removedTriangles": 102818
+  },
+  "clip": {
+    "inputTriangles": 580589,
+    "footprintTriangles": 102818,
+    "outputTriangles": 799066,
+    "unionPassthroughTriangles": 264026,
+    "unionAcceptedResidualAreaM2": 5.34860610776566e-13,
+    "unionMaximumAcceptedResidualAreaM2": 3.6891845927914967e-13,
+    "rejectedTinyTriangles": 0,
+    "rejectedTinyAreaM2": 0,
+    "outputAreaHistogram": [
+      0,
+      9,
+      406,
+      60384,
+      738267
+    ],
+    "outputAreaHistogramM2": [
+      0,
+      2.835497112600971e-12,
+      1.3173137739587303e-06,
+      2.2174358857402967,
+      8388.040576821228
+    ],
+    "candidateTests": 13286814,
+    "queryOperations": 95994737,
+    "gridReferences": 160245,
+    "passthroughTriangles": 196,
+    "unionCoverageDiagnostics": {
+      "inputTriangles": 102818,
+      "indexedTriangles": 102818,
+      "degenerateTriangles": 0,
+      "invalidTriangles": 0,
+      "gridEntries": 160245,
+      "gridCells": 6137,
+      "buildLimitExceeded": false,
+      "coverageLimitFailures": 0,
+      "coverageGapFailures": 315774,
+      "numericCoverageFailures": 0,
+      "approximateCoverageAcceptances": 149529,
+      "numericalAreaTolerance": 1e-12,
+      "lastCoverageResidualArea": 0.0005327165126800537,
+      "invalidQueries": 0,
+      "disposed": false
+    }
+  },
+  "scope": "Fixed inferred Poisson reconstruction clipped to the native footprint. Float32 output, not surveyed accuracy or visual/collision acceptance. No automatic runtime installation.",
+  "clipAndMergeElapsedMs": 8645.014500000001
+}

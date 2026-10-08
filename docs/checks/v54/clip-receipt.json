@@ -1,0 +1,107 @@
+{
+  "sourceDescriptor": {
+    "vertices": 291349,
+    "triangles": 580589,
+    "origin": [
+      5880,
+      0,
+      -1015
+    ],
+    "positionsBytes": 3496188,
+    "indicesBytes": 6967068,
+    "sha256": "563483a3474de29bb445e338ba8d468b1ea2f377f1e860f082e91029e00d9a19",
+    "source": "Tokyo 09QC1711, class2/non-withheld 220015 observations; Open3D0.19 Poisson depth9. Interpolation, not new measurements."
+  },
+  "sourceMethod": "Open3D 0.19 Poisson depth9, inferred surface",
+  "selection": {
+    "normalYMaximum": 0.8,
+    "originalY": [
+      6,
+      78
+    ],
+    "z": [
+      -1068,
+      -962
+    ],
+    "numericalCoverageAreaToleranceM2": 1e-12
+  },
+  "plan": {
+    "checkedTriangles": 259623,
+    "removedTriangles": 102818
+  },
+  "clip": {
+    "inputTriangles": 580589,
+    "footprintTriangles": 102818,
+    "outputTriangles": 799066,
+    "unionPassthroughTriangles": 264026,
+    "unionAcceptedResidualAreaM2": 5.34860610776566e-13,
+    "unionMaximumAcceptedResidualAreaM2": 3.6891845927914967e-13,
+    "rejectedTinyTriangles": 0,
+    "rejectedTinyAreaM2": 0,
+    "outputAreaHistogram": [
+      0,
+      9,
+      406,
+      60384,
+      738267
+    ],
+    "outputAreaHistogramM2": [
+      0,
+      2.835497112600971e-12,
+      0.0000013173137739587303,
+      2.2174358857402967,
+      8388.040576821228
+    ],
+    "candidateTests": 13286814,
+    "queryOperations": 95994737,
+    "gridReferences": 160245,
+    "passthroughTriangles": 196,
+    "unionCoverageDiagnostics": {
+      "inputTriangles": 102818,
+      "indexedTriangles": 102818,
+      "degenerateTriangles": 0,
+      "invalidTriangles": 0,
+      "gridEntries": 160245,
+      "gridCells": 6137,
+      "buildLimitExceeded": false,
+      "coverageLimitFailures": 0,
+      "coverageGapFailures": 315774,
+      "numericCoverageFailures": 0,
+      "approximateCoverageAcceptances": 149529,
+      "numericalAreaTolerance": 1e-12,
+      "lastCoverageResidualArea": 0.0005327165126800537,
+      "invalidQueries": 0,
+      "disposed": false
+    }
+  },
+  "final": {
+    "covered": 53269,
+    "missingRepresentatives": 37828,
+    "residuals": 49549,
+    "residualQuantiles": [
+      0,
+      6.900915689462043e-8,
+      3.198540331243822e-7,
+      0.000001135654148623885
+    ],
+    "diagnostics": {
+      "inputTriangles": 799066,
+      "indexedTriangles": 796843,
+      "degenerateTriangles": 2223,
+      "invalidTriangles": 0,
+      "gridEntries": 971480,
+      "gridCells": 6134,
+      "buildLimitExceeded": false,
+      "coverageLimitFailures": 3,
+      "coverageGapFailures": 49546,
+      "numericCoverageFailures": 0,
+      "approximateCoverageAcceptances": 50474,
+      "numericalAreaTolerance": 1e-12,
+      "lastCoverageResidualArea": 2.7148393926725454e-9,
+      "invalidQueries": 0,
+      "disposed": false
+    }
+  },
+  "elapsedMs": 37567.8216,
+  "queryValidationMs": 20699.654699999996
+}

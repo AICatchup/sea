@@ -511,6 +511,20 @@ export class Ocean {
     this.uniforms.uResolution.value.set(this.canvas.width,this.canvas.height);
     this.camera.aspect=width/height;this.camera.updateProjectionMatrix();
   }
+  /** Explicit paused observation, separate from realtime animation evidence. */
+  renderStaticSnapshot():string{
+    if(this.disposed||this.contextLost||!this.paused||!this.visualCaptureLocked||this.captureNextFrame)throw new Error('Idle paused locked observation required');
+    const measured=[this.measureTime,this.measureFrames,this.fps];
+    cancelAnimationFrame(this.animationFrame);this.lastStamp=0;
+    try{this.frame(performance.now());return this.canvas.toDataURL('image/png');}
+    finally{
+      this.measureTime=measured[0];this.measureFrames=measured[1];this.fps=measured[2];this.lastStamp=0;
+      // frame() may fail before scheduling its successor. Restore exactly one
+      // live loop in either path; observation errors must not stop normal play.
+      cancelAnimationFrame(this.animationFrame);
+      if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.frame);
+    }
+  }
   setQuality(quality:Quality):void{this.quality=quality;this.resize();}
   setWind(wind:number):void{this.wind=THREE.MathUtils.clamp(wind,2,18);this.simulation.setWind(this.wind);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
   setSwell(swell:number):void{this.swell=THREE.MathUtils.clamp(swell,.3,2);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
@@ -537,7 +551,7 @@ export class Ocean {
   }
   undoPlacement():void{this.assets.undoPlacement();this.syncSolids();}
   private syncSolids():void{
-    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup,this.expeditionWorld.solids,...(this.world.scarpVolume?[this.world.scarpVolume.group]:[]),...(this.world.cliffVolume?[this.world.cliffVolume.group]:[]),...(this.world.niijimaCliffSkin?[this.world.niijimaCliffSkin.group]:[])]);
+    this.solidBinding.sync(this.world.group,this.assets,this.scannedCoast,[this.world.habushiGate.solidsGroup,this.world.habushiGround.solidsGroup,this.expeditionWorld.solids,...(this.world.scarpVolume?[this.world.scarpVolume.group]:[]),...(this.world.cliffVolume?[this.world.cliffVolume.group]:[]),...(this.world.niijimaCliffSkin?[this.world.niijimaCliffSkin.group]:[]),...(this.world.niijimaPointCliff?[this.world.niijimaPointCliff.group]:[])]);
     this.solidContactReady=true;
   }
   capture():Promise<Blob|null>{
@@ -697,7 +711,7 @@ export class Ocean {
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
-      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,strandProfile:this.world.elevation.beach?.strandDiagnostics??null,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null,niijimaCoastConfidence:this.world.niijimaCoast.dem.coastConfidence,niijimaCliffSkin:this.world.niijimaCliffSkin?.diagnostics??null,niijimaCliffReplacement:this.world.niijimaCoast.cliffReplacement,niijimaMeasured:this.world.niijimaCoast.measured?.diagnostics??null,niijimaMeasuredPatch:this.world.niijimaCoast.measuredPatch?.diagnostics??null},
+      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,strandProfile:this.world.elevation.beach?.strandDiagnostics??null,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null,niijimaCoastConfidence:this.world.niijimaCoast.dem.coastConfidence,niijimaCliffSkin:this.world.niijimaCliffSkin?.diagnostics??null,niijimaPointCliff:this.world.niijimaPointCliff?.diagnostics??null,niijimaCliffReplacement:this.world.niijimaCoast.cliffReplacement,niijimaMeasured:this.world.niijimaCoast.measured?.diagnostics??null,niijimaMeasuredPatch:this.world.niijimaCoast.measuredPatch?.diagnostics??null},
       geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       expedition:{...this.expedition.snapshot,credits:this.expedition.credits,capacity:this.expedition.capacity,rank:this.expedition.rank,race:this.expedition.race?{next:this.expedition.race.next,elapsed:this.expedition.race.elapsed}:null,target:this.expedition.target(state),save:this.expedition.saveStatus},

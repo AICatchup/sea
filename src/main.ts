@@ -198,6 +198,19 @@ try {
   // as the touch controls; bookmarks are QA starts, never normal travel actions.
   let crestSeriesBusy=false;
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
+    async captureStaticCoast(pose:{x:number;z:number;yaw:number;pitch:number;eyeY:number},name='static-coast'){
+      if(!captureOnly||![pose.x,pose.z,pose.yaw,pose.pitch,pose.eyeY].every(Number.isFinite)||pose.x<5400||pose.x>6500||pose.z< -3500||pose.z>200)throw new Error('Bounded dedicated coast observation required');
+      await ocean.ready;const before=captureHost.readState(),clock=ocean.diagnostics.time;
+      try{
+        captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        captureHost.viewpoint(pose.x,pose.z,pose.yaw,pose.pitch,'walk',0,pose.eyeY);ocean.setObservationClock(34);
+        let png='';for(let i=0;i<3;i++)png=ocean.renderStaticSnapshot();
+        return{png,metadata:{name,pose,state:captureHost.readState(),time:ocean.diagnostics.time,materials:ocean.diagnostics.niijimaMaterials,topography:ocean.diagnostics.topography,scope:'Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.'}};
+      }finally{
+        try{ocean.setObservationClock(clock);captureHost.restoreState(before);captureHost.visualLock(true);captureHost.setPaused(true);ocean.renderStaticSnapshot();}
+        finally{captureHost.restoreState(before);}
+      }
+    },
     async captureCoastPose(pose:{x:number;z:number;yaw:number;pitch:number;eyeY:number},name='coast',probes:readonly{x:number;y:number}[]=[],diagnostic:'normal'|'no-water'|'no-shadow'|'no-shore'='normal'){
       if(!captureOnly||![pose.x,pose.z,pose.yaw,pose.pitch,pose.eyeY].every(Number.isFinite)||pose.x<5400||pose.x>6500||pose.z< -3500||pose.z>200)throw new Error('Dedicated bounded coast QA pose required');
       await ocean.ready;const before=captureHost.readState(),clock=ocean.diagnostics.time;
@@ -626,7 +639,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureCoastPose','captureSandComparison','captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle','inspectSandMoisture','inspectFoamStructure']){
+    for(const name of ['captureStaticCoast','captureCoastPose','captureSandComparison','captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle','inspectSandMoisture','inspectFoamStructure']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

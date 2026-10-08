@@ -1,0 +1,301 @@
+[
+  {
+    "name": "face",
+    "pose": {
+      "eyeY": 4.8,
+      "pitch": 0.18,
+      "x": 5900,
+      "yaw": -1.5708,
+      "z": -1040
+    },
+    "camera": [
+      5900,
+      4.8,
+      -1040,
+      0.0635536148980873,
+      0.7042462246709104,
+      -0.06355384834397967,
+      0.7042436378348232
+    ],
+    "fov": 62,
+    "time": 34,
+    "preset": "day",
+    "quality": "high",
+    "width": 1280,
+    "height": 720,
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "footprintSha256": "f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449",
+      "inputTriangles": 580589,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "reason": "",
+      "removedNativeTriangles": 102818,
+      "renderTriangles": 799066,
+      "state": "ready",
+      "stitch": {
+        "boundaryEdges": 51676,
+        "inputTriangles": 102818,
+        "maximumHeightDeltaM": 30.89617461137536,
+        "missingQueries": 0,
+        "outputTriangles": 206685,
+        "queries": 155028,
+        "signCrossings": 23248,
+        "subdivisions": 103352,
+        "zeroAreaTriangles": 19
+      },
+      "watertight": false
+    },
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance."
+  },
+  {
+    "name": "along",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "along",
+      "pitch": 0.05,
+      "x": 5888,
+      "yaw": -0.4,
+      "z": -996
+    },
+    "camera": [
+      5888,
+      3.8,
+      -996,
+      0.024499112269069832,
+      0.19860724986281417,
+      -0.004966215917997834,
+      0.9797603229869094
+    ],
+    "fov": 62,
+    "time": 34,
+    "preset": "day",
+    "quality": "high",
+    "width": 1280,
+    "height": 720,
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "footprintSha256": "f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449",
+      "inputTriangles": 580589,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "reason": "",
+      "removedNativeTriangles": 102818,
+      "renderTriangles": 799066,
+      "state": "ready",
+      "stitch": {
+        "boundaryEdges": 51676,
+        "inputTriangles": 102818,
+        "maximumHeightDeltaM": 30.89617461137536,
+        "missingQueries": 0,
+        "outputTriangles": 206685,
+        "queries": 155028,
+        "signCrossings": 23248,
+        "subdivisions": 103352,
+        "zeroAreaTriangles": 19
+      },
+      "watertight": false
+    },
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance."
+  },
+  {
+    "name": "close",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "close",
+      "pitch": 0.3,
+      "x": 5888,
+      "yaw": -1.5708,
+      "z": -986
+    },
+    "camera": [
+      5888,
+      3.8,
+      -986,
+      0.10566852276834454,
+      0.6991680183399224,
+      -0.10566891091121108,
+      0.6991654501571287
+    ],
+    "fov": 62,
+    "time": 34,
+    "preset": "day",
+    "quality": "high",
+    "width": 1280,
+    "height": 720,
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "footprintSha256": "f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449",
+      "inputTriangles": 580589,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "reason": "",
+      "removedNativeTriangles": 102818,
+      "renderTriangles": 799066,
+      "state": "ready",
+      "stitch": {
+        "boundaryEdges": 51676,
+        "inputTriangles": 102818,
+        "maximumHeightDeltaM": 30.89617461137536,
+        "missingQueries": 0,
+        "outputTriangles": 206685,
+        "queries": 155028,
+        "signCrossings": 23248,
+        "subdivisions": 103352,
+        "zeroAreaTriangles": 19
+      },
+      "watertight": false
+    },
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance."
+  },
+  {
+    "name": "offshore",
+    "pose": {
+      "eyeY": 8,
+      "name": "offshore",
+      "pitch": 0.11,
+      "x": 6040,
+      "yaw": -1.57,
+      "z": -1200
+    },
+    "camera": [
+      6040,
+      8,
+      -1200,
+      0.03888674248358531,
+      0.7057563774872812,
+      -0.03885578825178603,
+      0.706318614093086
+    ],
+    "fov": 62,
+    "time": 34,
+    "preset": "day",
+    "quality": "high",
+    "width": 1280,
+    "height": 720,
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "footprintSha256": "f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449",
+      "inputTriangles": 580589,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "reason": "",
+      "removedNativeTriangles": 102818,
+      "renderTriangles": 799066,
+      "state": "ready",
+      "stitch": {
+        "boundaryEdges": 51676,
+        "inputTriangles": 102818,
+        "maximumHeightDeltaM": 30.89617461137536,
+        "missingQueries": 0,
+        "outputTriangles": 206685,
+        "queries": 155028,
+        "signCrossings": 23248,
+        "subdivisions": 103352,
+        "zeroAreaTriangles": 19
+      },
+      "watertight": false
+    },
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance."
+  },
+  {
+    "name": "south-edge",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "south-edge",
+      "pitch": 0.1,
+      "x": 5900,
+      "yaw": -1.57,
+      "z": -1071
+    },
+    "camera": [
+      5900,
+      3.8,
+      -1071,
+      0.03535467804480676,
+      0.7059418336827238,
+      -0.035326535371252146,
+      0.7065042180310641
+    ],
+    "fov": 62,
+    "time": 34,
+    "preset": "day",
+    "quality": "high",
+    "width": 1280,
+    "height": 720,
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "footprintSha256": "f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449",
+      "inputTriangles": 580589,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "reason": "",
+      "removedNativeTriangles": 102818,
+      "renderTriangles": 799066,
+      "state": "ready",
+      "stitch": {
+        "boundaryEdges": 51676,
+        "inputTriangles": 102818,
+        "maximumHeightDeltaM": 30.89617461137536,
+        "missingQueries": 0,
+        "outputTriangles": 206685,
+        "queries": 155028,
+        "signCrossings": 23248,
+        "subdivisions": 103352,
+        "zeroAreaTriangles": 19
+      },
+      "watertight": false
+    },
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance."
+  },
+  {
+    "name": "north-edge",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "north-edge",
+      "pitch": 0.1,
+      "x": 5900,
+      "yaw": -1.57,
+      "z": -959
+    },
+    "camera": [
+      5900,
+      3.8,
+      -959,
+      0.03535467804480878,
+      0.7059418336826835,
+      -0.03532653537125013,
+      0.7065042180311044
+    ],
+    "fov": 62,
+    "time": 34,
+    "preset": "day",
+    "quality": "high",
+    "width": 1280,
+    "height": 720,
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "footprintSha256": "f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449",
+      "inputTriangles": 580589,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "reason": "",
+      "removedNativeTriangles": 102818,
+      "renderTriangles": 799066,
+      "state": "ready",
+      "stitch": {
+        "boundaryEdges": 51676,
+        "inputTriangles": 102818,
+        "maximumHeightDeltaM": 30.89617461137536,
+        "missingQueries": 0,
+        "outputTriangles": 206685,
+        "queries": 155028,
+        "signCrossings": 23248,
+        "subdivisions": 103352,
+        "zeroAreaTriangles": 19
+      },
+      "watertight": false
+    },
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance."
+  }
+]

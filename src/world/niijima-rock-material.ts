@@ -2,18 +2,23 @@ import * as THREE from 'three';
 const albedoURL=new URL('../assets/niijima/rock-face-03/rock_face_03_diff_2k.jpg',import.meta.url).href;
 const normalURL=new URL('../assets/niijima/rock-face-03/rock_face_03_nor_gl_2k.jpg',import.meta.url).href;
 const armURL=new URL('../assets/niijima/rock-face-03/rock_face_03_arm_2k.jpg',import.meta.url).href;
-export interface CliffTextureSet {albedo:THREE.Texture;normal:THREE.Texture;arm:THREE.Texture;ready:Promise<void>;available:THREE.IUniform<number>;textures:THREE.Texture[];}
-/** Real CC0 scan detail, an analogue material rather than a Niijima field scan. */
-export function loadCliffTextures():CliffTextureSet{
+const pumiceAlbedoURL=import.meta.env?.DEV===true?new URL('../assets/niijima/pumice-pbr-v54/albedo.png',import.meta.url).href:albedoURL;
+const pumiceNormalURL=import.meta.env?.DEV===true?new URL('../assets/niijima/pumice-pbr-v54/normal.png',import.meta.url).href:normalURL;
+const pumiceARMURL=import.meta.env?.DEV===true?new URL('../assets/niijima/pumice-pbr-v54/arm.png',import.meta.url).href:armURL;
+export interface CliffTextureSet {albedo:THREE.Texture;normal:THREE.Texture;arm:THREE.Texture;ready:Promise<void>;available:THREE.IUniform<number>;textures:THREE.Texture[];tileMetres:THREE.IUniform<number>;meanLuminance:THREE.IUniform<number>;}
+/** CC0 rock-scan baseline or optional generated pumice-grain study.
+ * Both are analogue materials rather than a Niijima field scan. */
+export function loadCliffTextures(pumiceGrain=false):CliffTextureSet{
+ pumiceGrain=pumiceGrain&&import.meta.env?.DEV===true;
  const textures:THREE.Texture[]=[],pending:Promise<void>[]=[],available={value:0};let failed=false;
  const load=(url:string,color=false)=>{let done=()=>{};pending.push(new Promise<void>(resolve=>{done=resolve;}));const tex=typeof document==='undefined'?new THREE.Texture():new THREE.TextureLoader().load(url,()=>done(),undefined,()=>{failed=true;done();});if(typeof document==='undefined')done();tex.colorSpace=color?THREE.SRGBColorSpace:THREE.NoColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=8;textures.push(tex);return tex;};
- const albedo=load(albedoURL,true),normal=load(normalURL),arm=load(armURL);
- const ready=Promise.all(pending).then(()=>{available.value=failed?0:1;});return{albedo,normal,arm,ready,available,textures};
+ const albedo=load(pumiceGrain?pumiceAlbedoURL:albedoURL,true),normal=load(pumiceGrain?pumiceNormalURL:normalURL),arm=load(pumiceGrain?pumiceARMURL:armURL);
+ const ready=Promise.all(pending).then(()=>{available.value=failed?0:1;});return{albedo,normal,arm,ready,available,textures,tileMetres:{value:pumiceGrain?1.5:2.7},meanLuminance:{value:pumiceGrain?.6652112494164935:.16029633}};
 }
 /** Shared world-metre projection. No camera-facing image or baked illumination. */
 export const cliffMaterialCommon=/*glsl*/`
  uniform sampler2D uCliffAlbedo,uCliffNormal,uCliffARM;
- uniform float uCliffReady,uCliffDetail;
+ uniform float uCliffReady,uCliffDetail,uCliffTileMetres,uCliffMeanLuminance;
  vec3 cliffScan(sampler2D source,vec2 uv,vec2 dx,vec2 dy,float blend){
    return mix(textureGrad(source,uv,dx,dy).rgb,textureGrad(source,uv+vec2(.371,.619),dx,dy).rgb,blend);
  }
@@ -27,13 +32,13 @@ export const cliffMaterialCommon=/*glsl*/`
 `;
 export const cliffMaterialColour=/*glsl*/`
  float cliffAmount=uCliffReady*uCliffDetail*niiRockPhotoMask;
- vec3 cliffP=vNiijimaPoint/2.7,cliffDX=dFdx(cliffP),cliffDY=dFdy(cliffP);
+ vec3 cliffP=vNiijimaPoint/uCliffTileMetres,cliffDX=dFdx(cliffP),cliffDY=dFdy(cliffP);
  vec3 cliffSigns=sign(cross(dFdx(vNiijimaPoint),dFdy(vNiijimaPoint)));
  float cliffBlend=smoothstep(.25,.75,niiNoise(vNiijimaPoint*vec3(.011,.045,.071)));
  vec3 cliffARM=vec3(1,.9,0);
  if(cliffAmount>.001){
    vec3 sampled=cliffTriScan(uCliffAlbedo,cliffP,cliffDX,cliffDY,niiWeights,cliffSigns,cliffBlend);
-   float grain=pow(clamp(dot(sampled,vec3(.2126,.7152,.0722))/.16029633,.22,2.3),.46);
+   float grain=pow(clamp(dot(sampled,vec3(.2126,.7152,.0722))/uCliffMeanLuminance,.22,2.3),.46);
    cliffARM=cliffTriScan(uCliffARM,cliffP,cliffDX,cliffDY,niiWeights,cliffSigns,cliffBlend);
    // Neutral pumice pigment; retain the registered scan's grain and fissures.
    diffuseColor.rgb*=mix(vec3(1),vec3(grain)*mix(.82,1.,cliffARM.r),cliffAmount*.68);

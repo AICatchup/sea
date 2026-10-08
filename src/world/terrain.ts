@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {createNiijimaCliffSkin,type CliffSkin} from './niijima-cliff-skin.ts';
+import type {NiijimaPointCliff} from './niijima-point-cliff.ts';
 import { PLAYER_DIMENSIONS, type MapOutline, type WorldDestination } from './contracts.ts';
 import { ElevationField, IslandElevation, sandAt, shelterAt, smoothstep } from './geodata.ts';
 import { DESTINATION_SEEDS } from './locations.ts';
@@ -80,6 +81,9 @@ export class IslandWorld {
   readonly scarpVolume:NiijimaScarpVolume|null;
   readonly cliffVolume:TomariCliffVolume|null;
   readonly niijimaCliffSkin:CliffSkin|null;
+  private pointCliffValue:NiijimaPointCliff|null=null;
+  get niijimaPointCliff():NiijimaPointCliff|null{return this.pointCliffValue;}
+  private disposed=false;
   private readonly maps = new Map<string, WaterMap>();
   private readonly niijimaShaderMaps = new WeakMap<THREE.Texture, WaterMap>();
   private readonly textures: THREE.Texture[] = [];
@@ -104,21 +108,41 @@ export class IslandWorld {
     const coastConfidence=typeof location==='undefined'||new URLSearchParams(location.search).get('coastconfidence')!=='0';
     const cliffDetail=typeof location==='undefined'||new URLSearchParams(location.search).get('cliffdetail')!=='0';
     const measured=typeof location==='undefined'||new URLSearchParams(location.search).get('measuredcoast')!=='0';
-    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume,coastConfidence,cliffDetail,measured});this.group.add(this.niijimaCoast.group);
+    const pumiceGrain=import.meta.env?.DEV===true&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('pumicegrain')==='1';
+    this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume,coastConfidence,cliffDetail,measured,pumiceGrain});this.group.add(this.niijimaCoast.group);
     const cliffMaterial=(this.niijimaCoast.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
     const cliffMeso=typeof location==='undefined'||new URLSearchParams(location.search).get('cliffmeso')!=='0';
-    this.niijimaCliffSkin=cliffDetail&&!measured?createNiijimaCliffSkin({heightAt:(x,z)=>this.niijimaCoast.baseHeightAt(x,z)},cliffMaterial,{faceSteps:144,meso:cliffMeso}):null;
+    const pointCliff=import.meta.env?.DEV===true&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('poissoncoast')==='1';
+    const nativeGeology=import.meta.env?.DEV===true&&!pointCliff&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('nativegeology')==='1';
+    this.niijimaCliffSkin=cliffDetail&&nativeGeology&&this.niijimaCoast.measuredPatch?
+      createNiijimaCliffSkin({heightAt:(x,z)=>this.niijimaCoast.measuredPatch!.surfaceHeightAt(x,z)??this.niijimaCoast.baseHeightAt(x,z)},cliffMaterial,
+        {zMin:-1070,zMax:-960,eastX:5950,westX:5810,sampleX:.25,alongZ:.5,faceSteps:512,chunkLength:120,meso:true,geology:true,topLimit:85}):
+      cliffDetail&&!measured?createNiijimaCliffSkin({heightAt:(x,z)=>this.niijimaCoast.baseHeightAt(x,z)},cliffMaterial,{faceSteps:144,meso:cliffMeso}):null;
     if(this.niijimaCliffSkin){
       const c=new THREE.Color();for(const g of this.niijimaCliffSkin.geometries){const p=g.getAttribute('position'),colors=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){this.niijimaCoast.colorAt(p.getX(i),p.getY(i),p.getZ(i),c);colors.set([c.r,c.g,c.b],i*3);}g.setAttribute('color',new THREE.BufferAttribute(colors,3));}
       this.niijimaCliffSkin.group.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});this.group.add(this.niijimaCliffSkin.group);
-      if(cliffMeso)this.niijimaCoast.replaceCliffSurface(this.niijimaCliffSkin);
+      if(nativeGeology&&this.niijimaCoast.measuredPatch){
+        if(this.niijimaCliffSkin.geometries.length){
+          this.niijimaCliffSkin.group.updateMatrixWorld(true);
+          this.niijimaCoast.measuredPatch.replaceInteriorSurface(this.niijimaCliffSkin,new THREE.Box3().setFromObject(this.niijimaCliffSkin.group));
+          this.niijimaCoast.invalidateWaterMaps();
+          this.niijimaCliffSkin.group.userData.provenance='Photo-informed inferred geological relief, bounded to 0.8m visible carving / 0.3m relief, with buried guard bands, anchored to the Tokyo native heightfield. Not measured sidewall geometry.';
+        }
+      }else if(cliffMeso)this.niijimaCoast.replaceCliffSurface(this.niijimaCliffSkin);
     }
+    // Rejected look-development assets stay out of the normal release bundle.
+    const pointCliffReady=pointCliff&&this.niijimaCoast.measuredPatch?import('./niijima-point-cliff.ts').then(async({NiijimaPointCliff})=>{
+      if(this.disposed)return;
+      const value=new NiijimaPointCliff(this.niijimaCoast.measuredPatch!,cliffMaterial,
+        {colorAt:(x,y,z,c)=>this.niijimaCoast.colorAt(x,y,z,c),invalidateWaterMaps:()=>this.niijimaCoast.invalidateWaterMaps()});
+      this.pointCliffValue=value;this.group.add(value.group);await value.ready;
+    }):Promise.resolve();
     this.scarpVolume=volume?new NiijimaScarpVolume(this.niijimaCoast,this.niijimaCoast.dem,cliffMaterial):null;
     if(this.scarpVolume)this.group.add(this.scarpVolume.group);
     this.habushiGate=new HabushiMainGate(this.niijimaCoast);
     this.niijimaCoast.applyGrading(this.habushiGate.grading);this.group.add(this.habushiGate.group);
     this.habushiGround=new HabushiGround(this.habushiGate,typeof location!=='undefined'&&new URLSearchParams(location.search).get('pavement')!=='0');
-    this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve(),this.niijimaCoast.ready,this.habushiGate.ready,this.habushiGround.ready,this.cliffVolume?.ready??Promise.resolve()]).then(()=>{});
+    this.ready=Promise.allSettled([atlasReady,sand.ready,terrainMaterial.userData.ready??Promise.resolve(),this.niijimaCoast.ready,this.habushiGate.ready,this.habushiGround.ready,this.cliffVolume?.ready??Promise.resolve(),pointCliffReady]).then(()=>{});
     this.niijimaCoast.applyGrading(this.habushiGround.grading);this.group.add(this.habushiGround.group);
     for (const field of this.elevation.fields) this.buildTerrain(field, terrainMaterial);
     if (this.elevation.tomari && this.elevation.coast) {
@@ -193,6 +217,8 @@ export class IslandWorld {
   }
 
   dispose(): void {
+    if(this.disposed)return;this.disposed=true;
+    this.niijimaPointCliff?.dispose();
     this.niijimaCliffSkin?.dispose();
     this.cliffVolume?.dispose();
     this.scarpVolume?.dispose();

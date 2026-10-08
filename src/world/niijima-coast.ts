@@ -57,7 +57,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
   material.map = material.normalMap = material.bumpMap = material.roughnessMap = material.metalnessMap = material.aoMap = null;
   material.onBeforeCompile = shader => {
     Object.assign(shader.uniforms,{uPumicePhoto:{value:pumice},uPumiceReady:ready??{value:0}});
-    if(detail)Object.assign(shader.uniforms,{uCliffAlbedo:{value:detail.albedo},uCliffNormal:{value:detail.normal},uCliffARM:{value:detail.arm},uCliffReady:detail.available,uCliffDetail:detailAmount});
+    if(detail)Object.assign(shader.uniforms,{uCliffAlbedo:{value:detail.albedo},uCliffNormal:{value:detail.normal},uCliffARM:{value:detail.arm},uCliffReady:detail.available,uCliffDetail:detailAmount,uCliffTileMetres:detail.tileMetres,uCliffMeanLuminance:detail.meanLuminance});
     if(sand&&water)Object.assign(shader.uniforms,water);
     if(sand)Object.assign(shader.uniforms,{uNiiSandAlbedo:{value:sand.albedo},uNiiSandNormal:{value:sand.normalGL},uNiiSandARM:{value:sand.arm}});
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNiijimaPoint;varying vec3 vNiijimaSurfaceNormal;');
@@ -181,7 +181,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
       `:''}
     `);
   };
-  material.customProgramCacheKey = () => 'niijima-pumice-swash-memory-v49-'+!!detail;
+  material.customProgramCacheKey = () => 'niijima-pumice-metre-detail-v54-'+!!detail;
   return material;
 }
 
@@ -199,7 +199,7 @@ export class NiijimaCoast implements GroundSampler {
   readonly ready:Promise<void>;
   readonly detailAmount={value:1};
   private readonly detailTextures:CliffTextureSet|null;
-  readonly materialDiagnostics:{pumice:'loading'|'ready'|'failed'|'not-loaded'}={pumice:'loading'};
+  readonly materialDiagnostics:{pumice:'loading'|'ready'|'failed'|'not-loaded';detail?:string;detailAsset?:string;tileMetres?:number}={pumice:'loading'};
   private readonly pumiceTexture:THREE.Texture;
   private readonly geometries: THREE.BufferGeometry[] = [];
   private readonly material: THREE.MeshStandardMaterial;
@@ -210,7 +210,7 @@ export class NiijimaCoast implements GroundSampler {
   readonly cliffReplacement={removedTriangles:0,queriedTriangles:0};
   private readonly maps = new Map<string, { texture: THREE.DataTexture; origin: THREE.Vector2; size: THREE.Vector2 }>();
 
-  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;volume?:boolean;sand?:SandTextureSet;coastConfidence?:boolean;cliffDetail?:boolean;measured?:boolean}={}) {
+  constructor(baseGround: GroundSampler, material: THREE.MeshStandardMaterial,options:{scarp?:boolean;volume?:boolean;sand?:SandTextureSet;coastConfidence?:boolean;cliffDetail?:boolean;measured?:boolean;pumiceGrain?:boolean}={}) {
     this.dem=new NiijimaDEM(undefined,{scarp:options.scarp??false,coastConfidence:options.coastConfidence});
     this.baseGround = baseGround;
     this.measured=options.measured?new MeasuredNiijimaTile():null;
@@ -222,7 +222,11 @@ export class NiijimaCoast implements GroundSampler {
     const pumiceReady={value:0};
     let resolvePumice:()=>void=()=>{};
     const pumicePending=new Promise<void>(resolve=>{resolvePumice=resolve;});
-    this.detailTextures=options.cliffDetail?loadCliffTextures():null;
+    this.detailTextures=options.cliffDetail?loadCliffTextures(options.pumiceGrain):null;
+    if(this.detailTextures){
+      this.materialDiagnostics.detail='loading';this.materialDiagnostics.detailAsset=options.pumiceGrain?'generated-pumice-grain-v54':'CC0-rock-face-03-analogue';this.materialDiagnostics.tileMetres=this.detailTextures.tileMetres.value;
+      void this.detailTextures.ready.then(()=>{this.materialDiagnostics.detail=typeof document==='undefined'?'cpu-placeholder':this.detailTextures!.available.value===1?'ready':'failed';});
+    }
     this.ready=Promise.all([pumicePending,...(this.detailTextures?[this.detailTextures.ready]:[])]).then(()=>{});
     this.pumiceTexture=typeof document!=='undefined'?new THREE.TextureLoader().load(pumiceURL,()=>{pumiceReady.value=1;this.materialDiagnostics.pumice='ready';resolvePumice();},undefined,()=>{this.materialDiagnostics.pumice='failed';console.warn('Niijima pumice image unavailable; procedural fallback retained');resolvePumice();}):new THREE.Texture();
     if(typeof document==='undefined'){this.materialDiagnostics.pumice='not-loaded';resolvePumice();}
@@ -260,6 +264,7 @@ export class NiijimaCoast implements GroundSampler {
   bindWaterSurface(uniforms:Record<string,THREE.IUniform>):void{
     for(const key of Object.keys(this.waterUniforms))if(uniforms[key])this.waterUniforms[key]=uniforms[key];
   }
+  invalidateWaterMaps():void{for(const map of this.maps.values())map.texture.dispose();this.maps.clear();}
   heightAt(x: number, z: number): number {
     if(this.cliffSurface)for(let i=this.surfaces.length-1;i>=0;i--){const s=this.surfaces[i];if(!s.contains(x,z))continue;const mask=this.cliffReplaced.get(s);if(mask){const px=Math.max(0,Math.min(s.width-1,(x-s.bounds.minX)/s.dx)),pz=Math.max(0,Math.min(s.height-1,(z-s.bounds.minZ)/s.dz)),ix=Math.min(s.width-2,Math.floor(px)),iz=Math.min(s.height-2,Math.floor(pz));const index=(iz*(s.width-1)+ix)*2+(px-ix+pz-iz>1?1:0);if(mask[index]){const y=this.cliffSurface.surfaceHeightAt(x,z);if(y!==null)return y;}}break;}
     const base=this.baseHeightAt(x,z),measured=this.measuredPatch?.surfaceHeightAt(x,z);

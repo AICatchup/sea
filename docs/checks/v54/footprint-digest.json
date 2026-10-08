@@ -1,0 +1,5 @@
+{
+  "sha256": "f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449",
+  "triangles": 102818,
+  "scope": "Ordered native local Float32 XYZ triangles plus shared Float64 origin. No unused vertices. Recomputed from actual offline source and original native topology."
+}

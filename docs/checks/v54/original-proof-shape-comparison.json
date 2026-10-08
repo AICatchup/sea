@@ -1,0 +1,17 @@
+{
+  "verticesA": 291349,
+  "verticesB": 291349,
+  "nearestABQuantilesM": [
+    0.0,
+    1.9073486328125e-06,
+    1.9073486328125e-06,
+    0.0004882849752760877
+  ],
+  "nearestBAQuantilesM": [
+    0.0,
+    1.9073486328125e-06,
+    1.9073486328125e-06,
+    0.0004882849752760877
+  ],
+  "scope": "Numerical nearest mesh vertex comparison between first NPZ-derived study and portable original ZIP reconstruction; not surveyed accuracy, photographs or topology proof."
+}

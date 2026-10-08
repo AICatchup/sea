@@ -1,0 +1,42 @@
+{
+  "source": "Generated grayscale height hypothesis, not surveyed site material",
+  "sourceSha256": "18218998c3aae1503c91d986b7b4df631fdc03df80aab8d50e1f7b14cff399bc",
+  "size": [
+    1254,
+    1254
+  ],
+  "tileMetres": 1.5,
+  "heightRangeM": [
+    0.0,
+    0.004
+  ],
+  "normalFormat": "OpenGL, +Y tangent green; no colour space",
+  "albedoMeanLinearLuminance": 0.6652112494164935,
+  "albedoLinearRange": [
+    0.6104955708078648,
+    0.6866853124353135
+  ],
+  "normalLengthError": 2.220446049250313e-16,
+  "edgeMeanHeightDifferenceM": 0.00016563150242595676,
+  "interiorMeanHeightDifferenceM": 0.0003383139431792399,
+  "roughnessRange": [
+    0.9,
+    0.9650000000000001
+  ],
+  "metalness": 0,
+  "files": {
+    "albedo.png": {
+      "sha256": "4b5952634e378e24d3ae1157289fdb089642e682040ef9e175ab269ce7d38396",
+      "bytes": 273128
+    },
+    "normal.png": {
+      "sha256": "8019a1d68c0b45615b7db7db589be23da8534ed6b610c530e94253b109cc6f3f",
+      "bytes": 3718479
+    },
+    "arm.png": {
+      "sha256": "af37830b9077002cb52ded6407a499bcc2e5bc0f041c5e59aebf47b7a814cf77",
+      "bytes": 1576390
+    }
+  },
+  "limits": "Grayscale interpreted as a bounded height model; pores and dimensions generated, not photogrammetry. Intrinsic albedo is authored separately, no generated shadows copied to diffuse."
+}
