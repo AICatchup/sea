@@ -3,6 +3,7 @@ import { capillarySampling, shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling } from './shore-solver.ts';
 import {surfaceFoamGLSL} from './surface-foam.ts';
 import {foamFilmGLSL} from './foam-film.ts';
+import {foamStructureGLSL} from './foam-structure.ts';
 import {refractedSceneGLSL,refractedBedGLSL} from './refracted-path.ts';
 import {packedReceiverGLSL,receiverMaterialGLSL} from './receiver-bridge.ts';
 import {waveCausticsSampling} from './caustics.ts';
@@ -253,6 +254,7 @@ export const oceanFragment = /* glsl */ `
   uniform float uFarWaveFilter;
   uniform float uHideSurfaceFoam;
   uniform float uFoamFilm;
+  uniform float uFoamStructure;
   uniform float uSnellRay;
   uniform mat4 uWaterProjection;
   uniform vec4 uBathyBounds;
@@ -340,6 +342,7 @@ export const oceanFragment = /* glsl */ `
   ${capillarySampling}
   ${surfaceFoamGLSL}
   ${foamFilmGLSL}
+  ${foamStructureGLSL}
   #ifdef GEOMETRIC_REFRACTION
   ${packedReceiverGLSL}
   ${skinnedReceiverTraceGLSL}
@@ -625,14 +628,17 @@ export const oceanFragment = /* glsl */ `
       foamPattern=.33*broadFoam+.36*foamDetail+.31*lace;
     }
     float solvedFoam=shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y;
-    foam=max(foam,surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern)));
+    float materialFoam=foamMaterialConcentration(solvedFoam,foam);
+    float pocketField=uFoamStructure>.5?foamPocketField(vOcean+foamDrift*.35):.5;
+    float solvedCoverage=uFoamStructure>.5?structuredFoamCoverage(solvedFoam,smoothstep(.25,.75,foamPattern),smoothstep(.25,.75,pocketField),footprint):surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern));
+    foam=max(foam,solvedCoverage);
     #ifdef CURVED_SURFACE
     // Aeration remains a narrow lip detail; the rolling face keeps optics.
     foam=max(foam,smoothstep(.88,1.,vLip)*vEnvelope*pores*.35);
     #endif
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
     if(uFoamFilm>.5&&foam>.001){
-      vec2 film=foamFilm(vOcean+foamDrift*.35,footprint,max(solvedFoam,foam));
+      vec2 film=uFoamStructure>.5?structuredFoamFilm(vOcean+foamDrift*.35,footprint,materialFoam,pocketField):foamFilm(vOcean+foamDrift*.35,footprint,max(solvedFoam,foam));
       foam*=film.x;
       foamColor*=film.y*(.90+.18*nL)*(.80+.20*sunVisibility);
     }

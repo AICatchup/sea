@@ -196,7 +196,7 @@ export class Ocean {
     const p=presets.day;
     this.uniforms={
       uSandAppearance:this.world.sandAppearance,
-      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},uHideSurfaceFoam:{value:0},uFoamFilm:{value:new URLSearchParams(location.search).get('foamfilm')==='0'?0:1},uFarWaveFilter:{value:new URLSearchParams(location.search).get('wavefilter')==='0'?0:1},
+      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},uHideSurfaceFoam:{value:0},uFoamFilm:{value:new URLSearchParams(location.search).get('foamfilm')==='0'?0:1},uFoamStructure:{value:new URLSearchParams(location.search).get('foamstructure')==='0'?0:1},uFarWaveFilter:{value:new URLSearchParams(location.search).get('wavefilter')==='0'?0:1},
       uSnellRay:{value:new URLSearchParams(location.search).get('ray')==='1'?1:0},uWaterProjection:{value:this.camera.projectionMatrix},
       uTime:{value:this.time},uSunDirection:{value:new THREE.Vector3(...p.sun).normalize()},
       uSunColor:{value:new THREE.Vector3(...p.sunColor)},uZenith:{value:new THREE.Vector3(...p.zenith)},

@@ -4,6 +4,7 @@ import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
 import {inspectShoreTransport} from './qa/shore-transport-probe.ts';
 import {inspectShoreIncident} from './qa/shore-incident-probe.ts';
 import {inspectSandMoisture} from './qa/sand-moisture-inspection.ts';
+import {inspectFoamStructure} from './qa/foam-structure-inspection.ts';
 import {inspectGpuSkinOnDevice} from './qa/gpu-skinned-browser-check.ts';
 import {inspectGpuSkinLifecycle} from './qa/gpu-skinned-lifecycle.ts';
 import {createCaptureGate} from './qa/capture-exclusivity.ts';
@@ -307,6 +308,11 @@ try {
       try{captureHost.visualLock(true);captureHost.setPaused(true);return inspectSandMoisture(ocean.renderer);}
       finally{captureHost.restoreState(before);}
     },
+    async inspectFoamStructure(){
+      await ocean.ready;const before=captureHost.readState();
+      try{captureHost.visualLock(true);captureHost.setPaused(true);return inspectFoamStructure(ocean.renderer);}
+      finally{captureHost.restoreState(before);}
+    },
     shoreState:()=>ocean.probeShoreState(),
     whitewaterSites:()=>ocean.probeWhitewaterSites(),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
@@ -517,7 +523,7 @@ try {
         return {png,pngWithoutWhitewater,pngWithoutSurfaceFoam,pngFoamFilm,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,lightComparison,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,foamComparison:compareFoam?'Frozen state: all foam, whitewater pool hidden, both pool and surface-shader foam hidden':null,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null,lightComparison:compareLight?'One frozen camera/FFT/solver/time/environment; legacy256->fine512->legacy256, caustic history reset only':null}};
       }finally{try{ocean.setCausticResolution(previousLight);}finally{captureHost.restoreState(before);}}
     },
-    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},startClock?:number,probes:readonly{x:number;y:number}[]=[],compareSand=false){
+    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},startClock?:number,probes:readonly{x:number;y:number}[]=[],compareSand=false,compareFoam=false){
       if(stops.length<1||stops.length>6||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown temporal capture view');
       if(startClock!==undefined&&(!Number.isFinite(startClock)||startClock<0||startClock>86400))throw new Error('Finite bounded QA clock required');
@@ -534,13 +540,32 @@ try {
         const visible=ocean.setWhitewaterVisible(false);
         try{
           await captureHost.nextFrame();await captureHost.nextFrame();const pngWithoutWhitewater=await capturePNG(),contactProbe=probes.length?ocean.probeWaterContact(probes):null;
+          let pngWithoutSurfaceFoam:string|null=null;
+          const foamComparison=[];
+          if(compareFoam){
+            const hidden=ocean.uniforms.uHideSurfaceFoam.value;ocean.uniforms.uHideSurfaceFoam.value=1;
+            try{await captureHost.nextFrame();await captureHost.nextFrame();pngWithoutSurfaceFoam=await capturePNG();}
+            finally{ocean.uniforms.uHideSurfaceFoam.value=hidden;}
+            const structure=ocean.uniforms.uFoamStructure.value;
+            try{
+              ocean.setWhitewaterVisible(visible);
+              for(const value of [0,1,0]){
+                ocean.uniforms.uFoamStructure.value=value;for(let i=0;i<8;i++)await captureHost.nextFrame();
+                const intervals:number[]=[];let last=await new Promise<number>(resolve=>requestAnimationFrame(resolve));
+                for(let i=0;i<30;i++){const now=await new Promise<number>(resolve=>requestAnimationFrame(resolve));intervals.push(now-last);last=now;}
+                foamComparison.push({png:await capturePNG(),metadata:{structure:value,time:ocean.diagnostics.time,state:captureHost.readState(),shore:ocean.probeShoreState(),frameIntervalsMs:intervals,scope:'Frozen FFT/SWE/camera/light/foam history; one material uniform only, whole-frame RAF timing'}});
+              }
+              ocean.setWhitewaterVisible(false);ocean.uniforms.uHideSurfaceFoam.value=1;
+              for(const value of [0,1]){ocean.uniforms.uFoamStructure.value=value;await captureHost.nextFrame();await captureHost.nextFrame();foamComparison.push({png:await capturePNG(),metadata:{structure:value,surfaceHidden:true,time:ocean.diagnostics.time,scope:'No surface foam and no pool; must remain identical'}});}
+            }finally{ocean.uniforms.uFoamStructure.value=structure;ocean.uniforms.uHideSurfaceFoam.value=hidden;ocean.setWhitewaterVisible(false);}
+          }
           let pngLegacySand:string|null=null;
           if(compareSand){
             ocean.setWhitewaterVisible(visible);const enabled=ocean.setSandMemoryEnabled(false);
             try{await captureHost.nextFrame();await captureHost.nextFrame();pngLegacySand=await capturePNG();}
             finally{ocean.setSandMemoryEnabled(enabled);}
           }
-          return {frames,pngWithoutWhitewater,pngLegacySand,contactProbe,whitewaterComparison:'Frozen same solver, particles, camera and light; volume/legacy material visible vs hidden only',sandComparison:compareSand?'Same final camera/FFT/SWE/particles/light; only old vs new sand material response':null};
+          return {frames,pngWithoutWhitewater,pngWithoutSurfaceFoam,foamComparison,pngLegacySand,contactProbe,whitewaterComparison:'Frozen same solver, particles, camera and light; pool first hidden, then surface foam hidden when requested',sandComparison:compareSand?'Same final camera/FFT/SWE/particles/light; only old vs new sand material response':null};
         }
         finally{ocean.setWhitewaterVisible(visible);}
       }finally{try{if(startClock!==undefined){captureHost.setPaused(true);ocean.setObservationClock(clock);}}finally{captureHost.restoreState(before);}}
@@ -579,7 +604,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureCoastPose','captureSandComparison','captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle','inspectSandMoisture']){
+    for(const name of ['captureCoastPose','captureSandComparison','captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle','inspectSandMoisture','inspectFoamStructure']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }
