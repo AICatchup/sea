@@ -1,0 +1,262 @@
+{
+  "version": "V50",
+  "globalGoal": "ACTIVE_UNMET",
+  "codeRevision": "7b935a7c1af84e1e46d1e550283584bf3175a9a5",
+  "tests": 425,
+  "testDurationMs": 102905.5843,
+  "fullTestLogSha256": "a17d877816519575fe713d319c848386b3a9aa530bd340251cb44ca47867a1f8",
+  "typeAndBuild": "PASS",
+  "gpu": {
+    "cases": 7,
+    "pass": true,
+    "scope": "Shared optical material function; occupancy expectation is only a CPU independent-uniform-input test, not real scene calibration"
+  },
+  "controlledViews": {
+    "close": {
+      "oldReturnMaxPixelDifference": 0.0,
+      "noFoamMaxPixelDifference": 0.0,
+      "oldFoamBrightening": 0.010344853577750546,
+      "newFoamBrightening": 0.04046185608319716,
+      "brighteningRatio": 3.9113029274983178,
+      "wholeFrameLuminanceDelta": 0.030102953915611377,
+      "meanFrameMs": [
+        18.316666666666666,
+        18.426666666666765,
+        18.4
+      ],
+      "scope": "Frozen image-space positive luminance difference versus foam-hidden frame, not measured foam volume or physical conservation"
+    },
+    "along": {
+      "oldReturnMaxPixelDifference": 0.0,
+      "noFoamMaxPixelDifference": 0.0,
+      "oldFoamBrightening": 0.00019088498093681918,
+      "newFoamBrightening": 0.006950879056883169,
+      "brighteningRatio": 36.4139652201544,
+      "wholeFrameLuminanceDelta": 0.0067545092277709684,
+      "meanFrameMs": [
+        18.26999999999971,
+        18.229999999999805,
+        18.40666666666657
+      ],
+      "scope": "Frozen image-space positive luminance difference versus foam-hidden frame, not measured foam volume or physical conservation"
+    },
+    "raised": {
+      "oldReturnMaxPixelDifference": 0.0,
+      "noFoamMaxPixelDifference": 0.0,
+      "oldFoamBrightening": 0.0012055136999591504,
+      "newFoamBrightening": 0.006314278455201525,
+      "brighteningRatio": 5.237832183421465,
+      "wholeFrameLuminanceDelta": 0.005105436211533225,
+      "meanFrameMs": [
+        18.216666666666665,
+        18.313333333333624,
+        18.386666666666862
+      ],
+      "scope": "Frozen image-space positive luminance difference versus foam-hidden frame, not measured foam volume or physical conservation"
+    }
+  },
+  "underwater": {
+    "oldNewMaxPixelDifference": 0,
+    "oldReturnMaxPixelDifference": 0,
+    "scope": "Same frozen underwater camera/time; animated avatar hidden only for material isolation and restored afterwards."
+  },
+  "movement": {
+    "samples": 272,
+    "frames": 1484,
+    "meanFrameMs": 18.320013477088963,
+    "p95FrameMs": 18.70000000001164,
+    "recordingOverheadIncluded": true,
+    "outwardX": 5917.678850165675,
+    "returnX": 5898.09329741736,
+    "modeCounts": {
+      "walk": 272
+    }
+  },
+  "video": {
+    "seconds": 27.333,
+    "frames": 821,
+    "width": 1280,
+    "height": 720,
+    "browserEnded": true,
+    "scope": "Internal QA video of final standalone canvas; no OS input, full travel, sound or final showcase acceptance"
+  },
+  "review": "Conditional local visual adoption by fresh Sol/low, root full checks and production runtime subsequently passed. White visible contribution increases; not foam volume preservation.",
+  "limitations": [
+    "Flat stretched white tips and thin film appearance remain",
+    "No new overturning volume or individual bubble/air entrainment simulation",
+    "Artist-authored pattern scales and drift, not measured local bubbles",
+    "Global photoreal/gameplay/boat/body/audio acceptance, erosion and final showcase remain unmet"
+  ],
+  "files": [
+    {
+      "path": "attribution-full.png",
+      "bytes": 1541266,
+      "sha256": "17c0fda8c6aed7a3b47c7be7d65d5c938bf9a8a6a058131e7a228a0fa4381b56"
+    },
+    {
+      "path": "attribution-no-pool.png",
+      "bytes": 1538665,
+      "sha256": "3d90f44a047b75c7543863a23659735e9395ca55d525099f11669451fcebfa2b"
+    },
+    {
+      "path": "attribution-no-surface.png",
+      "bytes": 1526842,
+      "sha256": "2da6e29487f3e9dac21ecfac740d0e2c52289a7609c9320749e7c0a5437878c1"
+    },
+    {
+      "path": "attribution.json",
+      "bytes": 9165,
+      "sha256": "dd1998dc75facb1fc014cb6de8972799306aba5351ffb0492a1983927e4b5582"
+    },
+    {
+      "path": "comparison-metrics.json",
+      "bytes": 1632,
+      "sha256": "11c11a33ffeae4ee4857782b11c23652f91139cb60ce95fcdfa75a4530fefec6"
+    },
+    {
+      "path": "gpu-soft.json",
+      "bytes": 5540,
+      "sha256": "647840b403f26b2650e2b042c35a6943e2f1b82279fe1158f9197fce53a1f5ca"
+    },
+    {
+      "path": "motion-frame-01.png",
+      "bytes": 468992,
+      "sha256": "0a680cd43a426cbd14ad3732e57f59a8f5df6629872f5037a7e05930d61c8351"
+    },
+    {
+      "path": "motion-frame-04.png",
+      "bytes": 527943,
+      "sha256": "797f1fe77e19d293c29afa10039f1ddea06c940f5b5a4bb8fce6fcb38be1f783"
+    },
+    {
+      "path": "motion-frame-07.png",
+      "bytes": 504325,
+      "sha256": "6b75997e04fcc717cac52ed6153be57cf85c2de248592b2907028c945f18e2f7"
+    },
+    {
+      "path": "motion-summary.json",
+      "bytes": 261,
+      "sha256": "36e02ba20bd688c162de21645ca07c48dd919397ddad88ad25458c783af125a4"
+    },
+    {
+      "path": "record-standalone.js",
+      "bytes": 1410,
+      "sha256": "b3d70d83e9fa23c812cc4299a3a62d9de88cf65945c7a5d4bc02c8f90dad0208"
+    },
+    {
+      "path": "review-runtime.json",
+      "bytes": 1189,
+      "sha256": "9e09ec6a72c0c8fce7c409c767dea360b8a0924509f0c2b074aeb2db51da5c0e"
+    },
+    {
+      "path": "soft-along-0.png",
+      "bytes": 1405928,
+      "sha256": "8a8c396b7f34eb5ff9538a2adb69ad5fed18a5724f8603b11d5dcc7cc565c48b"
+    },
+    {
+      "path": "soft-along-1.png",
+      "bytes": 1448626,
+      "sha256": "c00670989ef625c792c9e197506cf80cedff73000db3f7c6fb70cf7b8774a05a"
+    },
+    {
+      "path": "soft-along.json",
+      "bytes": 13814,
+      "sha256": "06f5099d032cd6c30c92bd2398aaf11389a638ccbe1075604f4df7134205576c"
+    },
+    {
+      "path": "soft-close-0.png",
+      "bytes": 1542925,
+      "sha256": "6ea6cd41c6b6cffe852895f0ef99a2c1c7f98ac2b7d6238cb4162489c5dd38f1"
+    },
+    {
+      "path": "soft-close-1.png",
+      "bytes": 1636275,
+      "sha256": "03813fb54118262861ac903bb0fc86766a4aa4044e35f4d9c0ea9d0ffd5904cc"
+    },
+    {
+      "path": "soft-close-2.png",
+      "bytes": 1542925,
+      "sha256": "6ea6cd41c6b6cffe852895f0ef99a2c1c7f98ac2b7d6238cb4162489c5dd38f1"
+    },
+    {
+      "path": "soft-close-3.png",
+      "bytes": 1526972,
+      "sha256": "b6bccbc1129dd24daa871ea884c0f1f1bd0190fc106a9d84a04e9dab79e1a336"
+    },
+    {
+      "path": "soft-close-4.png",
+      "bytes": 1526972,
+      "sha256": "b6bccbc1129dd24daa871ea884c0f1f1bd0190fc106a9d84a04e9dab79e1a336"
+    },
+    {
+      "path": "soft-close.json",
+      "bytes": 13780,
+      "sha256": "057b47b09ee328d23e40b02e6c59f1acd73d67499920e9bf2d73f92f309276a3"
+    },
+    {
+      "path": "soft-raised-0.png",
+      "bytes": 1341857,
+      "sha256": "d62557f07a177f239b08052d84915a0efbe50d95dc71a3f5394e2557064e971a"
+    },
+    {
+      "path": "soft-raised-1.png",
+      "bytes": 1364599,
+      "sha256": "338959fe275275cb99e257a886ecbd04f04308d13eefa8cdcf2a985a4e1f4aa1"
+    },
+    {
+      "path": "soft-raised.json",
+      "bytes": 13770,
+      "sha256": "58e0439d736eab4ee8e637c58c6d770315890ba95bc6733e9f5fa86c068d3a81"
+    },
+    {
+      "path": "standalone-route.js",
+      "bytes": 2187,
+      "sha256": "fbf844482070f861b492b5f2834ade0b6f35bb637b4e191609cdfac0ad7c3294"
+    },
+    {
+      "path": "standalone.json",
+      "bytes": 396846,
+      "sha256": "c1c1d7cead377f56fc8813dd6f4444b4a86634c78f9cf18f2268b16ddb4e3644"
+    },
+    {
+      "path": "underwater-isolated-0.png",
+      "bytes": 1314841,
+      "sha256": "7905839ddbdc70812c72a23f1c1f96210213a83fd876f3f23023f747c4bc2b5d"
+    },
+    {
+      "path": "underwater-isolated-1.png",
+      "bytes": 1314841,
+      "sha256": "7905839ddbdc70812c72a23f1c1f96210213a83fd876f3f23023f747c4bc2b5d"
+    },
+    {
+      "path": "underwater-isolated.json",
+      "bytes": 6080,
+      "sha256": "91b023ceb562cd879f3d8d1c52f39858ffa558fcff90c6f25289c6f49c1c84e8"
+    },
+    {
+      "path": "underwater-summary.json",
+      "bytes": 201,
+      "sha256": "2c47e798c63c04e99309d37a23207ae870107aabfe182998ef961f00951034e7"
+    },
+    {
+      "path": "verification-motion.mp4",
+      "bytes": 8642332,
+      "sha256": "1115dca63dcd80e381a41f9a057b58314456283710798c57c7dbd771bd052087"
+    },
+    {
+      "path": "video-ended.png",
+      "bytes": 30222,
+      "sha256": "c7964af5d9dfb5eaa9df7dc9d77291d6cfd7b1021f99e4f7d27ab59a3738d41b"
+    },
+    {
+      "path": "video-playback.json",
+      "bytes": 91,
+      "sha256": "01592ff5d68c2ac8c03f816828358b41388115f2e6874f6c6735fb9015395287"
+    },
+    {
+      "path": "video-probe.json",
+      "bytes": 377,
+      "sha256": "f28811149ad33b5e865ca28efc6dba0828eec5832fbf954d474bb1e1116a7fbf"
+    }
+  ]
+}

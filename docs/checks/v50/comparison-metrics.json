@@ -1,0 +1,44 @@
+{
+  "close": {
+    "oldReturnMaxPixelDifference": 0.0,
+    "noFoamMaxPixelDifference": 0.0,
+    "oldFoamBrightening": 0.010344853577750546,
+    "newFoamBrightening": 0.04046185608319716,
+    "brighteningRatio": 3.9113029274983178,
+    "wholeFrameLuminanceDelta": 0.030102953915611377,
+    "meanFrameMs": [
+      18.316666666666666,
+      18.426666666666765,
+      18.4
+    ],
+    "scope": "Frozen image-space positive luminance difference versus foam-hidden frame, not measured foam volume or physical conservation"
+  },
+  "along": {
+    "oldReturnMaxPixelDifference": 0.0,
+    "noFoamMaxPixelDifference": 0.0,
+    "oldFoamBrightening": 0.00019088498093681918,
+    "newFoamBrightening": 0.006950879056883169,
+    "brighteningRatio": 36.4139652201544,
+    "wholeFrameLuminanceDelta": 0.0067545092277709684,
+    "meanFrameMs": [
+      18.26999999999971,
+      18.229999999999805,
+      18.40666666666657
+    ],
+    "scope": "Frozen image-space positive luminance difference versus foam-hidden frame, not measured foam volume or physical conservation"
+  },
+  "raised": {
+    "oldReturnMaxPixelDifference": 0.0,
+    "noFoamMaxPixelDifference": 0.0,
+    "oldFoamBrightening": 0.0012055136999591504,
+    "newFoamBrightening": 0.006314278455201525,
+    "brighteningRatio": 5.237832183421465,
+    "wholeFrameLuminanceDelta": 0.005105436211533225,
+    "meanFrameMs": [
+      18.216666666666665,
+      18.313333333333624,
+      18.386666666666862
+    ],
+    "scope": "Frozen image-space positive luminance difference versus foam-hidden frame, not measured foam volume or physical conservation"
+  }
+}

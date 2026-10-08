@@ -1,0 +1,46 @@
+[
+  {
+    "threadId": "01a11982-abf0-79e0-9ac7-a769ea0a0bbc",
+    "source": {
+      "parent_thread_id": "01a0eeb7-7548-7120-a943-323a68d702eb",
+      "depth": 1,
+      "agent_path": "/root/v50_foam_visual_review",
+      "agent_nickname": "Erdos the 2nd",
+      "agent_role": "default"
+    },
+    "turns": [
+      {
+        "turnId": "01a11982-ae39-77a0-857e-684230fc4b34",
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "sandbox": {
+          "type": "danger-full-access"
+        }
+      }
+    ],
+    "completed": true,
+    "behavioralReadOnly": true
+  },
+  {
+    "threadId": "01a11954-e659-7f31-a626-e9034a3919fa",
+    "source": {
+      "parent_thread_id": "01a0eeb7-7548-7120-a943-323a68d702eb",
+      "depth": 1,
+      "agent_path": "/root/v50_foam_diagnosis",
+      "agent_nickname": "Maxwell the 2nd",
+      "agent_role": "default"
+    },
+    "turns": [
+      {
+        "turnId": "01a11954-e784-78d2-9bce-e9c2940b649c",
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "sandbox": {
+          "type": "danger-full-access"
+        }
+      }
+    ],
+    "completed": true,
+    "behavioralReadOnly": true
+  }
+]

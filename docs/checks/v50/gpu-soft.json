@@ -1,0 +1,233 @@
+{
+  "available": true,
+  "pass": true,
+  "failures": [],
+  "size": 96,
+  "cases": [
+    {
+      "name": "legacy-thresholded",
+      "concentration": 0.42,
+      "coverage": 1,
+      "footprint": 0.002,
+      "offset": 0,
+      "nonfinite": 0,
+      "opacity": {
+        "min": 1,
+        "max": 1,
+        "mean": 1,
+        "sd": 0
+      },
+      "shade": {
+        "min": 0.586361289024353,
+        "max": 1.4425662755966187,
+        "mean": 1.0724925053461145,
+        "sd": 0.13870404883151297
+      },
+      "covered": {
+        "min": 1,
+        "max": 1,
+        "mean": 1,
+        "sd": 0
+      },
+      "materialConcentration": {
+        "min": 0.41999998688697815,
+        "max": 0.41999998688697815,
+        "mean": 0.41999998688697815,
+        "sd": 1.8693386450848545e-7
+      }
+    },
+    {
+      "name": "actual-concentration",
+      "concentration": 0.42,
+      "coverage": 1,
+      "footprint": 0.002,
+      "offset": 0,
+      "nonfinite": 0,
+      "opacity": {
+        "min": 0.3440806567668915,
+        "max": 0.9999900460243225,
+        "mean": 0.8461326540434837,
+        "sd": 0.2010063846740377
+      },
+      "shade": {
+        "min": 0.7295464277267456,
+        "max": 1.3100666999816895,
+        "mean": 1.056473109696526,
+        "sd": 0.10237728686100939
+      },
+      "covered": {
+        "min": 0.3440806567668915,
+        "max": 0.9999900460243225,
+        "mean": 0.8461326540434837,
+        "sd": 0.2010063846740377
+      },
+      "materialConcentration": {
+        "min": 0.41999998688697815,
+        "max": 0.41999998688697815,
+        "mean": 0.41999998688697815,
+        "sd": 1.8693386450848545e-7
+      }
+    },
+    {
+      "name": "dense-resolved",
+      "concentration": 1,
+      "coverage": 1,
+      "footprint": 0.002,
+      "offset": 0,
+      "nonfinite": 0,
+      "opacity": {
+        "min": 0.5270258784294128,
+        "max": 0.9999933242797852,
+        "mean": 0.893896520202462,
+        "sd": 0.13761283576964284
+      },
+      "shade": {
+        "min": 0.7295464277267456,
+        "max": 1.3100666999816895,
+        "mean": 1.056473109696526,
+        "sd": 0.10237728686100939
+      },
+      "covered": {
+        "min": 0.5270258784294128,
+        "max": 0.9999933242797852,
+        "mean": 0.893896520202462,
+        "sd": 0.13761283576964284
+      },
+      "materialConcentration": {
+        "min": 1,
+        "max": 1,
+        "mean": 1,
+        "sd": 0
+      }
+    },
+    {
+      "name": "dense-mid",
+      "concentration": 1,
+      "coverage": 1,
+      "footprint": 0.04,
+      "offset": 0,
+      "nonfinite": 0,
+      "opacity": {
+        "min": 0.614870011806488,
+        "max": 0.9704514145851135,
+        "mean": 0.8904655761693397,
+        "sd": 0.1133794926920608
+      },
+      "shade": {
+        "min": 0.9479579329490662,
+        "max": 1.170546531677246,
+        "mean": 1.064596397233092,
+        "sd": 0.0388725560450096
+      },
+      "covered": {
+        "min": 0.614870011806488,
+        "max": 0.9704514145851135,
+        "mean": 0.8904655761693397,
+        "sd": 0.1133794926920608
+      },
+      "materialConcentration": {
+        "min": 1,
+        "max": 1,
+        "mean": 1,
+        "sd": 0
+      }
+    },
+    {
+      "name": "dense-unresolved",
+      "concentration": 1,
+      "coverage": 1,
+      "footprint": 4,
+      "offset": 0,
+      "nonfinite": 0,
+      "opacity": {
+        "min": 0.9064467549324036,
+        "max": 0.9064467549324036,
+        "mean": 0.9064467549324036,
+        "sd": 3.0246053830063996e-7
+      },
+      "shade": {
+        "min": 1.0399999618530273,
+        "max": 1.0399999618530273,
+        "mean": 1.0399999618530273,
+        "sd": 0
+      },
+      "covered": {
+        "min": 0.9064467549324036,
+        "max": 0.9064467549324036,
+        "mean": 0.9064467549324036,
+        "sd": 3.0246053830063996e-7
+      },
+      "materialConcentration": {
+        "min": 1,
+        "max": 1,
+        "mean": 1,
+        "sd": 0
+      }
+    },
+    {
+      "name": "dense-unresolved-shifted",
+      "concentration": 1,
+      "coverage": 1,
+      "footprint": 4,
+      "offset": 0.013,
+      "nonfinite": 0,
+      "opacity": {
+        "min": 0.9064467549324036,
+        "max": 0.9064467549324036,
+        "mean": 0.9064467549324036,
+        "sd": 3.0246053830063996e-7
+      },
+      "shade": {
+        "min": 1.0399999618530273,
+        "max": 1.0399999618530273,
+        "mean": 1.0399999618530273,
+        "sd": 0
+      },
+      "covered": {
+        "min": 0.9064467549324036,
+        "max": 0.9064467549324036,
+        "mean": 0.9064467549324036,
+        "sd": 3.0246053830063996e-7
+      },
+      "materialConcentration": {
+        "min": 1,
+        "max": 1,
+        "mean": 1,
+        "sd": 0
+      }
+    },
+    {
+      "name": "empty",
+      "concentration": 0,
+      "coverage": 0,
+      "footprint": 0.002,
+      "offset": 0,
+      "nonfinite": 0,
+      "opacity": {
+        "min": 0.22504203021526337,
+        "max": 0.9999877214431763,
+        "mean": 0.8120603592057402,
+        "sd": 0.24604662534232655
+      },
+      "shade": {
+        "min": 0.7295464277267456,
+        "max": 1.3100666999816895,
+        "mean": 1.056473109696526,
+        "sd": 0.10237728686100939
+      },
+      "covered": {
+        "min": 0,
+        "max": 0,
+        "mean": 0,
+        "sd": 0
+      },
+      "materialConcentration": {
+        "min": 0,
+        "max": 0,
+        "mean": 0,
+        "sd": 0
+      }
+    }
+  ],
+  "scope": "Isolated actual shared shader statistics; optical structure only, not measured bubble density or full-scene acceptance"
+}

@@ -1,0 +1,12 @@
+{
+  "samples": 272,
+  "frames": 1484,
+  "meanFrameMs": 18.320013477088963,
+  "p95FrameMs": 18.70000000001164,
+  "recordingOverheadIncluded": true,
+  "outwardX": 5917.678850165675,
+  "returnX": 5898.09329741736,
+  "modeCounts": {
+    "walk": 272
+  }
+}
