@@ -1,0 +1,7 @@
+{
+  "pythonSyntax": true,
+  "localDocumentationLinks": true,
+  "artifactHashes": true,
+  "scope": "V53 docs, actual sidewall reproduction and preserved candidates; no new gameplay acceptance",
+  "nativeAndBpaImagesDiffer": true
+}

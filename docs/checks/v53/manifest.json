@@ -1,0 +1,18 @@
+{
+  "sourceBaseline": "01d265cd15f5bef6af6af15e68d05d1b839fd681",
+  "gameRuntimeChanged": false,
+  "sourceClones": {
+    "Open3D": "b6c5e196384ad71e75b6e6f9c5da22d046221f1d",
+    "Infinigen": "3f58bb886bb1bda681d41240344fe3126ac0e9bd",
+    "procedural-stochastic-texturing": "a77263f336611c3b7acf021d5942207ee7223602"
+  },
+  "files": {
+    "docs/checks/v53/bpa-study.png": "8ee277bd1af2c7dfb46181f28d2962440a3936fb2f1fbdb4472ab2f65089803d",
+    "docs/checks/v53/holdout-receipt.json": "6bdf470682518414c5a49034fc068178d429aa7b7ba93aa5d1864795eaba96e2",
+    "docs/checks/v53/native-study.png": "8452f4043f447d644d72552dec9a8dfc9a9be0971b24c18da384c0985d57b4e6",
+    "docs/checks/v53/script-negative-checks.json": "f0908818d27a721ebc7f5c07a92595db40784294be63a5af85eb83573b81e9a1",
+    "docs/checks/v53/sidewall-receipt.json": "f8a3f20ff547f0a1c85c9f88e1376f4b1a0ed4a7bbd36de277c0032a8d4d490b",
+    "scripts/reconstruct-niijima-sidewall.py": "95606253c3d419dd25a6f740f36a1fa81df537c6dbed632dfa01f61a23150ef2"
+  },
+  "acceptance": "Research and executed data study only; game goal unmet"
+}

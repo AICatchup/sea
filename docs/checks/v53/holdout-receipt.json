@@ -1,0 +1,37 @@
+{
+  "centerZY": [
+    -1020.25,
+    15.25
+  ],
+  "radiusM": 0.35,
+  "heldoutPoints": 20,
+  "trainingPoints": 13436,
+  "normalScope": "east-facing steep class2 subset",
+  "results": [
+    {
+      "name": "small",
+      "triangles": 16116,
+      "trianglesTouchingHeldoutDisk": 0,
+      "heldoutSurfaceDistanceQuantilesM": [
+        0.11635462194681168,
+        0.24988365173339844,
+        0.36118163168430334,
+        0.41616761684417725
+      ],
+      "maximumVertexDistanceToTrainingPointM": 0.0
+    },
+    {
+      "name": "multi",
+      "triangles": 19284,
+      "trianglesTouchingHeldoutDisk": 5,
+      "heldoutSurfaceDistanceQuantilesM": [
+        0.00010071089491248131,
+        0.04443005286157131,
+        0.20961430370807652,
+        0.2432434856891632
+      ],
+      "maximumVertexDistanceToTrainingPointM": 0.0
+    }
+  ],
+  "meaning": "Known removed observations; sampled triangle intersection with disk is a bridge indicator, not measured data recovery. Distances to held-out points are local validation only, not field accuracy or closed topology."
+}

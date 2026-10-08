@@ -1,0 +1,54 @@
+{
+  "source": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Original/LAS/09/QC/17/09QC1711.zip",
+  "sourceSha256": "731881a1d95cd52a475912edceec9892670fbd3ebb3d3ac2b7c173e54e6a3e25",
+  "sourcePoints": 10853673,
+  "class2RoiPoints": 60985,
+  "steepPoints": 13456,
+  "open3dVersion": "0.19.0",
+  "normalRadiusM": 1.25,
+  "normalNeighbors": 32,
+  "normalSign": "Towards [6200,45,-1025], appropriate only to this eastern face study",
+  "medianSpacingM": 0.14170982165910673,
+  "records": [
+    {
+      "name": "small",
+      "radii": [
+        0.2125647324886601,
+        0.28341964331821345
+      ],
+      "vertices": 11853,
+      "triangles": 16158,
+      "beforeSupportFilter": 16158,
+      "areaM2": 419.7505363986241,
+      "watertight": false,
+      "seconds": 0.15896189998602495,
+      "sha256": "40ecc617c130d6ce0232e14589dff95c056ea6e155f47bd8997fa76652ef8c4d"
+    },
+    {
+      "name": "multi",
+      "radii": [
+        0.2125647324886601,
+        0.28341964331821345,
+        0.4251294649773202
+      ],
+      "vertices": 12660,
+      "triangles": 19260,
+      "beforeSupportFilter": 19323,
+      "areaM2": 693.5459087602685,
+      "watertight": false,
+      "seconds": 0.21952529999543913,
+      "sha256": "80ef1446b753651ff7100d4888d3013c88b01519f5192c1fa7ede75ee062f6e1"
+    }
+  ],
+  "seconds": 3.4911486000055447,
+  "datumTransformAccuracyM": 1.0,
+  "sourceCRS": "EPSG6677 from catalogue; absent from LAS VLR",
+  "credit": "Tokyo Metropolitan Government Digital Service Bureau, CC BY 4.0",
+  "limits": [
+    "Open observation-backed study meshes; not game terrain or collision",
+    "Normals and steepness do not prove full sidewall coverage",
+    "Centroid support filter does not prove every hole is preserved",
+    "Interpolation between observed vertices remains inferred",
+    "No centimetre survey accuracy or photorealism established"
+  ]
+}
