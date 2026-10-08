@@ -5,6 +5,8 @@ import { encrustingGeometry, finGeometry, finMaterial, fishEyes, fishGeometry, f
 import { ScannedRockField, type ScannedRockLibrary, type ScannedRockVariant } from './scanned-rocks.ts';
 import { BubbleTrail } from './marine-bubbles.ts';
 import { advanceFishMotion, createFishMotion, type FishMotion } from './fish-motion.ts';
+import {coastalAlgaeGeometry,coastalAlgaeMaterial,type AlgaeFamily} from './models/coastal-algae.ts';
+import {groundedPlantMatrix} from './marine-plant-grounding.ts';
 
 interface Fish {
   species: number; index: number; eyeIndex: number; center: THREE.Vector3; motion?: FishMotion;
@@ -118,7 +120,7 @@ export class MarineLife {
   private readonly swimmingEuler = new THREE.Euler(0, 0, 0, 'YXZ');
   private disposed = false;
 
-  constructor(private readonly ground: GroundSampler) {
+  constructor(private readonly ground: GroundSampler,private readonly structuredAlgae=true) {
     this.group.name = 'authored Tomari diving habitat';
     this.group.userData.provenance = 'Inferred seabed dressing and wrasse/damselfish/silver-shoal inspired fish, not surveyed fauna or coral.';
     this.scannedRocks = this.populateSeabed(); this.rockLibrary = this.scannedRocks.library;
@@ -165,6 +167,7 @@ export class MarineLife {
     const stone = standard(this.resources, '#babdb3', 0.99); stone.vertexColors = true;
     stone.map = surfaceTexture(this.resources, '#cac8bb', 'stone', 299);
     const grass = seagrassMaterial(this.resources, this.animationTime);
+    const structured=this.structuredAlgae?coastalAlgaeMaterial(this.resources,this.animationTime):null;
     const coral = standard(this.resources, '#85796f', 0.91);
     const rocks: THREE.Matrix4[][] = [[], [], []], grassMatrices: THREE.Matrix4[] = [], kelpMatrices: THREE.Matrix4[] = [], coralMatrices: THREE.Matrix4[] = [];
     for (let i = 0; i < 640; i++) {
@@ -181,7 +184,8 @@ export class MarineLife {
       if (height > -23 && i % 3 !== 0) {
         this.position.set(x + this.random() * 0.5, height - 0.03, z); this.rotation.setFromAxisAngle(this.yAxis, yaw);
         const size = 0.5 + this.random() * 0.9; this.scale.setScalar(size);
-        (i % 5 === 0 ? kelpMatrices : grassMatrices).push(new THREE.Matrix4().compose(this.position, this.rotation, this.scale));
+        const matrix=this.structuredAlgae?groundedPlantMatrix(this.ground,this.position.x,this.position.z,yaw,size,i%5===0?1.3:.45):new THREE.Matrix4().compose(this.position,this.rotation,this.scale);
+        if(matrix)(i % 5 === 0 ? kelpMatrices : grassMatrices).push(matrix);
       }
       if (height > -20 && i % 13 === 0) {
         this.position.set(x, height + 0.045, z); this.scale.setScalar(0.65 + this.random());
@@ -201,7 +205,8 @@ export class MarineLife {
         rocks[i % 3].push(new THREE.Matrix4().compose(this.position, this.rotation, this.scale));
         if (i % 3 !== 0) {
           this.position.set(x + size * 0.6, height - 0.04, z); this.scale.setScalar(0.63 + this.random() * 0.44);
-          grassMatrices.push(new THREE.Matrix4().compose(this.position, this.rotation, this.scale));
+          const matrix=this.structuredAlgae?groundedPlantMatrix(this.ground,this.position.x,this.position.z,angle,this.scale.x,.35):new THREE.Matrix4().compose(this.position,this.rotation,this.scale);
+          if(matrix)grassMatrices.push(matrix);
         }
       }
     }
@@ -210,8 +215,19 @@ export class MarineLife {
       const mesh = this.addInstances(geometry, stone, rocks[variant], 'distant rounded seabed stones');
       if (mesh) { mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); this.rockLods.push({ mesh, matrices: rocks[variant] }); }
     }
-    this.addInstances(seagrassGeometry(this.resources, 41), grass, grassMatrices, 'modest inferred seagrass patches');
-    this.addInstances(seagrassGeometry(this.resources, 83, true), grass, kelpMatrices, 'brown coastal algae fronds');
+    const addPlants=(family:AlgaeFamily,matrices:THREE.Matrix4[],seed:number,name:string)=>{
+      if(!structured)return;
+      for(let variant=0;variant<4;variant++){
+        const placements=matrices.filter((_,i)=>i%4===variant);
+        const mesh=this.addInstances(coastalAlgaeGeometry(this.resources,seed+variant*173,family),structured.material,placements,`${name} / family ${variant+1}`);
+        if(mesh){mesh.userData.marinePlant=true;mesh.customDepthMaterial=structured.depth;mesh.castShadow=true;}
+      }
+    };
+    if(structured){addPlants('turf',grassMatrices,41,'inferred short branching algae');addPlants('branched',kelpMatrices,83,'inferred brown algae with lateral leaves');}
+    else{
+      this.addInstances(seagrassGeometry(this.resources, 41), grass, grassMatrices, 'modest inferred seagrass patches');
+      this.addInstances(seagrassGeometry(this.resources, 83, true), grass, kelpMatrices, 'brown coastal algae fronds');
+    }
     this.addInstances(encrustingGeometry(this.resources, 20), coral, coralMatrices, 'muted inferred encrusting organisms');
     this.rockMatrices.push(...rocks.flat());
     const lowAlgaeMatrices: THREE.Matrix4[] = [], edgeRandom = randomSeed(0x45444745), edge = new THREE.Vector3();
@@ -224,8 +240,10 @@ export class MarineLife {
       const width = 0.24 + edgeRandom() * 0.29; this.scale.set(width, 0.13 + edgeRandom() * 0.17, width);
       lowAlgaeMatrices.push(new THREE.Matrix4().compose(this.position, this.rotation, this.scale));
     }
-    const lowAlgae = seagrassMaterial(this.resources, this.animationTime); lowAlgae.color.set('#a69b81'); lowAlgae.forceSinglePass = true;
-    this.addInstances(seagrassGeometry(this.resources, 773, true), lowAlgae, lowAlgaeMatrices, 'short brown algae at irregular rock edges');
+    if(structured)addPlants('turf',lowAlgaeMatrices,773,'short branching algae at rock edges');
+    else{const lowAlgae = seagrassMaterial(this.resources, this.animationTime); lowAlgae.color.set('#a69b81'); lowAlgae.forceSinglePass = true;
+      this.addInstances(seagrassGeometry(this.resources, 773, true), lowAlgae, lowAlgaeMatrices, 'short brown algae at irregular rock edges');}
+    this.group.userData.marinePlants={structured:this.structuredAlgae,variantFamilies:structured?12:3,support:'Final ground sample; not a biological survey or rock-surface attachment'};
     this.group.userData.habitatCounts = { rocks: this.rockMatrices.length, seagrass: grassMatrices.length, algae: kelpMatrices.length,
       lowAlgae: lowAlgaeMatrices.length, encrusting: coralMatrices.length, attachedCoatingPatches: 0 };
     return new ScannedRockField(this.group, this.rockMatrices);
@@ -236,6 +254,7 @@ export class MarineLife {
     const boulders = variants.filter((variant) => variant.kind === 'boulder');
     const material = standard(this.resources, '#ffffff', 0.96); material.vertexColors = true;
     material.name = 'muted brown / purple thin rock-surface encrustation'; material.alphaMap = coatingMask(this.resources); material.alphaTest = 0.16;
+    if(this.structuredAlgae){material.transparent=true;material.opacity=.62;material.depthWrite=false;material.alphaTest=.025;material.name='thin mottled rock biofilm / substrate detail retained';}
     material.map = surfaceTexture(this.resources, '#cabfa9', 'stone', 850); material.bumpMap = material.map; material.bumpScale = 0.0012;
     material.userData.photorealRole = 'inferred rock-surface coating, not surveyed Tomari coral';
     boulders.forEach((variant, index) => {

@@ -49,7 +49,7 @@ export function createMeasuredGridPatch(grid:MeasuredGrid,fallbackGround:GroundS
     values[n]=y;if(!Number.isFinite(values[n]))throw new Error('Height exceeds finite Float32 range');
     if(t===1)maxUnblendedHeightError=Math.max(maxUnblendedHeightError,Math.abs(values[n]-grid.heights[n]));
   }
-  const group=new THREE.Group();group.name='native-measured-grid-patch';group.userData.recon_part='native-measured-heightfield';
+  const group=new THREE.Group();group.name='native-measured-grid-patch';group.userData.recon_part='native-measured-heightfield';group.userData.heightfieldSurface=true;
   const geometries:THREE.BufferGeometry[]=[],chunks=new Map<string,Chunk>();
   const diagnostics:MeasuredPatchDiagnostics={vertices:0,triangles:0,chunks:0,unknownSamples,nativeSamples:total,fullResolutionOnly:true,maxUnblendedHeightError,kind:'measured-heightfield'};
   for(let j0=0;j0<h-1;j0+=cells)for(let i0=0;i0<w-1;i0+=cells){
@@ -68,7 +68,7 @@ export function createMeasuredGridPatch(grid:MeasuredGrid,fallbackGround:GroundS
     }
     for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*stride+i,b=a+1,d=a+stride,e=d+1;if(det>0)indices.push(a,d,b,b,d,e);else indices.push(a,b,d,b,e,d);}
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));geometry.setAttribute('normal',new THREE.BufferAttribute(normals,3));geometry.setAttribute('uv',new THREE.BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.computeBoundingBox();geometry.computeBoundingSphere();geometry.userData.nativeCellOrigin={i:i0,j:j0};geometry.userData.nativeCellSize={width:nx,height:nz};
-    const mesh=new THREE.Mesh(geometry,material);mesh.position.set(x,0,z);mesh.name=`measured-grid-${i0}-${j0}`;mesh.frustumCulled=true;group.add(mesh);geometries.push(geometry);chunks.set(`${Math.floor(i0/cells)},${Math.floor(j0/cells)}`,{i:i0,j:j0,nx,nz,x,z,geometry});diagnostics.vertices+=positions.length/3;diagnostics.triangles+=indices.length/3;
+    const mesh=new THREE.Mesh(geometry,material);mesh.position.set(x,0,z);mesh.name=`measured-grid-${i0}-${j0}`;mesh.userData.heightfieldSurface=true;mesh.frustumCulled=true;group.add(mesh);geometries.push(geometry);chunks.set(`${Math.floor(i0/cells)},${Math.floor(j0/cells)}`,{i:i0,j:j0,nx,nz,x,z,geometry});diagnostics.vertices+=positions.length/3;diagnostics.triangles+=indices.length/3;
   }
   diagnostics.chunks=geometries.length;
   const inverse=(x:number,z:number)=>{const dx=x-o.x,dz=z-o.z;return {i:(dx*r.z-dz*r.x)/det,j:(dz*c.x-dx*c.z)/det};};

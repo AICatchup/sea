@@ -3,6 +3,7 @@ import type {SoundscapeFrame} from '../audio/soundscape-state.ts';
 import {ActivitySession} from '../activities/session.ts';
 import {ActivityWorld} from '../activities/world.ts';
 import {OCEAN_PROPAGATION_DIRECTION} from './wave-direction.ts';
+import {isStaticOpticalReceiver} from './receiver-selection.ts';
 import { OceanSimulation } from './fft';
 import { environmentFragment, environmentVertex, oceanVertex, oceanFragment, skyVertex, skyFragment } from './shaders';
 import { presets, type PresetName } from './presets';
@@ -166,7 +167,7 @@ export class Ocean {
     this.breaker=new URLSearchParams(location.search).get('breaker')==='1'?new ShoreBreaker():null;
     if(this.breaker)this.waterScene.add(this.breaker.group);
     this.assets=new AssetWorld(this.world,{branchCanopy:new URLSearchParams(location.search).get('branches')!=='0',canopyContinuity:new URLSearchParams(location.search).get('canopy')!=='0',crownSupport:new URLSearchParams(location.search).get('crown')==='1',originalCanopy:new URLSearchParams(location.search).get('originaltree')==='1',leafVolumeRefinement:new URLSearchParams(location.search).get('leafvolume')==='1'?{pineTriangles:1440,shrubTriangles:320}:false});
-    this.marine=new MarineLife(this.world);
+    this.marine=new MarineLife(this.world,new URLSearchParams(location.search).get('marineplants')!=='0');
     const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),
       bodySegmentBlocked:(from:Parameters<IslandWorld['bodySegmentBlocked']>[0],to:Parameters<IslandWorld['bodySegmentBlocked']>[1],radius?:number,height?:number)=>
         this.solidContactReady?false:this.world.bodySegmentBlocked(from,to,radius,height)};
@@ -545,13 +546,7 @@ export class Ocean {
       await this.ready;if(this.disposed)throw new Error('Ocean disposed');
       this.receiverSand=loadSandTextures();await this.receiverSand.ready;if(this.disposed)throw new Error('Ocean disposed');
       this.scene.updateMatrixWorld(true);
-      const include=(mesh:THREE.Mesh)=>{
-        if(mesh instanceof THREE.SkinnedMesh||mesh.geometry.morphAttributes.position?.length||mesh.userData.foliageLod||mesh.userData.surface||/DEM|forest|pine|foliage|needles|sprays|shrub|seagrass|leaf|leaves|cloud/i.test(mesh.name))return false;
-        for(let p:THREE.Object3D|null=mesh;p;p=p.parent)if(p.userData.foliageLod)return false;
-        const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];if(materials.some(m=>!(m instanceof THREE.MeshStandardMaterial||m instanceof THREE.MeshBasicMaterial)))return false;
-        if(!materials.some(m=>m.visible&&!m.transparent&&m.opacity>=1&&m.alphaTest===0&&(!('alphaMap' in m)||!m.alphaMap)&&(!('transmission' in m)||m.transmission===0)))return false;
-        return true;
-      };
+      const include=isStaticOpticalReceiver;
       const activeMesh=(mesh:THREE.Mesh)=>{
         if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();let box:THREE.Box3;
         if(mesh instanceof THREE.InstancedMesh){mesh.computeBoundingBox();box=mesh.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);}else box=mesh.geometry.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);
@@ -663,7 +658,7 @@ export class Ocean {
     this.scene.traverse(object=>{
       if(!(object instanceof THREE.Mesh)||!object.visible)return;
       if(foliageOnly&&!object.userData.foliageLod)return;
-      if(!foliageOnly&&((!includeTerrain&&(object.userData.surface||/DEM/.test(object.name)))||object instanceof THREE.SkinnedMesh||
+      if(!foliageOnly&&((!includeTerrain&&(object.userData.surface||object.userData.heightfieldSurface||/DEM/.test(object.name)))||object instanceof THREE.SkinnedMesh||
         (Array.isArray(object.material)?object.material:[object.material]).some(m=>m instanceof THREE.ShaderMaterial)))return;
       if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();
       for(let i=0;i<(object instanceof THREE.InstancedMesh?object.count:1);i++){
