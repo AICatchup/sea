@@ -1,5 +1,6 @@
 import './style.css';
 import { inspectBodyHands } from './qa/body-inspection';
+import {inspectCurrentHelmContact} from './qa/helm-contact-inspection.ts';
 import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
 import {inspectShoreTransport} from './qa/shore-transport-probe.ts';
 import {inspectShoreIncident} from './qa/shore-incident-probe.ts';
@@ -154,6 +155,7 @@ try {
   sound.setWind(ocean.wind);
   Object.defineProperty(window, '__sea', { get: () => ocean.diagnostics, configurable: true });
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaOptics',{value:()=>ocean.probeOptics(),configurable:true});
+  if(import.meta.env.DEV)Object.defineProperty(window,'__seaHelm',{value:()=>inspectCurrentHelmContact(ocean),configurable:true});
   const captureOnly=new URLSearchParams(location.search).get('capture')==='1';
   const capturePNG=async():Promise<string|null>=>{
     const blob=await ocean.capture();if(!blob)return null;

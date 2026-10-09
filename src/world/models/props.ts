@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { BOAT_ACCESS } from '../contracts';
+import {HELM_WHEEL} from '../helm-contact.ts';
 import {boatHullGeometry} from './boat-hull.ts';
 import { addBoatCushion, boatUpholsteryMaterial } from './boat-upholstery';
 import { ModelBatch, ModelResources, rockGeometry, standard, surfaceTexture } from './procedural';
@@ -194,8 +195,8 @@ export class CoastalModels {
     batch.box(this.rubber, 0.51, 1.06, -0.19, 0.18, 0.035, 0.13, 0.13);
     batch.box(this.glass, 0.51, 1.083, -0.19, 0.145, 0.008, 0.095, 0.13);
     for (const x of [0.21, 0.31]) batch.add(new THREE.CylinderGeometry(0.026, 0.026, 0.012, 12), this.white, new THREE.Vector3(x, 1.064, -0.23));
-    const wheelCenter = new THREE.Vector3(0.26, 1.065, 0.23);
-    batch.add(new THREE.TorusGeometry(0.15, 0.017, 8, 24), this.rubber, wheelCenter, undefined, new THREE.Euler(-0.26, 0, 0));
+    const wheelCenter = new THREE.Vector3(HELM_WHEEL.x,HELM_WHEEL.y,HELM_WHEEL.z);
+    batch.add(new THREE.TorusGeometry(HELM_WHEEL.radius,HELM_WHEEL.tube,8,24),this.rubber,wheelCenter,undefined,new THREE.Euler(HELM_WHEEL.tilt,0,0));
     for (let i = 0; i < 3; i++) {
       const angle = i * Math.PI * 2 / 3;
       batch.rod(this.metal, wheelCenter, wheelCenter.clone().add(new THREE.Vector3(Math.cos(angle) * 0.13, Math.sin(angle) * 0.125, Math.sin(angle) * -0.035)), 0.007);

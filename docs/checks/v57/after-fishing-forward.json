@@ -1,0 +1,781 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "contact": {
+        "available": true,
+        "boat": {
+          "pitch": -0.06388847753259762,
+          "position": [
+            -161.32896946601528,
+            0.06315275664974751,
+            -153.4219543586144
+          ],
+          "roll": 0.010725979738829286,
+          "yaw": -0.6
+        },
+        "camera": [
+          -160.56986883039923,
+          1.56377135152698,
+          -153.13488283840385
+        ],
+        "clock": 785.5547666659655,
+        "evidence": "CPU-skinned vertices from current rendered actor against analytic wheel torus; not GPU depth, photographs or human acceptance",
+        "frames": 48750,
+        "groups": {
+          "left index": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": 0.00016610998519318854,
+            "nearestDistanceM": 0.00016610998519318854,
+            "vertices": 1097,
+            "within7mm": 124
+          },
+          "left little": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": 0.001416807588684902,
+            "nearestDistanceM": 0.001416807588684902,
+            "vertices": 1097,
+            "within7mm": 126
+          },
+          "left middle": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": 0.001342125381800903,
+            "nearestDistanceM": 0.001342125381800903,
+            "vertices": 1097,
+            "within7mm": 98
+          },
+          "left palm": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": -0.00017465859702332429,
+            "nearestDistanceM": 0.00003791589217562452,
+            "vertices": 1441,
+            "within7mm": 62
+          },
+          "left ring": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": 0.000903614820967933,
+            "nearestDistanceM": 0.000903614820967933,
+            "vertices": 1097,
+            "within7mm": 114
+          },
+          "left thumb": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": -0.000890551731768597,
+            "nearestDistanceM": 0.00003684683541140682,
+            "vertices": 269,
+            "within7mm": 28
+          },
+          "right index": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": 0.0001661099852321643,
+            "nearestDistanceM": 0.0001661099852321643,
+            "vertices": 1097,
+            "within7mm": 122
+          },
+          "right little": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": 0.0014168075886199505,
+            "nearestDistanceM": 0.0014168075886199505,
+            "vertices": 1097,
+            "within7mm": 126
+          },
+          "right middle": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": 0.0013421253818187671,
+            "nearestDistanceM": 0.0013421253818187671,
+            "vertices": 1097,
+            "within7mm": 97
+          },
+          "right palm": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": -0.00017465859707593498,
+            "nearestDistanceM": 0.000037915892156834,
+            "vertices": 1441,
+            "within7mm": 62
+          },
+          "right ring": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": 0.0009036148210295296,
+            "nearestDistanceM": 0.0009036148210295296,
+            "vertices": 1097,
+            "within7mm": 115
+          },
+          "right thumb": {
+            "deeperThan4mm": 0,
+            "minimumSignedDistanceM": -0.0008905517318224115,
+            "nearestDistanceM": 0.00003684683547914083,
+            "vertices": 269,
+            "within7mm": 30
+          }
+        },
+        "mode": "boat"
+      },
+      "state": {
+        "adventure": {
+          "avatarAction": "helm",
+          "boarding": 0,
+          "boat": [
+            -161.32896946601528,
+            0.06315275664974751,
+            -153.4219543586144
+          ],
+          "boatYaw": -0.6,
+          "depth": 0,
+          "grounded": true,
+          "interaction": "船から降りる",
+          "message": "道具をしまいました。",
+          "mode": "boat",
+          "oxygen": 1,
+          "placed": 0,
+          "remaining": 0,
+          "speed": 0,
+          "stamina": 1,
+          "voyage": null
+        },
+        "breaker": null,
+        "camera": {
+          "height": 1.56377135152698,
+          "pitch": -0.03561912805574015,
+          "x": -160.56986883039923,
+          "yaw": -0.5933737122781536,
+          "z": -153.13488283840385
+        },
+        "collision": {
+          "colliders": 3241,
+          "hashCells": 1273,
+          "largeColliders": 1,
+          "lastCandidates": 0,
+          "lastIterations": 0,
+          "lastTransformedTriangles": 0,
+          "lastTriangleTests": 0,
+          "storedTriangles": 489224,
+          "triangles": 3492816,
+          "uniqueBVHs": 29
+        },
+        "draws": 65,
+        "expedition": {
+          "banked": [],
+          "bestRace": null,
+          "capacity": 3,
+          "captain": false,
+          "cargo": [],
+          "credits": 0,
+          "gear": [],
+          "notebook": false,
+          "race": null,
+          "rank": "海の散歩人",
+          "save": "saved",
+          "stamps": [],
+          "target": {
+            "depth": 0,
+            "groundY": 0.5310755771027394,
+            "id": "notebook",
+            "kind": "find",
+            "name": "漂着した調査ノート",
+            "note": "潮に流された調査機材を探して、浜の拠点へ届けよう。",
+            "value": 0,
+            "x": -41,
+            "y": 0.7810755771027394,
+            "z": 19
+          },
+          "version": 1
+        },
+        "fieldOfView": 78,
+        "foliage": {
+          "branchClusters": true,
+          "photoPass": false,
+          "pines": {
+            "byVariant": [
+              {
+                "distant": 0,
+                "far": 0,
+                "mid": 37,
+                "near": 0
+              },
+              {
+                "distant": 0,
+                "far": 0,
+                "mid": 39,
+                "near": 0
+              },
+              {
+                "distant": 0,
+                "far": 0,
+                "mid": 46,
+                "near": 1
+              }
+            ],
+            "culled": 2975,
+            "draws": 15,
+            "exclusiveLod": true,
+            "instances": {
+              "distant": 0,
+              "far": 0,
+              "mid": 122,
+              "near": 1
+            },
+            "levelTriangles": {
+              "far": [
+                1083,
+                1083,
+                1073
+              ],
+              "mid": [
+                4567,
+                4534,
+                4559
+              ],
+              "near": [
+                21663,
+                21467,
+                21614
+              ]
+            },
+            "nearTriangles": 21614,
+            "originalPlacements": 3098,
+            "oversized": {
+              "distant": 0,
+              "far": 0,
+              "mid": 0
+            },
+            "placements": 3098,
+            "rendered": 123,
+            "selection": "actual transformed crown angular span within distance / triangle caps",
+            "source": "Native CC0 wood and leaves retained, with authored supplementary distant branch patches",
+            "status": "ready",
+            "thresholds": {
+              "midCapacity": 180,
+              "midDistance": 210,
+              "nearCapacity": 24,
+              "nearDistance": 35,
+              "triangleBudget": 3600000,
+              "viewAware": true
+            },
+            "triangles": 577133,
+            "viewAware": true
+          },
+          "shrubs": {
+            "byVariant": [
+              {
+                "distant": 0,
+                "far": 142,
+                "mid": 42,
+                "near": 1
+              },
+              {
+                "distant": 0,
+                "far": 134,
+                "mid": 57,
+                "near": 1
+              },
+              {
+                "distant": 0,
+                "far": 122,
+                "mid": 81,
+                "near": 5
+              }
+            ],
+            "culled": 10249,
+            "draws": 9,
+            "exclusiveLod": true,
+            "instances": {
+              "distant": 0,
+              "far": 398,
+              "mid": 180,
+              "near": 7
+            },
+            "levelTriangles": {
+              "far": [
+                160,
+                160,
+                160
+              ],
+              "mid": [
+                420,
+                416,
+                434
+              ],
+              "near": [
+                2299,
+                2297,
+                2293
+              ]
+            },
+            "nearTriangles": 16061,
+            "originalPlacements": 10834,
+            "oversized": {
+              "distant": 0,
+              "far": 0,
+              "mid": 0
+            },
+            "placements": 10834,
+            "rendered": 585,
+            "selection": "actual transformed crown angular span within distance / triangle caps",
+            "source": "CC0 all-angle branch/needle/leaf models in every ready band",
+            "status": "ready",
+            "thresholds": {
+              "midCapacity": 180,
+              "midDistance": 210,
+              "nearCapacity": 48,
+              "nearDistance": 26,
+              "triangleBudget": 1350000,
+              "viewAware": true
+            },
+            "triangles": 156247,
+            "viewAware": true
+          },
+          "source": "Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified; authored distance-faded branch atlas supplements distant pine crowns",
+          "status": "ready"
+        },
+        "fps": 60,
+        "frames": 48750,
+        "geometryReceivers": {
+          "bridge": null,
+          "enabled": false,
+          "geometry": null,
+          "irradiance": {
+            "coefficients": [],
+            "intensity": 0,
+            "measured": false,
+            "scope": "Nine SH coefficients from the actual rendered solar-removed environment cube; diffuse only, specular hemisphere remains approximate"
+          },
+          "maxTextureSize": 16384,
+          "maxTextures": 16,
+          "skinned": null
+        },
+        "ground": -3.830727893899595,
+        "habushiGate": {
+          "baseHeight": 13.154579418318333,
+          "borrowedResources": 0,
+          "disposed": false,
+          "drawCalls": 7,
+          "groundMax": 15.232431199862322,
+          "groundMin": 11.518341589580851,
+          "maxStep": 0.244,
+          "relief": 3.714089610281471,
+          "triangles": 14264,
+          "windowCount": 4
+        },
+        "habushiGround": {
+          "borrowedResources": 0,
+          "dimensionStatus": "photo-informed layout; absolute pavement dimensions unmeasured",
+          "disposed": false,
+          "drawCalls": 6,
+          "groundTop": 0.02,
+          "maxStep": 0.14,
+          "photographicPavement": true,
+          "sidewalkTop": 0.14,
+          "triangles": 2040
+        },
+        "marineScans": {
+          "assets": [
+            "boulder_01",
+            "namaqualand_boulder_02",
+            "namaqualand_boulder_03"
+          ],
+          "capacity": 32,
+          "draws": 3,
+          "instances": 0,
+          "instancesPerVariant": [
+            0,
+            0,
+            0
+          ],
+          "license": "CC0-1.0",
+          "maxDistance": 29,
+          "status": "ready",
+          "trianglesPerVariant": [
+            54106,
+            17995,
+            18000
+          ],
+          "uniqueVariants": 3
+        },
+        "niijimaMaterials": {
+          "detail": "ready",
+          "detailAsset": "CC0-rock-face-03-analogue",
+          "pumice": "ready",
+          "tileMetres": 2.7
+        },
+        "paused": false,
+        "photoCoast": null,
+        "photographicSky": true,
+        "preset": "day",
+        "programs": 70,
+        "quality": "auto",
+        "reefShelves": [
+          {
+            "enabled": true,
+            "name": "Ground-conforming scanned rocky habitat coast_rocks_01",
+            "patches": [
+              {
+                "apron": 0.55,
+                "boundaryEdges": 143,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.06522386421512039,
+                "maxRelief": 0.12373404452440064,
+                "minRelief": -0.08,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  -0.005836672246811194,
+                  0.01710946861911881,
+                  0.13333496892203262
+                ],
+                "triangles": 17999
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 143,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.07881322810246338,
+                "maxRelief": 0.05503626222613257,
+                "minRelief": -0.08,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  -0.005836672246811194,
+                  0.01710946861911881,
+                  0.13333496892203262
+                ],
+                "triangles": 17999
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 143,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.07999952466325233,
+                "maxRelief": 0.08018742161881902,
+                "minRelief": -0.08,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  -0.005836672246811194,
+                  0.01710946861911881,
+                  0.13333496892203262
+                ],
+                "triangles": 17999
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 143,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.0703971798953873,
+                "maxRelief": 0.09523857278160754,
+                "minRelief": -0.08,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  -0.005836672246811194,
+                  0.01710946861911881,
+                  0.13333496892203262
+                ],
+                "triangles": 17999
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 143,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.07999976210865434,
+                "maxRelief": 0.013652679104919366,
+                "minRelief": -0.08,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  -0.005836672246811194,
+                  0.01710946861911881,
+                  0.13333496892203262
+                ],
+                "triangles": 17999
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 143,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.0799997617220285,
+                "maxRelief": 0.08116809307162746,
+                "minRelief": -0.08,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  -0.005836672246811194,
+                  0.01710946861911881,
+                  0.13333496892203262
+                ],
+                "triangles": 17999
+              }
+            ]
+          },
+          {
+            "enabled": true,
+            "name": "Ground-conforming scanned rocky habitat coast_rocks_03",
+            "patches": [
+              {
+                "apron": 0.55,
+                "boundaryEdges": 108,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.06108728069579428,
+                "maxRelief": 0.38000813961347063,
+                "minRelief": -0.08812518456760411,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  0.01362716943926958,
+                  -0.04003627902586919,
+                  0.3668423046318808
+                ],
+                "triangles": 17998
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 108,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.05354675717510737,
+                "maxRelief": 0.47531526558434983,
+                "minRelief": -0.1038560711573672,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  0.01362716943926958,
+                  -0.04003627902586919,
+                  0.3668423046318808
+                ],
+                "triangles": 17998
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 108,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.07999952933954368,
+                "maxRelief": 0.32161972129749367,
+                "minRelief": -0.09774564688385298,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  0.01362716943926958,
+                  -0.04003627902586919,
+                  0.3668423046318808
+                ],
+                "triangles": 17998
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 108,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.07069027334911837,
+                "maxRelief": 0.32408023817844,
+                "minRelief": -0.09804297305749088,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  0.01362716943926958,
+                  -0.04003627902586919,
+                  0.3668423046318808
+                ],
+                "triangles": 17998
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 108,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.07762127517691031,
+                "maxRelief": 0.5035121768682025,
+                "minRelief": -0.13542017689981917,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  0.01362716943926958,
+                  -0.04003627902586919,
+                  0.3668423046318808
+                ],
+                "triangles": 17998
+              },
+              {
+                "apron": 0.55,
+                "boundaryEdges": 108,
+                "embed": 0.08,
+                "maxBoundaryExposure": -0.07999977533056946,
+                "maxRelief": 0.4911813481580713,
+                "minRelief": -0.12943772029012746,
+                "reliefScale": 2,
+                "sourceGroundPlane": [
+                  0.01362716943926958,
+                  -0.04003627902586919,
+                  0.3668423046318808
+                ],
+                "triangles": 17998
+              }
+            ]
+          }
+        ],
+        "resolution": [
+          1433,
+          806
+        ],
+        "sandAppearance": 1,
+        "sandMoisture": {
+          "bytes": 2097152,
+          "elapsed": 0,
+          "passes": 0,
+          "ready": false,
+          "resolution": 256,
+          "scope": "Local ground-fixed optical dampness/film; authored decay, no soil hydrology, erosion or saved global sediment state",
+          "span": 192
+        },
+        "scannedCoast": [
+          {
+            "count": 20,
+            "name": "Photo-scanned cliff outcrops boulder_01"
+          },
+          {
+            "count": 20,
+            "name": "Photo-scanned cliff outcrops namaqualand_boulder_02"
+          },
+          {
+            "count": 20,
+            "name": "Photo-scanned cliff outcrops namaqualand_boulder_03"
+          },
+          {
+            "count": 30,
+            "name": "Photo-scanned cliff outcrops coast_rocks_01"
+          },
+          {
+            "count": 30,
+            "name": "Photo-scanned cliff outcrops coast_rocks_03"
+          }
+        ],
+        "shoreSolver": {
+          "bounds": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "droppedSeconds": 0,
+          "order": 2,
+          "precision": "float32",
+          "ready": 0,
+          "simulationElapsed": 0,
+          "stableDelta": 0.0061153681793131975,
+          "substeps": 0
+        },
+        "spray": {
+          "active": 3,
+          "approximation": "6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback",
+          "birthProxyUnits": "SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input",
+          "capacity": 1500,
+          "drawCalls": 2,
+          "emitted": 6887,
+          "failed": false,
+          "flowSamples": 576,
+          "interval": 0.2,
+          "maxEstimatedHeightDepthRatio": 0.24980544747081695,
+          "maxSampleCrest": 1.0011139085984588,
+          "maxSampleEnergy": 0.5450980392156862,
+          "pending": false,
+          "readbackBytes": 4608,
+          "ready": true,
+          "sampleEnergyPositiveCount": 3,
+          "sampleWetEligibleCount": 144,
+          "samples": 576,
+          "updateMs": 0.2999999998137355,
+          "whitewaterActive": 36,
+          "whitewaterCapacity": 1024,
+          "whitewaterEmitted": 3839,
+          "whitewaterMode": "legacy",
+          "whitewaterTriangles": 2048
+        },
+        "swell": 1,
+        "time": 785.5547666659655,
+        "topography": {
+          "canopyContinuity": true,
+          "cliffVolume": {
+            "source": "CC0 scan geometry / inferred placement",
+            "status": "ready",
+            "triangles": 124760
+          },
+          "coherentRock": true,
+          "connectedForm": false,
+          "dryToe": true,
+          "niijimaCliffReplacement": {
+            "queriedTriangles": 123220,
+            "removedTriangles": 114586
+          },
+          "niijimaCliffSkin": null,
+          "niijimaCoastConfidence": {
+            "compatible": true,
+            "removed": 1968
+          },
+          "niijimaMeasured": {
+            "centimetreAccuracyEstablished": false,
+            "datumTransformAccuracyMetres": 1,
+            "id": "tokyo-09QC1701-1711-native",
+            "nativeGridSpacingMetres": 0.25,
+            "nativeSamples": 3840000,
+            "numericalComparison": {
+              "maximumHeightEncodingErrorMetres": 0.005000000000009663,
+              "maximumHorizontalErrorMetres": 0.006630673760028973,
+              "maximumVertexErrorMetres": 0.008285493951898815,
+              "scope": "Against the declared transform of both provider grids, before outer-boundary blending. Excludes source survey and datum uncertainty; NOT physical centimetre accuracy.",
+              "vertices": 3840000
+            },
+            "source": "https://www.geospatial.jp/ckan/dataset/tokyopc-shima-2023",
+            "sourceTiles": [
+              {
+                "columns": 1600,
+                "id": "09QC1701",
+                "nativeNorthing": -183000,
+                "nativePixelMetres": 0.25,
+                "rows": 1200,
+                "tiffSha256": "f0046ebf015834b00b4889fa9cd2e11dfe6f9dce66f172aa7da0b65c6dcb24cb",
+                "url": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/17/09QC1701.zip",
+                "zipSha256": "0a82fad30bb148c54a990874b2bd535f6c5595c4e01177380348c00e8aef2909"
+              },
+              {
+                "columns": 1600,
+                "id": "09QC1711",
+                "nativeNorthing": -183300,
+                "nativePixelMetres": 0.25,
+                "rows": 1200,
+                "tiffSha256": "517493120bf9952d641968a7e5dbd577eacbd9d5d9140c00133c10bb8185bf23",
+                "url": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/17/09QC1711.zip",
+                "zipSha256": "89fefd0cfcd4484ea477bec98c6c4919a767b37a15d1220de389205447a77f47"
+              }
+            ]
+          },
+          "niijimaMeasuredPatch": {
+            "chunks": 247,
+            "fullResolutionOnly": true,
+            "kind": "measured-heightfield",
+            "maxUnblendedHeightError": 0,
+            "nativeSamples": 3840000,
+            "triangles": 7672002,
+            "unknownSamples": 0,
+            "vertices": 3897816
+          },
+          "niijimaPointCliff": null,
+          "strandProfile": {
+            "changed": 17846,
+            "maximumDelta": 0.8011924102902412,
+            "meanAbsoluteDelta": 0.1647245723231761,
+            "westernJoinVertices": 990
+          }
+        },
+        "triangles": 5552282,
+        "visualCaptureLocked": false,
+        "waterHeightCache": {
+          "failed": false,
+          "interval": 0.2,
+          "readbackBytes": 1024,
+          "ready": true,
+          "requestCapacity": 128,
+          "requestedPoints": 11,
+          "samples": 256
+        },
+        "wind": 8.5,
+        "worldSolids": {
+          "added": 3241,
+          "colliders": 3241,
+          "instances": 120,
+          "meshes": 23,
+          "removed": 0,
+          "replaced": 0,
+          "syncMs": 5167,
+          "triangles": 3492816,
+          "trunks": 3098,
+          "unchanged": 0
+        }
+      },
+      "time": 1791555031227
+    }
+  }
+}

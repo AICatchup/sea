@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { AdventureState } from './contracts.ts';
 import { createPlayerSkin } from './player-skin.ts';
+import {helmHandPose,HELM_FINGER_CURL} from './helm-contact.ts';
 
 /**
  * Original, metre-scale anatomy; no downloaded model, photographed skin or likeness.
@@ -20,6 +21,7 @@ interface Finger { base: THREE.Bone; middle: THREE.Bone; tip: THREE.Bone; thumb:
 interface Limb {
   upper: THREE.Bone; lower: THREE.Bone; end: THREE.Bone;
   upperRest: THREE.Vector3; lowerRest: THREE.Vector3; fingers?: Finger[];
+  shoulderRest?:THREE.Vector3;
 }
 const ACTIONS: Action[] = ['idle', 'walk', 'run', 'swim', 'dive', 'helm', 'climb'];
 const SKIN = 0, SUIT = 1, PANEL = 2, SEAM = 3, RUBBER = 4, METAL = 5, NAIL = 6;
@@ -185,6 +187,8 @@ export class FirstPersonBody {
   private readonly poseEuler = new THREE.Euler();
   private readonly boatQuaternion = new THREE.Quaternion();
   private readonly helmWorld = new THREE.Vector3();
+  private readonly helmOrientation=new THREE.Quaternion();
+  private readonly helmBodyOrientation=new THREE.Quaternion();
   private phase = 0;
   private wet = 0;
   private lean = 0;
@@ -376,7 +380,7 @@ export class FirstPersonBody {
       s.ellipsoid(v(wrist.x, .900, -.082), v(.0155, .0155, .0015), rigid(l), RUBBER, 20, 8);
       s.line([v(wrist.x, .900, -.084), v(wrist.x + .009, .905, -.084)], .0007, rigid(l), SEAM);
     }
-    return { upper, lower, end, fingers, upperRest: elbow.clone().sub(shoulder), lowerRest: wrist.clone().sub(elbow) };
+    return { upper, lower, end, fingers, shoulderRest:upper.position.clone(),upperRest: elbow.clone().sub(shoulder), lowerRest: wrist.clone().sub(elbow) };
   }
 
   private sculptHand(s: Sculpt, side: number, hand: THREE.Bone, origin: THREE.Vector3): Finger[] {
@@ -619,7 +623,9 @@ export class FirstPersonBody {
     const leanTarget = swim * 1.03 + dive * 1.16;
     this.lean = this.initialized ? this.lean + clamp(leanTarget - this.lean, -dt * 1.8, dt * 1.8) : leanTarget;
     const lean = this.lean;
-    const boatPitch = clamp(finite(state.boatPitch), -.13, .13) * helm, boatRoll = clamp(finite(state.boatRoll), -.13, .13) * helm;
+    // The seated body shares the vessel frame. Limiting only the body to .13
+    // while the seat and wheel continue tilting separates their contact points.
+    const boatPitch = finite(state.boatPitch) * helm, boatRoll = finite(state.boatRoll) * helm;
     const boatYaw = Number.isFinite(state.boatYaw) ? state.boatYaw : state.yaw;
     const yawDifference = Math.atan2(Math.sin(boatYaw - state.yaw), Math.cos(boatYaw - state.yaw));
     const bodyYaw = state.yaw + yawDifference * helm;
@@ -649,6 +655,9 @@ export class FirstPersonBody {
 
     for (let i = 0; i < this.arms.length; i++) {
       const side = i === 0 ? -1 : 1, phase = this.phase + (i === 0 ? 0 : Math.PI);
+      // Seated reaching protracts the shoulders; segment lengths stay anatomical.
+      this.arms[i].upper.position.copy(this.arms[i].shoulderRest!);
+      this.arms[i].upper.position.z-=.05*helm*(1-this.fishingBlend);
       const swing = Math.sin(phase), stroke = Math.sin(phase * .65), recovery = Math.cos(phase * .65);
       // Target positions are anatomical metres in body space, never a camera overlay.
       this.target.set(side * (.266 * idle + .27 * walk + .265 * run + (.33 + .052 * stroke) * water + .211 * helm + .22 * climb),
@@ -657,9 +666,10 @@ export class FirstPersonBody {
         -.052 * idle + (-.055 - .17 * swing) * walk + (-.185 - .15 * swing) * run
           + (-.36 - .10 * stroke) * water - .435 * helm - .335 * climb);
       if (helm > .001) {
-        // Wheel centre is boat-local (.26,1.065,.23), radius .15 m. The wrist
-        // stays aft of the rim by one articulated finger length, with palms inwards.
-        this.helmWorld.set(.26 + side * .195, 1.126, .374).applyQuaternion(this.boatQuaternion).add(state.boatPosition);
+        // Solve the wrist from the actual wheel and palmar contact, then move
+        // both position and orientation with the vessel's complete raw pose.
+        helmHandPose(side,this.helmWorld,this.helmOrientation);
+        this.helmWorld.applyQuaternion(this.boatQuaternion).add(state.boatPosition);
         this.helmWorld.applyMatrix4(this.inverseGroup);
         this.target.addScaledVector(this.helmWorld.clone().sub(v(side * .211, 1.234, -.435)), helm);
       }
@@ -677,6 +687,10 @@ export class FirstPersonBody {
         side * (.99 * idle + .87 * walk + .67 * run + .18 * water + .68 * helm + .18 * climb),
         side * (water * (Math.PI - stroke * .20) + climb * 2.5 + helm * .22), 'XYZ');
       this.targetQuaternion.setFromEuler(this.poseEuler);
+      if(helm>.001){
+        this.helmBodyOrientation.copy(this.rootQuaternion).invert().multiply(this.boatQuaternion).multiply(this.helmOrientation);
+        this.targetQuaternion.slerp(this.helmBodyOrientation,helm);
+      }
       if(this.fishingBlend>.001){const grip=new THREE.Quaternion().copy(this.rootQuaternion).invert().multiply(camera.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(1.18,side*.35,side*.16)));this.targetQuaternion.slerp(grip,this.fishingBlend);}
       this.orientAbsolute(wrist,this.targetQuaternion);
       const curl = (.20 * idle + .24 * walk + .43 * run + (.08 + .12 * Math.max(0, -stroke)) * water + .92 * helm + .7 * climb)*(1-this.fishingBlend)+.82*this.fishingBlend;
@@ -684,11 +698,14 @@ export class FirstPersonBody {
       for (let f = 0; f < fingers.length; f++) {
         const finger = fingers[f], difference = f * .022;
         if (finger.thumb) {
-          finger.base.rotation.set(curl * .29, -side * curl * .22, -side * curl * .26);
+          finger.base.rotation.set(THREE.MathUtils.lerp(curl*.29,.1,helm*(1-this.fishingBlend)),
+            -side*THREE.MathUtils.lerp(curl*.22,.2,helm*(1-this.fishingBlend)),
+            -side*THREE.MathUtils.lerp(curl*.26,-.2,helm*(1-this.fishingBlend)));
           finger.middle.rotation.set(curl * .32, 0, -side * curl * .1); finger.tip.rotation.set(curl * .45, 0, 0);
         } else {
-          finger.base.rotation.set(curl + difference, 0, side * (f - 1.5) * .012 * water);
-          finger.middle.rotation.set(curl * 1.05 + difference, 0, 0); finger.tip.rotation.set(curl * .65, 0, 0);
+          const contact=helm*(1-this.fishingBlend),grip=THREE.MathUtils.lerp(curl,HELM_FINGER_CURL[f],contact);
+          finger.base.rotation.set(grip+difference*(1-contact),0,side*(f-1.5)*.012*water);
+          finger.middle.rotation.set(grip*1.05+difference*(1-contact),0,0);finger.tip.rotation.set(grip*.65,0,0);
         }
       }
     }
