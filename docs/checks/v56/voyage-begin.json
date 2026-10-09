@@ -1,0 +1,37 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -118.83735065907516,
+          -0.07257172661687511,
+          -90.99251492397543
+        ],
+        "boatYaw": -1.220217223742641,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "中の浦海水浴場へ出航。移動キーで手動操船に戻ります。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 1254.0822674473118,
+        "speed": 1.3994399999998046,
+        "stamina": 1,
+        "voyage": "nakanoura"
+      },
+      "camera": {
+        "height": 1.400481649806272,
+        "pitch": -0.483,
+        "x": -118.00060586528352,
+        "yaw": 3.682264850577054,
+        "z": -91.19369121549848
+      },
+      "fps": 60,
+      "time": 1791552540333
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -567.9491461316569,
+          -0.0914460142165818,
+          858.3804635391687
+        ],
+        "boatYaw": -2.9991692186680705,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "船から降りる",
+        "message": "中の浦海水浴場の海岸付近へ到着しました。Eで船のそばへ下り、泳いで浜へ進めます。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.3611895647926375,
+        "pitch": -0.483,
+        "x": -568.4405055968991,
+        "yaw": 3.283993969865738,
+        "z": 857.6328568574747
+      },
+      "fps": 60,
+      "frames": 41177,
+      "time": 1791552658351
+    }
+  }
+}

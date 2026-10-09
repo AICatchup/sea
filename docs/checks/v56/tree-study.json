@@ -1,0 +1,991 @@
+{
+  "observedAt": "2026-10-09T13:30:47.469Z",
+  "source": {
+    "url": "https://github.com/dgreenheck/ez-tree",
+    "revision": "dcf309bd86bd521083d9c70f01f2de45fdc7c457",
+    "license": "MIT",
+    "sources": {
+      "LICENSE": "dfcc723b09e99427663fb35ad5a86a39667255d3d6ea35a1efe0d8235d24cb40",
+      "src/lib/tree.js": "64d6ff21adfa3c373af191d79ca2df948075256ad3c65f0a6955a77d0d808378",
+      "src/lib/options.js": "495b69ec2415c339c31949c2b91c2e8b67fd0d9cc47d012b893a7e314890d8cd",
+      "src/lib/enums.js": "d91bec70c9919a13df042f3ff5c2f5082319aa3bf9afff0f787236abb621b4ff"
+    }
+  },
+  "execution": "Cloned library geometry methods bundled with Vite; no texture download, GPU render or runtime adoption.",
+  "cases": [
+    {
+      "preset": "Pine Medium",
+      "seed": 3917,
+      "skeletonHash": "9a011fcaca69a975af90f20f47ec9e201ff7d9385f49ec89e5f9ffdd737ddc9f",
+      "branches": 83,
+      "leaves": 2460,
+      "levels": [
+        {
+          "name": "near",
+          "leafStride": 1,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 6431,
+              "triangles": 10032,
+              "maxIndex": 6430,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.283452033996582,
+                  0,
+                  -12.067099571228027
+                ],
+                "max": [
+                  14.46809196472168,
+                  49.836570739746094,
+                  15.038536071777344
+                ]
+              },
+              "positionHash": "27b9414e679d510a01d0d1389f91eba6d60e961e568ec078551ff896e244d7cd"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 19680,
+              "triangles": 9840,
+              "maxIndex": 19679,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -16.46674919128418,
+                  6.089722633361816,
+                  -12.97826862335205
+                ],
+                "max": [
+                  15.495394706726074,
+                  51.34365463256836,
+                  15.878360748291016
+                ]
+              },
+              "positionHash": "713db988ebd237720b40c5d598511e5326f002bc52f24d72f94457c4c850e44a"
+            }
+          ],
+          "milliseconds": 64.81269999999995
+        },
+        {
+          "name": "mid",
+          "leafStride": 2,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 2495,
+              "triangles": 3328,
+              "maxIndex": 2494,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.28338623046875,
+                  0,
+                  -12.067089080810547
+                ],
+                "max": [
+                  14.468011856079102,
+                  49.836570739746094,
+                  15.038492202758789
+                ]
+              },
+              "positionHash": "feeb6e07147efd89b3f49eaca62a9b5e259f7bafe9bb95b33c4b3e5fe9fe1767"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 9840,
+              "triangles": 4920,
+              "maxIndex": 9839,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -16.256628036499023,
+                  6.089722633361816,
+                  -12.97826862335205
+                ],
+                "max": [
+                  15.211282730102539,
+                  51.34365463256836,
+                  15.545485496520996
+                ]
+              },
+              "positionHash": "d38cd2d55393cbe62347c4fbfa0d26b89b2e6d95048bdc0e7c4af2bfee550c02"
+            }
+          ],
+          "milliseconds": 37.04919999999993
+        },
+        {
+          "name": "far",
+          "leafStride": 4,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 999,
+              "triangles": 1000,
+              "maxIndex": 998,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.283452033996582,
+                  0,
+                  -12.067099571228027
+                ],
+                "max": [
+                  14.46809196472168,
+                  49.836570739746094,
+                  15.038406372070312
+                ]
+              },
+              "positionHash": "cb5ebc9357c0d8b46805f85fc5a89f035858f94bc5190acad8b9cc0e12eba503"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 4920,
+              "triangles": 2460,
+              "maxIndex": 4919,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.325551986694336,
+                  6.089722633361816,
+                  -12.97826862335205
+                ],
+                "max": [
+                  13.985416412353516,
+                  51.08889389038086,
+                  15.545485496520996
+                ]
+              },
+              "positionHash": "d3fc45100a804e254a99d8e64fc2146a913368f01d524a574f8b530e41284f77"
+            }
+          ],
+          "milliseconds": 24.867000000000075
+        }
+      ]
+    },
+    {
+      "preset": "Pine Medium",
+      "seed": 4919,
+      "skeletonHash": "e284823514547a272c2b705cd3b6ba960cab8f5ec60f467c060fed4388bea6e9",
+      "branches": 83,
+      "leaves": 2460,
+      "levels": [
+        {
+          "name": "near",
+          "leafStride": 1,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 6431,
+              "triangles": 10032,
+              "maxIndex": 6430,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.346145629882812,
+                  0,
+                  -14.022560119628906
+                ],
+                "max": [
+                  14.576478958129883,
+                  49.61124801635742,
+                  14.14891242980957
+                ]
+              },
+              "positionHash": "2b0edb97e7bb53349e36ccd4e1ce93b4164222697b0837f3c1f0252ce60d5e57"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 19680,
+              "triangles": 9840,
+              "maxIndex": 19679,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.993847846984863,
+                  4.090348720550537,
+                  -15.3506498336792
+                ],
+                "max": [
+                  16.219648361206055,
+                  50.9586067199707,
+                  15.60959529876709
+                ]
+              },
+              "positionHash": "88bbfeb958353798b00322e5480be04ff730809f91a5e4104ad05ce7e9a4799e"
+            }
+          ],
+          "milliseconds": 28.484399999999937
+        },
+        {
+          "name": "mid",
+          "leafStride": 2,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 2495,
+              "triangles": 3328,
+              "maxIndex": 2494,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.3461275100708,
+                  0,
+                  -14.022489547729492
+                ],
+                "max": [
+                  14.576476097106934,
+                  49.61124801635742,
+                  14.148896217346191
+                ]
+              },
+              "positionHash": "9e9636e0d3c4d8b8d9a49d667a0f66a5135751ce3d940de309f23675b614a47f"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 9840,
+              "triangles": 4920,
+              "maxIndex": 9839,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.334153175354004,
+                  4.090348720550537,
+                  -15.142857551574707
+                ],
+                "max": [
+                  15.135210037231445,
+                  50.9586067199707,
+                  14.868701934814453
+                ]
+              },
+              "positionHash": "e861570c66939bfdf9478b79be1999dc9bad6c0650c3fa13f4be70d900ac7e7a"
+            }
+          ],
+          "milliseconds": 17.026899999999955
+        },
+        {
+          "name": "far",
+          "leafStride": 4,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 999,
+              "triangles": 1000,
+              "maxIndex": 998,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.346145629882812,
+                  0,
+                  -14.022560119628906
+                ],
+                "max": [
+                  14.576191902160645,
+                  49.61124801635742,
+                  14.14891242980957
+                ]
+              },
+              "positionHash": "d2b902d9d2c5e2068169228de5bcffdbaeb54a1e9ef0182896d459826774a1fe"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 4920,
+              "triangles": 2460,
+              "maxIndex": 4919,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.334153175354004,
+                  5.481623649597168,
+                  -15.142857551574707
+                ],
+                "max": [
+                  14.846380233764648,
+                  50.175498962402344,
+                  14.868701934814453
+                ]
+              },
+              "positionHash": "2ad5fa743a3514314b69e5729b755553531930a0fc8de699a59117f54ee3be66"
+            }
+          ],
+          "milliseconds": 11.440499999999929
+        }
+      ]
+    },
+    {
+      "preset": "Pine Medium",
+      "seed": 5923,
+      "skeletonHash": "6c2c264e089abfbe8b08022a1305d2ac12f61c28ada6f597f4e2e6f10e8ab246",
+      "branches": 83,
+      "leaves": 2460,
+      "levels": [
+        {
+          "name": "near",
+          "leafStride": 1,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 6431,
+              "triangles": 10032,
+              "maxIndex": 6430,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.372208595275879,
+                  0,
+                  -13.774685859680176
+                ],
+                "max": [
+                  14.777179718017578,
+                  49.865081787109375,
+                  11.5482816696167
+                ]
+              },
+              "positionHash": "42196aca692c6ac2d0cd94eb4632202d637e689c8a3fa393cfc609e9976312c1"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 19680,
+              "triangles": 9840,
+              "maxIndex": 19679,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.557329177856445,
+                  0.9179354310035706,
+                  -15.17350959777832
+                ],
+                "max": [
+                  16.084976196289062,
+                  51.26720428466797,
+                  12.409546852111816
+                ]
+              },
+              "positionHash": "0213e77a0aa94e2c9c241b0b7a6431ec32813c92885fd3f47e9d9401788fdcb4"
+            }
+          ],
+          "milliseconds": 23.314399999999978
+        },
+        {
+          "name": "mid",
+          "leafStride": 2,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 2495,
+              "triangles": 3328,
+              "maxIndex": 2494,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.372145652770996,
+                  0,
+                  -13.774621963500977
+                ],
+                "max": [
+                  14.777117729187012,
+                  49.865081787109375,
+                  11.548269271850586
+                ]
+              },
+              "positionHash": "350e3953f854d574e70237c037f551018d94e47538b8c13bba311048acf083a2"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 9840,
+              "triangles": 4920,
+              "maxIndex": 9839,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.848278999328613,
+                  1.7066007852554321,
+                  -15.068259239196777
+                ],
+                "max": [
+                  15.498830795288086,
+                  50.955848693847656,
+                  12.257736206054688
+                ]
+              },
+              "positionHash": "e4aa5d893300e70e27ab6c04e1f4ba644bbee1a52a5f671a89cae2dbdaa6ec41"
+            }
+          ],
+          "milliseconds": 11.715799999999945
+        },
+        {
+          "name": "far",
+          "leafStride": 4,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 999,
+              "triangles": 1000,
+              "maxIndex": 998,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.371988296508789,
+                  0,
+                  -13.774685859680176
+                ],
+                "max": [
+                  14.777179718017578,
+                  49.865081787109375,
+                  11.547869682312012
+                ]
+              },
+              "positionHash": "0ace3095ce811c74a0b5b2523001f6565035bc4ac447305a870779ebbac8e671"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 4920,
+              "triangles": 2460,
+              "maxIndex": 4919,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.848278999328613,
+                  1.7066007852554321,
+                  -15.068259239196777
+                ],
+                "max": [
+                  14.466330528259277,
+                  50.955848693847656,
+                  11.757264137268066
+                ]
+              },
+              "positionHash": "4389c868e0a9ce92bc43e1af19db179668d3e1d0f045918fcbeb9c762a9a535d"
+            }
+          ],
+          "milliseconds": 7.39429999999993
+        }
+      ]
+    },
+    {
+      "preset": "Bush 1",
+      "seed": 3917,
+      "skeletonHash": "86d6af253dad3475997db72d4b7f804b3b5ccb63acb1a889271e3c7f344f72a4",
+      "branches": 137,
+      "leaves": 1248,
+      "levels": [
+        {
+          "name": "near",
+          "leafStride": 1,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 6331,
+              "triangles": 8880,
+              "maxIndex": 6330,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -8.21486759185791,
+                  -0.07932489365339279,
+                  -13.445100784301758
+                ],
+                "max": [
+                  12.303706169128418,
+                  23.974973678588867,
+                  14.019989967346191
+                ]
+              },
+              "positionHash": "5d1f854f80bc2fca49efe6ceaeffb2ead22ac4605c6a589ede75d3a13b3c25a0"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 9984,
+              "triangles": 4992,
+              "maxIndex": 9983,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -11.238628387451172,
+                  0.3444425165653229,
+                  -16.832433700561523
+                ],
+                "max": [
+                  15.798008918762207,
+                  26.814640045166016,
+                  16.769573211669922
+                ]
+              },
+              "positionHash": "6a2eee536c04c80e243ced5cb21c93ef40161658bdb9aac99da671bdddf5a994"
+            }
+          ],
+          "milliseconds": 48.043899999999894
+        },
+        {
+          "name": "mid",
+          "leafStride": 2,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 2540,
+              "triangles": 2988,
+              "maxIndex": 2539,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -8.214885711669922,
+                  -0.05627157539129257,
+                  -13.445039749145508
+                ],
+                "max": [
+                  12.303565979003906,
+                  23.974973678588867,
+                  14.015934944152832
+                ]
+              },
+              "positionHash": "1737715af9da0ac728de05279634f15f9f41a9d78729476f6555dc9f87301a0f"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 4992,
+              "triangles": 2496,
+              "maxIndex": 4991,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -10.759252548217773,
+                  1.8855924606323242,
+                  -16.832433700561523
+                ],
+                "max": [
+                  15.798008918762207,
+                  26.814640045166016,
+                  16.769573211669922
+                ]
+              },
+              "positionHash": "fc9051f1675258f22b8ef2b506ab75663a1158bed96afc0e73a1952a028b9588"
+            }
+          ],
+          "milliseconds": 21.963700000000017
+        },
+        {
+          "name": "far",
+          "leafStride": 4,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 1544,
+              "triangles": 1494,
+              "maxIndex": 1543,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -8.214885711669922,
+                  -0.05627157539129257,
+                  -13.445039749145508
+                ],
+                "max": [
+                  12.303565979003906,
+                  23.974973678588867,
+                  14.015934944152832
+                ]
+              },
+              "positionHash": "efe801c291a0d94ccee27dfbffb5abecf97c30243aff66472aa570e359b31d55"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 2496,
+              "triangles": 1248,
+              "maxIndex": 2495,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -10.759252548217773,
+                  1.986948013305664,
+                  -16.832433700561523
+                ],
+                "max": [
+                  15.322317123413086,
+                  26.814640045166016,
+                  16.769573211669922
+                ]
+              },
+              "positionHash": "2a52c9933e047b662fe087e4880caec1c0fd08102984a06190a17ca744d81246"
+            }
+          ],
+          "milliseconds": 14.697300000000041
+        }
+      ]
+    },
+    {
+      "preset": "Bush 1",
+      "seed": 4919,
+      "skeletonHash": "024c86da07ecd9d29fbb7cb1697a24775d7a24b9412cf10d3bde056606c5672f",
+      "branches": 137,
+      "leaves": 1248,
+      "levels": [
+        {
+          "name": "near",
+          "leafStride": 1,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 6331,
+              "triangles": 8880,
+              "maxIndex": 6330,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -11.478715896606445,
+                  -0.10498150438070297,
+                  -7.82233190536499
+                ],
+                "max": [
+                  11.574774742126465,
+                  24.4186954498291,
+                  15.6085786819458
+                ]
+              },
+              "positionHash": "49ae89715196767d9dc49615af76616cc1a3a87832392160c7296a4e07d06de5"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 9984,
+              "triangles": 4992,
+              "maxIndex": 9983,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.264793395996094,
+                  -0.8301406502723694,
+                  -10.577296257019043
+                ],
+                "max": [
+                  15.095782279968262,
+                  28.274402618408203,
+                  17.92843246459961
+                ]
+              },
+              "positionHash": "240ca620e824b53056dfc9fefcf4ef1500c34650ab68bbab10ed4e64b906ba4b"
+            }
+          ],
+          "milliseconds": 18.38409999999999
+        },
+        {
+          "name": "mid",
+          "leafStride": 2,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 2540,
+              "triangles": 2988,
+              "maxIndex": 2539,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -11.478715896606445,
+                  -0.10306207090616226,
+                  -7.818022727966309
+                ],
+                "max": [
+                  11.574774742126465,
+                  24.418773651123047,
+                  15.509449005126953
+                ]
+              },
+              "positionHash": "b86944e098ae99c5ca3b37a0fc2299f6d17e046d111105ee86d6b1f6088ca26f"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 4992,
+              "triangles": 2496,
+              "maxIndex": 4991,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.264793395996094,
+                  0.5966472625732422,
+                  -10.577296257019043
+                ],
+                "max": [
+                  14.839034080505371,
+                  28.274402618408203,
+                  17.92843246459961
+                ]
+              },
+              "positionHash": "7149f8c38924e88c82944bd1276d9a06fdd7e9ddb264117b67028e902631769a"
+            }
+          ],
+          "milliseconds": 14.983200000000124
+        },
+        {
+          "name": "far",
+          "leafStride": 4,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 1544,
+              "triangles": 1494,
+              "maxIndex": 1543,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -11.478715896606445,
+                  -0.10306207090616226,
+                  -7.818022727966309
+                ],
+                "max": [
+                  11.574774742126465,
+                  24.418773651123047,
+                  15.509449005126953
+                ]
+              },
+              "positionHash": "c2db6abbb107e02ac22ea700b1f596f760dcf88dce21ca2f3cbc166b9577b734"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 2496,
+              "triangles": 1248,
+              "maxIndex": 2495,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.24868106842041,
+                  1.3529924154281616,
+                  -10.454463958740234
+                ],
+                "max": [
+                  14.839034080505371,
+                  28.274402618408203,
+                  17.92843246459961
+                ]
+              },
+              "positionHash": "758c8167d0d3c23611948ec7600e0d1502c3d85fff62a57ba55d8e5b3b0c832d"
+            }
+          ],
+          "milliseconds": 6.65520000000015
+        }
+      ]
+    },
+    {
+      "preset": "Bush 1",
+      "seed": 5923,
+      "skeletonHash": "5f159152cb9f60889eee44fba868280a7ceb299c3066abea09f08764b539f809",
+      "branches": 137,
+      "leaves": 1248,
+      "levels": [
+        {
+          "name": "near",
+          "leafStride": 1,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 6331,
+              "triangles": 8880,
+              "maxIndex": 6330,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.092604637145996,
+                  -0.07591377198696136,
+                  -9.981525421142578
+                ],
+                "max": [
+                  10.425545692443848,
+                  23.5567569732666,
+                  12.947979927062988
+                ]
+              },
+              "positionHash": "7aae72e021d096f2114c79da4cb2ce50ad33b16c811d4133ab217f10c0a7de81"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 9984,
+              "triangles": 4992,
+              "maxIndex": 9983,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -18.3444766998291,
+                  -0.7524541616439819,
+                  -14.099764823913574
+                ],
+                "max": [
+                  13.95631217956543,
+                  26.2244873046875,
+                  16.15924072265625
+                ]
+              },
+              "positionHash": "326023934f2bd9d8070a5faadf9bf2c0d0366ce7fd32df8801763b615c2bfe93"
+            }
+          ],
+          "milliseconds": 14.919399999999996
+        },
+        {
+          "name": "mid",
+          "leafStride": 2,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 2540,
+              "triangles": 2988,
+              "maxIndex": 2539,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -15.092604637145996,
+                  -0.07040295749902725,
+                  -9.981525421142578
+                ],
+                "max": [
+                  10.425545692443848,
+                  23.5567569732666,
+                  12.948038101196289
+                ]
+              },
+              "positionHash": "beff0553ad843558516a55af2b16fa108a1bcd4902afd444b629e61b5a307404"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 4992,
+              "triangles": 2496,
+              "maxIndex": 4991,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -18.011737823486328,
+                  -0.26214852929115295,
+                  -14.099764823913574
+                ],
+                "max": [
+                  13.95631217956543,
+                  26.2244873046875,
+                  16.15924072265625
+                ]
+              },
+              "positionHash": "31a7b9f331abe956c3f9b9deba775d92bb550bffa6e4d003d961caba2ffad8fe"
+            }
+          ],
+          "milliseconds": 11.662199999999984
+        },
+        {
+          "name": "far",
+          "leafStride": 4,
+          "leafScale": 1,
+          "skeletonUnchanged": true,
+          "parts": [
+            {
+              "kind": "branches",
+              "vertices": 1544,
+              "triangles": 1494,
+              "maxIndex": 1543,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -14.989522933959961,
+                  -0.07040295749902725,
+                  -9.981525421142578
+                ],
+                "max": [
+                  10.425545692443848,
+                  23.5567569732666,
+                  12.948038101196289
+                ]
+              },
+              "positionHash": "143758a52c183b87e00df1280d077bc49b4b12a677727d03cd0913f941f831bb"
+            },
+            {
+              "kind": "leaves",
+              "vertices": 2496,
+              "triangles": 1248,
+              "maxIndex": 2495,
+              "indexArray": "Uint16Array",
+              "finite": true,
+              "bounds": {
+                "min": [
+                  -17.489776611328125,
+                  -0.26214852929115295,
+                  -14.099764823913574
+                ],
+                "max": [
+                  12.43282699584961,
+                  26.2244873046875,
+                  16.15924072265625
+                ]
+              },
+              "positionHash": "557d090936d450e2a6e126c3a7b2d4efb6df5b29b17acbd2fd8e36bf974e544e"
+            }
+          ],
+          "milliseconds": 7.317000000000007
+        }
+      ]
+    }
+  ],
+  "defaultAdoption": false,
+  "fullGoal": "active_unmet"
+}

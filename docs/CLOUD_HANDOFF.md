@@ -1,5 +1,9 @@
 # 再開用の途中保存 — 2026-10-06
 
+## 2026-10-09 V56の再開点
+
+[外部取得・形状生成・船の修正](research/sea-external-contact-v56.md)、[通常入力と片道上陸の実行証拠](verification-v56.md)。収納竿は船の完全な回転へ統一。EcctrlとEZ-Treeは固定版をcloneし、後者は元ライブラリで6個体・18LOD生成を実行したが、植生へは未採用。内蔵ブラウザの通常RAFが復旧し、浜→入水→実船への近距離乗船→約1.25kmの中の浦航海→下船→walkへ戻る上陸を確認した。回収・帰還・全島は今回未検証。崖V55の足元の欠損、反復する植生、身体と舵の接触、中の浦などの単純な地形、最終動画は未完了。全体goalはACTIVE/UNMET。ブラウザ・公開書込はrootが一人で操作し、旧プロセスのleaseだけをlivenessの証拠にしない。
+
 ## 2026-10-09 V55の再開点
 
 [連続面の実装](research/sea-continuous-cliff-v55.md)、[検証](verification-v55.md)、[独立審査](checks/v55/independent-visual-review.md)を読む。開発用poissoncoast=2は狭い110m版、=3は拡張150m版。元LASのy0–165まで取り直して旧y85による上端切断を除き、広い投影footprintと4m C2境界へ変更。V54の縦カーテンは使わず、floor/collisionは変形後の同じMesh。

@@ -7,13 +7,19 @@ const Y=new THREE.Vector3(0,1,0);
 export class ActivityWorld{
  readonly group=new THREE.Group();private rod=new THREE.Group();private spareRod=new THREE.Group();private board=new THREE.Group();
  private fish=new THREE.Group();private catchDisplay=new CatchDisplay();
+ private readonly vesselRotation=new THREE.Quaternion();
+ private readonly storedRodRotation=new THREE.Quaternion().setFromEuler(new THREE.Euler(.2,0,.12));
+ private readonly vesselEuler=new THREE.Euler(0,0,0,'YXZ');
  private bobber:THREE.Mesh;private line:THREE.Line;private poleTip=new THREE.Vector3();private resources:(THREE.BufferGeometry|THREE.Material)[]=[];
- constructor(private session:ActivitySession){
+ private session:ActivitySession;
+ constructor(session:ActivitySession){
+  this.session=session;
   this.group.name='Fishing and surfing equipment';
   const material=(color:number,metalness=0,roughness=.4)=>{const m=new THREE.MeshStandardMaterial({color,metalness,roughness});this.resources.push(m);return m;};
   const carbon=material(0x202d30,.3,.32),cork=material(0x967753,0,.85),steel=material(0xc7d2d1,.85,.19),white=material(0xebeee6,0,.28),teal=material(0x237c88,.15,.3);
   const mesh=(g:THREE.BufferGeometry,m:THREE.Material,parent:THREE.Object3D)=>{this.resources.push(g);const v=new THREE.Mesh(g,m);v.castShadow=true;v.receiveShadow=true;parent.add(v);return v;};
   const makeRod=(root:THREE.Group)=>{const shaft=mesh(new THREE.CylinderGeometry(.003,.010,2.05,12),carbon,root);shaft.position.y=1.1;const grip=mesh(new THREE.CylinderGeometry(.018,.020,.32,16),cork,root);grip.position.y=.16;const reel=mesh(new THREE.CylinderGeometry(.048,.048,.056,20),steel,root);reel.rotation.z=Math.PI/2;reel.position.set(-.06,.26,0);for(let i=0;i<5;i++){const guide=mesh(new THREE.TorusGeometry(.015-i*.0018,.0018,6,12),steel,root);guide.position.set(.013,.5+i*.34,0);guide.rotation.x=Math.PI/2;}};
+  this.rod.name='Fishing rod';this.spareRod.name='Shore fishing rod';
   makeRod(this.rod);makeRod(this.spareRod);this.group.add(this.rod,this.spareRod,this.board);
   const positions:number[]=[],uv:number[]=[],indices:number[]=[];const rings=36,sides=20;
   for(let r=0;r<=rings;r++){const t=r/rings,z=(t-.5)*2.35,shape=Math.pow(Math.max(.003,Math.sin(t*Math.PI)),.58),rocker=.07*Math.pow(Math.abs(2*t-1),3);for(let k=0;k<=sides;k++){const a=k/sides*Math.PI*2;positions.push(Math.cos(a)*.315*shape,Math.sin(a)*.038*shape+rocker,z);uv.push(k/sides,t);if(r<rings&&k<sides){const n=r*(sides+1)+k;indices.push(n,n+sides+1,n+1,n+1,n+sides+1,n+sides+2);}}}
@@ -33,7 +39,12 @@ export class ActivityWorld{
   if(model.tool==='rod'){
     this.rod.position.set(.22,-.51,-.47).applyMatrix4(camera.matrixWorld);
     const forward=new THREE.Vector3(.05,.31,-1).normalize().applyQuaternion(camera.quaternion);this.rod.quaternion.setFromUnitVectors(Y,forward);
-  }else{this.rod.position.set(.92,.6,1.95).applyEuler(new THREE.Euler(s.boatPitch??0,-s.boatYaw,s.boatRoll??0,'YXZ')).add(s.boatPosition);this.rod.quaternion.setFromEuler(new THREE.Euler(.2,-s.boatYaw,.12));}
+  }else{
+    // Socket position and shaft direction share the vessel's complete pose.
+    this.vesselRotation.setFromEuler(this.vesselEuler.set(s.boatPitch??0,-s.boatYaw,s.boatRoll??0,'YXZ'));
+    this.rod.position.set(.92,.6,1.95).applyQuaternion(this.vesselRotation).add(s.boatPosition);
+    this.rod.quaternion.copy(this.vesselRotation).multiply(this.storedRodRotation);
+  }
   this.rod.updateMatrixWorld(true);this.poleTip.set(0,2.125,0).applyMatrix4(this.rod.matrixWorld);
   this.bobber.visible=this.line.visible=model.tool==='rod'&&f.floatPosition!==null;
   if(f.floatPosition){const p=f.floatPosition;this.bobber.position.set(p.x,f.phase==='casting'?p.y:water(p.x,p.z)+(f.phase==='bite'?-.10:.025),p.z);

@@ -1,0 +1,38 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "adventure": {
+        "avatarAction": "dive",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          0.08228358612450244,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0.6921395335860616,
+        "grounded": false,
+        "interaction": "",
+        "message": "水中へ。見ている方向へ泳ぎ、Spaceで浮上、Cで潜降。",
+        "mode": "dive",
+        "oxygen": 0.965313233635588,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": -0.7114269372634858,
+        "pitch": -0.035,
+        "x": -45.476085268018515,
+        "yaw": 1.5672,
+        "z": -38.134371415536535
+      },
+      "fps": 60,
+      "frames": 63848,
+      "time": 1791507434415
+    }
+  }
+}

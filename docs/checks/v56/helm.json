@@ -1,0 +1,37 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0,
+        "boat": [
+          -118.5950068345507,
+          -0.014554048448825728,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "船から降りる",
+        "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.432503359895869,
+        "pitch": -0.035,
+        "x": -117.76391424705344,
+        "yaw": -0.6,
+        "z": -90.60319736894142
+      },
+      "fps": 59.6,
+      "time": 1791552289035
+    }
+  }
+}

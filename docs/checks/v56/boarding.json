@@ -1,0 +1,37 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "adventure": {
+        "avatarAction": "climb",
+        "boarding": 0.053340000000002344,
+        "boat": [
+          -118.5950068345507,
+          -0.054162448513709695,
+          -90.9578943776148
+        ],
+        "boatYaw": -0.6,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "はしごを移動中",
+        "message": "船尾のはしごを登り、操船席へ移動しています。",
+        "mode": "swim",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 1.9770459822449409,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 0.6462013093645157,
+        "pitch": -0.035,
+        "x": -116.70335206724216,
+        "yaw": -0.6,
+        "z": -88.7375453907813
+      },
+      "fps": 60,
+      "time": 1791552273281
+    }
+  }
+}

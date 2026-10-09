@@ -1,0 +1,37 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "adventure": {
+        "avatarAction": "helm",
+        "boarding": 0.056818181818181816,
+        "boat": [
+          -567.9491461316569,
+          0.1416210571120507,
+          858.3804635391687
+        ],
+        "boatYaw": -2.9991692186680705,
+        "depth": 0,
+        "grounded": false,
+        "interaction": "はしごを移動中",
+        "message": "船尾のはしごを降りて、すぐそばの海へ。",
+        "mode": "boat",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0.7189080660567505,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 1.8113195492721568,
+        "pitch": -0.483,
+        "x": -568.2567797803648,
+        "yaw": 3.283993969865738,
+        "z": 857.5776575102863
+      },
+      "fps": 60,
+      "time": 1791552688703
+    }
+  }
+}

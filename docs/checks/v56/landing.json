@@ -1,0 +1,37 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "adventure": {
+        "avatarAction": "idle",
+        "boarding": 0,
+        "boat": [
+          -567.9491461316569,
+          0.47776744350833344,
+          858.3804635391687
+        ],
+        "boatYaw": -2.9991692186680705,
+        "depth": 0,
+        "grounded": true,
+        "interaction": "",
+        "message": "足が浜に着きました。歩いて海岸を探検できます。",
+        "mode": "walk",
+        "oxygen": 1,
+        "placed": 0,
+        "remaining": 0,
+        "speed": 0,
+        "stamina": 1,
+        "voyage": null
+      },
+      "camera": {
+        "height": 2.324395972263777,
+        "pitch": -0.483,
+        "x": -570.1769867630799,
+        "yaw": 3.2840160885115153,
+        "z": 878.8854979212208
+      },
+      "fps": 60,
+      "time": 1791552739674
+    }
+  }
+}
