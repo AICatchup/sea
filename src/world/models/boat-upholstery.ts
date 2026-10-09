@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { ModelBatch, ModelResources, smoothNormalsByPosition, standard, surfaceTexture } from './procedural';
+import { ModelBatch, ModelResources, smoothNormalsByPosition, standard, surfaceTexture } from './procedural.ts';
+import { boatClothUV } from './boat-cloth.ts';
 
 /** Authored woven marine upholstery. No downloaded photograph or location claim. */
 export function boatUpholsteryMaterial(resources: ModelResources): THREE.MeshStandardMaterial {
@@ -33,6 +34,7 @@ export function addBoatCushion(
 ): void {
   const radius = Math.min(thickness * 0.38, 0.045);
   const geometry = new THREE.BoxGeometry(width, thickness, depth, 16, 4, 10);
+  if (fabric.userData.physicalBoatCloth) boatClothUV(geometry);
   const vertices = geometry.getAttribute('position');
   const core = new THREE.Vector3(width / 2 - radius, thickness / 2 - radius, depth / 2 - radius);
   const p = new THREE.Vector3(), nearest = new THREE.Vector3(), delta = new THREE.Vector3();

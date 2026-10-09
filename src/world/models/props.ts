@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { BOAT_ACCESS } from '../contracts';
 import {HELM_WHEEL} from '../helm-contact.ts';
 import {boatHullGeometry} from './boat-hull.ts';
-import { addBoatCushion, boatUpholsteryMaterial } from './boat-upholstery';
+import { addBoatCushion, boatUpholsteryMaterial } from './boat-upholstery.ts';
+import { loadBoatCloth } from './boat-cloth.ts';
 import { ModelBatch, ModelResources, rockGeometry, standard, surfaceTexture } from './procedural';
 
 export class CoastalModels {
@@ -26,6 +27,7 @@ export class CoastalModels {
   readonly tank: THREE.Group;
   readonly boarding: THREE.Group;
   readonly boat: THREE.Group;
+  readonly boatClothReady: Promise<void>;
   readonly propeller: THREE.Group;
   readonly outboard: THREE.Group;
 
@@ -58,6 +60,7 @@ export class CoastalModels {
     this.tank = this.buildTank();
     this.boarding = this.buildBoarding();
     const vessel = this.buildBoat(); this.boat = vessel.boat; this.propeller = vessel.propeller; this.outboard = vessel.outboard;
+    this.boatClothReady = (this.boat.userData.boatClothReady as Promise<void>) ?? Promise.resolve();
   }
 
   private buildChair(): THREE.Group {
@@ -177,6 +180,9 @@ export class CoastalModels {
     }
     // Independent boat upholstery keeps shared beach chair and umbrella cloth unchanged.
     const upholstery = boatUpholsteryMaterial(this.resources);
+    const clothEnabled = typeof location !== 'undefined' && new URLSearchParams(location.search).get('boatcloth') === '1';
+    upholstery.userData.physicalBoatCloth = clothEnabled;
+    const cloth = clothEnabled && typeof document !== 'undefined' ? loadBoatCloth(this.resources, upholstery) : null;
     // Bow casting seat and aft bench, thick cushions with a restrained blue piping line.
     batch.box(this.white, 0, 0.23, -1.77, 1.32, 0.23, 0.8);
     addBoatCushion(batch, upholstery, this.blue, new THREE.Vector3(0, 0.37, -1.77), 1.32, 0.075, 0.8);
@@ -226,6 +232,8 @@ export class CoastalModels {
     for (const y of [-.07,-.31,-.54]) batch.rod(this.metal,new THREE.Vector3(BOAT_ACCESS.ladderX-.17,y,BOAT_ACCESS.ladderRungZ),new THREE.Vector3(BOAT_ACCESS.ladderX+.17,y,BOAT_ACCESS.ladderRungZ),.017);
     const boat = batch.finish(this.resources, '5.6 metre coastal motorboat');
     boat.userData.provenance = 'Authored adventure vessel; not a reconstruction of a photographed local boat.';
+    boat.userData.boatCloth = cloth?.state ?? { status: 'generated', source: 'authored procedural cloth' };
+    boat.userData.boatClothReady = cloth?.ready ?? Promise.resolve();
     boat.userData.footprint = { radius: 1.13, halfLength: 2.8, height: 2.18 };
 
     const motor = new ModelBatch();

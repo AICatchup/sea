@@ -54,7 +54,7 @@ export class AssetWorld {
     this.populateStrand();
     this.preparePlacementBatches();
     this.group.userData.foliage = { status: typeof document === 'undefined' ? 'cpu-proxies' : 'loading', source: 'Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified', photoPass: false };
-    this.ready = this.foliage.loadDetailed(this.options.canopyContinuity===true,this.options.leafVolumeRefinement??false,this.options.originalCanopy??false,this.options.branchCanopy??false).then(() => {
+    const foliageReady = this.foliage.loadDetailed(this.options.canopyContinuity===true,this.options.leafVolumeRefinement??false,this.options.originalCanopy??false,this.options.branchCanopy??false).then(() => {
       if (this.disposed || typeof document === 'undefined') return;
       if (this.options.crownSupport) this.rebuildCrownSupport();
       else { this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels); }
@@ -63,6 +63,7 @@ export class AssetWorld {
       this.group.userData.foliage.branchClusters=this.options.branchCanopy===true;
       if(this.options.branchCanopy)this.group.userData.foliage.source+='; authored distance-faded branch atlas supplements distant pine crowns';
     }).catch((error: unknown) => { if (!this.disposed) this.group.userData.foliage.status = `proxy fallback: ${error instanceof Error ? error.message : String(error)}`; });
+    this.ready = Promise.all([foliageReady, this.models.boatClothReady]).then(() => undefined);
   }
 
   private rebuildCrownSupport(): void {
