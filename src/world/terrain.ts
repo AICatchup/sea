@@ -112,7 +112,8 @@ export class IslandWorld {
     this.niijimaCoast=new NiijimaCoast(this.elevation,terrainMaterial,{scarp,sand,volume,coastConfidence,cliffDetail,measured,pumiceGrain});this.group.add(this.niijimaCoast.group);
     const cliffMaterial=(this.niijimaCoast.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
     const cliffMeso=typeof location==='undefined'||new URLSearchParams(location.search).get('cliffmeso')!=='0';
-    const pointCliff=import.meta.env?.DEV===true&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('poissoncoast')==='1';
+    const pointVariant=typeof location!=='undefined'?new URLSearchParams(location.search).get('poissoncoast'):null;
+    const pointCliff=import.meta.env?.DEV===true&&(pointVariant==='1'||pointVariant==='2'||pointVariant==='3');
     const nativeGeology=import.meta.env?.DEV===true&&!pointCliff&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('nativegeology')==='1';
     this.niijimaCliffSkin=cliffDetail&&nativeGeology&&this.niijimaCoast.measuredPatch?
       createNiijimaCliffSkin({heightAt:(x,z)=>this.niijimaCoast.measuredPatch!.surfaceHeightAt(x,z)??this.niijimaCoast.baseHeightAt(x,z)},cliffMaterial,
@@ -134,7 +135,7 @@ export class IslandWorld {
     const pointCliffReady=pointCliff&&this.niijimaCoast.measuredPatch?import('./niijima-point-cliff.ts').then(async({NiijimaPointCliff})=>{
       if(this.disposed)return;
       const value=new NiijimaPointCliff(this.niijimaCoast.measuredPatch!,cliffMaterial,
-        {colorAt:(x,y,z,c)=>this.niijimaCoast.colorAt(x,y,z,c),invalidateWaterMaps:()=>this.niijimaCoast.invalidateWaterMaps()});
+        {continuous:pointVariant==='2',expanded:pointVariant==='3',colorAt:(x,y,z,c)=>this.niijimaCoast.colorAt(x,y,z,c),invalidateWaterMaps:()=>this.niijimaCoast.invalidateWaterMaps()});
       this.pointCliffValue=value;this.group.add(value.group);await value.ready;
     }):Promise.resolve();
     this.scarpVolume=volume?new NiijimaScarpVolume(this.niijimaCoast,this.niijimaCoast.dem,cliffMaterial):null;

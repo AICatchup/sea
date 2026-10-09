@@ -181,7 +181,7 @@ export function createMeasuredGridPatch(grid:MeasuredGrid,fallbackGround:GroundS
         if(chosen!==surface)for(const e of checked){const p=e.chunk.geometry.getAttribute('position');
           for(let k=0;k<e.removedIndex.length;k+=3){
             const q=e.removedIndex.slice(k,k+3).map(n=>({x:p.getX(n)+e.chunk.x,y:p.getY(n),z:p.getZ(n)+e.chunk.z})) as [MeasuredPoint,MeasuredPoint,MeasuredPoint];
-            if(!chosen.coversOriginalTriangle(q))throw new Error('Final replacement does not cover the prepared footprint');
+            if(!chosen.coversOriginalTriangle(q))throw new Error(`Final replacement does not cover the prepared footprint at ${q.map(p=>`${p.x},${p.z}`).join(';')}`);
             for(const point of [...q,{x:q.reduce((s,v)=>s+v.x,0)/3,z:q.reduce((s,v)=>s+v.z,0)/3}]){
               const y=chosen.surfaceHeightAt(point.x,point.z);if(y===null||!Number.isFinite(y))throw new Error('Final replacement lacks a finite floor');
             }

@@ -1,0 +1,182 @@
+{
+  "source": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Original/LAS/09/QC/17/09QC1711.zip",
+  "sourceSha256": "731881a1d95cd52a475912edceec9892670fbd3ebb3d3ac2b7c173e54e6a3e25",
+  "sourceMember": "09QC1711.las",
+  "sourcePoints": 10853673,
+  "sourceLASVersion": "1.2",
+  "sourcePointFormat": 3,
+  "sourceCRS": "EPSG6677 per catalogue; not inferred from absent LAS VLR",
+  "transformAccuracyM": 1.0,
+  "coordinateTransform": {
+    "referenceLongitude": 139.2117451,
+    "referenceLatitude": 34.3359808,
+    "metersPerDegree": 111320,
+    "x": "(longitude-referenceLongitude)*metersPerDegree*cos(referenceLatitude)",
+    "y": "original LAS elevation",
+    "z": "(referenceLatitude-latitude)*metersPerDegree"
+  },
+  "roi": {
+    "x": [
+      5785,
+      5950
+    ],
+    "y": [
+      0,
+      165
+    ],
+    "z": [
+      -1090,
+      -940
+    ]
+  },
+  "roiPoints": 550987,
+  "uniquePoints": 550909,
+  "inputBBoxMin": [
+    5785.0001181505595,
+    0.16,
+    -1089.9996537332722
+  ],
+  "inputBBoxMax": [
+    5900.969902596418,
+    106.64,
+    -940.0001446982253
+  ],
+  "open3dVersion": "0.19.0",
+  "normalRadiusM": 2,
+  "normalMaxNN": 30,
+  "normalMSTNeighbors": 30,
+  "normalSign": "One global flip toward +Y using median Y of abs(normalY)>=0.7; no per-point forcing",
+  "normalAnchorCount": 485233,
+  "normalAnchorMedianBeforeFlip": -0.8241324873068824,
+  "globalNormalFlip": true,
+  "poissonDepth": 9,
+  "threads": 2,
+  "densityLabelQuantile": 0.05,
+  "densityThreshold": 7.853642320632934,
+  "densityRemoval": false,
+  "raw": {
+    "vertices": 332695,
+    "triangles": 665110,
+    "components": 1,
+    "bboxMin": [
+      5760.4853515625,
+      -29.099729537963867,
+      -1097.49951171875
+    ],
+    "bboxMax": [
+      5925.48486328125,
+      117.82992553710938,
+      -932.5000610351562
+    ],
+    "watertight": false,
+    "boundaryEdges": 278,
+    "distanceP50P95P99MaxM": [
+      0.10653368446602741,
+      0.603602244974415,
+      3.1507781325951107,
+      51.7382728975899
+    ],
+    "distanceAbove1mFraction": 0.028497572852011602,
+    "lowDensityFraction": 0.050000751439005696
+  },
+  "croppedOnly": {
+    "vertices": 321237,
+    "triangles": 640452,
+    "components": 1,
+    "bboxMin": [
+      5785.0,
+      0.0001220703125,
+      -1089.999755859375
+    ],
+    "bboxMax": [
+      5903.57080078125,
+      106.57363891601562,
+      -940.0011596679688
+    ],
+    "watertight": false,
+    "boundaryEdges": 2020,
+    "distanceP50P95P99MaxM": [
+      0.10360975225947498,
+      0.45796134034527175,
+      0.9605745930933708,
+      6.691912595674126
+    ],
+    "distanceAbove1mFraction": 0.009211267693322998,
+    "lowDensityFraction": 0.032325043503705984,
+    "cropPlaneDiagnostics": {
+      "x=5785": {
+        "verticesWithin0.5m": 1158,
+        "boundaryEdgesBothEndpointsWithin0.5m": 635
+      },
+      "x=5950": {
+        "verticesWithin0.5m": 0,
+        "boundaryEdgesBothEndpointsWithin0.5m": 0
+      },
+      "y=0": {
+        "verticesWithin0.5m": 3962,
+        "boundaryEdgesBothEndpointsWithin0.5m": 232
+      },
+      "y=165": {
+        "verticesWithin0.5m": 0,
+        "boundaryEdgesBothEndpointsWithin0.5m": 0
+      },
+      "z=-1090": {
+        "verticesWithin0.5m": 680,
+        "boundaryEdgesBothEndpointsWithin0.5m": 580
+      },
+      "z=-940": {
+        "verticesWithin0.5m": 701,
+        "boundaryEdgesBothEndpointsWithin0.5m": 597
+      }
+    }
+  },
+  "caps": {
+    "source_points": 12000000,
+    "roi_points": 1000000,
+    "output_vertices": 1500000,
+    "output_triangles": 3000000,
+    "member_bytes": 536870912,
+    "elapsed_seconds": 180
+  },
+  "elapsedSeconds": 53.13124780001817,
+  "credit": "Tokyo Metropolitan Government Digital Service Bureau",
+  "license": "CC-BY-4.0",
+  "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+  "methodReferences": [
+    "https://www.open3d.org/docs/release/tutorial/geometry/surface_reconstruction.html",
+    "https://github.com/isl-org/Open3D/blob/v0.19.0/cpp/open3d/geometry/SurfaceReconstructionPoisson.cpp"
+  ],
+  "scriptSha256": "6c31676447654bb88f5e319146541a845551d3cc044e3fa511b5ae7307fb34c6",
+  "artifacts": {
+    "poisson-raw-position.bin": "4e3571f2efd4a641318ed504bf25e4cbc611edc6e53d667439626d35613a5f3d",
+    "poisson-raw-index.bin": "9374a861564d6745f6d1038c7916a2fdf1bb3e1c502df8860714c57813041905",
+    "poisson-raw-normal.bin": "3c111798c5493c20381b2c0033d88f7e957683e26024660a71e937fd1bb2a66e",
+    "poisson-raw-color.bin": "24ffa4f7d219e59f0cd1dfd51d73b143edf55de4c38b4feb01e0066ac9b0eb64",
+    "poisson-raw-density.bin": "91d7c7fe40e97b2dbc9668368f5a56dec03558a3163283a7eb9b7e33ae587b92",
+    "poisson-raw-observationDistance.bin": "53e5fbb7a4136489a466ba5593ca86d6054b5cfe7ae01aac9bda32700a5aec41",
+    "poisson-raw-inferredRegion.bin": "39871186d280dc9abe5fde07085a2a3833bf2ae9d3f1a460c833ad9d7e476f9b",
+    "poisson-raw-lowDensityRegion.bin": "861b042887e3bddc94d705a10a7d139531fc3268cf8edb56de69fce344953aaa",
+    "poisson-raw-buffers.json": "1ec8d8273a423637e194101208b673b8ae3ba4101c0f0c80dcac78ddb5398821",
+    "poisson-raw.ply": "5ee551b7c44aa0fda1f0303eb15c3b6d63813de28bf07942c58a2397e38b6bba",
+    "poisson-cropped-only-position.bin": "da7f62c8e2d3ca8fd75346921d6a1294d966395ef8458a86cfc1ce4661ba3402",
+    "poisson-cropped-only-index.bin": "860a099941f03e651ae64174217f1186411253c19d15591984d5380972e4aba8",
+    "poisson-cropped-only-normal.bin": "fccb25cdd2998a38361558051b35c66299e09cd6c8d97cc17f6e3e2edf5c8edd",
+    "poisson-cropped-only-color.bin": "0250cba422c7834f3e8a28dc4b6e7f5c92deef3de7a088f5d24b13ac08f6de88",
+    "poisson-cropped-only-density.bin": "57564936b589b159eb90b7169e9497de15987ded744fa7c8e93ef660abdba070",
+    "poisson-cropped-only-observationDistance.bin": "096f3fccdea49c70645ceeb97080f715e9e27978c123dc453eaecb0de7937668",
+    "poisson-cropped-only-inferredRegion.bin": "048a80a5bdaa00c1d955b3cfffd553cf39d9cd956798885198f0ea9c370d8c42",
+    "poisson-cropped-only-lowDensityRegion.bin": "6a2a4b8402c19737a664b478ac3a1ea802e130a33ed7cf1d7bdfd9257df16065",
+    "poisson-cropped-only-buffers.json": "24b359c7485ecba002e77d28396cfaa2b3f33fc68bac22b2be27471e957c176f",
+    "poisson-cropped-only.ply": "090b01590c4bc209c9293bbf03901e05efbd827221b7c2d3c7b642ea5af2cdb8",
+    "packedsource.bin": "20eb881dab71abb686e626436bdb782a0c3ee27f35813cae218d8c83b8d48691",
+    "packedsource.json": "6870e4be09551bcc243356ea209ac0f53167948ea4776a9604e0b053ac4aad17"
+  },
+  "limits": [
+    "Poisson is inferred surface reconstruction, including unobserved sidewalls; not measured accuracy or photorealism",
+    "Global upward normal anchor does not verify sidewall outward normals",
+    "Distance>1m and bottom5% density are diagnostic labels, not a truth boundary",
+    "Crop removes out-of-ROI vertices and their triangles only; no density removal",
+    "No runtime integration, collision acceptance, or automatic downloads",
+    "Budgets bound input/output and check elapsed time between stages; native calls are not forcibly interrupted"
+  ]
+}

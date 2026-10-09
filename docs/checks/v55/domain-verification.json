@@ -1,0 +1,10 @@
+{
+  "terrainChecks": 414399,
+  "missing": 0,
+  "maxCoastErrorM": 0,
+  "residualQueries": 7490356,
+  "residualMissing": 0,
+  "maxResidualDistanceM": 0.000004285485648515296,
+  "elapsedMs": 180263.9809,
+  "scope": "All accepted triangle centroids plus residual polygon vertices/edge midpoints/means; finite-precision CPU consistency, not every-point watertightness or ordinary walking."
+}

@@ -1,0 +1,338 @@
+[
+  {
+    "name": "face",
+    "pose": {
+      "eyeY": 4.8,
+      "name": "expanded-face",
+      "pitch": 0.18,
+      "x": 5900,
+      "yaw": -1.5708,
+      "z": -1040
+    },
+    "camera": [
+      5900,
+      4.8,
+      -1040,
+      0.0635536148980873,
+      0.7042462246709104,
+      -0.06355384834397967,
+      0.7042436378348232
+    ],
+    "fov": 62,
+    "time": 34,
+    "width": 1280,
+    "height": 720,
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "finalCoverageAreaToleranceM2": 2e-06,
+      "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+      "inputTriangles": 640452,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "querySnapDistanceM": 1e-05,
+      "reason": "",
+      "removedNativeTriangles": 414399,
+      "renderTriangles": 606336,
+      "state": "ready",
+      "stitch": null,
+      "variant": "expanded",
+      "version": 55,
+      "watertight": false
+    }
+  },
+  {
+    "name": "along",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "expanded-along",
+      "pitch": 0.05,
+      "x": 5888,
+      "yaw": -0.4,
+      "z": -996
+    },
+    "camera": [
+      5888,
+      3.8,
+      -996,
+      0.024499112269069832,
+      0.19860724986281417,
+      -0.004966215917997834,
+      0.9797603229869094
+    ],
+    "fov": 62,
+    "time": 34,
+    "width": 1280,
+    "height": 720,
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "finalCoverageAreaToleranceM2": 2e-06,
+      "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+      "inputTriangles": 640452,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "querySnapDistanceM": 1e-05,
+      "reason": "",
+      "removedNativeTriangles": 414399,
+      "renderTriangles": 606336,
+      "state": "ready",
+      "stitch": null,
+      "variant": "expanded",
+      "version": 55,
+      "watertight": false
+    }
+  },
+  {
+    "name": "close",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "expanded-close",
+      "pitch": 0.3,
+      "x": 5888,
+      "yaw": -1.5708,
+      "z": -986
+    },
+    "camera": [
+      5888,
+      3.8,
+      -986,
+      0.10566852276834454,
+      0.6991680183399224,
+      -0.10566891091121108,
+      0.6991654501571287
+    ],
+    "fov": 62,
+    "time": 34,
+    "width": 1280,
+    "height": 720,
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "finalCoverageAreaToleranceM2": 2e-06,
+      "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+      "inputTriangles": 640452,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "querySnapDistanceM": 1e-05,
+      "reason": "",
+      "removedNativeTriangles": 414399,
+      "renderTriangles": 606336,
+      "state": "ready",
+      "stitch": null,
+      "variant": "expanded",
+      "version": 55,
+      "watertight": false
+    }
+  },
+  {
+    "name": "offshore",
+    "pose": {
+      "eyeY": 8,
+      "name": "expanded-offshore",
+      "pitch": 0.11,
+      "x": 6040,
+      "yaw": -1.57,
+      "z": -1200
+    },
+    "camera": [
+      6040,
+      8,
+      -1200,
+      0.03888674248358531,
+      0.7057563774872812,
+      -0.03885578825178603,
+      0.706318614093086
+    ],
+    "fov": 62,
+    "time": 34,
+    "width": 1280,
+    "height": 720,
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "finalCoverageAreaToleranceM2": 2e-06,
+      "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+      "inputTriangles": 640452,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "querySnapDistanceM": 1e-05,
+      "reason": "",
+      "removedNativeTriangles": 414399,
+      "renderTriangles": 606336,
+      "state": "ready",
+      "stitch": null,
+      "variant": "expanded",
+      "version": 55,
+      "watertight": false
+    }
+  },
+  {
+    "name": "south-edge",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "expanded-south-edge",
+      "pitch": 0.1,
+      "x": 5900,
+      "yaw": -1.57,
+      "z": -1071
+    },
+    "camera": [
+      5900,
+      3.8,
+      -1071,
+      0.03535467804480676,
+      0.7059418336827238,
+      -0.035326535371252146,
+      0.7065042180310641
+    ],
+    "fov": 62,
+    "time": 34,
+    "width": 1280,
+    "height": 720,
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "finalCoverageAreaToleranceM2": 2e-06,
+      "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+      "inputTriangles": 640452,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "querySnapDistanceM": 1e-05,
+      "reason": "",
+      "removedNativeTriangles": 414399,
+      "renderTriangles": 606336,
+      "state": "ready",
+      "stitch": null,
+      "variant": "expanded",
+      "version": 55,
+      "watertight": false
+    }
+  },
+  {
+    "name": "north-edge",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "expanded-north-edge",
+      "pitch": 0.1,
+      "x": 5900,
+      "yaw": -1.57,
+      "z": -959
+    },
+    "camera": [
+      5900,
+      3.8,
+      -959,
+      0.03535467804480878,
+      0.7059418336826835,
+      -0.03532653537125013,
+      0.7065042180311044
+    ],
+    "fov": 62,
+    "time": 34,
+    "width": 1280,
+    "height": 720,
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "finalCoverageAreaToleranceM2": 2e-06,
+      "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+      "inputTriangles": 640452,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "querySnapDistanceM": 1e-05,
+      "reason": "",
+      "removedNativeTriangles": 414399,
+      "renderTriangles": 606336,
+      "state": "ready",
+      "stitch": null,
+      "variant": "expanded",
+      "version": 55,
+      "watertight": false
+    }
+  },
+  {
+    "name": "outer-south",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "expanded-outer-south",
+      "pitch": 0.1,
+      "x": 5920,
+      "yaw": -1.57,
+      "z": -1089
+    },
+    "camera": [
+      5920,
+      3.8,
+      -1089,
+      0.03535467804480676,
+      0.7059418336827238,
+      -0.035326535371252146,
+      0.7065042180310641
+    ],
+    "fov": 62,
+    "time": 34,
+    "width": 1280,
+    "height": 720,
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "finalCoverageAreaToleranceM2": 2e-06,
+      "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+      "inputTriangles": 640452,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "querySnapDistanceM": 1e-05,
+      "reason": "",
+      "removedNativeTriangles": 414399,
+      "renderTriangles": 606336,
+      "state": "ready",
+      "stitch": null,
+      "variant": "expanded",
+      "version": 55,
+      "watertight": false
+    }
+  },
+  {
+    "name": "outer-north",
+    "pose": {
+      "eyeY": 3.8,
+      "name": "expanded-outer-north",
+      "pitch": 0.1,
+      "x": 5920,
+      "yaw": -1.57,
+      "z": -941
+    },
+    "camera": [
+      5920,
+      3.8,
+      -941,
+      0.03535467804480878,
+      0.7059418336826835,
+      -0.03532653537125013,
+      0.7065042180311044
+    ],
+    "fov": 62,
+    "time": 34,
+    "width": 1280,
+    "height": 720,
+    "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+    "pointCliff": {
+      "centimetreAccuracyEstablished": false,
+      "finalCoverageAreaToleranceM2": 2e-06,
+      "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+      "inputTriangles": 640452,
+      "kind": "inferred-poisson-surface",
+      "numericalCoverageAreaToleranceM2": 1e-12,
+      "querySnapDistanceM": 1e-05,
+      "reason": "",
+      "removedNativeTriangles": 414399,
+      "renderTriangles": 606336,
+      "state": "ready",
+      "stitch": null,
+      "variant": "expanded",
+      "version": 55,
+      "watertight": false
+    }
+  }
+]

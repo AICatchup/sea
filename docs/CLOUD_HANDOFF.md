@@ -1,5 +1,13 @@
 # 再開用の途中保存 — 2026-10-06
 
+## 2026-10-09 V55の再開点
+
+[連続面の実装](research/sea-continuous-cliff-v55.md)、[検証](verification-v55.md)、[独立審査](checks/v55/independent-visual-review.md)を読む。開発用poissoncoast=2は狭い110m版、=3は拡張150m版。元LASのy0–165まで取り直して旧y85による上端切断を除き、広い投影footprintと4m C2境界へ変更。V54の縦カーテンは使わず、floor/collisionは変形後の同じMesh。
+
+最良の次工程用はexpanded、通常採用は却下。崖上・旧端の継ぎ目は改善、足元の白黒裂けは残る。下層埋設は大きな鋸歯状欠損を作り退避、使用assetは未埋設24739...へ戻した。共通原点化も32µm級の丸め残差で退避、近い原点5880,0,-1015を維持。数値予算を増やして欠陥を通さない。
+
+最終coast床まで414399 centroid＋約749万の残存領域点を検証し、欠落/高さ差0、最大距離4.29µm。ただし全点watertightやunder-overhang歩行、通常RAF/操作/全旅程は未証明。次は足元の3D面の接続/登録を修復して材質を分離する。Actor・船・自然音・探索・最終動画のゴールは維持し、海の基準を保つ。
+
 ## 2026-10-09 V54の再開点
 
 [点群組立と限界](research/sea-point-cliff-v54.md)、[検証](verification-v54.md)、[独立レビュー](checks/v54/independent-visual-review.md)を読む。Open3D0.19 Poissonを元LASから再現し、110mの局所区間でnative格子の置換を先に計画、原点・hash・床・水深・同じMeshの衝突へ接続した。40rayと3身体sweepはCPUで確認。6WebGL静止視点には人工的な接続壁・欠け・丸まりが残り、通常採用は却下。

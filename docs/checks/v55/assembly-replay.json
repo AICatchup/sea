@@ -1,0 +1,82 @@
+{
+  "study": "expanded",
+  "sourceSha256": "20eb881dab71abb686e626436bdb782a0c3ee27f35813cae218d8c83b8d48691",
+  "descriptor": {
+    "vertices": 310388,
+    "triangles": 606336,
+    "origin": [
+      5880,
+      0,
+      -1015
+    ],
+    "positionsBytes": 3724656,
+    "indicesBytes": 7276032,
+    "sha256": "24739aa1267bb0a2855208e2910d49016f18d289048612ccf244eac79c2639c8"
+  },
+  "footprintSha256": "71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417",
+  "native": {
+    "checkedTriangles": 565395,
+    "removedTriangles": 414399
+  },
+  "clip": {
+    "inputTriangles": 640452,
+    "footprintTriangles": 414399,
+    "outputTriangles": 606336,
+    "unionPassthroughTriangles": 576425,
+    "unionAcceptedResidualAreaM2": 4.579234220647645e-13,
+    "unionMaximumAcceptedResidualAreaM2": 4.691400165012548e-17,
+    "rejectedTinyTriangles": 0,
+    "rejectedTinyAreaM2": 0,
+    "outputAreaHistogram": [
+      1,
+      2,
+      68,
+      8150,
+      598115
+    ],
+    "outputAreaHistogramM2": [
+      8.304988641238964e-17,
+      8.239362429261498e-14,
+      2.5968262269555533e-07,
+      0.25626505074396516,
+      22008.958835616948
+    ],
+    "candidateTests": 740672,
+    "queryOperations": 5691559,
+    "gridReferences": 647728,
+    "passthroughTriangles": 210,
+    "unionCoverageDiagnostics": {
+      "inputTriangles": 414399,
+      "indexedTriangles": 414399,
+      "degenerateTriangles": 0,
+      "invalidTriangles": 0,
+      "gridEntries": 647728,
+      "gridCells": 13163,
+      "buildLimitExceeded": false,
+      "coverageLimitFailures": 0,
+      "coverageGapFailures": 63392,
+      "numericCoverageFailures": 0,
+      "approximateCoverageAcceptances": 423044,
+      "numericalAreaTolerance": 1e-12,
+      "lastCoverageResidualArea": 0.03135323524475098,
+      "lastCoverageResidualAvailable": true,
+      "nearestQueries": 0,
+      "nearestBudgetFailures": 0,
+      "numericNearestFailures": 0,
+      "maxAcceptedDistanceM": 0,
+      "invalidQueries": 0,
+      "disposed": false
+    }
+  },
+  "feather": {
+    "movedVertices": 56331,
+    "maxYMovement": 11.05735969543457,
+    "boundaryEdges": 2105,
+    "queries": 57522,
+    "distanceTests": 4346977,
+    "gridReferences": 19330,
+    "authoredDeformation": true
+  },
+  "clipAndMergeElapsedMs": 14241.5474,
+  "scope": "Fixed inferred Poisson reconstruction clipped to the native footprint. Float32 output, not surveyed accuracy or visual/collision acceptance. No automatic runtime installation."
+}

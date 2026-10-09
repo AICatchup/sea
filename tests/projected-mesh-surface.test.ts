@@ -94,3 +94,86 @@ test('a thin diagonal slit with covered corners exceeds the total-area budget ev
   assert.ok(t.every(p=>s.surfaceHeightAt(p.x,p.z)!==null));assert.equal(s.coversOriginalTriangle(t),false);
   assert.ok(s.diagnostics.lastCoverageResidualArea>1e-12);assert.equal(s.diagnostics.approximateCoverageAcceptances,0);
 });
+
+test('nearest radius bridges only a requested micrometre edge gap and leaves strict queries unchanged',()=>{
+  const s=createProjectedMeshSurface(mesh(rectangle(0,0,1,1,3)),undefined,{numericalAreaTolerance:1});
+  assert.equal(s.surfaceHeightAt(-5e-6,.5),null);
+  assert.deepEqual(s.nearestSurfacePoint(-5e-6,.5,1e-5),{x:0,z:.5,height:3,distanceM:5e-6});
+  assert.equal(s.nearestSurfacePoint(-1e-4,.5,1e-5),null);
+  assert.equal(s.nearestSurfacePoint(-5e-6,.5,4.999e-6),null);
+  assert.equal(s.nearestSurfacePoint(-5e-6,.5,0),null);
+  assert.deepEqual(s.nearestSurfacePoint(.25,.25,0),{x:.25,z:.25,height:3,distanceM:0});
+  assert.equal(s.diagnostics.maxAcceptedDistanceM,5e-6);
+  const slit=createProjectedMeshSurface(mesh([...rectangle(-1,0,-5e-5,1,3),...rectangle(5e-5,0,1,1,3)]),undefined,{numericalAreaTolerance:1});
+  assert.equal(slit.surfaceHeightAt(0,.5),null);assert.equal(slit.nearestSurfacePoint(0,.5,1e-5),null);
+});
+
+test('thin steep triangles return convex original heights without plane extrapolation',()=>{
+  const s=createProjectedMeshSurface(mesh([[point(0,0,0),point(1e-7,0,1000),point(0,1,0)]]));
+  const hit=s.nearestSurfacePoint(5e-6,.5,1e-5)!;
+  assert.ok(hit);assert.ok(hit.x>=0&&hit.x<=1e-7);assert.ok(hit.height>=0&&hit.height<=1000);
+  assert.ok(Math.abs(hit.height-500)<.01);assert.ok(hit.distanceM<=1e-5);
+  assert.equal(s.surfaceHeightAt(5e-6,.5),null);
+});
+
+test('translated bucket boundary searches adjacent buckets and snapshots geometry and origin',()=>{
+  const g=mesh(rectangle(-1,0,0,1,2)),origin=new THREE.Vector3(73,8,-1015),s=createProjectedMeshSurface(g,origin,{cellSize:.25});
+  g.getAttribute('position').setY(0,99);origin.set(0,0,0);
+  const hit=s.nearestSurfacePoint(73+5e-6,-1014.5,1e-5)!;
+  assert.ok(hit);assert.equal(hit.x,73);assert.equal(hit.z,-1014.5);assert.equal(hit.height,10);assert.ok(hit.distanceM<=1e-5);
+  assert.equal(s.surfaceHeightAt(73+5e-6,-1014.5),null);
+  assert.equal(s.nearestSurfacePoint(73+5e-6,-1014.5,1e-6),null);
+});
+
+test('nearest chooses minimum distance before height and highest layer only for identical projected points',()=>{
+  const s=createProjectedMeshSurface(mesh([...rectangle(0,0,1,1,2),...rectangle(0,0,1,1,8),...rectangle(-.01,0,-.005,1,100)]));
+  assert.equal(s.nearestSurfacePoint(.25,.5,.1)!.height,8);
+  assert.equal(s.nearestSurfacePoint(-1e-6,.5,.1)!.height,8);
+  assert.equal(s.nearestSurfacePoint(-1e-6,.5,.1)!.x,0);
+  // Equidistant distinct boundaries retain triangle traversal order, not height.
+  const tied=createProjectedMeshSurface(mesh([...rectangle(-2,-1,-1,1,2),...rectangle(1,-1,2,1,100)]));
+  assert.equal(tied.nearestSurfacePoint(0,0,1)!.height,2);
+  assert.equal(tied.nearestSurfacePoint(0,0,1)!.x,-1);
+});
+
+test('nearest invalid radius, cell or operation exhaustion and disposed surfaces fail conservatively',()=>{
+  const g=mesh(rectangle(0,0,1,1)),s=createProjectedMeshSurface(g);
+  for(const r of [-1,NaN,Infinity,-Infinity])assert.equal(s.nearestSurfacePoint(.5,.5,r),null);
+  assert.equal(s.nearestSurfacePoint(NaN,.5,1),null);assert.equal(s.nearestSurfacePoint(.5,Infinity,1),null);
+  assert.equal(s.nearestSurfacePoint(.5,.5,1e300),null);assert.equal(s.diagnostics.nearestBudgetFailures,1);
+  const cells=createProjectedMeshSurface(g,undefined,{maxQueryCells:1});assert.equal(cells.nearestSurfacePoint(.5,.5,1),null);assert.equal(cells.diagnostics.nearestBudgetFailures,1);
+  const ops=createProjectedMeshSurface(g,undefined,{maxCoverageOperations:1});assert.equal(ops.nearestSurfacePoint(.5,.5,0),null);assert.equal(ops.diagnostics.nearestBudgetFailures,1);
+  s.dispose();assert.equal(s.nearestSurfacePoint(.5,.5,1),null);
+  assert.equal(s.diagnostics.nearestQueries,8);assert.equal(s.diagnostics.maxAcceptedDistanceM,0);
+});
+
+test('coverage exposes owned world residual polygons including holes accepted by the explicit area budget',()=>{
+  const a=.06,b=.07,origin=new THREE.Vector3(73,0,-1010);
+  const g=mesh([...rectangle(0,0,.25,a),...rectangle(0,a,a,.25),...rectangle(b,a,.25,.25),...rectangle(a,b,b,.25)]);
+  const target:[Point,Point,Point]=[point(73,-1010),point(73.25,-1010),point(73,-1009.75)];
+  for(const tolerance of [0,1e-3]) {
+    const s=createProjectedMeshSurface(g,origin,{numericalAreaTolerance:tolerance});
+    assert.equal(s.coversOriginalTriangle(target),tolerance>0);assert.equal(s.diagnostics.lastCoverageResidualAvailable,true);
+    const polygons=s.lastCoverageResidualPolygons(),points=s.lastCoverageResidualPoints();
+    assert.ok(polygons.length>0);assert.ok(points.length>0);
+    // Tiny roundoff pieces are intentionally exposed too, not filtered away.
+    assert.ok(points.every(p=>p.x>=73-1e-12&&p.x<=73.25+1e-12&&p.z>=-1010-1e-12&&p.z<=-1009.75+1e-12));
+    assert.ok(points.some(p=>p.x>=73+a-1e-12&&p.x<=73+b+1e-12&&p.z>=-1010+a-1e-12&&p.z<=-1010+b+1e-12));
+    assert.ok(points.some(p=>Math.abs(p.x-(73+a))<1e-12));assert.ok(points.some(p=>Math.abs(p.z-(-1010+b))<1e-12));
+    (points[0] as {x:number}).x=999;(polygons[0][0] as {z:number}).z=999;
+    assert.ok(s.lastCoverageResidualPoints().every(p=>p.x!==999&&p.z!==999));
+    // A later query clears current evidence but previously returned snapshots survive.
+    const saved=s.lastCoverageResidualPolygons();
+    assert.equal(s.coversOriginalTriangle([point(73,-1010),point(73.25,-1010),point(73.25,-1010+a)]),true);
+    assert.deepEqual(s.lastCoverageResidualPoints(),[]);assert.equal(s.diagnostics.lastCoverageResidualAvailable,true);assert.ok(saved.length>0);
+    s.dispose();assert.deepEqual(s.lastCoverageResidualPolygons(),[]);assert.equal(s.diagnostics.lastCoverageResidualAvailable,false);assert.ok(saved.length>0);
+  }
+});
+
+test('incomplete coverage query budgets and invalid input provide no fabricated residual proof',()=>{
+  const g=mesh(rectangle(0,0,1,1)),s=createProjectedMeshSurface(g,undefined,{maxCoverageOperations:1});
+  assert.equal(s.coversOriginalTriangle([point(0,0),point(.25,0),point(0,.25)]),false);
+  assert.equal(s.diagnostics.coverageLimitFailures,1);assert.equal(s.diagnostics.lastCoverageResidualAvailable,false);assert.deepEqual(s.lastCoverageResidualPoints(),[]);
+  const full=createProjectedMeshSurface(g);full.coversOriginalTriangle([point(0,0),point(2,0),point(0,2)]);assert.equal(full.diagnostics.lastCoverageResidualAvailable,true);
+  assert.equal(full.coversOriginalTriangle([point(NaN,0),point(2,0),point(0,2)]),false);assert.equal(full.diagnostics.lastCoverageResidualAvailable,false);assert.deepEqual(full.lastCoverageResidualPolygons(),[]);
+});

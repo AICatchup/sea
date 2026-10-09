@@ -1,6 +1,7 @@
 import type { BufferGeometry, Vector3 } from 'three';
 
 export type SurfacePoint = Readonly<{x:number;y:number;z:number}>;
+export type NearestSurfacePoint = Readonly<{x:number;z:number;height:number;distanceM:number}>;
 export interface ProjectedMeshSurfaceOptions {
   /** Maximum TOTAL uncovered projected area in square metres. Default 0 is
    * strict. Positive values deliberately permit real gaps up to this area,
@@ -45,8 +46,9 @@ export function createProjectedMeshSurface(geometry:BufferGeometry,origin?:Vecto
   const maxCells=limit(options.maxQueryCells,100_000),maxOperations=limit(options.maxCoverageOperations,200_000);
   const maxPieces=limit(options.maxRemainingPolygons,4096);
   const areaTolerance=Number.isFinite(options.numericalAreaTolerance)&&options.numericalAreaTolerance!>=0?options.numericalAreaTolerance!:0;
-  const diagnostics={inputTriangles:0,indexedTriangles:0,degenerateTriangles:0,invalidTriangles:0,gridEntries:0,gridCells:0,buildLimitExceeded:false,coverageLimitFailures:0,coverageGapFailures:0,numericCoverageFailures:0,approximateCoverageAcceptances:0,numericalAreaTolerance:areaTolerance,lastCoverageResidualArea:0,invalidQueries:0,disposed:false};
+  const diagnostics={inputTriangles:0,indexedTriangles:0,degenerateTriangles:0,invalidTriangles:0,gridEntries:0,gridCells:0,buildLimitExceeded:false,coverageLimitFailures:0,coverageGapFailures:0,numericCoverageFailures:0,approximateCoverageAcceptances:0,numericalAreaTolerance:areaTolerance,lastCoverageResidualArea:0,lastCoverageResidualAvailable:false,nearestQueries:0,nearestBudgetFailures:0,numericNearestFailures:0,maxAcceptedDistanceM:0,invalidQueries:0,disposed:false};
   const triangles:Triangle[]=[],grid=new Map<string,number[]>();
+  let residualPolygons:P[][]=[];
   const o={x:origin?.x??0,y:origin?.y??0,z:origin?.z??0};
   const position=geometry.getAttribute('position'),index=geometry.getIndex();
   let trustworthy=finite(o)&&!!position&&position.itemSize>=3&&!!index&&index.count%3===0;
@@ -75,6 +77,17 @@ export function createProjectedMeshSurface(geometry:BufferGeometry,origin?:Vecto
   diagnostics.indexedTriangles=triangles.length;diagnostics.gridCells=grid.size;
   return {
     diagnostics,
+    /** Owned copy of the last completed coverage query's remaining polygons in
+     * world XZ, including queries accepted by the explicit area budget. Empty
+     * output is proof of no residual ONLY when lastCoverageResidualAvailable
+     * is true. Invalid, budget-limited and disposed queries have no evidence.
+     */
+    lastCoverageResidualPolygons():readonly (readonly Readonly<P>[])[] {
+      return residualPolygons.map(polygon=>polygon.map(p=>({x:p.x,z:p.z})));
+    },
+    lastCoverageResidualPoints():readonly Readonly<P>[] {
+      return residualPolygons.flatMap(polygon=>polygon.map(p=>({x:p.x,z:p.z})));
+    },
     surfaceHeightAt(x:number,z:number):number|null {
       if(diagnostics.disposed||!trustworthy||!Number.isFinite(x)||!Number.isFinite(z))return null;
       let highest:number|null=null;
@@ -87,8 +100,55 @@ export function createProjectedMeshSurface(geometry:BufferGeometry,origin?:Vecto
       }
       return highest;
     },
+    /** Closest point in the projected triangle union within the explicit radius.
+     * Distance has priority over height, with NO epsilon radius or distance tie.
+     * Equal-distance candidates at exactly the same returned XZ choose the
+     * highest layer; equal-distance distinct points retain traversal order.
+     * Heights use convex weights on an actual triangle, never extrapolation.
+     * This is independent of the coverage area's optional approximation budget.
+     */
+    nearestSurfacePoint(x:number,z:number,maxDistanceM:number):NearestSurfacePoint|null {
+      diagnostics.nearestQueries++;
+      if(diagnostics.disposed||!trustworthy)return null;
+      if(!Number.isFinite(x)||!Number.isFinite(z)||!Number.isFinite(maxDistanceM)||maxDistanceM<0) {diagnostics.invalidQueries++;return null;}
+      const x0=Math.floor((x-maxDistanceM)/cellSize),x1=Math.floor((x+maxDistanceM)/cellSize),z0=Math.floor((z-maxDistanceM)/cellSize),z1=Math.floor((z+maxDistanceM)/cellSize),cells=(x1-x0+1)*(z1-z0+1);
+      const failBudget=()=>{diagnostics.nearestBudgetFailures++;return null;};
+      const failNumeric=()=>{diagnostics.numericNearestFailures++;return null;};
+      if(![x0,x1,z0,z1,cells].every(Number.isSafeInteger)||cells>maxCells)return failBudget();
+      const candidates=new Set<number>();let operations=0;
+      for(let bz=z0;bz<=z1;bz++)for(let bx=x0;bx<=x1;bx++)for(const id of grid.get(`${bx},${bz}`)??[]) {if(++operations>maxOperations)return failBudget();candidates.add(id);}
+      let best:NearestSurfacePoint|null=null;
+      const accept=(qx:number,qz:number,height:number):boolean=> {
+        const distanceM=Math.hypot(qx-x,qz-z);
+        if(![qx,qz,height,distanceM].every(Number.isFinite))return false;
+        if(distanceM<=maxDistanceM&&(!best||distanceM<best.distanceM||(distanceM===best.distanceM&&qx===best.x&&qz===best.z&&height>best.height)))best={x:qx,z:qz,height,distanceM};
+        return true;
+      };
+      for(const id of candidates) {
+        if((operations+=3)>maxOperations)return failBudget();
+        const {p,area}=triangles[id],q={x,z};
+        const weights=[cross(p[1],p[2],q)/area,cross(p[2],p[0],q)/area,cross(p[0],p[1],q)/area];
+        if(!weights.every(Number.isFinite))return failNumeric();
+        if(weights.every(w=>w>=0)) {
+          const clamped=weights.map(w=>Math.max(0,Math.min(1,w))),sum=clamped[0]+clamped[1]+clamped[2];
+          const height=clamped.reduce((h,w,i)=>h+(w/sum)*p[i].y,0);
+          if(!accept(x,z,Math.max(Math.min(...p.map(v=>v.y)),Math.min(Math.max(...p.map(v=>v.y)),height))))return failNumeric();
+        } else for(let edge=0;edge<3;edge++) {
+          const a=p[edge],b=p[(edge+1)%3],dx=b.x-a.x,dz=b.z-a.z,lengthSquared=dx*dx+dz*dz;
+          const dot=(x-a.x)*dx+(z-a.z)*dz;
+          if(!Number.isFinite(lengthSquared)||!Number.isFinite(dot))return failNumeric();
+          const t=lengthSquared===0?0:Math.max(0,Math.min(1,dot/lengthSquared));
+          const height=(1-t)*a.y+t*b.y;
+          if(!accept(a.x+t*dx,a.z+t*dz,Math.max(Math.min(a.y,b.y),Math.min(Math.max(a.y,b.y),height))))return failNumeric();
+        }
+      }
+      const selected=best as NearestSurfacePoint|null;
+      if(selected)diagnostics.maxAcceptedDistanceM=Math.max(diagnostics.maxAcceptedDistanceM,selected.distanceM);
+      return selected;
+    },
     coversOriginalTriangle(points:readonly [SurfacePoint,SurfacePoint,SurfacePoint]):boolean {
       diagnostics.lastCoverageResidualArea=0;
+      diagnostics.lastCoverageResidualAvailable=false;residualPolygons=[];
       if(diagnostics.disposed||!trustworthy||points.length!==3||!points.every(finite)) {diagnostics.invalidQueries++;return false;}
       const area=cross(points[0],points[1],points[2]);
       if(!Number.isFinite(area)||area===0) {diagnostics.invalidQueries++;return false;}
@@ -118,13 +178,17 @@ export function createProjectedMeshSurface(geometry:BufferGeometry,origin?:Vecto
             inside=inner;
           }
         }
-        remaining=next;if(remaining.length===0)return true;
+        remaining=next;if(remaining.length===0) {diagnostics.lastCoverageResidualAvailable=true;return true;}
       }
       diagnostics.lastCoverageResidualArea=remaining.reduce((sum,p)=>sum+polygonArea(p),0);
       if(!Number.isFinite(diagnostics.lastCoverageResidualArea)) {diagnostics.numericCoverageFailures++;return false;}
+      if(remaining.reduce((count,p)=>count+p.length,0)>maxOperations)return failLimit();
+      const worldRemaining=remaining.map(polygon=>polygon.map(p=>({x:p.x+anchor.x,z:p.z+anchor.z})));
+      if(!worldRemaining.every(polygon=>polygon.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.z)))) {diagnostics.numericCoverageFailures++;return false;}
+      residualPolygons=worldRemaining;diagnostics.lastCoverageResidualAvailable=true;
       if(areaTolerance>0&&diagnostics.lastCoverageResidualArea<=areaTolerance) {diagnostics.approximateCoverageAcceptances++;return true;}
       diagnostics.coverageGapFailures++;return false;
     },
-    dispose() {triangles.length=0;grid.clear();diagnostics.disposed=true;},
+    dispose() {triangles.length=0;grid.clear();residualPolygons=[];diagnostics.lastCoverageResidualAvailable=false;diagnostics.disposed=true;},
   };
 }

@@ -1,5 +1,7 @@
 # SEA — 式根島、泊海水浴場。
 
+2026-10-09 V55: [崖を広い連続3D面として再構成](docs/research/sea-continuous-cliff-v55.md)。元点を崖上・低い浜まで広げ、縦カーテンを除いた。約41万三角形の床と約749万の残存領域照会を確認したが、足元の欠損で通常採用は見送り。[検証と未達](docs/verification-v55.md)。
+
 2026-10-09 V54: [点群の3D再構成を崖・床・水際・衝突へ接続](docs/research/sea-point-cliff-v54.md)。元ZIPと組立を再実行し、6視点を独立レビュー。人工的な接続壁が残るため通常採用は見送り、試作は開発用に保存。[検証と未達](docs/verification-v54.md)。
 
 2026-10-09 V53: [外部実装の取得・読解と実測崖での試行](docs/research/sea-external-methods-v53.md)。海を基準に保ち、崖と植生を優先。Open3Dによる元点の3D再構成を実行し、Infinigenと写真素材の反復対策をコードまで確認した。候補の見た目は採用せず、通常表示はV52のまま。[検証と残る課題](docs/verification-v53.md)。
