@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { crownSupportedPlacements } from './crown-support.ts';
+import {tomariCliffCover} from './tomari-cliff-cover.ts';
 import type { GroundSampler, PlaceableKind } from './contracts';
 import { CoastalModels } from './models/props';
 import { makeInstances, ModelBatch, randomSeed, rockGeometry, standard, updateInstanceBounds } from './models/procedural';
@@ -8,7 +9,7 @@ import { FoliageLodField } from './foliage-lod.ts';
 import type { TrunkProxy } from './foliage-lod.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
-export interface AssetWorldOptions { canopyContinuity?: boolean; crownSupport?: boolean; originalCanopy?:boolean; branchCanopy?:boolean; leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
+export interface AssetWorldOptions { canopyContinuity?: boolean; crownSupport?: boolean; originalCanopy?:boolean; branchCanopy?:boolean; cliffCoverSurface?:{group:THREE.Group;ready:Promise<void>};leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
 interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; variant?: number; }
@@ -23,6 +24,8 @@ export class AssetWorld {
   private readonly pines = this.foliage.pines;
   private pineField!: FoliageLodField;
   private shrubField!: FoliageLodField;
+  private cliffCoverField?:FoliageLodField;
+  private cliffTreeField?:FoliageLodField;
   readonly ready: Promise<void>;
   private readonly placements: Placement[] = [];
   private readonly placementBatches = new Map<PlaceableKind, PlacementBatch[]>();
@@ -63,7 +66,13 @@ export class AssetWorld {
       this.group.userData.foliage.branchClusters=this.options.branchCanopy===true;
       if(this.options.branchCanopy)this.group.userData.foliage.source+='; authored distance-faded branch atlas supplements distant pine crowns';
     }).catch((error: unknown) => { if (!this.disposed) this.group.userData.foliage.status = `proxy fallback: ${error instanceof Error ? error.message : String(error)}`; });
-    this.ready = Promise.all([foliageReady, this.models.boatClothReady]).then(() => undefined);
+    this.ready = Promise.all([foliageReady, this.models.boatClothReady,this.options.cliffCoverSurface?.ready]).then(() => {
+      if(this.disposed||!this.options.cliffCoverSurface)return;
+      const cover=tomariCliffCover(this.ground,this.options.cliffCoverSurface.group);
+      this.cliffCoverField=new FoliageLodField(this.group,'tomariCliffCoverLod',this.foliage.shrubLevels,cover.placements,{nearDistance:110,midDistance:210,nearCapacity:320,midCapacity:320,triangleBudget:800000,viewAware:true});
+      this.cliffTreeField=new FoliageLodField(this.group,'tomariCliffTreeLod',this.foliage.pineLevels,cover.trees,{nearDistance:100,midDistance:210,nearCapacity:96,midCapacity:96,triangleBudget:1000000,viewAware:true});
+      this.group.userData.cliffCover={count:cover.count,trees:cover.trees.flat().length,projected:cover.projected,source:'Reference-informed 3D cliff scrub and small woody crowns; inferred plant inventory'};
+    });
   }
 
   private rebuildCrownSupport(): void {
@@ -79,7 +88,7 @@ export class AssetWorld {
   }
 
   get placedCount(): number { return this.placements.length; }
-  getTrunkProxies(): readonly TrunkProxy[] { return this.pineField.getTrunkProxies(); }
+  getTrunkProxies(): readonly TrunkProxy[] { return this.cliffTreeField?[...this.pineField.getTrunkProxies(),...this.cliffTreeField.getTrunkProxies()]:this.pineField.getTrunkProxies(); }
 
   private addInstances(geometry: THREE.BufferGeometry, material: THREE.Material, positions: THREE.Matrix4[], name: string): void {
     if (!positions.length) return;
@@ -331,6 +340,8 @@ export class AssetWorld {
     if (this.disposed) return;
     this.foliagePosition.copy(position);
     this.pineField.update(position,false,forward,projectionScale); this.shrubField.update(position,false,forward,projectionScale);
+    this.cliffCoverField?.update(position,false,forward,projectionScale);
+    this.cliffTreeField?.update(position,false,forward,projectionScale);
     for (const marker of this.floatingMarkers) {
       marker.object.position.y = this.waterAt(marker.object.position.x,marker.object.position.z)+0.06+Math.sin(time*1.55+marker.phase)*0.052;
       marker.object.rotation.z = Math.sin(time * 1.05 + marker.phase) * 0.04;
@@ -348,7 +359,7 @@ export class AssetWorld {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true; this.instanceMeshes.forEach((mesh) => mesh.dispose());
-    this.foliage.dispose(); this.pineField.dispose(); this.shrubField.dispose();
+    this.foliage.dispose(); this.pineField.dispose(); this.shrubField.dispose();this.cliffCoverField?.dispose();this.cliffTreeField?.dispose();
     this.models.resources.dispose(); this.group.clear(); this.placements.length = 0; this.placementBatches.clear();
   }
 }

@@ -26,8 +26,8 @@ export function cliffBodySegmentBlocked(
 }
 
 /** Structural joint groups replace the dense decorative all-over rock scatter. */
-export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number},candidate=false,connectedForm=false):THREE.BufferGeometry {
-  if(connectedForm)return connectedCliffSkin(ground,bounds);
+export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number},candidate=false,connectedForm=false,exclude?:{minX:number;minZ:number;maxX:number;maxZ:number}):THREE.BufferGeometry {
+  if(connectedForm)return connectedCliffSkin(ground,bounds,exclude);
   const positions:number[]=[],colors:number[]=[],uvs:number[]=[],proxies:CliffCollisionProxy[]=[];
   const familyCounts={plates:0,columns:0,buttresses:0},regions={west:0,centre:0,east:0};
   const stride=4.7,triangleLimit=80000;
@@ -49,6 +49,7 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
     if(positions.length/9+120>triangleLimit)break;
     const random=(seed:number)=>jointRandom(ix,iz,seed);
     const px=x+(random(13)-.5)*3.2,pz=z+(random(17)-.5)*3.2,y=ground.heightAt(px,pz);
+    if(exclude&&px+20>=exclude.minX&&px-20<=exclude.maxX&&pz+20>=exclude.minZ&&pz-20<=exclude.maxZ)continue;
     // sandAt describes the horizontal cove, including the tall west wall.
     // Apply it only at foot elevations, never to the entire vertical column.
     if(y<5 || y>56 || (y<9 && sandAt(px,pz)>.48))continue;
@@ -187,7 +188,7 @@ export function cliffOutcrops(ground:GroundSampler,bounds:{minX:number;minZ:numb
 
 /** One indexed terrain-attached shell per connected steep region. Adjacent faces
  * share vertices; edges close into embedded backs, not detached shelf prisms. */
-function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number}):THREE.BufferGeometry {
+function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number;maxX:number;maxZ:number},exclude?:{minX:number;minZ:number;maxX:number;maxZ:number}):THREE.BufferGeometry {
   const step=2.4,positions:number[]=[],uvs:number[]=[],colors:number[]=[],indices:number[]=[];
   const proxies:CliffCollisionProxy[]=[];
   const vertices=new Map<string,number>();
@@ -255,6 +256,10 @@ function connectedCliffSkin(ground:GroundSampler,bounds:{minX:number;minZ:number
     for(let ix=0;bounds.minX+14+(ix+1)*step<bounds.maxX-14;ix++){
       // Four front and back facets plus four walls: strict worst-case cap.
       if((selectedCells.length+1)*16>80000)break;
+      // Reject whole cells before topology/edge closure and collision generation.
+      // Clipping triangles after generation would strand visible collisionless fragments.
+      const x0=bounds.minX+14+ix*step,z0=bounds.minZ+14+iz*step;
+      if(exclude&&x0+step>=exclude.minX&&x0<=exclude.maxX&&z0+step>=exclude.minZ&&z0<=exclude.maxZ)continue;
       const corners=[[ix,iz],[ix,iz+1],[ix+1,iz+1],[ix+1,iz]];
       const samples=[...corners,[ix+.5,iz+.5]].map(([i,j])=>{const x=bounds.minX+14+i*step,z=bounds.minZ+14+j*step;
         const y=ground.heightAt(x,z),gx=(ground.heightAt(x+2,z)-ground.heightAt(x-2,z))/4,

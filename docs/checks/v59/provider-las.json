@@ -1,0 +1,45 @@
+{
+  "url": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Original/LAS/09/QC/15/09QC1546.zip",
+  "zipSha256": "50a4a789301282ef04da7c1e5165ac8e9b7f74b3b23b5e75b69838457ca0cd35",
+  "lasSha256": "668ec23763658369d4b608f954c7a171ee4fcf6bb33c8e87953f40f61e679a5b",
+  "count": 4672078,
+  "pointFormat": "<PointFormat(3, 0 bytes of extra dims)>",
+  "dimensions": [
+    "X",
+    "Y",
+    "Z",
+    "intensity",
+    "return_number",
+    "number_of_returns",
+    "scan_direction_flag",
+    "edge_of_flight_line",
+    "classification",
+    "synthetic",
+    "key_point",
+    "withheld",
+    "scan_angle_rank",
+    "user_data",
+    "point_source_id",
+    "gps_time",
+    "red",
+    "green",
+    "blue"
+  ],
+  "min": [
+    -57600.0,
+    -184500.0,
+    -21.601
+  ],
+  "max": [
+    -57200.001000000004,
+    -184200.001,
+    52.006
+  ],
+  "classes": {
+    "1": 2152719,
+    "2": 1345273,
+    "11": 12701,
+    "12": 1161385
+  },
+  "crs": "None"
+}

@@ -13,6 +13,7 @@ import { NiijimaCoast } from './niijima-coast.ts';
 import { HabushiMainGate } from './habushi-main-gate.ts';
 import { HabushiGround } from './habushi-ground.ts';
 import { NiijimaScarpVolume } from './niijima-scarp-volume.ts';
+import {TomariMeasuredCoast} from './tomari-measured.ts';
 import { TomariCliffVolume } from './tomari-cliff-volume.ts';
 const atlasURL=new URL('../assets/tomari-atlas-v1.png',import.meta.url).href;
 
@@ -80,6 +81,7 @@ export class IslandWorld {
   readonly habushiGround:HabushiGround;
   readonly scarpVolume:NiijimaScarpVolume|null;
   readonly cliffVolume:TomariCliffVolume|null;
+  readonly tomariMeasured:TomariMeasuredCoast|null;
   readonly niijimaCliffSkin:CliffSkin|null;
   private pointCliffValue:NiijimaPointCliff|null=null;
   get niijimaPointCliff():NiijimaPointCliff|null{return this.pointCliffValue;}
@@ -101,7 +103,9 @@ export class IslandWorld {
     this.textures.push(atlas);
     const sand=loadSandTextures(8,this.sandAppearance);this.textures.push(...sand.textures);
     const terrainMaterial = makeTerrainMaterial(grain, atlas, sand,forestGround); this.materials.push(terrainMaterial);
-    this.cliffVolume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('cliffvolume')!=='0'?new TomariCliffVolume(terrainMaterial):null;
+    this.tomariMeasured=typeof location!=='undefined'&&new URLSearchParams(location.search).get('tomarisurvey')==='1'?new TomariMeasuredCoast(this.elevation,terrainMaterial):null;
+    if(this.tomariMeasured)this.group.add(this.tomariMeasured.group);
+    this.cliffVolume=!this.tomariMeasured&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('cliffvolume')!=='0'?new TomariCliffVolume(terrainMaterial):null;
     if(this.cliffVolume)this.group.add(this.cliffVolume.group);
     const scarp=typeof location!=='undefined'&&new URLSearchParams(location.search).get('scarp')==='1';
     const volume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('volume')==='1';
@@ -149,7 +153,7 @@ export class IslandWorld {
     if (this.elevation.tomari && this.elevation.coast) {
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true);
       this.buildTerrain(this.elevation.tomari, terrainMaterial, true, true);
-      const geometry = cliffOutcrops(this, this.elevation.coast,coherentRock,this.elevation.connectedForm||joinedCliffSkin);
+      const geometry = cliffOutcrops(this, this.elevation.coast,coherentRock,this.elevation.connectedForm||joinedCliffSkin,this.tomariMeasured?.bounds);
       this.cliffCollisionProxies.push(...geometry.userData.collisionProxies as CliffCollisionProxy[]);
       const tomariCliffMaterial=makeCliffMaterial(terrainMaterial);this.materials.push(tomariCliffMaterial);
       const outcrops = new THREE.Mesh(geometry, tomariCliffMaterial);
@@ -173,7 +177,7 @@ export class IslandWorld {
     this.mapOutlines = this.elevation.fields.filter(field => field.raster.id !== 'tomari').map(field => ({ id: field.raster.id, label: field.raster.name, points: traceOutline(field) }));
   }
 
-  heightAt(x: number, z: number): number { return this.niijimaCoast?.contains(x,z)?this.niijimaCoast.heightAt(x,z):this.elevation.heightAt(x, z); }
+  heightAt(x: number, z: number): number { return this.tomariMeasured?.heightAt(x,z)??(this.niijimaCoast?.contains(x,z)?this.niijimaCoast.heightAt(x,z):this.elevation.heightAt(x, z)); }
   /** Inputs are the feet position, not the camera position. Conservative collision for non-heightfield ledges. */
   bodySegmentBlocked(from: BodyPoint, to: BodyPoint, radius = .38, bodyHeight = 1.72): boolean {
     return cliffBodySegmentBlocked(this.cliffCollisionProxies, from, to, radius, bodyHeight);
@@ -222,6 +226,7 @@ export class IslandWorld {
     this.niijimaPointCliff?.dispose();
     this.niijimaCliffSkin?.dispose();
     this.cliffVolume?.dispose();
+    this.tomariMeasured?.dispose();
     this.scarpVolume?.dispose();
     this.habushiGround.dispose();
     this.habushiGate.dispose();
@@ -268,6 +273,7 @@ export class IslandWorld {
       const mx = (positions[a * 3] + positions[d * 3]) * 0.5, mz = (positions[a * 3 + 2] + positions[d * 3 + 2]) * 0.5;
       if (r.id === 'shikine' && this.elevation.tomari?.contains(mx, mz)) continue;
       if (r.id === 'niijima' && this.niijimaCoast.contains(mx,mz)) continue;
+      if (this.tomariMeasured?.contains(mx,mz)) continue;
       if (detail && !fine && this.elevation.coast?.contains(mx, mz)) continue;
       if (fine && !strand && this.elevation.beach?.contains(mx, mz)) continue;
       if (!detail && field.shoreAt(mx, mz) < -200) continue;

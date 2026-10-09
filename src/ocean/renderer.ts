@@ -169,7 +169,7 @@ export class Ocean {
     this.waterScene.add(this.spray.group);
     this.breaker=new URLSearchParams(location.search).get('breaker')==='1'?new ShoreBreaker(this.renderer,new URLSearchParams(location.search).get('breakertrack')!=='0'):null;
     if(this.breaker)this.waterScene.add(this.breaker.group);
-    this.assets=new AssetWorld(this.world,{branchCanopy:new URLSearchParams(location.search).get('branches')!=='0',canopyContinuity:new URLSearchParams(location.search).get('canopy')!=='0',crownSupport:new URLSearchParams(location.search).get('crown')==='1',originalCanopy:new URLSearchParams(location.search).get('originaltree')==='1',leafVolumeRefinement:new URLSearchParams(location.search).get('leafvolume')==='1'?{pineTriangles:1440,shrubTriangles:320}:false});
+    this.assets=new AssetWorld(this.world,{cliffCoverSurface:new URLSearchParams(location.search).get('cliffcover')==='1'?(this.world.tomariMeasured??this.world.cliffVolume??undefined):undefined,branchCanopy:new URLSearchParams(location.search).get('branches')!=='0',canopyContinuity:new URLSearchParams(location.search).get('canopy')!=='0',crownSupport:new URLSearchParams(location.search).get('crown')==='1',originalCanopy:new URLSearchParams(location.search).get('originaltree')==='1',leafVolumeRefinement:new URLSearchParams(location.search).get('leafvolume')==='1'?{pineTriangles:1440,shrubTriangles:320}:false});
     this.marine=new MarineLife(this.world,new URLSearchParams(location.search).get('marineplants')!=='0');
     const ground={heightAt:(x:number,z:number)=>this.world.heightAt(x,z),
       bodySegmentBlocked:(from:Parameters<IslandWorld['bodySegmentBlocked']>[0],to:Parameters<IslandWorld['bodySegmentBlocked']>[1],radius?:number,height?:number)=>
@@ -711,12 +711,14 @@ export class Ocean {
         voyage:state.voyageTarget,remaining:state.voyageRemaining,message:state.message,
         boat:state.boatPosition.toArray(),boatYaw:state.boatYaw,interaction:state.interactionLabel,boarding:state.boardingProgress,
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
-      topography:{coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,strandProfile:this.world.elevation.beach?.strandDiagnostics??null,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null,niijimaCoastConfidence:this.world.niijimaCoast.dem.coastConfidence,niijimaCliffSkin:this.world.niijimaCliffSkin?.diagnostics??null,niijimaPointCliff:this.world.niijimaPointCliff?.diagnostics??null,niijimaCliffReplacement:this.world.niijimaCoast.cliffReplacement,niijimaMeasured:this.world.niijimaCoast.measured?.diagnostics??null,niijimaMeasuredPatch:this.world.niijimaCoast.measuredPatch?.diagnostics??null},
+      topography:{tomariSurvey:this.world.tomariMeasured?.diagnostics??null,coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,strandProfile:this.world.elevation.beach?.strandDiagnostics??null,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null,niijimaCoastConfidence:this.world.niijimaCoast.dem.coastConfidence,niijimaCliffSkin:this.world.niijimaCliffSkin?.diagnostics??null,niijimaPointCliff:this.world.niijimaPointCliff?.diagnostics??null,niijimaCliffReplacement:this.world.niijimaCoast.cliffReplacement,niijimaMeasured:this.world.niijimaCoast.measured?.diagnostics??null,niijimaMeasuredPatch:this.world.niijimaCoast.measuredPatch?.diagnostics??null},
       geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       expedition:{...this.expedition.snapshot,credits:this.expedition.credits,capacity:this.expedition.capacity,rank:this.expedition.rank,race:this.expedition.race?{next:this.expedition.race.next,elapsed:this.expedition.race.elapsed}:null,target:this.expedition.target(state),save:this.expedition.saveStatus},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
+      boatCloth:this.assets.boat.userData.boatCloth,
+      cliffCover:this.assets.group.userData.cliffCover??null,
       spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,habushiGround:this.world.habushiGround.diagnostics,
       shoreSolver:this.shoreSolver?{...this.shoreSolver.diagnostics,ready:this.uniforms.uShoreReady.value}:null,
       sandMoisture:this.sandMoisture?.diagnostics??null,

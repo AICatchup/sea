@@ -1,6 +1,8 @@
 import './style.css';
+import {Raycaster,Vector2} from 'three';
 import { inspectBodyHands } from './qa/body-inspection';
 import {inspectCurrentHelmContact} from './qa/helm-contact-inspection.ts';
+import {inspectBoatCloth} from './qa/boat-cloth-inspection.ts';
 import {inspectFlatCaustics} from './qa/caustic-flat-control.ts';
 import {inspectShoreTransport} from './qa/shore-transport-probe.ts';
 import {inspectShoreIncident} from './qa/shore-incident-probe.ts';
@@ -156,6 +158,7 @@ try {
   Object.defineProperty(window, '__sea', { get: () => ocean.diagnostics, configurable: true });
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaOptics',{value:()=>ocean.probeOptics(),configurable:true});
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaHelm',{value:()=>inspectCurrentHelmContact(ocean),configurable:true});
+  if(import.meta.env.DEV)Object.defineProperty(window,'__seaBoatCloth',{value:async()=>{await ocean.ready;return inspectBoatCloth(ocean);},configurable:true});
   const captureOnly=new URLSearchParams(location.search).get('capture')==='1';
   const capturePNG=async():Promise<string|null>=>{
     const blob=await ocean.capture();if(!blob)return null;
@@ -163,7 +166,7 @@ try {
   };
   type SavedCapture=CaptureState&{wind:number;swell:number;eyeY:number;oxygen:number;stamina:number;action:typeof ocean.adventure.state.avatarAction};
   const captureHost:SceneCaptureHost={
-    readDiagnostics:()=>{const d=ocean.diagnostics;return JSON.parse(JSON.stringify({time:d.time,frames:d.frames,draws:d.draws,triangles:d.triangles,foliage:d.foliage,worldSolids:d.worldSolids}));},
+    readDiagnostics:()=>{const d=ocean.diagnostics;const ray=new Raycaster();const surfaceProbes=new URLSearchParams(location.search).get('cliffcover')==='1'?[-.25,0,.25].map(x=>{ray.setFromCamera(new Vector2(x,-.4),ocean.camera);const h=ray.intersectObject(ocean.world.group,true)[0];return h?{name:h.object.name,point:h.point.toArray(),floor:ocean.world.heightAt(h.point.x,h.point.z)}:null;}):undefined;return JSON.parse(JSON.stringify({time:d.time,frames:d.frames,draws:d.draws,triangles:d.triangles,foliage:d.foliage,worldSolids:d.worldSolids,surfaceProbes}));},
     ready:ocean.ready,
     readState(){
       const d=ocean.diagnostics,s=ocean.adventure.state;
@@ -478,9 +481,10 @@ try {
         try{await ocean.setGeometryRefraction(previous);}finally{captureHost.restoreState(before);}
       }
     },
-    captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4)=>{
+    captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4,eyeY?:number)=>{
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
-      return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
+      if(eyeY!==undefined&&!Number.isFinite(eyeY))throw new Error('Finite comparison eye height required');
+      return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth,eyeY},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
     },
     async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false,compareContact=false,compareLight=false,compareFoam=false){
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');

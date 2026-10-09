@@ -1,0 +1,863 @@
+{
+  "sourceZipSha256": "50a4a789301282ef04da7c1e5165ac8e9b7f74b3b23b5e75b69838457ca0cd35",
+  "classification": "Inferred candidates: source class1, green-dominant RGB, 0.6..12m above DEM; NOT a classified vegetation inventory or measured trunks. Smoothed canopy maxima, >=3m spacing.",
+  "count": 107,
+  "candidates": [
+    {
+      "x": -93.75,
+      "z": 70.75,
+      "observedTop": 51.448,
+      "demGround": 39.819,
+      "inferredHeight": 11.63,
+      "supportPoints": 506
+    },
+    {
+      "x": -101.75,
+      "z": 72.75,
+      "observedTop": 51.302,
+      "demGround": 42.753,
+      "inferredHeight": 8.548,
+      "supportPoints": 446
+    },
+    {
+      "x": -113.25,
+      "z": 73.25,
+      "observedTop": 50.782,
+      "demGround": 43.73,
+      "inferredHeight": 7.053,
+      "supportPoints": 306
+    },
+    {
+      "x": -110.75,
+      "z": 67.25,
+      "observedTop": 50.745,
+      "demGround": 42.956,
+      "inferredHeight": 7.789,
+      "supportPoints": 973
+    },
+    {
+      "x": -117.75,
+      "z": 73.75,
+      "observedTop": 50.632,
+      "demGround": 43.258,
+      "inferredHeight": 7.374,
+      "supportPoints": 208
+    },
+    {
+      "x": -98.25,
+      "z": 64.25,
+      "observedTop": 49.335,
+      "demGround": 39.515,
+      "inferredHeight": 9.82,
+      "supportPoints": 846
+    },
+    {
+      "x": -95.25,
+      "z": 61.25,
+      "observedTop": 49.099,
+      "demGround": 37.79,
+      "inferredHeight": 11.309,
+      "supportPoints": 1173
+    },
+    {
+      "x": -93.25,
+      "z": 65.75,
+      "observedTop": 49.217,
+      "demGround": 38.489,
+      "inferredHeight": 10.728,
+      "supportPoints": 540
+    },
+    {
+      "x": -124.25,
+      "z": 73.25,
+      "observedTop": 47.662,
+      "demGround": 41.078,
+      "inferredHeight": 6.584,
+      "supportPoints": 704
+    },
+    {
+      "x": -95.25,
+      "z": 56.25,
+      "observedTop": 47.276,
+      "demGround": 36.687,
+      "inferredHeight": 10.589,
+      "supportPoints": 899
+    },
+    {
+      "x": -150.75,
+      "z": -31.75,
+      "observedTop": 45.462,
+      "demGround": 41.0,
+      "inferredHeight": 4.462,
+      "supportPoints": 881
+    },
+    {
+      "x": -88.25,
+      "z": 56.25,
+      "observedTop": 45.371,
+      "demGround": 34.35,
+      "inferredHeight": 11.021,
+      "supportPoints": 1477
+    },
+    {
+      "x": -106.25,
+      "z": 46.25,
+      "observedTop": 45.12,
+      "demGround": 36.508,
+      "inferredHeight": 8.612,
+      "supportPoints": 1010
+    },
+    {
+      "x": -104.75,
+      "z": 52.25,
+      "observedTop": 45.173,
+      "demGround": 37.83,
+      "inferredHeight": 7.343,
+      "supportPoints": 915
+    },
+    {
+      "x": -147.25,
+      "z": -33.25,
+      "observedTop": 45.009,
+      "demGround": 40.537,
+      "inferredHeight": 4.472,
+      "supportPoints": 647
+    },
+    {
+      "x": -119.25,
+      "z": 55.75,
+      "observedTop": 44.937,
+      "demGround": 39.432,
+      "inferredHeight": 5.505,
+      "supportPoints": 663
+    },
+    {
+      "x": -144.25,
+      "z": -34.75,
+      "observedTop": 45.026,
+      "demGround": 39.986,
+      "inferredHeight": 5.04,
+      "supportPoints": 563
+    },
+    {
+      "x": -130.25,
+      "z": 67.25,
+      "observedTop": 44.554,
+      "demGround": 36.405,
+      "inferredHeight": 8.149,
+      "supportPoints": 705
+    },
+    {
+      "x": -78.75,
+      "z": 73.75,
+      "observedTop": 43.178,
+      "demGround": 36.055,
+      "inferredHeight": 7.122,
+      "supportPoints": 227
+    },
+    {
+      "x": -138.25,
+      "z": -31.25,
+      "observedTop": 43.723,
+      "demGround": 37.081,
+      "inferredHeight": 6.642,
+      "supportPoints": 515
+    },
+    {
+      "x": -132.25,
+      "z": 73.25,
+      "observedTop": 43.682,
+      "demGround": 37.862,
+      "inferredHeight": 5.821,
+      "supportPoints": 537
+    },
+    {
+      "x": -143.25,
+      "z": -40.25,
+      "observedTop": 43.62,
+      "demGround": 38.522,
+      "inferredHeight": 5.098,
+      "supportPoints": 444
+    },
+    {
+      "x": -73.25,
+      "z": 61.75,
+      "observedTop": 43.498,
+      "demGround": 31.875,
+      "inferredHeight": 11.623,
+      "supportPoints": 1003
+    },
+    {
+      "x": -117.75,
+      "z": 44.75,
+      "observedTop": 43.497,
+      "demGround": 37.535,
+      "inferredHeight": 5.962,
+      "supportPoints": 1401
+    },
+    {
+      "x": -87.25,
+      "z": 46.75,
+      "observedTop": 43.324,
+      "demGround": 31.89,
+      "inferredHeight": 11.434,
+      "supportPoints": 2220
+    },
+    {
+      "x": -98.25,
+      "z": 48.25,
+      "observedTop": 42.949,
+      "demGround": 35.508,
+      "inferredHeight": 7.441,
+      "supportPoints": 1143
+    },
+    {
+      "x": -117.75,
+      "z": 40.25,
+      "observedTop": 42.7,
+      "demGround": 37.023,
+      "inferredHeight": 5.677,
+      "supportPoints": 1053
+    },
+    {
+      "x": -138.75,
+      "z": -41.75,
+      "observedTop": 42.727,
+      "demGround": 38.152,
+      "inferredHeight": 4.575,
+      "supportPoints": 354
+    },
+    {
+      "x": -153.25,
+      "z": -22.75,
+      "observedTop": 42.473,
+      "demGround": 39.063,
+      "inferredHeight": 3.41,
+      "supportPoints": 396
+    },
+    {
+      "x": -127.25,
+      "z": 47.75,
+      "observedTop": 42.211,
+      "demGround": 36.238,
+      "inferredHeight": 5.973,
+      "supportPoints": 970
+    },
+    {
+      "x": -145.25,
+      "z": -21.25,
+      "observedTop": 42.191,
+      "demGround": 36.507,
+      "inferredHeight": 5.684,
+      "supportPoints": 835
+    },
+    {
+      "x": -168.75,
+      "z": -35.75,
+      "observedTop": 41.939,
+      "demGround": 39.083,
+      "inferredHeight": 2.856,
+      "supportPoints": 312
+    },
+    {
+      "x": -110.75,
+      "z": 32.25,
+      "observedTop": 41.381,
+      "demGround": 30.586,
+      "inferredHeight": 10.795,
+      "supportPoints": 964
+    },
+    {
+      "x": -120.25,
+      "z": -31.25,
+      "observedTop": 41.422,
+      "demGround": 31.818,
+      "inferredHeight": 9.604,
+      "supportPoints": 295
+    },
+    {
+      "x": -124.25,
+      "z": -40.25,
+      "observedTop": 41.214,
+      "demGround": 35.203,
+      "inferredHeight": 6.011,
+      "supportPoints": 644
+    },
+    {
+      "x": -94.75,
+      "z": 39.75,
+      "observedTop": 41.132,
+      "demGround": 29.841,
+      "inferredHeight": 11.291,
+      "supportPoints": 1559
+    },
+    {
+      "x": -118.25,
+      "z": 31.75,
+      "observedTop": 40.778,
+      "demGround": 34.501,
+      "inferredHeight": 6.277,
+      "supportPoints": 940
+    },
+    {
+      "x": -119.25,
+      "z": 34.75,
+      "observedTop": 41.023,
+      "demGround": 36.033,
+      "inferredHeight": 4.99,
+      "supportPoints": 1236
+    },
+    {
+      "x": -128.75,
+      "z": -33.75,
+      "observedTop": 40.557,
+      "demGround": 35.432,
+      "inferredHeight": 5.124,
+      "supportPoints": 368
+    },
+    {
+      "x": -74.25,
+      "z": 51.75,
+      "observedTop": 39.885,
+      "demGround": 29.601,
+      "inferredHeight": 10.284,
+      "supportPoints": 1123
+    },
+    {
+      "x": -147.25,
+      "z": -12.25,
+      "observedTop": 39.599,
+      "demGround": 35.364,
+      "inferredHeight": 4.234,
+      "supportPoints": 389
+    },
+    {
+      "x": -132.25,
+      "z": -44.75,
+      "observedTop": 39.353,
+      "demGround": 34.136,
+      "inferredHeight": 5.216,
+      "supportPoints": 1346
+    },
+    {
+      "x": -63.75,
+      "z": 60.75,
+      "observedTop": 39.154,
+      "demGround": 27.687,
+      "inferredHeight": 11.468,
+      "supportPoints": 787
+    },
+    {
+      "x": -127.25,
+      "z": -27.75,
+      "observedTop": 39.045,
+      "demGround": 31.547,
+      "inferredHeight": 7.498,
+      "supportPoints": 453
+    },
+    {
+      "x": -113.25,
+      "z": -21.25,
+      "observedTop": 38.157,
+      "demGround": 27.924,
+      "inferredHeight": 10.233,
+      "supportPoints": 429
+    },
+    {
+      "x": -115.75,
+      "z": -39.25,
+      "observedTop": 37.931,
+      "demGround": 30.617,
+      "inferredHeight": 7.314,
+      "supportPoints": 886
+    },
+    {
+      "x": -138.75,
+      "z": -6.25,
+      "observedTop": 37.678,
+      "demGround": 31.841,
+      "inferredHeight": 5.837,
+      "supportPoints": 839
+    },
+    {
+      "x": -116.75,
+      "z": -42.75,
+      "observedTop": 37.668,
+      "demGround": 28.869,
+      "inferredHeight": 8.799,
+      "supportPoints": 844
+    },
+    {
+      "x": -65.25,
+      "z": 73.75,
+      "observedTop": 37.627,
+      "demGround": 27.888,
+      "inferredHeight": 9.738,
+      "supportPoints": 308
+    },
+    {
+      "x": -129.75,
+      "z": -9.75,
+      "observedTop": 37.286,
+      "demGround": 27.354,
+      "inferredHeight": 9.932,
+      "supportPoints": 582
+    },
+    {
+      "x": -108.75,
+      "z": -31.75,
+      "observedTop": 37.088,
+      "demGround": 32.001,
+      "inferredHeight": 5.087,
+      "supportPoints": 307
+    },
+    {
+      "x": -63.25,
+      "z": 52.75,
+      "observedTop": 36.25,
+      "demGround": 26.532,
+      "inferredHeight": 9.718,
+      "supportPoints": 729
+    },
+    {
+      "x": -58.75,
+      "z": 55.75,
+      "observedTop": 35.756,
+      "demGround": 24.633,
+      "inferredHeight": 11.123,
+      "supportPoints": 768
+    },
+    {
+      "x": -81.25,
+      "z": 42.75,
+      "observedTop": 35.731,
+      "demGround": 25.957,
+      "inferredHeight": 9.774,
+      "supportPoints": 657
+    },
+    {
+      "x": -134.75,
+      "z": -1.25,
+      "observedTop": 35.661,
+      "demGround": 30.298,
+      "inferredHeight": 5.363,
+      "supportPoints": 673
+    },
+    {
+      "x": -64.75,
+      "z": 46.75,
+      "observedTop": 35.285,
+      "demGround": 26.237,
+      "inferredHeight": 9.047,
+      "supportPoints": 952
+    },
+    {
+      "x": -135.75,
+      "z": 39.25,
+      "observedTop": 35.351,
+      "demGround": 32.233,
+      "inferredHeight": 3.119,
+      "supportPoints": 344
+    },
+    {
+      "x": -130.75,
+      "z": 4.75,
+      "observedTop": 35.25,
+      "demGround": 28.509,
+      "inferredHeight": 6.741,
+      "supportPoints": 599
+    },
+    {
+      "x": -118.25,
+      "z": 22.25,
+      "observedTop": 35.074,
+      "demGround": 27.739,
+      "inferredHeight": 7.336,
+      "supportPoints": 607
+    },
+    {
+      "x": -123.75,
+      "z": -7.25,
+      "observedTop": 34.843,
+      "demGround": 23.773,
+      "inferredHeight": 11.07,
+      "supportPoints": 482
+    },
+    {
+      "x": -244.75,
+      "z": 73.75,
+      "observedTop": 34.546,
+      "demGround": 28.328,
+      "inferredHeight": 6.218,
+      "supportPoints": 655
+    },
+    {
+      "x": -130.75,
+      "z": 26.25,
+      "observedTop": 34.114,
+      "demGround": 30.527,
+      "inferredHeight": 3.588,
+      "supportPoints": 422
+    },
+    {
+      "x": -130.75,
+      "z": 17.75,
+      "observedTop": 34.023,
+      "demGround": 29.391,
+      "inferredHeight": 4.631,
+      "supportPoints": 657
+    },
+    {
+      "x": -54.25,
+      "z": 72.75,
+      "observedTop": 33.572,
+      "demGround": 22.953,
+      "inferredHeight": 10.619,
+      "supportPoints": 1364
+    },
+    {
+      "x": -151.25,
+      "z": 73.75,
+      "observedTop": 33.5,
+      "demGround": 26.868,
+      "inferredHeight": 6.632,
+      "supportPoints": 134
+    },
+    {
+      "x": -99.75,
+      "z": -29.75,
+      "observedTop": 32.866,
+      "demGround": 25.847,
+      "inferredHeight": 7.019,
+      "supportPoints": 308
+    },
+    {
+      "x": -57.75,
+      "z": 66.75,
+      "observedTop": 32.506,
+      "demGround": 24.622,
+      "inferredHeight": 7.884,
+      "supportPoints": 968
+    },
+    {
+      "x": -54.25,
+      "z": 62.75,
+      "observedTop": 32.725,
+      "demGround": 22.023,
+      "inferredHeight": 10.702,
+      "supportPoints": 859
+    },
+    {
+      "x": -111.25,
+      "z": 22.75,
+      "observedTop": 32.486,
+      "demGround": 22.735,
+      "inferredHeight": 9.75,
+      "supportPoints": 457
+    },
+    {
+      "x": -105.25,
+      "z": -37.25,
+      "observedTop": 32.202,
+      "demGround": 26.627,
+      "inferredHeight": 5.575,
+      "supportPoints": 580
+    },
+    {
+      "x": -57.75,
+      "z": 44.75,
+      "observedTop": 31.065,
+      "demGround": 23.037,
+      "inferredHeight": 8.028,
+      "supportPoints": 1086
+    },
+    {
+      "x": -188.25,
+      "z": -23.75,
+      "observedTop": 30.865,
+      "demGround": 28.204,
+      "inferredHeight": 2.661,
+      "supportPoints": 151
+    },
+    {
+      "x": -193.25,
+      "z": -44.75,
+      "observedTop": 30.483,
+      "demGround": 28.509,
+      "inferredHeight": 1.973,
+      "supportPoints": 109
+    },
+    {
+      "x": -118.25,
+      "z": -9.25,
+      "observedTop": 29.928,
+      "demGround": 20.952,
+      "inferredHeight": 8.976,
+      "supportPoints": 316
+    },
+    {
+      "x": -197.75,
+      "z": -39.75,
+      "observedTop": 29.619,
+      "demGround": 27.921,
+      "inferredHeight": 1.698,
+      "supportPoints": 150
+    },
+    {
+      "x": -51.25,
+      "z": 52.25,
+      "observedTop": 28.684,
+      "demGround": 17.911,
+      "inferredHeight": 10.773,
+      "supportPoints": 541
+    },
+    {
+      "x": -114.25,
+      "z": -10.25,
+      "observedTop": 27.283,
+      "demGround": 17.179,
+      "inferredHeight": 10.104,
+      "supportPoints": 207
+    },
+    {
+      "x": -154.25,
+      "z": 70.25,
+      "observedTop": 27.241,
+      "demGround": 21.709,
+      "inferredHeight": 5.532,
+      "supportPoints": 296
+    },
+    {
+      "x": -114.75,
+      "z": -2.75,
+      "observedTop": 27.169,
+      "demGround": 16.352,
+      "inferredHeight": 10.817,
+      "supportPoints": 378
+    },
+    {
+      "x": -142.25,
+      "z": 58.75,
+      "observedTop": 26.781,
+      "demGround": 23.59,
+      "inferredHeight": 3.191,
+      "supportPoints": 162
+    },
+    {
+      "x": -147.25,
+      "z": 46.25,
+      "observedTop": 25.06,
+      "demGround": 15.725,
+      "inferredHeight": 9.335,
+      "supportPoints": 693
+    },
+    {
+      "x": -161.25,
+      "z": -55.75,
+      "observedTop": 24.942,
+      "demGround": 23.296,
+      "inferredHeight": 1.646,
+      "supportPoints": 59
+    },
+    {
+      "x": -161.25,
+      "z": 72.25,
+      "observedTop": 23.772,
+      "demGround": 19.826,
+      "inferredHeight": 3.946,
+      "supportPoints": 348
+    },
+    {
+      "x": -167.25,
+      "z": 73.75,
+      "observedTop": 23.195,
+      "demGround": 19.251,
+      "inferredHeight": 3.944,
+      "supportPoints": 172
+    },
+    {
+      "x": -148.75,
+      "z": 55.75,
+      "observedTop": 22.909,
+      "demGround": 15.754,
+      "inferredHeight": 7.155,
+      "supportPoints": 310
+    },
+    {
+      "x": -168.25,
+      "z": -58.25,
+      "observedTop": 21.588,
+      "demGround": 20.267,
+      "inferredHeight": 1.321,
+      "supportPoints": 203
+    },
+    {
+      "x": -179.25,
+      "z": -6.75,
+      "observedTop": 19.539,
+      "demGround": 15.229,
+      "inferredHeight": 4.311,
+      "supportPoints": 294
+    },
+    {
+      "x": -174.75,
+      "z": -2.25,
+      "observedTop": 18.571,
+      "demGround": 15.132,
+      "inferredHeight": 3.439,
+      "supportPoints": 247
+    },
+    {
+      "x": -158.25,
+      "z": 59.25,
+      "observedTop": 18.349,
+      "demGround": 11.378,
+      "inferredHeight": 6.972,
+      "supportPoints": 495
+    },
+    {
+      "x": -160.25,
+      "z": 40.75,
+      "observedTop": 18.517,
+      "demGround": 8.05,
+      "inferredHeight": 10.466,
+      "supportPoints": 436
+    },
+    {
+      "x": -159.25,
+      "z": 54.25,
+      "observedTop": 18.351,
+      "demGround": 9.974,
+      "inferredHeight": 8.377,
+      "supportPoints": 571
+    },
+    {
+      "x": -196.75,
+      "z": -14.25,
+      "observedTop": 14.442,
+      "demGround": 12.443,
+      "inferredHeight": 2.0,
+      "supportPoints": 73
+    },
+    {
+      "x": -198.25,
+      "z": -19.25,
+      "observedTop": 14.709,
+      "demGround": 13.381,
+      "inferredHeight": 1.328,
+      "supportPoints": 156
+    },
+    {
+      "x": -176.25,
+      "z": 27.25,
+      "observedTop": 12.058,
+      "demGround": 6.458,
+      "inferredHeight": 5.6,
+      "supportPoints": 471
+    },
+    {
+      "x": -177.75,
+      "z": 69.75,
+      "observedTop": 11.81,
+      "demGround": 6.69,
+      "inferredHeight": 5.12,
+      "supportPoints": 447
+    },
+    {
+      "x": -63.25,
+      "z": -101.75,
+      "observedTop": 10.91,
+      "demGround": 8.386,
+      "inferredHeight": 2.524,
+      "supportPoints": 761
+    },
+    {
+      "x": -189.75,
+      "z": 73.75,
+      "observedTop": 10.723,
+      "demGround": 5.461,
+      "inferredHeight": 5.263,
+      "supportPoints": 414
+    },
+    {
+      "x": -57.25,
+      "z": -99.75,
+      "observedTop": 10.729,
+      "demGround": 9.419,
+      "inferredHeight": 1.31,
+      "supportPoints": 263
+    },
+    {
+      "x": -181.75,
+      "z": 30.75,
+      "observedTop": 10.578,
+      "demGround": 5.647,
+      "inferredHeight": 4.931,
+      "supportPoints": 489
+    },
+    {
+      "x": -185.25,
+      "z": 70.75,
+      "observedTop": 10.219,
+      "demGround": 5.607,
+      "inferredHeight": 4.612,
+      "supportPoints": 649
+    },
+    {
+      "x": -50.25,
+      "z": -94.75,
+      "observedTop": 10.04,
+      "demGround": 8.546,
+      "inferredHeight": 1.494,
+      "supportPoints": 125
+    },
+    {
+      "x": -174.25,
+      "z": 39.75,
+      "observedTop": 9.858,
+      "demGround": 5.965,
+      "inferredHeight": 3.893,
+      "supportPoints": 452
+    },
+    {
+      "x": -187.25,
+      "z": 3.25,
+      "observedTop": 7.776,
+      "demGround": 6.581,
+      "inferredHeight": 1.194,
+      "supportPoints": 90
+    },
+    {
+      "x": -188.75,
+      "z": 11.75,
+      "observedTop": 7.734,
+      "demGround": 5.978,
+      "inferredHeight": 1.756,
+      "supportPoints": 175
+    },
+    {
+      "x": -215.75,
+      "z": 3.25,
+      "observedTop": 7.863,
+      "demGround": 5.879,
+      "inferredHeight": 1.984,
+      "supportPoints": 38
+    },
+    {
+      "x": -191.75,
+      "z": 3.75,
+      "observedTop": 6.565,
+      "demGround": 5.302,
+      "inferredHeight": 1.262,
+      "supportPoints": 87
+    },
+    {
+      "x": -193.75,
+      "z": 8.25,
+      "observedTop": 6.315,
+      "demGround": 5.105,
+      "inferredHeight": 1.211,
+      "supportPoints": 69
+    }
+  ]
+}

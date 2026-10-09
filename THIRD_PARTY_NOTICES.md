@@ -1,5 +1,11 @@
 # Third-party notices
 
+Boat fabric candidate **Terlenka** is an unchanged Poly Haven CC0-1.0 PBR texture,
+photographed by colormass and processed by Rico Cilliers. Source, dimensions and
+download hashes are under `src/assets/boat/terlenka/`. Vessel-local UV mapping and
+material calibration are authored; this is not a surveyed local boat material.
+https://polyhaven.com/a/terlenka · https://polyhaven.com/license
+
 Rendering uses [Three.js](https://github.com/mrdoob/three.js), under the MIT license. Its license is included with the dependency and standalone output.
 
 UI font subsets are [Noto Sans JP](https://github.com/google/fonts/tree/main/ofl/notosansjp) and [Outfit](https://github.com/google/fonts/tree/main/ofl/outfit), under SIL OFL 1.1. Unmodified licenses are in public/fonts/ and embedded in the standalone HTML.
@@ -18,10 +24,12 @@ Coastal canopy models and native leaf masks **island_tree_01, island_tree_02, is
 
 The expanded Niijima surface is processed from GSI DEM5A/DEM10B tiles, with source hashes in src/world/niijima-detail.generated.ts and src/world/niijima-north.generated.ts. Beach microrelief, seabed, building foundation grading and small rock placements are authored refinements.
 
-Habushi Main Gate and the avatar are authored 3D geometry. The gate uses the official Niijima tourist gallery as a visual reference only; no gallery pixels are included. Absolute gate dimensions and unobserved faces are inferred. Boat upholstery uses authored geometry and procedural cloth maps, with no photographic fabric redistribution. See docs/habushi-main-gate-provenance.md.
+Habushi Main Gate and the avatar are authored 3D geometry. The gate uses the official Niijima tourist gallery as a visual reference only; no gallery pixels are included. Absolute gate dimensions and unobserved faces are inferred. Boat upholstery uses authored geometry and procedural cloth fallback; the opt-in Terlenka photographic material is attributed above. See docs/habushi-main-gate-provenance.md.
 
 The generic gate finish **White Plaster 02** by Rob Tuytel and pavement **Clean Asphalt** by Dimitrios Savva are Poly Haven CC0-1.0 assets. Original maps, source hashes and attribution are under src/assets/plaster/ and src/assets/pavement/. The brightness calibration and weathering are authored; neither material was photographed at Habushi Main Gate.
 
 Niijima cliff microdetail also uses unchanged 2K **Rock Face 03** maps by Dario Barresi / Rico Cilliers, CC0-1.0. Hashes and attribution are in `src/assets/niijima/rock-face-03/`. The white-pumice palette, layered shader, closed erosion mesh and its placement are authored; the scan was not acquired in Niijima. The V40 coastline source seam correction preserves original GSI bytes and records the exact affected coarse-only cells in `niijima-coast-confidence.generated.ts`. New seabed depths remain inferred.
 
 The V42 native Niijima ground patch is processed from Tokyo Metropolitan Government, Digital Services Bureau, **東京都デジタルツイン実現プロジェクト 島しょ地域点群データ**, catalogue https://www.geospatial.jp/ckan/dataset/tokyopc-shima-2023, CC BY4.0 (https://creativecommons.org/licenses/by/4.0/). Coordinate registration, centimetre storage quantization, outer-boundary blending and runtime triangulation are modifications by this project. The adjacent native25cm GeoTIFFs 09QC1701 and 09QC1711 are pinned by ZIP/TIFF hashes and joined on their original sample lattice. See docs/niijima-native-survey.md for provenance, terms and accuracy limits; the derivative is not endorsed by Tokyo and does not establish physical centimetre accuracy.
+
+The V59 Tomari west candidate uses Tokyo CC BY4.0 **09QC1546** provider 25cm GeoTIFF, reprojected to an aligned ~24.66cm grid, with seam and tidal-zone blending. Source ZIP/TIFF hashes and accuracy limits are in `docs/verification-v59.md` and `src/world/tomari-survey.generated.ts`. This derivative is not endorsed by Tokyo and does not establish centimetre field accuracy.
