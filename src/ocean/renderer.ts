@@ -231,6 +231,8 @@ export class Ocean {
     this.uniforms.uCaustics.value=this.caustics.texture;this.uniforms.uCausticBounds.value=this.caustics.bounds;
     this.compositor=new SceneCompositor(this.renderer,this.uniforms.uExposure,this.uniforms.uUnderwater,this.uniforms.uTime);
     this.compositor.setWaterOptics(this.camera,this.sun,this.uniforms.uSunDirection,this.uniforms.uSunColor);
+    // grade=photo: AgX + bloom + lens fall-off candidate; the default display transform is unchanged.
+    if(new URLSearchParams(location.search).get('grade')==='photo')this.compositor.enableGrade();
     Object.assign(this.uniforms,this.compositor.shadowUniforms);
     this.uniforms.uSceneColor.value=this.compositor.landTarget.texture;
     this.uniforms.uSceneDepth.value=this.compositor.landTarget.depthTexture;

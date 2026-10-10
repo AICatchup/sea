@@ -72,7 +72,7 @@ const mergeFragment = `
  ${waterVolumeGLSL}
  varying vec2 vUv;
  uniform sampler2D uLand, uWater, uLandDepth, uWaterDepth, uOcclusion;
- uniform float uExposure, uUnderwater, uTime;
+ uniform float uExposure, uUnderwater, uTime, uGrade;
  uniform vec2 uNearFar, uOcclusionPixel, uSunShadowTexel;
  uniform sampler2DShadow uSunShadow;
  uniform mat4 uSunShadowMatrix, uCameraWorld, uInverseProjection;
@@ -138,6 +138,8 @@ const mergeFragment = `
      color=mix(color,underwater,uUnderwater);
    }
    color*=uExposure;
+   // Photographic grade: hand linear HDR to the bloom and finish passes.
+   if(uGrade>.5){gl_FragColor=vec4(color,1.0);return;}
    color=clamp((color*(2.51*color+0.03))/(color*(2.43*color+0.59)+0.14),0.0,1.0);
    // Exactly one display transform, after HDR optics and contact occlusion.
    color=mix(color*12.92,1.055*pow(color,vec3(1.0/2.4))-.055,step(vec3(.0031308),color));
@@ -149,6 +151,51 @@ const mergeFragment = `
      float edge=smoothstep(0.52,1.2,length(p*vec2(0.80,1.0)));
      color*=1.0-edge*0.10*uUnderwater;
    }
+   gl_FragColor=vec4(color,1.0);
+ }`;
+
+// ?grade=photo candidate. Bright-pass-free dual-filter bloom (Karis-weighted first
+// level so isolated sun glints cannot flicker), then AgX with a mild look in place of
+// the ACES fit, film grain and a slight lens fall-off. Exposure/look values were picked
+// from side-by-side stills against the default (not a measured camera calibration).
+const downFragment=/* glsl */`
+ precision highp float;varying vec2 vUv;uniform sampler2D uSource;uniform vec2 uTexel;uniform float uKaris;
+ float weight(vec3 c){return uKaris>.5?1.0/(1.0+dot(c,vec3(.2126,.7152,.0722))):1.0;}
+ void main(){
+   vec3 a=texture2D(uSource,vUv+uTexel*vec2(-1,-1)).rgb,b=texture2D(uSource,vUv+uTexel*vec2(1,-1)).rgb;
+   vec3 c=texture2D(uSource,vUv+uTexel*vec2(-1,1)).rgb,d=texture2D(uSource,vUv+uTexel*vec2(1,1)).rgb;
+   float wa=weight(a),wb=weight(b),wc=weight(c),wd=weight(d);
+   gl_FragColor=vec4((a*wa+b*wb+c*wc+d*wd)/(wa+wb+wc+wd),1.0);
+ }`;
+const upFragment=/* glsl */`
+ precision highp float;varying vec2 vUv;uniform sampler2D uSource;uniform vec2 uTexel;
+ void main(){
+   vec3 s=texture2D(uSource,vUv).rgb*4.0;
+   s+=(texture2D(uSource,vUv+uTexel*vec2(-1,0)).rgb+texture2D(uSource,vUv+uTexel*vec2(1,0)).rgb+texture2D(uSource,vUv+uTexel*vec2(0,-1)).rgb+texture2D(uSource,vUv+uTexel*vec2(0,1)).rgb)*2.0;
+   s+=texture2D(uSource,vUv+uTexel*vec2(-1,-1)).rgb+texture2D(uSource,vUv+uTexel*vec2(1,-1)).rgb+texture2D(uSource,vUv+uTexel*vec2(-1,1)).rgb+texture2D(uSource,vUv+uTexel*vec2(1,1)).rgb;
+   gl_FragColor=vec4(s/16.0,1.0);
+ }`;
+const finishFragment=/* glsl */`
+ precision highp float;varying vec2 vUv;uniform sampler2D uHdr,uBloom;uniform float uBloomMix,uGradeExposure,uVignette,uUnderwater,uLookPower,uLookSaturation;
+ const mat3 SRGB_TO_2020=mat3(vec3(.6274,.0691,.0164),vec3(.3293,.9195,.0880),vec3(.0433,.0113,.8956));
+ const mat3 REC2020_TO_SRGB=mat3(vec3(1.6605,-.1246,-.0182),vec3(-.5876,1.1329,-.1006),vec3(-.0728,-.0083,1.1187));
+ const mat3 INSET=mat3(vec3(.856627153315983,.137318972929847,.11189821299995),vec3(.0951212405381588,.761241990602591,.0767994186031903),vec3(.0482516061458583,.101439036467562,.811302368396859));
+ const mat3 OUTSET=mat3(vec3(1.1271005818144368,-.1413297634984383,-.14132976349843826),vec3(-.11060664309660323,1.157823702216272,-.11060664309660294),vec3(-.016493938717834573,-.016493938717834257,1.2519364065950405));
+ vec3 contrast(vec3 x){vec3 x2=x*x,x4=x2*x2;return 15.5*x4*x2-40.14*x4*x+31.96*x4-6.868*x2*x+.4298*x2+.1191*x-.00232;}
+ // AgX (Blender/Filament, as in three's tone-mapping chunk) with a mild power/saturation look.
+ vec3 agx(vec3 c){
+   c=INSET*(SRGB_TO_2020*c);c=clamp((log2(max(c,1e-10))+12.47393)/16.5,0.0,1.0);c=contrast(c);
+   float luma=dot(c,vec3(.2126,.7152,.0722));c=pow(max(c,0.0),vec3(uLookPower));c=luma+uLookSaturation*(c-luma);
+   c=OUTSET*c;c=pow(max(c,0.0),vec3(2.2));return clamp(REC2020_TO_SRGB*c,0.0,1.0);
+ }
+ void main(){
+   vec3 hdr=mix(texture2D(uHdr,vUv).rgb,texture2D(uBloom,vUv).rgb,uBloomMix);
+   vec2 p=vUv*2.0-1.0;
+   hdr*=1.0-uVignette*smoothstep(.35,1.45,dot(p*vec2(.86,1.0),p*vec2(.86,1.0)));
+   vec3 color=agx(hdr*uGradeExposure);
+   color=mix(color*12.92,1.055*pow(color,vec3(1.0/2.4))-.055,step(vec3(.0031308),color));
+   color+=(fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)-.5)/650.0;
+   if(uUnderwater>0.0)color*=1.0-smoothstep(0.52,1.2,length(p*vec2(.80,1.0)))*.10*uUnderwater;
    gl_FragColor=vec4(color,1.0);
  }`;
 
@@ -173,6 +220,8 @@ export class SceneCompositor {
     depthTest: false, depthWrite: false, toneMapped: false });
   private readonly quad: THREE.Mesh;
   private sunlight:THREE.DirectionalLight|null=null;
+  /** Optional photographic grade (?grade=photo): HDR target, bloom chain and finish pass. */
+  private grade:{hdr:THREE.WebGLRenderTarget;mips:THREE.WebGLRenderTarget[];down:THREE.ShaderMaterial;up:THREE.ShaderMaterial;finish:THREE.ShaderMaterial}|null=null;
 
   private readonly renderer: THREE.WebGLRenderer;
 
@@ -200,7 +249,23 @@ export class SceneCompositor {
     this.quad = new THREE.Mesh(this.geometry, this.merge);
     this.quad.frustumCulled = false; this.scene.add(this.quad);
     this.fxaa.uniforms.tDiffuse.value = this.colorTarget.texture;
+    this.merge.uniforms.uGrade={value:0};
   }
+
+  /** Enables the photographic grade candidate; the default ACES path is untouched when off. */
+  enableGrade():void{
+    if(this.grade)return;
+    const hdr=()=>new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,depthBuffer:false,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
+    const pass=(fragmentShader:string,uniforms:Record<string,THREE.IUniform>,blending:THREE.Blending=THREE.NoBlending)=>new THREE.ShaderMaterial({vertexShader:vertex,fragmentShader,uniforms,depthTest:false,depthWrite:false,toneMapped:false,blending});
+    this.grade={hdr:hdr(),mips:Array.from({length:6},hdr),
+      down:pass(downFragment,{uSource:{value:null},uTexel:{value:new THREE.Vector2()},uKaris:{value:0}}),
+      // Additive tent upsampling accumulates every coarser level into the finer one.
+      up:pass(upFragment,{uSource:{value:null},uTexel:{value:new THREE.Vector2()}},THREE.AdditiveBlending),
+      finish:pass(finishFragment,{uHdr:{value:null},uBloom:{value:null},uBloomMix:{value:.01},uGradeExposure:{value:1.5},uVignette:{value:.16},uLookPower:{value:1.25},uLookSaturation:{value:1.35},uUnderwater:this.merge.uniforms.uUnderwater})};
+    this.merge.uniforms.uGrade.value=1;
+    this.resize(this.colorTarget.width,this.colorTarget.height);
+  }
+  get gradeEnabled():boolean{return this.grade!==null;}
 
   /** QA only: UV origin is bottom-left. Samples the most recently rendered buffers. */
   async probeDepthSamples(points: readonly DepthProbePoint[]): Promise<DepthProbeSample[]> {
@@ -262,6 +327,10 @@ export class SceneCompositor {
     this.occlusion.uniforms.uFullResolution.value.set(width,height);
     this.merge.uniforms.uOcclusionPixel.value.set(1/aoWidth,1/aoHeight);
     this.fxaa.uniforms.resolution.value.set(1/width,1/height);
+    if(this.grade){
+      this.grade.hdr.setSize(width,height);
+      this.grade.mips.forEach((mip,i)=>mip.setSize(Math.max(1,width>>(i+1)),Math.max(1,height>>(i+1))));
+    }
   }
   setWaterOptics(camera:THREE.PerspectiveCamera,sun:THREE.DirectionalLight,direction:THREE.IUniform,color:THREE.IUniform):void{
     this.sunlight=sun;
@@ -284,12 +353,34 @@ export class SceneCompositor {
     this.renderer.setClearColor(0,0);
     this.renderer.setRenderTarget(this.waterTarget);this.renderer.render(water,camera);
     this.quad.material=this.merge;
-    this.renderer.setRenderTarget(this.colorTarget);this.renderer.render(this.scene,this.camera);
+    if(this.grade)this.renderGrade();
+    else{this.renderer.setRenderTarget(this.colorTarget);this.renderer.render(this.scene,this.camera);}
     this.quad.material=this.fxaa;
     this.renderer.setRenderTarget(null);this.renderer.render(this.scene,this.camera);
   }
 
+  private renderGrade():void{
+    const g=this.grade!,r=this.renderer;
+    r.setRenderTarget(g.hdr);r.render(this.scene,this.camera);
+    this.quad.material=g.down;
+    let source=g.hdr;
+    g.mips.forEach((mip,i)=>{
+      g.down.uniforms.uSource.value=source.texture;g.down.uniforms.uTexel.value.set(.5/source.width,.5/source.height);g.down.uniforms.uKaris.value=i===0?1:0;
+      r.setRenderTarget(mip);r.render(this.scene,this.camera);source=mip;
+    });
+    this.quad.material=g.up;
+    const autoClear=r.autoClear;r.autoClear=false;
+    for(let i=g.mips.length-1;i>0;i--){
+      const from=g.mips[i];g.up.uniforms.uSource.value=from.texture;g.up.uniforms.uTexel.value.set(1/from.width,1/from.height);
+      r.setRenderTarget(g.mips[i-1]);r.render(this.scene,this.camera);
+    }
+    r.autoClear=autoClear;
+    this.quad.material=g.finish;g.finish.uniforms.uHdr.value=g.hdr.texture;g.finish.uniforms.uBloom.value=g.mips[0].texture;
+    r.setRenderTarget(this.colorTarget);r.render(this.scene,this.camera);
+  }
+
   dispose():void {
+    if(this.grade){this.grade.hdr.dispose();this.grade.mips.forEach(m=>m.dispose());this.grade.down.dispose();this.grade.up.dispose();this.grade.finish.dispose();this.grade=null;}
     this.landTarget.dispose();this.waterTarget.dispose();this.colorTarget.dispose();this.occlusionTarget.dispose();
     this.geometry.dispose();this.merge.dispose();this.occlusion.dispose();this.fxaa.dispose();
   }
