@@ -20,6 +20,7 @@ import { WaveCaustics } from './caustics';
 import { loadPhotographicSky } from './photographic-sky';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { FirstPersonBody } from '../world/player-body';
+import {ThirdPersonCamera} from '../world/third-person-camera.ts';
 import {targetCameraFov,approachCameraFov} from '../world/camera-lens.ts';
 import { LocalWaterHeights, cameraSubmersion } from './local-water-heights.ts';
 import { WorldCollision, withWorldCollision } from '../world/world-collision';
@@ -40,7 +41,6 @@ import {ExpeditionWorld} from '../game/expedition-world.ts';
 import {resizeReflectionTarget} from './reflection-target.ts';
 import {groundScannedShelf} from '../world/grounded-reef.ts';
 import {ReflectionCull} from './mirror-cull.ts';
-import {ThirdPersonCamera} from '../world/third-person-camera.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
