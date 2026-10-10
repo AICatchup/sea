@@ -28,9 +28,10 @@ export class TomariMeasuredCoast {
    const k=j*data.width+i,value=view.getInt16(k*2,true),x=data.origin.x+i*data.column.x,z=data.origin.z+j*data.row.z;
    if(value===-32768)continue;
    const y=value*.01,old=fallback(x,z);
-   // The terrestrial DEM is not a bathymetric survey. Retain existing shallow
-   // water and navigation channels; transition only onto measured dry ground.
-   const blend=THREE.MathUtils.smoothstep(Math.min(old,y),.3,2.0);
+   // Retain the inferred bed only where the new survey is low/wet. The older
+   // authored beach cannot veto measured dry rock: doing so carved a false
+   // strand through the cliff's measured foot and created a vertical step.
+   const blend=THREE.MathUtils.smoothstep(y,.3,2.0);
    heights[k]=old+(y-old)*blend;valid[k]=1;
   }
   this.material=terrain.clone();this.material.vertexColors=false;

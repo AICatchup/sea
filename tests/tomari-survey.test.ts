@@ -1,6 +1,7 @@
 import {test,after} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import * as THREE from 'three';
 import {IslandElevation} from '../src/world/geodata.ts';
 import {TomariMeasuredCoast} from '../src/world/tomari-measured.ts';
@@ -49,6 +50,15 @@ test('western cliff changes, berth water and spawn remain outside land reconstru
  for(const [x,z] of [[-116,-90],[-50,-25]])assert.ok(Math.abs(measured.heightAt(x,z)!-elevation.heightAt(x,z))<.003);
  assert.equal(measured.heightAt(-36,27),null);
  assert.equal(measured.heightAt(NaN,0),null);
+});
+test('measured dry rock cannot be suppressed into the old authored beach',()=>{
+ const fixture=JSON.parse(readFileSync(new URL('./fixtures/tomari-dry-rock-source.json',import.meta.url),'utf8'));
+ assert.equal(fixture.samples.length,8);
+ for(const p of fixture.samples){
+  assert.ok(p.height>=4&&p.previousAuthoredHeight<2,'fixture describes dry survey above the old strand');
+  const actual=measured.heightAt(p.x,p.z);assert.notEqual(actual,null);
+  assert.ok(Math.abs(actual!-p.height)<.15,`survey dry rock ${p.x},${p.z}: ${actual} vs source ${p.height}`);
+ }
 });
 test('dispose does not destroy borrowed terrain material',()=>{
  let disposed=0;material.addEventListener('dispose',()=>disposed++);

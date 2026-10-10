@@ -1,0 +1,56 @@
+{
+  "sourceArchiveSha256": "50a4a789301282ef04da7c1e5165ac8e9b7f74b3b23b5e75b69838457ca0cd35",
+  "source": "Tokyo09QC1546 LAS original class2 ground points",
+  "license": "CC BY4.0",
+  "scope": "Known measured dry rock where the prior authored beach incorrectly dominates; numerical check against source points, not absolute survey accuracy",
+  "samples": [
+    {
+      "x": -87.18894222615113,
+      "z": -36.97020169698476,
+      "height": 4.032,
+      "previousAuthoredHeight": 0.4271062910556793
+    },
+    {
+      "x": -87.62905687917466,
+      "z": -40.33459728082619,
+      "height": 4.023,
+      "previousAuthoredHeight": 0.4271062910556793
+    },
+    {
+      "x": -87.74490393489305,
+      "z": -38.03562133488555,
+      "height": 4.638,
+      "previousAuthoredHeight": 0.4271062910556793
+    },
+    {
+      "x": -88.15707856004443,
+      "z": -35.182836390117984,
+      "height": 4.043,
+      "previousAuthoredHeight": 0.4271062910556793
+    },
+    {
+      "x": -88.37005140314066,
+      "z": -33.24757217445466,
+      "height": 4.025,
+      "previousAuthoredHeight": 0.4271062910556793
+    },
+    {
+      "x": -88.6366152673074,
+      "z": -39.27761594443069,
+      "height": 4.831,
+      "previousAuthoredHeight": 0.4271062910556793
+    },
+    {
+      "x": -88.79993908784104,
+      "z": -41.48555188063085,
+      "height": 4.086,
+      "previousAuthoredHeight": 0.3764969571982585
+    },
+    {
+      "x": -89.1257307392505,
+      "z": -42.486150472971076,
+      "height": 4,
+      "previousAuthoredHeight": 0.22239754009328896
+    }
+  ]
+}

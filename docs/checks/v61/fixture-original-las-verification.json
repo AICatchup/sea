@@ -1,0 +1,17 @@
+{
+  "archiveSha256": "50a4a789301282ef04da7c1e5165ac8e9b7f74b3b23b5e75b69838457ca0cd35",
+  "class": 2,
+  "matches": 8,
+  "maximumNumericDistanceMetres": 0.0,
+  "lasPointIndices": [
+    3660239,
+    4065224,
+    4066798,
+    4069126,
+    1726660,
+    1786636,
+    1707641,
+    1790396
+  ],
+  "scope": "Exact match to decoded archive coordinates after declared EPSG6677 transform; not absolute survey precision"
+}
