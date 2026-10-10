@@ -3,6 +3,8 @@ import type { AdventureState } from './contracts.ts';
 import { createPlayerSkin } from './player-skin.ts';
 import {helmHandPose,HELM_FINGER_CURL} from './helm-contact.ts';
 import {boneKey,diverBodyMaterial,isHandKey,makeHumanGeometries,wearFields,type MakeHumanSource} from './makehuman-body.ts';
+import {MOCAP_BONES,mocapFootLift,sampleMocapClip,type MocapGaitData} from './mocap-gait.ts';
+import {PLAYER_DIMENSIONS} from './contracts.ts';
 
 /**
  * Original, metre-scale anatomy; no downloaded model, photographed skin or likeness.
@@ -26,7 +28,9 @@ interface Limb {
 }
 const ACTIONS: Action[] = ['idle', 'walk', 'run', 'swim', 'dive', 'helm', 'climb'];
 const SKIN = 0, SUIT = 1, PANEL = 2, SEAM = 3, RUBBER = 4, METAL = 5, NAIL = 6;
-const UP = new THREE.Vector3(0, 1, 0);
+const UP = new THREE.Vector3(0, 1, 0), X_AXIS = new THREE.Vector3(1, 0, 0);
+/** Heel and toe of the boot sole in the ankle frame. */
+const SOLE_POINTS = [new THREE.Vector3(0, -.087, .03), new THREE.Vector3(0, -.07, -.17)];
 const clamp = THREE.MathUtils.clamp;
 const finite = (value: number | undefined, fallback = 0) => Number.isFinite(value) ? value! : fallback;
 const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
@@ -198,6 +202,9 @@ export class FirstPersonBody {
   private disposed = false;
   /** Gear triangles per material group; kept when the anatomy is swapped for MakeHuman. */
   private readonly gearFaces: number[][];
+  /** CMU motion capture gait clips (opt-in); null keeps the procedural gait bit-exact. */
+  private readonly mocapReach = new THREE.Quaternion();
+  private mocap: { data: MocapGaitData; bones: THREE.Bone[]; land: THREE.Quaternion[]; run: THREE.Quaternion[]; swim: THREE.Quaternion[] } | null = null;
   private makehuman: { meshes: THREE.SkinnedMesh[]; materials: THREE.Material[]; textures: THREE.Texture[]; skin: THREE.MeshStandardMaterial; anatomy: THREE.BufferGeometry } | null = null;
 
   constructor() {
@@ -319,6 +326,61 @@ export class FirstPersonBody {
     this.mesh.geometry = gear;
     this.makehuman = { meshes, materials: [skin, eyes, ...meshes.slice(2).map(m => m.material as THREE.Material)], textures: Object.values(textures).filter((t): t is THREE.Texture => !!t), skin, anatomy };
     this.group.userData.makehuman = { triangles: body.index!.count / 3, gearTriangles: gearIndex.length / 3, provenance: source.meta.provenance };
+  }
+
+  /** Drive walk, run, swim and dive with looping CMU motion capture on the same skeleton.
+   * Idle, helm, climb, fishing and surfing stay procedural; the head keeps the camera. */
+  useMocap(data: MocapGaitData): void {
+    if (this.disposed) return;
+    const byKey = new Map(this.bones.map(b => [boneKey(b), b]));
+    const quaternions = () => MOCAP_BONES.map(() => new THREE.Quaternion());
+    this.mocap = { data, bones: MOCAP_BONES.map(k => { const b = byKey.get(k); if (!b) throw new Error(`mocap bone ${k}`); return b; }), land: quaternions(), run: quaternions(), swim: quaternions() };
+    this.group.userData.mocap = { clips: Object.fromEntries(Object.entries(data.clips).map(([k, c]) => [k, { cycleSeconds: c.cycleSeconds, cycles: c.cycles, source: c.source }])), provenance: data.provenance };
+  }
+
+  private applyMocap(walk: number, run: number, water: number, lean: number, headOrientation: THREE.Euler): void {
+    const m = this.mocap!, clips = m.data.clips, cycle = this.phase / (2 * Math.PI);
+    const loco = walk + run + water;
+    if (loco < 1e-4) return;
+    sampleMocapClip(clips.walk, cycle, m.land); sampleMocapClip(clips.run, cycle, m.run); sampleMocapClip(clips.swim, cycle, m.swim);
+    const runShare = walk + run > 1e-6 ? run / (walk + run) : 0, waterShare = water / loco;
+    const body = loco * (1 - this.surfBlend), arms = body * (1 - this.fishingBlend);
+    // The captured swimmer lies flat; the game swimmer keeps the head up at `lean` from
+    // vertical. Lower the arms by the difference so the stroke reaches forward along the
+    // surface instead of rising out of the water (80%: the reach stays in the eye's view).
+    this.mocapReach.setFromAxisAngle(X_AXIS, -.8 * Math.max(0, Math.PI / 2 - lean) * waterShare);
+    for (let k = 0; k < m.bones.length; k++) {
+      const q = m.land[k].slerp(m.run[k], runShare).slerp(m.swim[k], waterShare);
+      if (k === 3 || k === 6) q.premultiply(this.mocapReach);
+      m.bones[k].quaternion.slerp(q, k >= 3 && k < 9 ? arms : body);
+    }
+    // Mocap trunk twist and sway must not turn the eye: the head stays camera-aligned.
+    this.targetQuaternion.setFromEuler(headOrientation);
+    this.orientAbsolute(this.head, this.targetQuaternion);
+  }
+
+  /** Real gait never straightens the stance knee, so the captured legs end above a floor
+   * one standing eye height below the camera. Lower the body until the stance sole meets
+   * it; running keeps its flight phase. In third person the drawn eye drops with the body
+   * (as a real walker's does); in first person the eye stays on the camera. */
+  private plantMocapFeet(walk: number, run: number, state: AdventureState, camera: THREE.PerspectiveCamera): void {
+    const land = (walk + run) * (1 - this.surfBlend) * (state.grounded === false ? 0 : 1);
+    if (land < 1e-3) return;
+    const clips = this.mocap!.data.clips, cycle = this.phase / (2 * Math.PI), runShare = run / (walk + run);
+    const lift = THREE.MathUtils.lerp(mocapFootLift(clips.walk, cycle), mocapFootLift(clips.run, cycle), runShare) * (this.legs[0].upperRest.length() + this.legs[0].lowerRest.length());
+    const floor = camera.position.y - finite(state.viewOffset?.y) - PLAYER_DIMENSIONS.eyeHeight;
+    let sole = Infinity;
+    for (const leg of this.legs) for (const point of SOLE_POINTS) sole = Math.min(sole, this.scratch.copy(point).applyMatrix4(leg.end.matrixWorld).y);
+    const drop = clamp(sole - floor - lift, 0, .1) * land;
+    this.group.position.y -= drop;
+    if (!this.relaxedStance) {
+      // First person: the eye must stay on the camera, or the lowered head brings the
+      // eyes and brows into the near view. Only the neck, unseen from the eye, lengthens.
+      this.group.updateMatrixWorld(true); this.head.parent!.getWorldQuaternion(this.parentQuaternion).invert();
+      this.head.position.add(this.scratch.set(0, drop, 0).applyQuaternion(this.parentQuaternion));
+    }
+    this.group.updateMatrixWorld(true);
+    this.group.userData.mocapDrop = drop;
   }
 
   private bone(name: string, point: THREE.Vector3, parent?: THREE.Bone): THREE.Bone {
@@ -777,7 +839,9 @@ export class FirstPersonBody {
       if (i === 1) { leg.upper.rotation.x += .07 * settle; leg.upper.rotation.z += .035 * settle; leg.lower.rotation.x -= .15 * settle; leg.end.rotation.x += .07 * settle; }
       if(this.surfBlend>.001){leg.upper.rotation.x+=this.surfBlend*(i===0?.24:-.12);leg.upper.rotation.z+=this.surfBlend*(i===0?-.15:.15);leg.lower.rotation.x-=this.surfBlend*.28;}
     }
+    if (this.mocap) this.applyMocap(walk, run, water, lean, this.poseEuler.set(state.pitch + lean - boatPitch, clamp(bodyYaw - state.yaw, -1.4, 1.4), -boatRoll, 'XYZ'));
     this.anchor(camera);
+    if (this.mocap) this.plantMocapFeet(walk, run, state, camera);
     this.group.updateMatrixWorld(true); this.mesh.skeleton.update();
     this.initialized = true;
   }

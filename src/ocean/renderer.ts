@@ -370,12 +370,16 @@ export class Ocean {
       if(this.disposed)return;this.body.useMakeHuman(source);
       prepareWorldMaterials(this.body.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     }).catch(error=>console.warn('MakeHuman body unavailable; sculpted body retained',error)):Promise.resolve();
+    // motion=cmu drives walk/run/swim/dive with CMU motion capture on the same skeleton.
+    const motionReady=new URLSearchParams(location.search).get('motion')==='cmu'?import('../world/mocap-gait.ts').then(m=>m.loadMocapGait()).then(data=>{
+      if(!this.disposed)this.body.useMocap(data);
+    }).catch(error=>console.warn('Motion capture gait unavailable; procedural gait retained',error)):Promise.resolve();
     const assetReady=((this.assets as AssetWorld&{ready?:Promise<unknown>}).ready??Promise.resolve()).then(()=>{
       // impostor=0 keeps the far/distant crown meshes for comparison.
       if(!this.disposed&&new URLSearchParams(location.search).get('impostor')!=='0')this.assets.useImpostors(this.renderer);
       if(!this.disposed)prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     });
-    this.ready=Promise.allSettled([worldReady,assetReady,marineReady,coastReady,skyReady,bodyReady]).then(results=>{
+    this.ready=Promise.allSettled([worldReady,assetReady,marineReady,coastReady,skyReady,bodyReady,motionReady]).then(results=>{
       for(const result of results)if(result.status==='rejected')console.warn('A photographic asset could not load',result.reason);
       if(!this.disposed)this.syncSolids();
     });

@@ -8,6 +8,13 @@ import { ROUTE_MIN_DEPTH, ROUTE_RADIUS, clampWorld, findNearbyWater, footSegment
 
 const EYE_HEIGHT = PLAYER_DIMENSIONS.eyeHeight;
 const SURFACE_EYE = 0.34;
+/** Gait phase rate (rad/s; one stride, i.e. two steps, per 2π). Walking keeps the
+ * original 3.8·v (1.12 strides/s at 1.85 m/s). Above that, real stride frequency rises
+ * slowly while stride length grows: ~1.5 strides/s (180 steps/min) at a 4.7 m/s run,
+ * instead of 2.85 strides/s (342 steps/min) from extrapolating the walking line. */
+export function strideRate(speed: number): number {
+  return speed <= 1.85 ? speed * 3.8 : 1.85 * 3.8 + (speed - 1.85) * .13 * 2 * Math.PI;
+}
 const MAX_DIVE_DEPTH = 60;
 const MANUAL_BOAT_SPEED = 12;
 const VOYAGE_SPEED = MANUAL_BOAT_SPEED;
@@ -616,7 +623,7 @@ export class ExplorerControls {
     this.state.speed = Math.hypot(this.velocity.x, this.velocity.z);
     this.state.stamina = (this.state.stamina ?? 1) + resourceDelta * (running ? -.08 : .055);
     const walking = this.state.mode === 'walk' && this.state.grounded && this.state.speed > .12;
-    if (walking) this.state.gaitPhase = (this.state.gaitPhase ?? 0) + this.state.speed * dt * 3.8;
+    if (walking) this.state.gaitPhase = (this.state.gaitPhase ?? 0) + strideRate(this.state.speed) * dt;
     else if(this.state.mode==='swim'||this.state.mode==='dive'){
       // The render body consumes the controller phase. Keep slow sculling at
       // rest and increase stroke cadence with actual horizontal/vertical motion.
