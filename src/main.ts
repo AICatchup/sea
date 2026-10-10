@@ -203,6 +203,29 @@ try {
   // as the touch controls; bookmarks are QA starts, never normal travel actions.
   let crestSeriesBusy=false;
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
+    async captureMirrorComparison(pose:{x:number;z:number;yaw:number;pitch:number;eyeY:number;mode:'walk'|'dive'},name='reflection'){
+      if(!captureOnly||![pose.x,pose.z,pose.yaw,pose.pitch,pose.eyeY].every(Number.isFinite)||Math.abs(pose.x)>7000||Math.abs(pose.z)>4000||!['walk','dive'].includes(pose.mode))throw new Error('Dedicated bounded reflection observation required');
+      await ocean.ready;const before=captureHost.readState(),clock=ocean.diagnostics.time,wasEnabled=ocean.setReflectionCulling(false);
+      try{
+        captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
+        captureHost.viewpoint(pose.x,pose.z,pose.yaw,pose.pitch,pose.mode,0,pose.eyeY);ocean.setObservationClock(34);
+        // End each group after the non-shadow reflection at frame phase 9,
+        // so an accepted ON image actually contains a culled reflection.
+        while(ocean.frames%12!==0)ocean.renderStaticSnapshot();
+        for(let i=0;i<12;i++)ocean.renderStaticSnapshot();
+        const captures=[];
+        for(const [label,enabled] of [['off-first',false],['off-repeat',false],['on',true],['off-last',false]] as const){
+          ocean.setReflectionCulling(enabled);let png='';const frames=[];
+          for(let i=0;i<12;i++){png=ocean.renderStaticSnapshot();const d=ocean.diagnostics;frames.push({frame:d.frames,draws:d.draws,triangles:d.triangles,cull:d.reflectionCulling});}
+          captures.push({label,enabled,png,frames});
+        }
+        return{name,pose,captures,state:captureHost.readState(),scope:'Paused same-build off/off/on/off. Complete 12-frame shadow/reflection cadence; no FPS or normal input acceptance.'};
+      }finally{
+        ocean.setReflectionCulling(wasEnabled);
+        try{ocean.setObservationClock(clock);captureHost.restoreState(before);captureHost.visualLock(true);captureHost.setPaused(true);ocean.renderStaticSnapshot();}
+        finally{captureHost.restoreState(before);}
+      }
+    },
     async captureStaticCoast(pose:{x:number;z:number;yaw:number;pitch:number;eyeY:number},name='static-coast',diagnostic:'normal'|'no-shadow'='normal',probes:readonly{x:number;y:number}[]=[]) {
       const tomari=pose.x>=-350&&pose.x<=350&&pose.z>=-300&&pose.z<=200;
       const niijima=pose.x>=5400&&pose.x<=6500&&pose.z>=-3500&&pose.z<=200;
@@ -214,7 +237,9 @@ try {
       try{
         captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
         captureHost.viewpoint(pose.x,pose.z,pose.yaw,pose.pitch,'walk',0,pose.eyeY);ocean.setObservationClock(34);
-        let png='';for(let i=0;i<3;i++)png=ocean.renderStaticSnapshot();
+        // Cover complete 3-frame reflection and 4-frame shadow cadences after
+        // moving the observation camera, regardless of its initial frame phase.
+        let png='';for(let i=0;i<12;i++)png=ocean.renderStaticSnapshot();
         return{png,metadata:{name,pose,diagnostic,state:captureHost.readState(),time:ocean.diagnostics.time,materials:ocean.diagnostics.niijimaMaterials,topography:ocean.diagnostics.topography,foliage:ocean.diagnostics.foliage,draws:ocean.diagnostics.draws,triangles:ocean.diagnostics.triangles,terrain:probes.map(p=>({point:p,hits:ocean.probeFoliage(p.x*2-1,1-p.y*2,false,true)})),scope:'Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.'}};
       }finally{
         for(const r of receivers)r.mesh.receiveShadow=r.receive;
@@ -651,7 +676,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
-    for(const name of ['captureStaticCoast','captureCoastPose','captureSandComparison','captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle','inspectSandMoisture','inspectFoamStructure']){
+    for(const name of ['captureMirrorComparison','captureStaticCoast','captureCoastPose','captureSandComparison','captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle','inspectSandMoisture','inspectFoamStructure']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
   }

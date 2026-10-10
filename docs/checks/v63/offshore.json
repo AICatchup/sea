@@ -1,0 +1,504 @@
+{
+  "captures": [
+    {
+      "enabled": false,
+      "frames": [
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 636,
+          "frame": 973,
+          "triangles": 27248178
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 974,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 975,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 976,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 337,
+          "frame": 977,
+          "triangles": 16383200
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 978,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 979,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 980,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 337,
+          "frame": 981,
+          "triangles": 16383200
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 982,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 983,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 984,
+          "triangles": 10567896
+        }
+      ],
+      "label": "off-first"
+    },
+    {
+      "enabled": false,
+      "frames": [
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 636,
+          "frame": 985,
+          "triangles": 27248178
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 986,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 987,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 988,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 337,
+          "frame": 989,
+          "triangles": 16383200
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 990,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 991,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 992,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 337,
+          "frame": 993,
+          "triangles": 16383200
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 994,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 995,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 996,
+          "triangles": 10567896
+        }
+      ],
+      "label": "off-repeat"
+    },
+    {
+      "enabled": true,
+      "frames": [
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 0
+          },
+          "draws": 636,
+          "frame": 997,
+          "triangles": 27248178
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 998,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 999,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 603,
+          "frame": 1000,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 337,
+          "frame": 1001,
+          "triangles": 16383200
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 304,
+          "frame": 1002,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 603,
+          "frame": 1003,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 304,
+          "frame": 1004,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 337,
+          "frame": 1005,
+          "triangles": 16383200
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 603,
+          "frame": 1006,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 304,
+          "frame": 1007,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 33
+          },
+          "draws": 304,
+          "frame": 1008,
+          "triangles": 10567896
+        }
+      ],
+      "label": "on"
+    },
+    {
+      "enabled": false,
+      "frames": [
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 636,
+          "frame": 1009,
+          "triangles": 27248178
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 1010,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 1011,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 1012,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 337,
+          "frame": 1013,
+          "triangles": 16383200
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 1014,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 1015,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 1016,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 337,
+          "frame": 1017,
+          "triangles": 16383200
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 603,
+          "frame": 1018,
+          "triangles": 21432874
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 1019,
+          "triangles": 10567896
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 304,
+          "frame": 1020,
+          "triangles": 10567896
+        }
+      ],
+      "label": "off-last"
+    }
+  ],
+  "name": "offshore",
+  "pose": {
+    "eyeY": 2.2,
+    "mode": "walk",
+    "pitch": 0.04,
+    "x": 300,
+    "yaw": 1.12,
+    "z": -300
+  },
+  "scope": "Paused same-build off/off/on/off. Complete 12-frame shadow/reflection cadence; no FPS or normal input acceptance.",
+  "state": {
+    "action": "idle",
+    "camera": [
+      300,
+      2.2,
+      -300,
+      0.016943972569380697,
+      -0.5310799642224814,
+      0.010623015724318566,
+      0.847085665639513
+    ],
+    "disposed": false,
+    "eyeY": 2.2,
+    "fov": 62,
+    "height": 720,
+    "hidden": false,
+    "locked": true,
+    "oxygen": 1,
+    "paused": true,
+    "pose": {
+      "depth": 64.27738611215176,
+      "mode": "walk",
+      "pitch": 0.04,
+      "x": 300,
+      "yaw": 1.12,
+      "z": -300
+    },
+    "preset": "day",
+    "quality": "high",
+    "stamina": 1,
+    "swell": 1,
+    "width": 1280,
+    "wind": 8.5
+  }
+}

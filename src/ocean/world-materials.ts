@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { waveCausticsSampling } from './caustics';
+import {certifyEarthOnlyMaterial} from './mirror-cull.ts';
 
 export function prepareWorldMaterials(group:THREE.Object3D,time:THREE.IUniform,caustics?:{texture:THREE.IUniform;bounds:THREE.IUniform;sunDirection?:THREE.IUniform}):void {
   group.traverse(object=>{
@@ -40,6 +41,7 @@ export function prepareWorldMaterials(group:THREE.Object3D,time:THREE.IUniform,c
       if(!(material instanceof THREE.MeshStandardMaterial)||material.userData.seaPrepared)continue;
       material.userData.seaPrepared=true;
       const original=material.onBeforeCompile,originalKey=material.customProgramCacheKey();
+      const positionUnmodified=original===THREE.Material.prototype.onBeforeCompile;
       material.onBeforeCompile=(shader,renderer)=>{
         original.call(material,shader,renderer);
         shader.uniforms.uWorldTime=time;
@@ -79,6 +81,7 @@ export function prepareWorldMaterials(group:THREE.Object3D,time:THREE.IUniform,c
         `);
       };
       material.customProgramCacheKey=()=>originalKey+'|shikine-earth-photon-caustic-v4-spectral';material.needsUpdate=true;
+      if(positionUnmodified)certifyEarthOnlyMaterial(material);
     }
   });
 }

@@ -1,0 +1,23 @@
+✔ legacy paired full motion and ordered samples: deep (33.3072ms)
+✔ legacy paired full motion and ordered samples: shore (22.9355ms)
+✔ legacy paired full motion and ordered samples: ridge (19.1933ms)
+✔ legacy paired full motion and ordered samples: unavailable (17.9875ms)
+✔ legacy paired invalid targets, current ground, reversal, zero delta and jumps (1.0072ms)
+✔ actual MarineLife legacy/current full fish state, matrices, clocks and ordered ground calls (4784.3257ms)
+16:21:06 [vite] (client) [optimizer] bundling dependencies...
+✔ v62 sparse variants and empty visibility buckets retain exact legacy updates (16.8972ms)
+✔ v62 exact legacy equivalence across selection, lifecycle and view changes (392.0559ms)
+✔ installed Reflector clipBias retains far-side vertices that a fixed y margin wrongly removes (5.5859ms)
+✔ pending shadow updates retain every caster, and hidden visibility and original hook survive exceptions (1.1ms)
+✔ world transforms and instance/geometry mutations are current before classification (1.8087ms)
+✔ curved world bounds conservatively include far land in underwater reflection (0.7064ms)
+✔ unproven vertex shaders, morphs, skins and mesh parents remain in the pass (0.964ms)
+✔ clip predicate retains uncertainty and exact boundary contact (0.1215ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6128.3853

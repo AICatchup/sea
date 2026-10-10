@@ -39,6 +39,7 @@ import {Expedition,createExpeditionMap,type SaveStore} from '../game/expedition.
 import {ExpeditionWorld} from '../game/expedition-world.ts';
 import {resizeReflectionTarget} from './reflection-target.ts';
 import {groundScannedShelf} from '../world/grounded-reef.ts';
+import {ReflectionCull} from './mirror-cull.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -118,6 +119,7 @@ export class Ocean {
   private readonly meshGeometries:THREE.BufferGeometry[];
   private readonly reflection=new Reflector(new THREE.PlaneGeometry(2,2),{textureWidth:512,textureHeight:320,multisample:0,clipBias:.001});
   private readonly reflectionMatrix=new THREE.Matrix4();
+  private readonly reflectionCull=new ReflectionCull();
   private readonly reflectionBias=new THREE.Matrix4().set(.5,0,0,.5,0,.5,0,.5,0,0,.5,.5,0,0,0,1);
   private readonly reflectionContext=new THREE.Group();
   private readonly scannedCoast=new THREE.Group();
@@ -158,6 +160,7 @@ export class Ocean {
     this.renderer.info.autoReset=false;
     this.simulation=new OceanSimulation(this.renderer,this.wind);
     const experience=experienceOptions(location.search);
+    this.reflectionCull.enabled=new URLSearchParams(location.search).get('mirrorcull')!=='0';
     this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2,incidentDirection:new URLSearchParams(location.search).get('shoreincident')!=='0',matchedIncident:new URLSearchParams(location.search).get('shoreforcing')!=='0'}):null;
     this.sandMoisture=new URLSearchParams(location.search).get('sandmemory')!=='0'?new SandMoisture(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
@@ -471,7 +474,7 @@ export class Ocean {
       this.reflectionViewCamera.projectionMatrix.elements[0]/=this.reflectionOverscan;
       this.reflectionViewCamera.projectionMatrix.elements[5]/=this.reflectionOverscan;
       this.reflectionViewCamera.projectionMatrixInverse.copy(this.reflectionViewCamera.projectionMatrix).invert();
-      this.reflection.onBeforeRender(this.renderer,this.scene,this.reflectionViewCamera,this.reflection.geometry,this.reflection.material as THREE.Material,this.reflectionContext);
+      this.reflectionCull.render(this.reflection,this.renderer,this.scene,this.reflectionViewCamera,this.reflectionContext);
       const reflectedCamera=this.reflection.getReflectionCamera(this.reflectionViewCamera);
       reflectedCamera.projectionMatrixInverse.copy(reflectedCamera.projectionMatrix).invert();
       this.uniforms.uReflectionInverseProjection.value.copy(reflectedCamera.projectionMatrixInverse);
@@ -640,6 +643,7 @@ export class Ocean {
   setShoreCandidateEnabled(enabled:boolean):void{this.shoreCandidateEnabled=enabled;if(!enabled)this.uniforms.uShoreReady.value=0;}
   setReflectionOverscan(scale:number):void{if(Number.isFinite(scale))this.reflectionOverscan=THREE.MathUtils.clamp(scale,1,1.6);}
   setReflectionSampling(enabled:boolean):boolean{const before=this.reflectionSamplingEnabled;this.reflectionSamplingEnabled=enabled;this.uniforms.uHasReflection.value=enabled&&!this.reflectionNeedsUpdate?1:0;return before;}
+  setReflectionCulling(enabled:boolean):boolean{const before=this.reflectionCull.enabled;this.reflectionCull.enabled=enabled;this.reflectionNeedsUpdate=true;return before;}
   probeReflectionTarget(){
     const target=this.reflection.getRenderTarget(),raw=new Uint16Array(4),samples=[],gl=this.renderer.getContext(),initialError=gl.getError(),previous=this.renderer.getRenderTarget();
     this.renderer.setRenderTarget(target);const status=gl.checkFramebufferStatus(gl.FRAMEBUFFER);this.renderer.setRenderTarget(previous);
@@ -724,6 +728,7 @@ export class Ocean {
       sandMoisture:this.sandMoisture?.diagnostics??null,
       photoCoast:this.photoCoast?{instances:this.photoCoast.diagnostics.instances,triangles:this.photoCoast.diagnostics.triangles,draws:this.photoCoast.diagnostics.draws,roles:this.photoCoast.diagnostics.roles}:null,
       scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),
+      reflectionCulling:{enabled:this.reflectionCull.enabled,skippedMeshes:this.reflectionCull.hiddenCount},
       reefShelves:this.scannedCoast.children.filter(m=>m.userData.groundedShelf).map(m=>({name:m.name,...m.userData.groundedShelf})),
       ground:this.world.heightAt(state.position.x,state.position.z),programs:this.renderer.info.programs?.length,
       draws:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles};

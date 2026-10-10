@@ -1,0 +1,89 @@
+[
+  {
+    "view": "spawn",
+    "images": [
+      {
+        "a": "off-first",
+        "b": "off-repeat",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      },
+      {
+        "a": "off-repeat",
+        "b": "on",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      },
+      {
+        "a": "off-repeat",
+        "b": "off-last",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      }
+    ],
+    "onFinalSkippedMeshes": 33,
+    "offMeanTriangles": 23235179.666666668,
+    "onMeanTriangles": 22817205.666666668
+  },
+  {
+    "view": "underwater",
+    "images": [
+      {
+        "a": "off-first",
+        "b": "off-repeat",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      },
+      {
+        "a": "off-repeat",
+        "b": "on",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      },
+      {
+        "a": "off-repeat",
+        "b": "off-last",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      }
+    ],
+    "onFinalSkippedMeshes": 82,
+    "offMeanTriangles": 33438882.583333332,
+    "onMeanTriangles": 32958521.333333332
+  },
+  {
+    "view": "offshore",
+    "images": [
+      {
+        "a": "off-first",
+        "b": "off-repeat",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      },
+      {
+        "a": "off-repeat",
+        "b": "on",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      },
+      {
+        "a": "off-repeat",
+        "b": "off-last",
+        "differentPixels": 0,
+        "meanChannelError": 0.0,
+        "maxChannelError": 0
+      }
+    ],
+    "onFinalSkippedMeshes": 33,
+    "offMeanTriangles": 15643381.333333334,
+    "onMeanTriangles": 15643381.333333334
+  }
+]

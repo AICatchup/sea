@@ -1,0 +1,504 @@
+{
+  "captures": [
+    {
+      "enabled": false,
+      "frames": [
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 708,
+          "frame": 5477,
+          "triangles": 52584814
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5478,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5479,
+          "triangles": 41021060
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5480,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 506,
+          "frame": 5481,
+          "triangles": 34630901
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5482,
+          "triangles": 41021060
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5483,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5484,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 708,
+          "frame": 5485,
+          "triangles": 52584814
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5486,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5487,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5488,
+          "triangles": 41021060
+        }
+      ],
+      "label": "off-first"
+    },
+    {
+      "enabled": false,
+      "frames": [
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 708,
+          "frame": 5489,
+          "triangles": 52584814
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5490,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5491,
+          "triangles": 41021060
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5492,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 506,
+          "frame": 5493,
+          "triangles": 34630901
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5494,
+          "triangles": 41021060
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5495,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5496,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 708,
+          "frame": 5497,
+          "triangles": 52584814
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5498,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5499,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5500,
+          "triangles": 41021060
+        }
+      ],
+      "label": "off-repeat"
+    },
+    {
+      "enabled": true,
+      "frames": [
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 0
+          },
+          "draws": 708,
+          "frame": 5501,
+          "triangles": 52584814
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5502,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 82
+          },
+          "draws": 555,
+          "frame": 5503,
+          "triangles": 39099615
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 82
+          },
+          "draws": 379,
+          "frame": 5504,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 82
+          },
+          "draws": 506,
+          "frame": 5505,
+          "triangles": 34630901
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 82
+          },
+          "draws": 555,
+          "frame": 5506,
+          "triangles": 39099615
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 82
+          },
+          "draws": 379,
+          "frame": 5507,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 82
+          },
+          "draws": 379,
+          "frame": 5508,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 0
+          },
+          "draws": 708,
+          "frame": 5509,
+          "triangles": 52584814
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5510,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5511,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": true,
+            "skippedMeshes": 82
+          },
+          "draws": 555,
+          "frame": 5512,
+          "triangles": 39099615
+        }
+      ],
+      "label": "on"
+    },
+    {
+      "enabled": false,
+      "frames": [
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 708,
+          "frame": 5513,
+          "triangles": 52584814
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5514,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5515,
+          "triangles": 41021060
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5516,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 506,
+          "frame": 5517,
+          "triangles": 34630901
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5518,
+          "triangles": 41021060
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5519,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5520,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 708,
+          "frame": 5521,
+          "triangles": 52584814
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5522,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 379,
+          "frame": 5523,
+          "triangles": 23067147
+        },
+        {
+          "cull": {
+            "enabled": false,
+            "skippedMeshes": 0
+          },
+          "draws": 581,
+          "frame": 5524,
+          "triangles": 41021060
+        }
+      ],
+      "label": "off-last"
+    }
+  ],
+  "name": "underwater",
+  "pose": {
+    "eyeY": -2,
+    "mode": "dive",
+    "pitch": 0.28,
+    "x": -145,
+    "yaw": 0.65,
+    "z": -113
+  },
+  "scope": "Paused same-build off/off/on/off. Complete 12-frame shadow/reflection cadence; no FPS or normal input acceptance.",
+  "state": {
+    "action": "dive",
+    "camera": [
+      -145,
+      -2,
+      -113,
+      0.13223813395879594,
+      -0.3161846674868431,
+      0.04455734251175605,
+      0.9383789081184744
+    ],
+    "disposed": false,
+    "eyeY": -2,
+    "fov": 62,
+    "height": 720,
+    "hidden": false,
+    "locked": true,
+    "oxygen": 1,
+    "paused": true,
+    "pose": {
+      "depth": 2,
+      "mode": "dive",
+      "pitch": 0.28,
+      "x": -145,
+      "yaw": 0.65,
+      "z": -113
+    },
+    "preset": "day",
+    "quality": "high",
+    "stamina": 1,
+    "swell": 1,
+    "width": 1280,
+    "wind": 8.5
+  }
+}

@@ -1,0 +1,23 @@
+✔ combined receiver tables preserve texel addresses and input bytes (2.4107ms)
+✔ packed shader retains geometry traversal with two data samplers (0.181ms)
+✔ map gamma metadata preserves raw normals and independent native UV/wrap/flip (1.8683ms)
+✔ unsupported UV and object normal encodings fail explicitly (0.508ms)
+✔ scalar wetness and mixed extra material updates preserve static geometry and atlas epochs (6.7513ms)
+✔ triangle basis handles nonuniform reflected transforms without derivatives (0.2713ms)
+✔ texture epoch refresh is independent of geometry; GPU budget fails without dropping maps (4.6413ms)
+✔ native measured chunks stay on the height-field path without exhausting opaque geometry capacity (27.4111ms)
+✔ an opaque plant remains excluded by role after renaming; ordinary opaque meshes remain eligible (0.4737ms)
+{"skinnedBody":{"available":true,"reason":"","triangles":36700,"vertices":19372,"nodes":16055,"bytes":10457648,"rebuilds":1,"refits":22,"skipped":0,"timeMs":14.942099999999982,"excludedSurfaces":0,"maxDepth":14},"maxRefitMs":29.24380000000008,"oracleHits":42}
+✔ unchanged posed buffers skip refit while changed pose and replaced attributes remain authoritative (5.0089ms)
+✔ posed refit preserves allocations, nearest double-sided hits, bind modes and negative/nonuniform transforms (4.239ms)
+✔ unsupported morph, alpha, budgets, visibility and borrowed ownership (1.2719ms)
+✔ actual FirstPersonBody seven actions, three poses each agree with independent source oracle and packed BVH (1439.889ms)
+✔ decoded normalized/interleaved inputs agree with Three and in-place version changes require rebuild (2.9629ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2380.222
