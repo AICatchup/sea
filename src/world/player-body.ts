@@ -636,9 +636,13 @@ export class FirstPersonBody {
     const climbPhase = time * 3.4 + this.boarding * Math.PI;
     // Seat contact compresses the lumbar chain slightly while leaving the eye fixed.
     this.pelvis.position.y = .94 + helm * .035; this.spine.position.y = .16 - helm * .035;
-    this.pelvis.rotation.set(gait * moving * .016, gait * moving * .016, gait * moving * .014);
+    // Relaxed standing (idle only): weight settles on the left leg with a slow drift, the
+    // free hip drops and the chest counter-tilts, instead of a symmetric mannequin stance.
+    const settle = idle * (1 - water) * (.85 + .15 * Math.sin(time * .37));
+    this.pelvis.position.x = .022 * settle;
+    this.pelvis.rotation.set(gait * moving * .016, gait * moving * .016 + .05 * settle, gait * moving * .014 + .045 * settle);
     this.spine.rotation.set(clamp(state.pitch, -.5, .5) * .08 - run * .035, 0, -gait * moving * .014);
-    this.chest.rotation.set(breath + gait * moving * .012, -gait * moving * .018, 0);
+    this.chest.rotation.set(breath + gait * moving * .012, -gait * moving * .018 - .03 * settle, -.05 * settle);
     this.head.position.set(0, .135, -.070);
     if (state.viewOffset && [state.viewOffset.x, state.viewOffset.y, state.viewOffset.z].every(Number.isFinite)) {
       // Camera gait bob belongs at the head; moving the entire render body would
@@ -660,10 +664,10 @@ export class FirstPersonBody {
       this.arms[i].upper.position.z-=.05*helm*(1-this.fishingBlend);
       const swing = Math.sin(phase), stroke = Math.sin(phase * .65), recovery = Math.cos(phase * .65);
       // Target positions are anatomical metres in body space, never a camera overlay.
-      this.target.set(side * (.266 * idle + .27 * walk + .265 * run + (.33 + .052 * stroke) * water + .211 * helm + .22 * climb),
-        .843 * idle + (.851 + .028 * swing) * walk + (1.007 + .085 * swing) * run
+      this.target.set(side * (.222 * idle + .27 * walk + .265 * run + (.33 + .052 * stroke) * water + .211 * helm + .22 * climb),
+        .875 * idle + (.851 + .028 * swing) * walk + (1.007 + .085 * swing) * run
           + (1.43 + .22 * recovery) * water + 1.234 * helm + (1.49 + .08 * side * Math.sin(climbPhase)) * climb,
-        -.052 * idle + (-.055 - .17 * swing) * walk + (-.185 - .15 * swing) * run
+        -.098 * idle + (-.055 - .17 * swing) * walk + (-.185 - .15 * swing) * run
           + (-.36 - .10 * stroke) * water - .435 * helm - .335 * climb);
       if (helm > .001) {
         // Solve the wrist from the actual wheel and palmar contact, then move
@@ -693,7 +697,7 @@ export class FirstPersonBody {
       }
       if(this.fishingBlend>.001){const grip=new THREE.Quaternion().copy(this.rootQuaternion).invert().multiply(camera.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(1.18,side*.35,side*.16)));this.targetQuaternion.slerp(grip,this.fishingBlend);}
       this.orientAbsolute(wrist,this.targetQuaternion);
-      const curl = (.20 * idle + .24 * walk + .43 * run + (.08 + .12 * Math.max(0, -stroke)) * water + .92 * helm + .7 * climb)*(1-this.fishingBlend)+.82*this.fishingBlend;
+      const curl = (.42 * idle + .24 * walk + .43 * run + (.08 + .12 * Math.max(0, -stroke)) * water + .92 * helm + .7 * climb)*(1-this.fishingBlend)+.82*this.fishingBlend;
       const fingers = this.arms[i].fingers!;
       for (let f = 0; f < fingers.length; f++) {
         const finger = fingers[f], difference = f * .022;
@@ -715,7 +719,8 @@ export class FirstPersonBody {
       leg.upper.rotation.set(step * (.31 * walk + .49 * run) + flutter * water * .13 + airborne * .12 + climb * (i === 0 ? .53 : .21) + helm * 1.087,
         0, (i === 0 ? -.015 : .015) * (1 - water));
       leg.lower.rotation.set(-Math.max(0, -step) * (.52 * walk + .88 * run) - .12 * water - .36 * airborne - climb * .67 - helm * 1.087, 0, 0);
-      leg.end.rotation.set(step * .10 * moving + water * .22 + climb * .12, 0, 0);
+      leg.end.rotation.set(step * .10 * moving + water * .22 + climb * .12, -(i === 0 ? -1 : 1) * .14 * idle, 0);
+      if (i === 1) { leg.upper.rotation.x += .07 * settle; leg.upper.rotation.z += .035 * settle; leg.lower.rotation.x -= .15 * settle; leg.end.rotation.x += .07 * settle; }
       if(this.surfBlend>.001){leg.upper.rotation.x+=this.surfBlend*(i===0?.24:-.12);leg.upper.rotation.z+=this.surfBlend*(i===0?-.15:.15);leg.lower.rotation.x-=this.surfBlend*.28;}
     }
     this.anchor(camera);
