@@ -40,6 +40,7 @@ import {ExpeditionWorld} from '../game/expedition-world.ts';
 import {resizeReflectionTarget} from './reflection-target.ts';
 import {groundScannedShelf} from '../world/grounded-reef.ts';
 import {ReflectionCull} from './mirror-cull.ts';
+import {InstancedScanLod,simplifiedScanLevels} from '../world/scan-lod.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -124,6 +125,7 @@ export class Ocean {
   private readonly reflectionContext=new THREE.Group();
   private readonly scannedCoast=new THREE.Group();
   private readonly scannedCoastInstances:THREE.InstancedMesh[]=[];
+  private readonly scanLods:InstancedScanLod[]=[];
   private readonly reefGeometries:THREE.BufferGeometry[]=[];
   private readonly caustics:WaveCaustics;
   private readonly waterHeights:LocalWaterHeights;
@@ -286,7 +288,7 @@ export class Ocean {
       }
       let seed=31851;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
       const groundedReef=new URLSearchParams(location.search).get('reefseat')!=='0';
-      const helper=new THREE.Object3D();
+      const helper=new THREE.Object3D(),scanLodReady:Promise<void>[]=[];
       for(const variant of variants){
         const matrices:THREE.Matrix4[]=[];
         for(let attempt=0;attempt<900&&!this.photoCoast&&matrices.length<(variant.kind==='shelf'?30:20);attempt++){
@@ -334,8 +336,15 @@ export class Ocean {
         matrices.forEach((matrix,index)=>instances.setMatrixAt(index,matrix));
         instances.name='Photo-scanned cliff outcrops '+variant.id;instances.castShadow=true;instances.receiveShadow=true;
         instances.computeBoundingSphere();this.scannedCoastInstances.push(instances);this.scannedCoast.add(instances);
+        // Distance LOD draws meshoptimizer reductions; the full scan stays the hidden collider.
+        if(new URLSearchParams(location.search).get('scanlod')!=='0')scanLodReady.push(simplifiedScanLevels(variant.geometry,[.22,.06]).then(levels=>{
+          if(this.disposed){levels.forEach(l=>{l.geometry.attributes={};l.geometry.dispose();});return;}
+          const lod=new InstancedScanLod(instances,levels,[260,70]);instances.visible=false;
+          this.scanLods.push(lod);this.scannedCoast.add(lod.group);
+        }).catch(error=>console.warn('Scan LOD unavailable; full scans retained',error)));
       }
       prepareWorldMaterials(this.scannedCoast,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
+      return Promise.all(scanLodReady);
     });
     const requestedSkyRotation=new URLSearchParams(location.search).get('skyrotation');
     const skyRotation=import.meta.env.DEV&&requestedSkyRotation!==null&&Number.isFinite(Number(requestedSkyRotation))?THREE.MathUtils.clamp(Number(requestedSkyRotation),-Math.PI,Math.PI):1.70;
@@ -427,6 +436,7 @@ export class Ocean {
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()),this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));
     this.marine.update(this.time,this.camera.position,underwater>.5);
+    for(const lod of this.scanLods)lod.update(this.camera.position,this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));
     this.expeditionWorld.update(this.time,state,this.waterHeights.sample);
     if(this.geometryRefraction&&this.receiverBridge){this.scene.updateMatrixWorld(true);this.updateSkinnedReceivers();if(!this.receiverBridge.sync()||!this.skinnedReceiverReady())this.setGeometryShader(false);}
     const waterMap=this.world.waterMapFor(this.camera.position.x,this.camera.position.z);
@@ -729,7 +739,7 @@ export class Ocean {
       shoreSolver:this.shoreSolver?{...this.shoreSolver.diagnostics,ready:this.uniforms.uShoreReady.value}:null,
       sandMoisture:this.sandMoisture?.diagnostics??null,
       photoCoast:this.photoCoast?{instances:this.photoCoast.diagnostics.instances,triangles:this.photoCoast.diagnostics.triangles,draws:this.photoCoast.diagnostics.draws,roles:this.photoCoast.diagnostics.roles}:null,
-      scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),
+      scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),scanLod:this.scanLods.map(l=>l.diagnostics),
       reflectionCulling:{enabled:this.reflectionCull.enabled,skippedMeshes:this.reflectionCull.hiddenCount},
       reefShelves:this.scannedCoast.children.filter(m=>m.userData.groundedShelf).map(m=>({name:m.name,...m.userData.groundedShelf})),
       ground:this.world.heightAt(state.position.x,state.position.z),programs:this.renderer.info.programs?.length,
@@ -758,7 +768,7 @@ export class Ocean {
     if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.animationFrame);this.abort.abort();
     this.captureNextFrame?.(null);this.captureNextFrame=null;
     this.gpuSkinnedReceivers?.dispose();this.skinnedReceivers?.dispose();this.receiverBridge?.dispose();this.receiverSand?.textures.forEach(texture=>texture.dispose());
-    this.photoCoast?.dispose();this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scannedCoast.clear();
+    this.photoCoast?.dispose();this.scannedCoastInstances.forEach(instance=>instance.dispose());this.scanLods.forEach(lod=>lod.dispose());this.scannedCoast.clear();
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();
     this.shoreSolver?.dispose();
