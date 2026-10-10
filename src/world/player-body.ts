@@ -307,6 +307,11 @@ export class FirstPersonBody {
       face[i] = w.face; hand[i] = w.hand; boot[i] = w.boot;
     }
     body.setAttribute('wearFace', new THREE.BufferAttribute(face, 1)); body.setAttribute('wearHand', new THREE.BufferAttribute(hand, 1)); body.setAttribute('wearBoot', new THREE.BufferAttribute(boot, 1));
+    // The packed refraction receiver already transfers three barycentric colour
+    // channels. This material keeps vertexColors OFF and uses them as wear fields.
+    const receiverWear=new Float32Array(position.count*3);
+    for(let i=0;i<position.count;i++){receiverWear[i*3]=face[i];receiverWear[i*3+1]=hand[i];receiverWear[i*3+2]=boot[i];}
+    body.setAttribute('color',new THREE.BufferAttribute(receiverWear,3));
     const meshes: THREE.SkinnedMesh[] = [];
     const add = (geometry: THREE.BufferGeometry | undefined, material: THREE.Material | THREE.Material[], name: string, shadow = true) => {
       if (!geometry) return;
@@ -839,9 +844,12 @@ export class FirstPersonBody {
       if (i === 1) { leg.upper.rotation.x += .07 * settle; leg.upper.rotation.z += .035 * settle; leg.lower.rotation.x -= .15 * settle; leg.end.rotation.x += .07 * settle; }
       if(this.surfBlend>.001){leg.upper.rotation.x+=this.surfBlend*(i===0?.24:-.12);leg.upper.rotation.z+=this.surfBlend*(i===0?-.15:.15);leg.lower.rotation.x-=this.surfBlend*.28;}
     }
-    if (this.mocap) this.applyMocap(walk, run, water, lean, this.poseEuler.set(state.pitch + lean - boatPitch, clamp(bodyYaw - state.yaw, -1.4, 1.4), -boatRoll, 'XYZ'));
+    // Tool contacts were solved against the procedural trunk above. Keep both
+    // that trunk and its floor anchor intact while a tool/action blend is active.
+    const mocapLocomotion=this.mocap&&this.fishingBlend<=.001&&this.surfBlend<=.001&&helm<=.001&&climb<=.001;
+    if (mocapLocomotion) this.applyMocap(walk, run, water, lean, this.poseEuler.set(state.pitch + lean - boatPitch, clamp(bodyYaw - state.yaw, -1.4, 1.4), -boatRoll, 'XYZ'));
     this.anchor(camera);
-    if (this.mocap) this.plantMocapFeet(walk, run, state, camera);
+    if (mocapLocomotion) this.plantMocapFeet(walk, run, state, camera);
     this.group.updateMatrixWorld(true); this.mesh.skeleton.update();
     this.initialized = true;
   }

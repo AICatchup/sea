@@ -106,8 +106,14 @@ export class AssetWorld {
   useImpostors(renderer: THREE.WebGLRenderer, pixels = 40): void {
     if (this.disposed || this.impostors || this.group.userData.foliage?.status !== 'ready') return;
     const started = performance.now();
-    const atlases = this.foliage.pineLevels.near.map(variant => bakeImpostor(renderer, variant));
-    this.impostors = { atlases, pixels, geometry: atlases.map(impostorGeometry), material: atlases.map(atlas => impostorMaterial(atlas)) };
+    const atlases:ImpostorAtlas[]=[],geometry:THREE.BufferGeometry[]=[],material:THREE.Material[]=[];
+    try{
+      for(const variant of this.foliage.pineLevels.near)atlases.push(bakeImpostor(renderer,variant));
+      for(const atlas of atlases){geometry.push(impostorGeometry(atlas));material.push(impostorMaterial(atlas));}
+    }catch(error){
+      atlases.forEach(atlas=>atlas.dispose());geometry.forEach(g=>g.dispose());material.forEach(m=>m.dispose());throw error;
+    }
+    this.impostors = { atlases, pixels, geometry, material };
     for (const field of [this.pineField, this.surveyCanopyField, this.cliffTreeField]) field?.setImpostors(this.impostors);
     this.group.userData.impostors = { variants: atlases.length, pixels, spritesPerSide: atlases[0]?.spritesPerSide, bakeMs: Math.round(performance.now() - started) };
   }

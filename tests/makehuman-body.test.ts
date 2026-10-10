@@ -4,7 +4,9 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import * as THREE from 'three';
 import {FirstPersonBody} from '../src/world/player-body.ts';
-import {boneKey,makeHumanGeometries,wearFields,type MakeHumanMeta,type MakeHumanSource} from '../src/world/makehuman-body.ts';
+import {boneKey,disposeMakeHumanSource,loadMakeHumanSource,makeHumanGeometries,wearFields,type MakeHumanMeta,type MakeHumanSource} from '../src/world/makehuman-body.ts';
+import {packReceiverMaterialParameters} from '../src/ocean/receiver-bridge.ts';
+import {SkinnedReceivers} from '../src/ocean/skinned-receivers.ts';
 import type {AdventureState} from '../src/world/contracts.ts';
 
 const dir=new URL('../src/assets/player/makehuman-v65/',import.meta.url);
@@ -59,4 +61,34 @@ test('wear fields open the hood on the face only and bare the hands',()=>{
  assert.ok(wearFields(new THREE.Vector3(0,1.76,-.08),forward,0).face<0,'crown is hooded');
  assert.ok(wearFields(new THREE.Vector3(0,1.48,-.06),forward,0).face<0,'throat is hooded');
  assert.ok(wearFields(new THREE.Vector3(.26,.8,-.05),forward,1).hand>.5&&wearFields(new THREE.Vector3(.1,.05,0),forward,0).boot>0);
+});
+
+test('refraction retains the actual continuous garment fields and wet material values',()=>{
+ const body=new FirstPersonBody();body.useMakeHuman(source());body.group.updateMatrixWorld(true);
+ const mesh=body.group.children.find(o=>o.name==='MakeHuman diver anatomy (CC0)') as THREE.SkinnedMesh;
+ const fields=mesh.geometry.getAttribute('color'),face=mesh.geometry.getAttribute('wearFace'),hand=mesh.geometry.getAttribute('wearHand'),boot=mesh.geometry.getAttribute('wearBoot');
+ for(let i=0;i<fields.count;i++){assert.equal(fields.getX(i),face.getX(i));assert.equal(fields.getY(i),hand.getX(i));assert.equal(fields.getZ(i),boot.getX(i));}
+ const material=mesh.material as THREE.MeshStandardMaterial;
+ assert.equal(material.vertexColors,false,'wear fields do not tint the normal draw');
+ material.userData.wear.suitRoughness.value=.61;
+ const params=packReceiverMaterialParameters([material],new Map());
+ assert.equal(params[24*4],1);assert.ok(Math.abs(params[22*4+3]-.61)<1e-6);assert.ok(Math.abs(params[23*4+3]-.92)<1e-6);
+ mesh.skeleton.update();const receiver=new SkinnedReceivers(body.group);assert.equal(receiver.diagnostics.available,true,receiver.diagnostics.reason);
+ // The static triangle suffix transfers the same values to both CPU and GPU paths.
+ const layout=receiver.exportGPU(),packed=layout.staticPacked,bodyId=receiver.materials.indexOf(material);let checked=0;
+ layout.triangles.forEach((triangle,ti)=>{if(triangle.material!==bodyId)return;
+   const offset=layout.surfaces[triangle.surface].vertexOffset,base=(layout.triangleOffset+ti*12)*4;
+   for(let k=0;k<3;k++)for(let c=0;c<3;c++)assert.equal(packed[base+(k+9)*4+c],fields.getComponent(triangle.vertices[k]-offset,c));
+   checked++;
+ });assert.ok(checked>20000,'actual body triangles transfer all wear values');
+ receiver.dispose();body.dispose();
+});
+
+test('a failed texture load collects successful peers; unadopted sources release once',async t=>{
+ t.mock.method(globalThis,'fetch',async (url:string)=>({ok:true,json:async()=>meta,arrayBuffer:async()=>source().bin}));
+ const textures=[new THREE.Texture(),new THREE.Texture(),new THREE.Texture()];let loaded=0,disposed=0;
+ textures.forEach(texture=>texture.addEventListener('dispose',()=>disposed++));
+ t.mock.method(THREE.TextureLoader.prototype,'loadAsync',async()=>{if(loaded++===1)throw new Error('missing eye texture');return textures[loaded===1?0:loaded-2];});
+ await assert.rejects(loadMakeHumanSource(),/missing eye texture/);assert.equal(disposed,3);
+ disposed=0;disposeMakeHumanSource({...source(),textures:{skin:textures[0],eyes:textures[0]}});assert.equal(disposed,1,'shared source texture released once');
 });

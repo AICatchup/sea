@@ -60,3 +60,19 @@ test('the vessel box blocks a lens line from outside but not from its own deck',
  assert.equal(segmentBoxFraction(new THREE.Vector3(10,1,0),new THREE.Vector3(10,1,10),box,inverse),1,'from the deck outwards');
  assert.equal(segmentBoxFraction(new THREE.Vector3(30,1,-10),new THREE.Vector3(30,1,10),box,inverse),1,'miss');
 });
+
+test('solid occlusion uses the water-corrected lens line',()=>{
+ const solids=new WorldCollision();
+ solids.addBox(new THREE.Box3(new THREE.Vector3(-2,.2,1.2),new THREE.Vector3(2,.5,3)));
+ const p=new THREE.Vector3(),aim=new THREE.Vector3();
+ thirdPersonPose({eye:new THREE.Vector3(0,.1,0),yaw:0,pitch:.6,mode:'swim',heightAt:()=>-20,waterAt:()=>0,blocked:(a,b)=>solids.segmentFraction(a,b)},p,aim);
+ assert.ok(p.z<1.2,'the corrected sightline stops before the low overhang');
+ assert.ok(p.y>=THIRD_PERSON.surface);
+});
+
+test('a shallow dive keeps feasible margins on both sides of the lens',()=>{
+ const p=new THREE.Vector3(),aim=new THREE.Vector3();
+ thirdPersonPose({eye:new THREE.Vector3(0,-.1,0),yaw:0,pitch:.4,mode:'dive',heightAt:()=>-.4,waterAt:()=>0},p,aim);
+ assert.ok(p.y>-.4&&p.y<0,`lens stays within the water column: ${p.y}`);
+ assert.ok(p.y+.4>.15&&-p.y>.15,'both margins shrink together in shallow water');
+});

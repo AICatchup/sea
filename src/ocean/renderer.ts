@@ -366,8 +366,10 @@ export class Ocean {
       if(!this.disposed)prepareWorldMaterials(this.world.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     });
     // body=makehuman swaps the sculpted anatomy for the CC0 MakeHuman body on the same skeleton.
-    const bodyReady=new URLSearchParams(location.search).get('body')==='makehuman'?import('../world/makehuman-body.ts').then(m=>m.loadMakeHumanSource()).then(source=>{
-      if(this.disposed)return;this.body.useMakeHuman(source);
+    const bodyReady=new URLSearchParams(location.search).get('body')==='makehuman'?import('../world/makehuman-body.ts').then(async m=>{
+      const source=await m.loadMakeHumanSource();
+      if(this.disposed){m.disposeMakeHumanSource(source);return;}
+      try{this.body.useMakeHuman(source);}catch(error){m.disposeMakeHumanSource(source);throw error;}
       prepareWorldMaterials(this.body.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     }).catch(error=>console.warn('MakeHuman body unavailable; sculpted body retained',error)):Promise.resolve();
     // motion=cmu drives walk/run/swim/dive with CMU motion capture on the same skeleton.

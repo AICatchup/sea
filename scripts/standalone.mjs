@@ -14,10 +14,10 @@ for (const match of [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/scr
     source=source.split(assetURL).join(`data:${mime};base64,${bytes.toString('base64')}`);
   }
   for(const filename of await readdir(resolve(root,'dist/assets'))){
-    if(!/\.(?:png|jpe?g|webp|svg|hdr|exr|glb|bin|ogg)$/.test(filename)||!source.includes(filename))continue;
+    if(!/\.(?:png|jpe?g|webp|svg|hdr|exr|glb|bin|ogg|json)$/.test(filename)||!source.includes(filename))continue;
     const bytes=await readFile(resolve(root,'dist/assets',filename));
     const ext=filename.split('.').at(-1);
-    const mime=ext==='ogg'?'audio/ogg':ext==='svg'?'image/svg+xml':ext==='jpg'?'image/jpeg':ext==='glb'?'model/gltf-binary':ext==='hdr'||ext==='exr'||ext==='bin'?'application/octet-stream':`image/${ext}`;
+    const mime=ext==='json'?'application/json':ext==='ogg'?'audio/ogg':ext==='svg'?'image/svg+xml':ext==='jpg'?'image/jpeg':ext==='glb'?'model/gltf-binary':ext==='hdr'||ext==='exr'||ext==='bin'?'application/octet-stream':`image/${ext}`;
     const dataURL=`data:${mime};base64,${bytes.toString('base64')}`;
     for(const url of [`./assets/${filename}`,`assets/${filename}`,filename])source=source.split(url).join(dataURL);
   }
@@ -41,6 +41,8 @@ licenses.push(await readFile(resolve(root,'src/assets/boat/terlenka/README.md'),
 for(const variant of [1,2])licenses.push(await readFile(resolve(root,`src/assets/foliage/cc0/native-v60/canopy${variant}/README.md`),'utf8'));
 licenses.push(await readFile(resolve(root,'src/assets/foliage/cc0/original-lod/README.md'),'utf8'));
 licenses.push(await readFile(resolve(root,'src/assets/audio/README.md'),'utf8'));
+licenses.push(await readFile(resolve(root,'src/assets/player/makehuman-v65/README.md'),'utf8'));
+licenses.push(await readFile(resolve(root,'src/assets/player/cmu-mocap-v65/README.md'),'utf8'));
 licenses.push('HDR sky: CC0-1.0, Poly Haven / Greg Zaal and Jarod Guest. https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky https://polyhaven.com/license');
 html = html.replace('</body>', () => `<script type="text/plain" id="third-party-licenses">${licenses.join('\n\n').replace(/<\/script/gi, '<\\/script')}</script></body>`);
 await writeFile(resolve(root, 'dist/sea.html'), html, 'utf8');

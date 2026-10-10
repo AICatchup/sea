@@ -5,19 +5,23 @@ import * as THREE from 'three';
  * existing FirstPersonBody rest skeleton, with MPFB game_engine weights merged onto its 47
  * bones. Joint keys are `bone name@L|R|C` (side from the rest point's X sign).
  */
-const base='../assets/player/makehuman-v65/';
 export const MAKEHUMAN_URLS={
-  json:new URL(`${base}makehuman-body.json`,import.meta.url).href,
-  bin:new URL(`${base}makehuman-body.bin`,import.meta.url).href,
-  skin:new URL(`${base}makehuman-skin.png`,import.meta.url).href,
-  eyes:new URL(`${base}makehuman-eyes.png`,import.meta.url).href,
-  eyebrows:new URL(`${base}makehuman-eyebrows.png`,import.meta.url).href,
-  eyelashes:new URL(`${base}makehuman-eyelashes.png`,import.meta.url).href,
+  json:new URL('../assets/player/makehuman-v65/makehuman-body.json',import.meta.url).href,
+  bin:new URL('../assets/player/makehuman-v65/makehuman-body.bin',import.meta.url).href,
+  skin:new URL('../assets/player/makehuman-v65/makehuman-skin.png',import.meta.url).href,
+  eyes:new URL('../assets/player/makehuman-v65/makehuman-eyes.png',import.meta.url).href,
+  eyebrows:new URL('../assets/player/makehuman-v65/makehuman-eyebrows.png',import.meta.url).href,
+  eyelashes:new URL('../assets/player/makehuman-v65/makehuman-eyelashes.png',import.meta.url).href,
 } as const;
 
 interface PartMeta {name:string;vertices:number;indices:number;position:number;normal:number;uv:number;joints:number;weights:number;index:number}
 export interface MakeHumanMeta {parts:PartMeta[];boneKeys:string[];sha256:string;provenance:Record<string,unknown>}
 export interface MakeHumanSource {meta:MakeHumanMeta;bin:ArrayBuffer;textures?:Partial<Record<'skin'|'eyes'|'eyebrows'|'eyelashes',THREE.Texture>>}
+
+/** Releases a loaded source whose texture ownership has not passed to the body. */
+export function disposeMakeHumanSource(source:MakeHumanSource):void{
+  new Set(Object.values(source.textures??{})).forEach(texture=>texture?.dispose());
+}
 
 export function boneKey(bone:THREE.Bone):string{
   const x=(bone.userData.restPoint as THREE.Vector3).x;
@@ -50,7 +54,10 @@ export async function loadMakeHumanSource():Promise<MakeHumanSource>{
   const [meta,bin]=await Promise.all([fetch(MAKEHUMAN_URLS.json).then(r=>{if(!r.ok)throw new Error(`MakeHuman meta ${r.status}`);return r.json();}),
     fetch(MAKEHUMAN_URLS.bin).then(r=>{if(!r.ok)throw new Error(`MakeHuman mesh ${r.status}`);return r.arrayBuffer();})]);
   const loader=new THREE.TextureLoader(),load=(url:string,srgb=true)=>loader.loadAsync(url).then(t=>{if(srgb)t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;});
-  const [skin,eyes,eyebrows,eyelashes]=await Promise.all([load(MAKEHUMAN_URLS.skin),load(MAKEHUMAN_URLS.eyes),load(MAKEHUMAN_URLS.eyebrows),load(MAKEHUMAN_URLS.eyelashes)]);
+  const results=await Promise.allSettled([load(MAKEHUMAN_URLS.skin),load(MAKEHUMAN_URLS.eyes),load(MAKEHUMAN_URLS.eyebrows),load(MAKEHUMAN_URLS.eyelashes)]);
+  const failure=results.find(result=>result.status==='rejected');
+  if(failure){results.forEach(result=>{if(result.status==='fulfilled')result.value.dispose();});throw failure.reason;}
+  const [skin,eyes,eyebrows,eyelashes]=results.map(result=>(result as PromiseFulfilledResult<THREE.Texture>).value);
   return {meta,bin,textures:{skin,eyes,eyebrows,eyelashes}};
 }
 

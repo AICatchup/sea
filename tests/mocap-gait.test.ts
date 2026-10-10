@@ -76,3 +76,19 @@ test('running stride rate is a human cadence and walking is unchanged',()=>{
   const stepsPerMinute=strideRate(4.7)/(2*Math.PI)*2*60;
   assert.ok(stepsPerMinute>165&&stepsPerMinute<190,`${stepsPerMinute.toFixed(0)} steps/min at 4.7 m/s`);
 });
+
+test('fishing and physical tool transitions retain the procedural contact pose',()=>{
+ for(const action of ['walk','swim','helm','climb'] as const){
+   const plain=new FirstPersonBody(),captured=new FirstPersonBody();captured.useMocap(data);
+   const c=camera(),s=stateFor(action,action==='walk'?1.85:action==='swim'?1.5:0);s.activity='fishing';
+   for(let j=0;j<18;j++){s.gaitPhase=j*.5;plain.update(s,c,.05,j*.05);captured.update(s,c,.05,j*.05);assert.deepEqual(boneMatrices(captured),boneMatrices(plain),`${action} fishing frame ${j}`);}
+   plain.dispose();captured.dispose();
+ }
+ for(const action of ['helm','climb'] as const){
+   const plain=new FirstPersonBody(),captured=new FirstPersonBody();captured.useMocap(data);const c=camera(),s=stateFor('walk',1.85);
+   for(let j=0;j<12;j++){s.gaitPhase=j*.5;plain.update(s,c,.05,j*.05);captured.update(s,c,.05,j*.05);}
+   s.avatarAction=action;s.speed=0;
+   for(let j=0;j<18;j++){plain.update(s,c,.05,1+j*.05);captured.update(s,c,.05,1+j*.05);if(j>1)assert.deepEqual(boneMatrices(captured),boneMatrices(plain),`${action} transition ${j}`);}
+   plain.dispose();captured.dispose();
+ }
+});

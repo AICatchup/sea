@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {hemiOctaDirToGrid,hemiOctaGridToDir,impostorGeometry,type ImpostorAtlas} from '../src/world/foliage-impostor.ts';
 import {FoliageLodField} from '../src/world/foliage-lod.ts';
+import {createServer} from 'vite';
 import type {FoliageLevels,FoliageVariant} from '../src/world/foliage.ts';
 
 test('hemi-octahedral grid and direction mappings invert each other over the upper hemisphere',()=>{
@@ -45,4 +46,19 @@ test('only crowns below the card size leave far/distant meshes; near/mid choices
  // Removing cards restores the original partition exactly.
  field.setImpostors(null);assert.deepEqual(project(field,group),before);
  field.dispose();base.dispose();card.dispose();material.dispose();
+});
+
+test('a later atlas bake failure rolls back all targets and restores the renderer',async t=>{
+ const server=await createServer({configFile:false,server:{middlewareMode:true,watch:null,hmr:false},appType:'custom'});
+ try{
+ const {AssetWorld}=await server.ssrLoadModule('/src/world/assets.ts');
+ let renders=0,disposed=0,current:unknown='original';
+ t.mock.method(THREE.WebGLRenderTarget.prototype,'dispose',()=>{disposed++;});
+ const renderer={autoClear:true,getRenderTarget:()=>current,getViewport:(v:THREE.Vector4)=>v.set(0,0,800,600),getScissor:(v:THREE.Vector4)=>v.set(0,0,800,600),getScissorTest:()=>false,getClearColor:(c:THREE.Color)=>c.set('blue'),getClearAlpha:()=>1,
+ setRenderTarget:(target:unknown)=>{current=target;},setViewport(){},setScissor(){},setScissorTest(){},setClearColor(){},clear(){},render(){if(++renders===145)throw new Error('lost context');}};
+ const world={disposed:false,impostors:null,group:{userData:{foliage:{status:'ready'}}},foliage:{pineLevels:{near:[variant(12),variant(12)]}}};
+ assert.throws(()=>AssetWorld.prototype.useImpostors.call(world,renderer as unknown as THREE.WebGLRenderer),/lost context/);
+ assert.equal(disposed,2,'completed first atlas and failing second target released');
+ assert.equal(current,'original');assert.equal(renderer.autoClear,true);assert.equal(world.impostors,null);
+ }finally{await server.close();}
 });

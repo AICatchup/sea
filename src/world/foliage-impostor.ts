@@ -113,6 +113,7 @@ export function bakeImpostor(renderer:THREE.WebGLRenderer,variant:FoliageVariant
   const previous={target:renderer.getRenderTarget(),viewport:renderer.getViewport(new THREE.Vector4()),scissor:renderer.getScissor(new THREE.Vector4()),
     scissorTest:renderer.getScissorTest(),clear:renderer.getClearColor(new THREE.Color()),alpha:renderer.getClearAlpha(),autoClear:renderer.autoClear};
   const direction=new THREE.Vector3();
+  let complete=false;
   try{
     renderer.setRenderTarget(target);renderer.setClearColor(0,0);renderer.autoClear=false;renderer.setScissorTest(false);renderer.clear(true,true,true);
     renderer.setScissorTest(true);
@@ -125,10 +126,12 @@ export function bakeImpostor(renderer:THREE.WebGLRenderer,variant:FoliageVariant
       renderer.setViewport(col*cell,row*cell,cell,cell);renderer.setScissor(col*cell,row*cell,cell,cell);
       renderer.render(scene,camera);
     }
+    complete=true;
   }finally{
     renderer.setRenderTarget(previous.target);renderer.setViewport(previous.viewport);renderer.setScissor(previous.scissor);
     renderer.setScissorTest(previous.scissorTest);renderer.setClearColor(previous.clear,previous.alpha);renderer.autoClear=previous.autoClear;
     materials.forEach(m=>m.dispose());
+    if(!complete)target.dispose();
   }
   return {albedo,normal,sphere,spritesPerSide:sprites,target,dispose:()=>target.dispose()};
 }

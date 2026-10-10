@@ -29,17 +29,33 @@ export function thirdPersonPose(input:PoseInput,position:THREE.Vector3,aim:THREE
   const right=new THREE.Vector3(Math.cos(yaw),0,Math.sin(yaw));
   const pivot=eye.clone().addScaledVector(right,frame.shoulder).add(new THREE.Vector3(0,frame.lift,0));
   const wanted=Math.min(frame.distance,maxDistance);
+  // Establish feasible vertical bounds before testing the final sightline. In water
+  // shallower than both clearances, shrink them together instead of placing the
+  // lens below the seabed to satisfy an impossible pair of full-size margins.
+  const bounds=(p:THREE.Vector3)=>{
+    const floor=input.heightAt(p.x,p.z),water=input.waterAt(p.x,p.z);
+    if(mode==='dive'&&water>floor){
+      const scale=Math.min(1,(water-floor)/(THIRD_PERSON.ground+THIRD_PERSON.surface)*.9);
+      return {min:floor+THIRD_PERSON.ground*scale,max:water-THIRD_PERSON.surface*scale};
+    }
+    return {min:Math.max(floor+THIRD_PERSON.ground,water+THIRD_PERSON.surface),max:Infinity};
+  };
+  const clampHeight=(p:THREE.Vector3)=>{const b=bounds(p);p.y=THREE.MathUtils.clamp(p.y,b.min,b.max);};
+  clampHeight(pivot);
   position.copy(pivot).addScaledVector(forward,-wanted);
-  const terrain=unobstructedFraction(pivot,position,input.heightAt,THIRD_PERSON.ground,THIRD_PERSON.samples);
+  clampHeight(position);
+  const desired=position.clone(),sample=new THREE.Vector3();
+  let terrain=1;
+  for(let i=1;i<=THIRD_PERSON.samples;i++){
+    sample.lerpVectors(pivot,desired,i/THIRD_PERSON.samples);const b=bounds(sample);
+    if(sample.y<b.min-1e-9||sample.y>b.max+1e-9){terrain=(i-1)/THIRD_PERSON.samples;break;}
+  }
   // Stop short of a solid by a lens clearance so the near plane cannot cut into it.
-  const solid=input.blocked?input.blocked(pivot,position):1;
-  const distance=Math.max(0,Math.min(wanted*terrain,solid<1?wanted*solid-THIRD_PERSON.ground:Infinity));
-  position.copy(pivot).addScaledVector(forward,-distance);
-  position.y=Math.max(position.y,input.heightAt(position.x,position.z)+THIRD_PERSON.ground);
-  // A lens straddling the waterline shows a split frame; stay on the player's side of it.
-  const water=input.waterAt(position.x,position.z);
-  if(mode==='dive')position.y=Math.min(position.y,water-THIRD_PERSON.surface);
-  else position.y=Math.max(position.y,water+THIRD_PERSON.surface);
+  const solid=input.blocked?input.blocked(pivot,desired):1;
+  const length=pivot.distanceTo(desired);
+  const fraction=Math.max(0,Math.min(terrain,solid<1?solid-THIRD_PERSON.ground/Math.max(length,1e-9):1));
+  position.lerpVectors(pivot,desired,fraction);
+  const distance=wanted*fraction;
   aim.copy(eye).addScaledVector(forward,8).addScaledVector(right,frame.shoulder);
   return distance;
 }
