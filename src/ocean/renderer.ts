@@ -352,6 +352,8 @@ export class Ocean {
       if(!this.disposed)prepareWorldMaterials(this.world.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     });
     const assetReady=((this.assets as AssetWorld&{ready?:Promise<unknown>}).ready??Promise.resolve()).then(()=>{
+      // impostor=0 keeps the far/distant crown meshes for comparison.
+      if(!this.disposed&&new URLSearchParams(location.search).get('impostor')!=='0')this.assets.useImpostors(this.renderer);
       if(!this.disposed)prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     });
     this.ready=Promise.allSettled([worldReady,assetReady,marineReady,coastReady,skyReady]).then(results=>{

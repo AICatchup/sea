@@ -2,7 +2,10 @@ import * as THREE from 'three';
 import type { FoliageLevels, FoliageVariant } from './foliage.ts';
 import { makeInstances, updateInstanceBounds } from './models/procedural.ts';
 
-type LodLevel='near'|'mid'|'far'|'distant';
+type MeshLevel='near'|'mid'|'far'|'distant';
+type LodLevel=MeshLevel|'impostor';
+/** Borrowed per-variant camera-facing crown cards; the field never disposes them. */
+export interface FoliageImpostors { geometry: THREE.BufferGeometry[]; material: THREE.Material[]; pixels: number; }
 interface Plant { matrix: THREE.Matrix4; position: THREE.Vector3; variant: number; level: LodLevel; height: number; visible?:boolean; pixels?:number; }
 interface Batch { mesh: THREE.InstancedMesh; variant: number; triangles: number; }
 export interface FoliageLodSettings { nearDistance: number; midDistance: number; nearCapacity: number; midCapacity: number; triangleBudget?: number; viewAware?:boolean; nearPixels?:number;midPixels?:number;farPixels?:number; preserveCrowns?:boolean; }
@@ -14,11 +17,12 @@ export class FoliageLodField {
   private readonly name: string;
   private readonly settings: FoliageLodSettings;
   private plants: Plant[] = [];
-  private batches: Record<LodLevel, Batch[]> = { near: [], mid: [], far: [],distant:[] };
+  private batches: Record<LodLevel, Batch[]> = { near: [], mid: [], far: [],distant:[],impostor:[] };
+  private impostors: FoliageImpostors | null = null;
   private lastPosition = new THREE.Vector3(Infinity, Infinity, Infinity);
   private lastDirection=new THREE.Vector3(0,0,-1);
   private readonly directionScratch = new THREE.Vector3();
-  private readonly matrixBuckets: Record<LodLevel, THREE.Matrix4[][]> = { near: [], mid: [], far: [], distant: [] };
+  private readonly matrixBuckets: Record<LodLevel, THREE.Matrix4[][]> = { near: [], mid: [], far: [], distant: [], impostor: [] };
   private lastProjectionScale=0;
   private levels: FoliageLevels;
   private disposed = false;
@@ -67,6 +71,12 @@ export class FoliageLodField {
     return { matrix, position: bounds.getCenter(new THREE.Vector3()), variant, level: 'far', height: Math.max(size.x,size.y,size.z) };
   }
 
+  /** Crowns projected below `pixels` tall draw as a two-triangle card instead of far/distant meshes. */
+  setImpostors(impostors: FoliageImpostors | null): void {
+    if (this.disposed) return;
+    this.impostors = impostors; this.releaseBatches(); this.build(); this.update(this.lastPosition.clone(), true, this.lastDirection.clone(), this.lastProjectionScale);
+  }
+
   /** Read-only world coordinates; render LOD selection never moves these physical trunks. */
   getTrunkProxies(): readonly TrunkProxy[] {
     if (this.trunkProxies) return this.trunkProxies;
@@ -107,6 +117,14 @@ export class FoliageLodField {
     create('mid', this.levels.mid, this.settings.midCapacity);
     create('far', this.levels.far, this.fixedCount + 96);
     if(this.levels.distant)create('distant',this.levels.distant,this.fixedCount+96);
+    this.impostors?.geometry.forEach((geometry, variant) => {
+      const mesh = makeInstances(geometry, this.impostors!.material[variant], this.fixedCount + 96, `${this.name} impostor ${variant}`);
+      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.count = 0;
+      // A flat card would self-shadow in stripes; far crowns never cast either.
+      mesh.castShadow = mesh.receiveShadow = false;
+      mesh.userData.foliageLod = 'impostor'; mesh.userData.source = 'Octahedral impostor baked from the native near crown';
+      this.group.add(mesh); this.batches.impostor.push({ mesh, variant, triangles: 2 });
+    });
   }
 
   update(position: THREE.Vector3, force = false,forward?:THREE.Vector3,projectionScale=0): void {
@@ -147,7 +165,7 @@ export class FoliageLodField {
     const select = (list: typeof near, level: 'near' | 'mid'|'far', capacity: number, output: typeof near,limit=budget) => {
       for (const entry of list) {
         if (output.length >= capacity) break;
-        const extra = this.levels[level][entry.plant.variant].triangles - this.levels[entry.plant.level]![entry.plant.variant].triangles;
+        const extra = this.levels[level][entry.plant.variant].triangles - this.levels[entry.plant.level as MeshLevel]![entry.plant.variant].triangles; // cards are assigned after selection
         if (budgetUsed + extra > limit) continue;
         budgetUsed += extra; entry.plant.level = level; output.push(entry);
       }
@@ -167,19 +185,25 @@ export class FoliageLodField {
     select(middleCandidates, 'mid', this.settings.midCapacity, selectedMid);
     if(this.levels.distant)select([...middleCandidates.filter(e=>e.plant.level===baseline),...far].sort((a,b)=>b.score-a.score),'far',this.plants.length,selectedFar);
     }
+    // Cards replace only the cheapest bands, after the crown budget made its choices.
+    let impostorCount = 0;
+    if (this.impostors) for (const plant of this.plants)
+      if (plant.visible !== false && (plant.level === 'far' || plant.level === 'distant') && (plant.pixels ?? 0) < this.impostors.pixels) { plant.level = 'impostor'; impostorCount++; }
     let draws = 0, triangles = 0;
     const rendered=this.plants.filter(p=>p.visible!==false).length;
-    const counts = { near: selectedNear.length, mid: selectedMid.length, far:this.levels.distant?selectedFar.length:rendered-selectedNear.length-selectedMid.length,distant:this.levels.distant?rendered-selectedNear.length-selectedMid.length-selectedFar.length:0 };
-    const byVariant=this.levels.near.map(()=>({near:0,mid:0,far:0,distant:0}));
+    // Diagnostics only gain an impostor key when cards are on, so the off state matches before.
+    const counts: Record<string, number> = { near: selectedNear.length, mid: selectedMid.length, far:0, distant:0, ...(this.impostors ? { impostor: impostorCount } : {}) };
+    const byVariant: Record<string, number>[]=this.levels.near.map(()=>({near:0,mid:0,far:0,distant:0,...(this.impostors ? { impostor: 0 } : {})}));
     const oversized={mid:0,far:0,distant:0};
     for(const plant of this.plants)if(plant.visible!==false){byVariant[plant.variant][plant.level]++;const pixels=plant.pixels??0;if(plant.level==='mid'&&pixels>(this.settings.nearPixels??Infinity))oversized.mid++;if(plant.level==='far'&&pixels>(this.settings.midPixels??Infinity))oversized.far++;if(plant.level==='distant'&&pixels>(this.settings.farPixels??12))oversized.distant++;}
+    for (const plant of this.plants) if (plant.visible !== false && (plant.level === 'far' || plant.level === 'distant')) counts[plant.level]++;
     // Classify once in original placement order; every material part reuses it.
     for (const buckets of Object.values(this.matrixBuckets)) for (const bucket of buckets) if (bucket) bucket.length = 0;
     for (const plant of this.plants) if (plant.visible !== false) {
       const buckets = this.matrixBuckets[plant.level];
       (buckets[plant.variant] ??= []).push(plant.matrix);
     }
-    for (const level of ['near', 'mid', 'far','distant'] as const) for (const batch of this.batches[level]) {
+    for (const level of ['near', 'mid', 'far','distant','impostor'] as const) for (const batch of this.batches[level]) {
       let count = 0;
       for (const matrix of this.matrixBuckets[level][batch.variant] ?? []) batch.mesh.setMatrixAt(count++, matrix);
       batch.mesh.count = count; batch.mesh.visible = count > 0;

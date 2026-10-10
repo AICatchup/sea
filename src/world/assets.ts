@@ -7,7 +7,8 @@ import { CoastalModels } from './models/props';
 import { makeInstances, ModelBatch, randomSeed, rockGeometry, standard, updateInstanceBounds } from './models/procedural';
 import { CoastalFoliage } from './foliage.ts';
 import { FoliageLodField } from './foliage-lod.ts';
-import type { TrunkProxy } from './foliage-lod.ts';
+import type { FoliageImpostors, TrunkProxy } from './foliage-lod.ts';
+import { bakeImpostor, impostorGeometry, impostorMaterial, type ImpostorAtlas } from './foliage-impostor.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
 export interface AssetWorldOptions {surveyCanopy?:boolean;nativeCanopies?:boolean; canopyContinuity?: boolean; crownSupport?: boolean; originalCanopy?:boolean; branchCanopy?:boolean; cliffCoverSurface?:{group:THREE.Group;ready:Promise<void>};leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
@@ -28,6 +29,7 @@ export class AssetWorld {
   private cliffCoverField?:FoliageLodField;
   private surveyCanopyField?:FoliageLodField;
   private cliffTreeField?:FoliageLodField;
+  private impostors: (FoliageImpostors & { atlases: ImpostorAtlas[] }) | null = null;
   readonly ready: Promise<void>;
   private readonly placements: Placement[] = [];
   private readonly placementBatches = new Map<PlaceableKind, PlacementBatch[]>();
@@ -98,6 +100,16 @@ export class AssetWorld {
     this.lastPineSignature = '!native-rebuild'; this.rebuildPlacements(0);
     this.group.userData.crownSupport = { ...supported.diagnostics, trees: supported.trees.flat().length, shrubs: supported.shrubs.flat().length,
       coverageMeaning: 'sum of crown footprint areas; overlaps included, not measured canopy coverage', photoPass: false };
+  }
+
+  /** Bakes native near pine crowns once and lets every pine field draw distant crowns as cards. */
+  useImpostors(renderer: THREE.WebGLRenderer, pixels = 40): void {
+    if (this.disposed || this.impostors || this.group.userData.foliage?.status !== 'ready') return;
+    const started = performance.now();
+    const atlases = this.foliage.pineLevels.near.map(variant => bakeImpostor(renderer, variant));
+    this.impostors = { atlases, pixels, geometry: atlases.map(impostorGeometry), material: atlases.map(atlas => impostorMaterial(atlas)) };
+    for (const field of [this.pineField, this.surveyCanopyField, this.cliffTreeField]) field?.setImpostors(this.impostors);
+    this.group.userData.impostors = { variants: atlases.length, pixels, spritesPerSide: atlases[0]?.spritesPerSide, bakeMs: Math.round(performance.now() - started) };
   }
 
   get placedCount(): number { return this.placements.length; }
@@ -373,6 +385,7 @@ export class AssetWorld {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true; this.instanceMeshes.forEach((mesh) => mesh.dispose());
+    if (this.impostors) { this.impostors.atlases.forEach(a => a.dispose()); this.impostors.geometry.forEach(g => g.dispose()); this.impostors.material.forEach(m => m.dispose()); }
     this.foliage.dispose(); this.pineField.dispose(); this.shrubField.dispose();this.cliffCoverField?.dispose();this.cliffTreeField?.dispose();this.surveyCanopyField?.dispose();
     this.models.resources.dispose(); this.group.clear(); this.placements.length = 0; this.placementBatches.clear();
   }
