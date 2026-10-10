@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import type { FoliageLevels, FoliageVariant } from './foliage.ts';
-import { makeInstances, updateInstanceBounds } from './models/procedural.ts';
+import type { FoliageLevels, FoliageVariant } from '../../src/world/foliage.ts';
+import { makeInstances, updateInstanceBounds } from '../../src/world/models/procedural.ts';
 
 type LodLevel='near'|'mid'|'far'|'distant';
 interface Plant { matrix: THREE.Matrix4; position: THREE.Vector3; variant: number; level: LodLevel; height: number; visible?:boolean; pixels?:number; }
@@ -17,8 +17,6 @@ export class FoliageLodField {
   private batches: Record<LodLevel, Batch[]> = { near: [], mid: [], far: [],distant:[] };
   private lastPosition = new THREE.Vector3(Infinity, Infinity, Infinity);
   private lastDirection=new THREE.Vector3(0,0,-1);
-  private readonly directionScratch = new THREE.Vector3();
-  private readonly matrixBuckets: Record<LodLevel, THREE.Matrix4[][]> = { near: [], mid: [], far: [], distant: [] };
   private lastProjectionScale=0;
   private levels: FoliageLevels;
   private disposed = false;
@@ -111,7 +109,7 @@ export class FoliageLodField {
 
   update(position: THREE.Vector3, force = false,forward?:THREE.Vector3,projectionScale=0): void {
     const viewAware=this.settings.viewAware===true;
-    const direction=viewAware&&forward?this.directionScratch.set(forward.x,0,forward.z).normalize():this.lastDirection;
+    const direction=viewAware&&forward?new THREE.Vector3(forward.x,0,forward.z).normalize():this.lastDirection;
     const turned=viewAware&&direction.dot(this.lastDirection)<.9986;
     const resized=Math.abs(projectionScale-this.lastProjectionScale)>.5;
     if (this.disposed || (!force&&!turned&&!resized && this.lastPosition.distanceToSquared(position) < 3.24)) return;
@@ -173,15 +171,9 @@ export class FoliageLodField {
     const byVariant=this.levels.near.map(()=>({near:0,mid:0,far:0,distant:0}));
     const oversized={mid:0,far:0,distant:0};
     for(const plant of this.plants)if(plant.visible!==false){byVariant[plant.variant][plant.level]++;const pixels=plant.pixels??0;if(plant.level==='mid'&&pixels>(this.settings.nearPixels??Infinity))oversized.mid++;if(plant.level==='far'&&pixels>(this.settings.midPixels??Infinity))oversized.far++;if(plant.level==='distant'&&pixels>(this.settings.farPixels??12))oversized.distant++;}
-    // Classify once in original placement order; every material part reuses it.
-    for (const buckets of Object.values(this.matrixBuckets)) for (const bucket of buckets) bucket.length = 0;
-    for (const plant of this.plants) if (plant.visible !== false) {
-      const buckets = this.matrixBuckets[plant.level];
-      (buckets[plant.variant] ??= []).push(plant.matrix);
-    }
     for (const level of ['near', 'mid', 'far','distant'] as const) for (const batch of this.batches[level]) {
       let count = 0;
-      for (const matrix of this.matrixBuckets[level][batch.variant] ?? []) batch.mesh.setMatrixAt(count++, matrix);
+      for (const plant of this.plants) if (plant.visible!==false&&plant.level === level && plant.variant === batch.variant) batch.mesh.setMatrixAt(count++, plant.matrix);
       batch.mesh.count = count; batch.mesh.visible = count > 0;
       updateInstanceBounds(batch.mesh); if (count) draws++;
       triangles += count * batch.triangles;
@@ -192,7 +184,6 @@ export class FoliageLodField {
   }
 
   private releaseBatches(): void {
-    for (const buckets of Object.values(this.matrixBuckets)) buckets.length = 0;
     for (const list of Object.values(this.batches)) { list.forEach(batch => { this.group.remove(batch.mesh); batch.mesh.dispose(); }); list.length = 0; }
   }
 

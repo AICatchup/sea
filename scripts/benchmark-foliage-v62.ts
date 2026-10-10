@@ -1,0 +1,10 @@
+import * as THREE from 'three';
+import {FoliageLodField as Current} from '../src/world/foliage-lod.ts';
+import {FoliageLodField as Legacy} from '../tests/fixtures/foliage-lod-v62-legacy.ts';
+import {levels,placements} from '../tests/fixtures/foliage-v62-harness.ts';
+const result:any={environment:{node:process.version,platform:process.platform},method:'Synthetic 3 variants x 3 parts; alternating old/new order; 30 warmup pairs then 100 measured pairs; forced updates; milliseconds; static calls 1000 per sample'};
+for(const [name,n] of [['trees',3000],['shrubs',10000]] as const){const source=levels(),matrices=placements(n),settings={nearDistance:60,midDistance:160,nearCapacity:40,midCapacity:200,viewAware:true,preserveCrowns:true,triangleBudget:n*60};const old=new Legacy(new THREE.Group(),'field',source,matrices,settings),now=new Current(new THREE.Group(),'field',source,matrices,settings);const times={old:[] as number[],current:[] as number[]};
+for(let i=0;i<130;i++){const p=new THREE.Vector3(i%5*5,1.7,i%7*3),f=new THREE.Vector3(Math.sin(i*.1),0,-Math.cos(i*.1));for(const key of i%2?['old','current'] as const:['current','old'] as const){const start=performance.now();(key==='old'?old:now).update(p,true,f,700);if(i>=30)times[key].push(performance.now()-start);}}
+const stats=(a:number[])=>{a.sort((a,b)=>a-b);return {medianMs:(a[49]+a[50])/2,p95Ms:a[94]};};result[name]={placements:n,old:stats(times.old),current:stats(times.current)};
+const staticTimes={old:[] as number[],current:[] as number[]},p=new THREE.Vector3(),f=new THREE.Vector3(0,0,-1);old.update(p,true,f,700);now.update(p,true,f,700);for(let i=0;i<130;i++)for(const key of i%2?['old','current'] as const:['current','old'] as const){const start=performance.now();for(let j=0;j<1000;j++)(key==='old'?old:now).update(p,false,f,700);if(i>=30)staticTimes[key].push((performance.now()-start)/1000);}result[name].staticEarlyReturn={old:stats(staticTimes.old),current:stats(staticTimes.current)};old.dispose();now.dispose();}
+console.log(JSON.stringify(result,null,2));
