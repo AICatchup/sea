@@ -1,0 +1,19 @@
+{
+  "createdAt": "2026-10-10T09:05:10.543386+00:00",
+  "appCodeCommit": "57b01bb14b46d745864bd4a4cab153812a9e447e",
+  "htmlBytes": 358322666,
+  "htmlSha256": "69b231599500ceccc520dee1fd6131448059d2e3886683e72a61800a7693445b",
+  "typecheck": true,
+  "build": true,
+  "httpStatus": 200,
+  "httpLength": 358322666,
+  "staticChecks": {
+    "externalScriptTags": [],
+    "externalStylesheetTags": [],
+    "remainingQuotedAssetUrls": [],
+    "embeddedThirdPartyNotices": true,
+    "devQaExportPresent": false
+  },
+  "v64BrowserRuntime": "not_yet_verified",
+  "browserBlocker": "After an expired local server produced an error page, tab access was rejected by the browser URL policy. Server was restored; manual reopening requested. V63 runtime evidence remains separate."
+}

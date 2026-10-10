@@ -1,0 +1,24 @@
+✔ integrated reel actions count one catch and preserve existing expedition storage (5.9994ms)
+✔ physical board pickup, carrying and launch preserve east-positive movement and local stow (2.0487ms)
+✔ map pause keeps current water references without queuing a stale stand action (0.2817ms)
+✔ east-positive heading agrees with the FPS controller coordinate system (1.2813ms)
+✔ pickup is proximity gated and launch requires usable water (0.4373ms)
+✔ flat water and static slope cannot power surfing (6.5156ms)
+✔ a stopped body cannot turn stored board speed into motion of a static wave (0.335ms)
+✔ moving wave opens stand window and accelerates, readiness loss is recoverable (2.5372ms)
+✔ sustained hard turning loses balance, gentle turning remains viable (1.8761ms)
+✔ shallow water ends ride without displacement or teleport (1.2544ms)
+✔ walking a wiped-out board onto the beach restores carrying (0.3473ms)
+✔ invalid numeric inputs and oversized frames stay finite and bounded (0.5816ms)
+✔ constant wave integration is consistent at 30/60/120 fps (2.3897ms)
+✔ five-Hz wave cache drives the interval between samples, then expires when the crest stops (3.1679ms)
+✔ the front face drives a ride and the back of the swell slows it (0.4736ms)
+✔ angling down the face gains more than trimming flat across it (0.4158ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 335.0303
