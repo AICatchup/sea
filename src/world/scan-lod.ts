@@ -88,7 +88,7 @@ export class InstancedScanLod {
     const counts=this.batches.map(()=>0);
     for(let i=0;i<this.matrices.length;i++){const level=this.levelOf[i];this.batches[level].setMatrixAt(counts[level]++,this.matrices[i]);}
     let triangles=0;
-    this.batches.forEach((mesh,level)=>{mesh.count=counts[level];mesh.visible=counts[level]>0;mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();triangles+=counts[level]*((mesh.geometry.index?.count??0)/3);});
+    this.batches.forEach((mesh,level)=>{mesh.count=counts[level];mesh.visible=counts[level]>0;mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingBox();mesh.computeBoundingSphere();triangles+=counts[level]*((mesh.geometry.index?.count??0)/3);});
     this.diagnostics={instances:counts,triangles,updates:this.diagnostics.updates+1};
   }
 
