@@ -65,3 +65,13 @@ test('five-Hz wave cache drives the interval between samples, then expires when 
  for(let i=0;i<650;i++)s=stepSurfing(s,{...base,...wave,waterVerticalVelocity:0}).state;
  assert.equal(s.phase,'wipeout');
 });
+test('the front face drives a ride and the back of the swell slows it',()=>{
+ const front=run(riding(),1.5,wave).state.speed;
+ const back=run(riding(),1.5,{...wave,waterGradient:{x:0,z:-.15}}).state;
+ assert.ok(front>2.2);assert.ok(back.speed<2.2,`back of the wave still accelerated to ${back.speed}`);
+});
+test('angling down the face gains more than trimming flat across it',()=>{
+ const down={...riding(),yaw:0},across={...riding(),yaw:Math.PI/2};
+ const steep={waterGradient:{x:0,z:.25},waterVerticalVelocity:.2};
+ assert.ok(run(down,1,steep).state.speed>run(across,1,steep).state.speed);
+});

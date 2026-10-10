@@ -85,7 +85,13 @@ export function stepSurfing(previous: SurfState, input: SurfInput): SurfOutput {
         // Drive expires when moving crest evidence disappears; flat water cannot sustain a ride.
         // The renderer delivers water samples at 5 Hz. Retain decaying crest
         // evidence between samples; evaluating only its arrival frame loses drive.
-        const drive = waterValid ? 2.7 * Math.min(1,s.movingWave/.65) * Math.max(0, alignment) * Math.min(1, slope / .12) : 0;
+        // A moving wave pushes only from its front face (water higher on the seaward
+        // side), plus gravity along the heading: riding down the face accelerates,
+        // climbing onto the back of the swell decelerates. Before, slope magnitude
+        // alone drove the board, so the back of a wave also accelerated it.
+        const evidence = Math.min(1,s.movingWave/.65);
+        const face = clamp(-(gx*shore.x+gz*shore.z)/.12, 0, 1), downhill = -(gx*dx+gz*dz);
+        const drive = waterValid ? evidence * (2.4 * face * Math.max(0, alignment) + 9.81 * .6 * clamp(downhill, -.6, .6)) : 0;
         s.speed += (drive - .35 * s.speed) * h;
         s.rideTime += h;
         if (s.balance <= .08 || s.speed < .65 || !waterValid) {s.phase = 'wipeout'; s.wipeoutTime = 0; s.speed = 0;}
