@@ -1,0 +1,394 @@
+{
+  "base": "dd2f5eb",
+  "scope": [
+    "per-MarineLife reusable target and terrain callback",
+    "scalar finite checks for plain numeric poses",
+    "lazy ahead allocation in original short-circuit branch"
+  ],
+  "preserved": [
+    "motion arithmetic and sampling spacing",
+    "ground sample order and exact coordinates",
+    "full FishMotion state",
+    "body fin tail eye matrices",
+    "fish counts shadows animation clock"
+  ],
+  "oracle": {
+    "src/world/fish-motion.ts": {
+      "base_sha256": "b2d561cd92c1df887ed8a26da3f2032b8d0bec47b8b6a74c84a81b2e366f5306"
+    },
+    "src/world/marine-life.ts": {
+      "base_sha256": "df42da90fd2647a82cfc06795863ed95d57226ca8919128a27ddcf5ead98555d"
+    }
+  },
+  "validation": {
+    "paired_tests": 6,
+    "combined_focused_tests": 12,
+    "typecheck": "tsc --noEmit PASS",
+    "paired_motion_frames_per_terrain": 6000,
+    "paired_motion_terrains": [
+      "deepwater",
+      "shore",
+      "ridge",
+      "nonfinite patch"
+    ],
+    "marine_fish_count": 255,
+    "marine_normal_frames_per_terrain": 900,
+    "marine_terrains": [
+      "deepwater",
+      "shore",
+      "nonfinite patch"
+    ],
+    "negative_paths": [
+      "each target component NaN/Infinity/-Infinity",
+      "current ground NaN/Infinity/-Infinity",
+      "zero delta",
+      "clock reversal",
+      "oversized delta",
+      "nonfinite clock"
+    ]
+  },
+  "benchmark": {
+    "node": "v24.21.0",
+    "fishCount": 255,
+    "frames": 1200,
+    "runs": 12,
+    "warmupPairs": 6,
+    "scope": "CPU fish kernel including target/callback allocation model; no renderer/GPU/FPS measurement",
+    "results": [
+      {
+        "terrain": "deepwater",
+        "paired": [
+          {
+            "old": {
+              "milliseconds": 98.28190000000018,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 90.18560000000002,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 96.06320000000005,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 87.37379999999985,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 90.62429999999995,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 92.94089999999983,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 99.08230000000003,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 79.61789999999996,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 86.85519999999974,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 85.26790000000005,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 88.16899999999987,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 72.83699999999999,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 82.19100000000026,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 85.59339999999975,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 85.70770000000039,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 83.9725999999996,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 85.80639999999994,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 77.01099999999997,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 104.12310000000025,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 81.35759999999982,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 84.82330000000002,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 79.95359999999982,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 83.07810000000018,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 77.9970000000003,
+              "blockedEvents": 0,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          }
+        ],
+        "oldMedian": 87.5120999999998,
+        "currentMedian": 82.66509999999971,
+        "reductionPercent": 5.538662653507465
+      },
+      {
+        "terrain": "nearshore",
+        "paired": [
+          {
+            "old": {
+              "milliseconds": 96.83809999999994,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 101.52559999999994,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 95.34090000000015,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 86.07549999999992,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 93.63860000000022,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 84.07070000000022,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 107.65160000000014,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 95.43159999999989,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 103.14009999999962,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 98.47269999999935,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 96.15389999999934,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 92.50340000000051,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 98.7502000000004,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 88.50930000000062,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 95.49429999999938,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 96.13509999999951,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 106.09540000000015,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 90.14459999999963,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 104.35289999999986,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 91.04579999999987,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          },
+          {
+            "old": {
+              "milliseconds": 95.92210000000068,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 98.72209999999995,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "current-old"
+          },
+          {
+            "old": {
+              "milliseconds": 95.92649999999958,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "current": {
+              "milliseconds": 88.03749999999945,
+              "blockedEvents": 26478,
+              "checksum": -660.6644448860296
+            },
+            "order": "old-current"
+          }
+        ],
+        "oldMedian": 96.49599999999964,
+        "currentMedian": 91.77460000000019,
+        "reductionPercent": 4.8928452992864635
+      }
+    ]
+  },
+  "limitations": [
+    "CPU synthetic kernel timing including target and callback allocations; does not measure full MarineLife update or GPU/FPS",
+    "Shared host timing varies; earlier run medians showed 11.50%/10.27% reductions; final instrumented blocked-event run is recorded here",
+    "No browser or device acceptance performed; matrix and query equivalence is local CPU evidence",
+    "Candidate and avoidance allocations retained to minimize scope"
+  ]
+}

@@ -4,7 +4,7 @@ import { makeInstances, ModelResources, randomSeed, rockGeometry, standard, surf
 import { encrustingGeometry, finGeometry, finMaterial, fishEyes, fishGeometry, fishMaterial, seagrassGeometry, seagrassMaterial, tailGeometry } from './models/marine.ts';
 import { ScannedRockField, type ScannedRockLibrary, type ScannedRockVariant } from './scanned-rocks.ts';
 import { BubbleTrail } from './marine-bubbles.ts';
-import { advanceFishMotion, createFishMotion, type FishMotion } from './fish-motion.ts';
+import { advanceFishMotion, createFishMotion, type FishMotion, type FishPose } from './fish-motion.ts';
 import {coastalAlgaeGeometry,coastalAlgaeMaterial,type AlgaeFamily} from './models/coastal-algae.ts';
 import {groundedPlantMatrix} from './marine-plant-grounding.ts';
 
@@ -118,6 +118,9 @@ export class MarineLife {
   private readonly scale = new THREE.Vector3();
   private readonly yAxis = new THREE.Vector3(0, 1, 0);
   private readonly swimmingEuler = new THREE.Euler(0, 0, 0, 'YXZ');
+  // Scratch values are consumed synchronously by each fish before the next one.
+  private readonly fishTarget: FishPose = { x: 0, z: 0, y: 0, heading: 0 };
+  private readonly fishHeight = (x: number, z: number): number => this.ground.heightAt(x, z);
   private disposed = false;
 
   constructor(private readonly ground: GroundSampler,private readonly structuredAlgae=true) {
@@ -329,8 +332,9 @@ export class MarineLife {
       const x = fish.center.x + Math.cos(phase) * fish.radius + meander;
       const z = fish.center.z + Math.sin(phase) * fish.radius * fish.aspect + Math.sin(time * 0.13 + fish.depthPhase) * 0.15;
       const clearance = fish.size * 0.28 + 0.09;
-      const target = { x, z, y: fish.center.y + Math.sin(time * 0.6 + fish.depthPhase) * 0.24,
-        heading: Math.atan2(Math.cos(phase) * fish.aspect, -Math.sin(phase)) };
+      const target = this.fishTarget;
+      target.x = x; target.z = z; target.y = fish.center.y + Math.sin(time * 0.6 + fish.depthPhase) * 0.24;
+      target.heading = Math.atan2(Math.cos(phase) * fish.aspect, -Math.sin(phase));
       if (!fish.motion) {
         const bottom = this.ground.heightAt(x, z);
         const valid = Number.isFinite(bottom) && bottom <= -0.65 && bottom + clearance <= -0.3;
@@ -338,7 +342,7 @@ export class MarineLife {
         const initialBottom = this.ground.heightAt(initialX, initialZ);
         fish.motion = createFishMotion({ x: initialX, z: initialZ,
           y: Math.min(-0.3, Math.max(initialBottom + clearance, target.y)), heading: target.heading }, time);
-      } else advanceFishMotion(fish.motion, target, time, clearance, (px, pz) => this.ground.heightAt(px, pz));
+      } else advanceFishMotion(fish.motion, target, time, clearance, this.fishHeight);
       this.position.set(fish.motion.x, fish.motion.y, fish.motion.z);
       const yaw = -fish.motion.heading;
       const tailBeat = Math.sin(time * (6.3 + fish.rate * 10) + fish.depthPhase);

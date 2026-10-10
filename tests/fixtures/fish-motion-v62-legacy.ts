@@ -1,3 +1,4 @@
+// Immutable oracle copied from dd2f5eb:src/world/fish-motion.ts.
 /** CPU swimming state. Terrain is sampled at <= 2cm along every accepted move. */
 export interface FishPose { x: number; y: number; z: number; heading: number; }
 export interface FishMotion extends FishPose { time: number; turn: number; blockedSteps: number; }
@@ -22,7 +23,7 @@ export function advanceFishMotion(state: FishMotion, target: FishPose, time: num
   const elapsed = time - state.time; state.time = time;
   if (elapsed <= 0 || elapsed > FISH_MOTION_LIMITS.maxStep + 1e-8) return;
   const dt = Math.min(elapsed, FISH_MOTION_LIMITS.maxStep);
-  if (!Number.isFinite(target.x) || !Number.isFinite(target.y) || !Number.isFinite(target.z) || !Number.isFinite(target.heading)) return;
+  if (![target.x, target.y, target.z, target.heading].every(Number.isFinite)) return;
   const distance = Math.hypot(target.x - state.x, target.z - state.z);
   const desired = distance > 0.005 ? Math.atan2(target.z - state.z, target.x - state.x) : target.heading;
   const maxTurn = FISH_MOTION_LIMITS.turnRate * dt;
@@ -34,9 +35,8 @@ export function advanceFishMotion(state: FishMotion, target: FishPose, time: num
   const desiredY = clamp(Math.max(target.y, bottomHere + clearance), bottomHere + clearance, -0.3);
   const y = state.y + clamp(desiredY - state.y, -FISH_MOTION_LIMITS.verticalSpeed * dt, FISH_MOTION_LIMITS.verticalSpeed * dt);
   const candidate = { x: state.x + Math.cos(heading) * step, z: state.z + Math.sin(heading) * step, y, heading };
-  // Unblocked swimming does not sample ahead, so only allocate it when needed.
-  if (fishSegmentClear(state, candidate, clearance, height) && (state.blockedSteps === 0 || fishSegmentClear(candidate,
-    { ...candidate, x: candidate.x + Math.cos(heading) * 0.35, z: candidate.z + Math.sin(heading) * 0.35 }, clearance, height))) {
+  const ahead = { ...candidate, x: candidate.x + Math.cos(heading) * 0.35, z: candidate.z + Math.sin(heading) * 0.35 };
+  if (fishSegmentClear(state, candidate, clearance, height) && (state.blockedSteps === 0 || fishSegmentClear(candidate, ahead, clearance, height))) {
     Object.assign(state, candidate); state.blockedSteps = 0; return;
   }
   // Turn in place before continuing around the obstruction. Keep one turning side
