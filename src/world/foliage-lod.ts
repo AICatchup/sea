@@ -174,7 +174,7 @@ export class FoliageLodField {
     const oversized={mid:0,far:0,distant:0};
     for(const plant of this.plants)if(plant.visible!==false){byVariant[plant.variant][plant.level]++;const pixels=plant.pixels??0;if(plant.level==='mid'&&pixels>(this.settings.nearPixels??Infinity))oversized.mid++;if(plant.level==='far'&&pixels>(this.settings.midPixels??Infinity))oversized.far++;if(plant.level==='distant'&&pixels>(this.settings.farPixels??12))oversized.distant++;}
     // Classify once in original placement order; every material part reuses it.
-    for (const buckets of Object.values(this.matrixBuckets)) for (const bucket of buckets) bucket.length = 0;
+    for (const buckets of Object.values(this.matrixBuckets)) for (const bucket of buckets) if (bucket) bucket.length = 0;
     for (const plant of this.plants) if (plant.visible !== false) {
       const buckets = this.matrixBuckets[plant.level];
       (buckets[plant.variant] ??= []).push(plant.matrix);

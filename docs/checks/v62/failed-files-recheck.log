@@ -1,0 +1,11 @@
+{"scope":"CPU native/render floor rays and static surface sweeps; no browser movement or photoreal acceptance","rayChecks":40,"maxRayErrorM":7.327471962526033e-14,"wallChecks":5,"cliff":{"state":"ready","reason":"","inputTriangles":640452,"renderTriangles":606336,"removedNativeTriangles":414399,"numericalCoverageAreaToleranceM2":1e-12,"finalCoverageAreaToleranceM2":0.000002,"footprintSha256":"71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417","version":55,"variant":"expanded","querySnapDistanceM":0.00001,"stitch":null,"kind":"inferred-poisson-surface","watertight":false,"centimetreAccuracyEstablished":false}}
+✔ actual expanded continuous LiDAR study shares native floor, water map and static mesh collision with source intact (42330.3386ms)
+✔ joined presentation skin preserves every terrain mesh, ground sample, and arrival location (12017.2279ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 55885.7487
