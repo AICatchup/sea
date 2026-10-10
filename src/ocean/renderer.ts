@@ -354,10 +354,15 @@ export class Ocean {
     const worldReady=this.world.ready.then(()=>{
       if(!this.disposed)prepareWorldMaterials(this.world.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     });
+    // body=makehuman swaps the sculpted anatomy for the CC0 MakeHuman body on the same skeleton.
+    const bodyReady=new URLSearchParams(location.search).get('body')==='makehuman'?import('../world/makehuman-body.ts').then(m=>m.loadMakeHumanSource()).then(source=>{
+      if(this.disposed)return;this.body.useMakeHuman(source);
+      prepareWorldMaterials(this.body.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
+    }).catch(error=>console.warn('MakeHuman body unavailable; sculpted body retained',error)):Promise.resolve();
     const assetReady=((this.assets as AssetWorld&{ready?:Promise<unknown>}).ready??Promise.resolve()).then(()=>{
       if(!this.disposed)prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     });
-    this.ready=Promise.allSettled([worldReady,assetReady,marineReady,coastReady,skyReady]).then(results=>{
+    this.ready=Promise.allSettled([worldReady,assetReady,marineReady,coastReady,skyReady,bodyReady]).then(results=>{
       for(const result of results)if(result.status==='rejected')console.warn('A photographic asset could not load',result.reason);
       if(!this.disposed)this.syncSolids();
     });

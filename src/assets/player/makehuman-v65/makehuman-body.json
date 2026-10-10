@@ -1,0 +1,219 @@
+{
+ "parts": [
+  {
+   "name": "body",
+   "vertices": 14517,
+   "indices": 80268,
+   "position": 0,
+   "normal": 174204,
+   "uv": 348408,
+   "joints": 464544,
+   "weights": 522612,
+   "index": 754884
+  },
+  {
+   "name": "eyes",
+   "vertices": 1076,
+   "indices": 6120,
+   "position": 1075956,
+   "normal": 1088868,
+   "uv": 1101780,
+   "joints": 1110388,
+   "weights": 1114692,
+   "index": 1131908
+  },
+  {
+   "name": "eyebrows",
+   "vertices": 124,
+   "indices": 576,
+   "position": 1156388,
+   "normal": 1157876,
+   "uv": 1159364,
+   "joints": 1160356,
+   "weights": 1160852,
+   "index": 1162836
+  },
+  {
+   "name": "eyelashes",
+   "vertices": 250,
+   "indices": 1104,
+   "position": 1165140,
+   "normal": 1168140,
+   "uv": 1171140,
+   "joints": 1173140,
+   "weights": 1174140,
+   "index": 1178140
+  }
+ ],
+ "boneKeys": [
+  "chest@C",
+  "head@C",
+  "index distal@L",
+  "index distal@R",
+  "index middle@L",
+  "index middle@R",
+  "left ankle@L",
+  "left elbow@L",
+  "left hip@L",
+  "left index proximal@L",
+  "left knee@L",
+  "left little proximal@L",
+  "left middle proximal@L",
+  "left ring proximal@L",
+  "left shoulder@L",
+  "left wrist@L",
+  "little distal@L",
+  "little distal@R",
+  "little middle@L",
+  "little middle@R",
+  "lumbar@C",
+  "middle distal@L",
+  "middle distal@R",
+  "middle middle@L",
+  "middle middle@R",
+  "neck@C",
+  "pelvis@C",
+  "right ankle@R",
+  "right elbow@R",
+  "right hip@R",
+  "right index proximal@R",
+  "right knee@R",
+  "right little proximal@R",
+  "right middle proximal@R",
+  "right ring proximal@R",
+  "right shoulder@R",
+  "right wrist@R",
+  "ring distal@L",
+  "ring distal@R",
+  "ring middle@L",
+  "ring middle@R",
+  "thumb distal@L",
+  "thumb distal@R",
+  "thumb metacarpal@L",
+  "thumb metacarpal@R",
+  "thumb proximal@L",
+  "thumb proximal@R"
+ ],
+ "textures": {
+  "skin": {
+   "file": "makehuman-skin.png",
+   "sha256": "f50016a5507fc687dc8df06599c8ea48de950cd185de33a71cafc1319ddab4d5"
+  },
+  "eyes": {
+   "file": "makehuman-eyes.png",
+   "sha256": "4659691c7295ad6206c78b003e5fd0e5f91dcd53032fa914a229bb48cabe424b"
+  },
+  "eyebrows": {
+   "file": "makehuman-eyebrows.png",
+   "sha256": "9940f7d0b1b223709a19b05156ba6f6e9e4dbdbced02d7574f4d51d72c58967b"
+  },
+  "eyelashes": {
+   "file": "makehuman-eyelashes.png",
+   "sha256": "4b69c0fff2648874460e9caf80c31413c444218a5c50afebc425aeaa65484a35"
+  }
+ },
+ "provenance": {
+  "generator": "MPFB 2.0.17 (Blender 5.1.2) game_engine rig, posed and joint-corrected onto SEA FirstPersonBody",
+  "license": "CC0-1.0 (MakeHuman base mesh, targets and system assets; MPFB output is CC0)",
+  "macro": {
+   "gender": 1.0,
+   "age": 0.5,
+   "muscle": 0.62,
+   "weight": 0.48,
+   "proportions": 0.55,
+   "height": 0.5,
+   "cupsize": 0.5,
+   "firmness": 0.5
+  },
+  "race": {
+   "asian": 0.8,
+   "caucasian": 0.2,
+   "african": 0.0
+  },
+  "scale": 0.10579041515594997,
+  "headTop": 1.748000144958496,
+  "eyeCentreBeforeCorrection": [
+   7.5085260675678e-08,
+   1.6336357593536377,
+   -0.13638156652450562
+  ],
+  "report": {
+   "body": {
+    "vertices": 14517,
+    "triangles": 26756,
+    "maxJointShiftMetres": 0.0386
+   },
+   "eyes": {
+    "vertices": 1076,
+    "triangles": 2040,
+    "maxJointShiftMetres": 0.0064
+   },
+   "eyebrows": {
+    "vertices": 124,
+    "triangles": 192,
+    "maxJointShiftMetres": 0.0064
+   },
+   "eyelashes": {
+    "vertices": 250,
+    "triangles": 368,
+    "maxJointShiftMetres": 0.0064
+   }
+  },
+  "jointShiftMetres": {
+   "Root": 0.0173,
+   "ball_l": 0.0298,
+   "ball_r": 0.0298,
+   "calf_l": 0.0241,
+   "calf_r": 0.0241,
+   "clavicle_l": 0.0173,
+   "clavicle_r": 0.0173,
+   "foot_l": 0.0298,
+   "foot_r": 0.0298,
+   "hand_l": 0.0386,
+   "hand_r": 0.0386,
+   "head": 0.0064,
+   "index_01_l": 0.0265,
+   "index_01_r": 0.0265,
+   "index_02_l": 0.0309,
+   "index_02_r": 0.0309,
+   "index_03_l": 0.0298,
+   "index_03_r": 0.0298,
+   "lowerarm_l": 0.0313,
+   "lowerarm_r": 0.0313,
+   "middle_01_l": 0.0283,
+   "middle_01_r": 0.0283,
+   "middle_02_l": 0.0294,
+   "middle_02_r": 0.0294,
+   "middle_03_l": 0.0263,
+   "middle_03_r": 0.0263,
+   "neck_01": 0.0032,
+   "pelvis": 0.0173,
+   "pinky_01_l": 0.0285,
+   "pinky_01_r": 0.0285,
+   "pinky_02_l": 0.0315,
+   "pinky_02_r": 0.0315,
+   "pinky_03_l": 0.0331,
+   "pinky_03_r": 0.0331,
+   "ring_01_l": 0.0313,
+   "ring_01_r": 0.0313,
+   "ring_02_l": 0.0328,
+   "ring_02_r": 0.0328,
+   "ring_03_l": 0.0309,
+   "ring_03_r": 0.0309,
+   "spine_01": 0.0104,
+   "spine_02": 0.0116,
+   "spine_03": 0.0238,
+   "thigh_l": 0.0225,
+   "thigh_r": 0.0225,
+   "thumb_01_l": 0.0259,
+   "thumb_01_r": 0.0259,
+   "thumb_02_l": 0.0262,
+   "thumb_02_r": 0.0262,
+   "thumb_03_l": 0.0177,
+   "thumb_03_r": 0.0177,
+   "upperarm_l": 0.0346,
+   "upperarm_r": 0.0346
+  }
+ },
+ "sha256": "00ca9570730e8d323bdecd65a5d23583ed38696796bb58b1761f3458c397b6b7"
+}
