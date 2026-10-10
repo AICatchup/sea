@@ -422,6 +422,7 @@ export class Ocean {
     this.assets.boat.position.copy(state.boatPosition);
     this.assets.boat.rotation.set(state.boatPitch??0,-state.boatYaw,state.boatRoll??0,'YXZ');
     state.activity=this.activities.tool==='rod'?'fishing':this.activities.surf.phase==='riding'?'surf':undefined;
+    this.body.relaxedStance=this.viewCamera.mode==='third';
     this.body.update(state,this.camera,delta,this.time);
     this.activityWorld.update(state,this.camera,this.waterHeights.sample,this.time);
     // Third person moves only the drawing camera, after everything posed from the eye.
