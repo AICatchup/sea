@@ -104,6 +104,8 @@ try {
   const controls = new ControlSettings(controlsStorage);
   ocean = new Ocean(element<HTMLCanvasElement>('ocean'),controls);
   const view=experienceOptions(location.search).view;
+  // camera=third opens in the over-the-shoulder view (V toggles it during play).
+  if(new URLSearchParams(location.search).get('camera')==='third')ocean.viewCamera.toggle();
   if(view==='dive')ocean.adventure.viewpoint(-145,-113,-.45,-.28,'dive',4.5);
   if(view==='reef')ocean.adventure.viewpoint(-140,-110,-.5,-.42,'dive',5);
   if(view==='lookout')ocean.adventure.viewpoint(-25,36,-.52,-.25);
@@ -800,6 +802,7 @@ try {
     else if(controls.matches('journal',event.code)){event.preventDefault();revealUI();queueMicrotask(()=>expeditionUI.open());}
     else if(controls.matches('immersive',event.code)){event.preventDefault();toggleImmersive();}
     else if(controls.matches('pause',event.code)){event.preventDefault();togglePause();}
+    else if(controls.matches('view',event.code)){event.preventDefault();toast(ocean.viewCamera.toggle()==='third'?'三人称視点':'一人称視点');}
   }, { ...events, capture: true });
   document.addEventListener('visibilitychange', () => void sound.setVisible(!document.hidden && available).catch(() => {}), events);
   window.addEventListener('ocean-error', event => showError((event as CustomEvent<string>).detail), events);

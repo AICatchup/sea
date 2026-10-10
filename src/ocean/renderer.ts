@@ -40,6 +40,7 @@ import {ExpeditionWorld} from '../game/expedition-world.ts';
 import {resizeReflectionTarget} from './reflection-target.ts';
 import {groundScannedShelf} from '../world/grounded-reef.ts';
 import {ReflectionCull} from './mirror-cull.ts';
+import {ThirdPersonCamera} from '../world/third-person-camera.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
 type Uniforms = Record<string, THREE.IUniform>;
@@ -105,6 +106,8 @@ export class Ocean {
   readonly expedition:Expedition;
   private readonly expeditionWorld:ExpeditionWorld;
   readonly body=new FirstPersonBody();
+  /** View toggle; body, tools and gameplay always use the first-person eye. */
+  readonly viewCamera=new ThirdPersonCamera();
   readonly uniforms:Uniforms;
   readonly ready:Promise<void>;
   private readonly compositor:SceneCompositor;
@@ -421,6 +424,9 @@ export class Ocean {
     state.activity=this.activities.tool==='rod'?'fishing':this.activities.surf.phase==='riding'?'surf':undefined;
     this.body.update(state,this.camera,delta,this.time);
     this.activityWorld.update(state,this.camera,this.waterHeights.sample,this.time);
+    // Third person moves only the drawing camera, after everything posed from the eye.
+    this.viewCamera.apply(this.camera,{eye:this.camera.position.clone(),yaw:state.yaw,pitch:state.pitch,mode:state.mode,
+      heightAt:(x,z)=>this.world.heightAt(x,z),waterAt:(x,z)=>this.waterHeights.sample(x,z)},delta);
     const underwater=cameraSubmersion(this.camera.position.y,this.waterHeights.sample(this.camera.position.x,this.camera.position.z));
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()),this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));

@@ -3,7 +3,7 @@ export const CONTROL_ACTIONS = {
   forward: '前進 / 船の加速', back: '後退 / 船の減速', left: '左へ / 左に舵を切る', right: '右へ / 右に舵を切る',
   rise: 'ジャンプ / 浮上', descend: '潜降', sprint: '走る', interact: '調べる / 船の乗り降り',
   map: '地図', journal: '調査ノート', pause: '波の一時停止', immersive: '画面の表示 / 非表示', settings: '操作設定',
-  activity: '釣り竿 / サーフボードを使う',
+  activity: '釣り竿 / サーフボードを使う', view: '視点 (一人称 / 三人称)',
 } as const;
 export type ControlAction = keyof typeof CONTROL_ACTIONS;
 export const ACTIONS = Object.keys(CONTROL_ACTIONS) as ControlAction[];
@@ -15,12 +15,12 @@ const DEFAULT_BINDINGS: KeyBindings = {
   forward: ['KeyW', 'ArrowUp'], back: ['KeyS', 'ArrowDown'], left: ['KeyA', 'ArrowLeft'], right: ['KeyD', 'ArrowRight'],
   rise: ['Space', ''], descend: ['KeyC', ''], sprint: ['ShiftLeft', ''], interact: ['KeyE', ''],
   map: ['KeyM', ''], journal: ['KeyJ', ''], pause: ['KeyP', ''], immersive: ['KeyH', ''], settings: ['KeyO', ''],
-  activity:['KeyF',''],
+  activity:['KeyF',''], view:['KeyV',''],
 };
 export const normalizeKey = (code: string): string => code === 'ShiftRight' ? 'ShiftLeft' : code === 'ControlRight' ? 'ControlLeft' : code;
 export const isBindableKey = (code: string): boolean => /^(Key[A-Z]|Digit[0-9]|Arrow(Up|Down|Left|Right)|Space|ShiftLeft|BracketLeft|BracketRight|Minus|Equal|Comma|Period|Slash|Semicolon|Quote|Backquote|Backslash)$/.test(code);
 const isActionKey = (action: ControlAction, code: string): boolean => isBindableKey(code)
-  && (!['map', 'journal', 'pause', 'immersive', 'settings'].includes(action) || !/^(Space|Arrow|Shift|Control)/.test(code));
+  && (!['map', 'journal', 'pause', 'immersive', 'settings', 'view'].includes(action) || !/^(Space|Arrow|Shift|Control)/.test(code));
 export function keyLabel(code: string): string {
   const labels: Record<string, string> = { ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→', Space: 'Space', ShiftLeft: 'Shift', ControlLeft: 'Ctrl', BracketLeft: '[', BracketRight: ']', Minus: '-', Equal: '=', Comma: ',', Period: '.', Slash: '/', Semicolon: ';', Quote: "'", Backquote: '`', Backslash: '\\' };
   return labels[normalizeKey(code)] ?? (code.replace(/^(Key|Digit)/, '') || '未設定');
@@ -40,8 +40,11 @@ export function parseControls(raw: string | null): ControlPreferences {
     const seen = new Set<string>();
     const bindings = {} as KeyBindings;
     for (const action of ACTIONS) {
-      const pair = data.bindings[action]??(action==='activity'?[
-        ['KeyF','KeyG','KeyR','KeyT','KeyV','KeyB','KeyU','KeyY',...Array.from({length:26},(_,i)=>`Key${String.fromCharCode(65+i)}`),...Array.from({length:10},(_,i)=>`Digit${i}`)].find(k=>!seen.has(k))??'KeyF','']:undefined);
+      // Actions added after a save was written take the first free preferred key.
+      const preferred=action==='activity'?['KeyF','KeyG','KeyR','KeyT','KeyV','KeyB','KeyU','KeyY']:action==='view'?['KeyV','KeyB','KeyG','KeyT','KeyR','KeyU','KeyY']:null;
+      const taken=new Set([...seen,...ACTIONS.filter(a=>a!==action&&data.bindings[a]).flatMap(a=>data.bindings[a] as string[])]);
+      const pair = data.bindings[action]??(preferred?[
+        [...preferred,...Array.from({length:26},(_,i)=>`Key${String.fromCharCode(65+i)}`),...Array.from({length:10},(_,i)=>`Digit${i}`)].find(k=>!taken.has(k))??preferred[0],'']:undefined);
       if (!Array.isArray(pair) || pair.length !== 2 || pair.some(k => typeof k !== 'string')) return fallback;
       const keys = pair.map(normalizeKey) as [string, string];
       for (const key of keys) {
