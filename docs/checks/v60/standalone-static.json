@@ -1,0 +1,27 @@
+{
+  "bytes": 358318754,
+  "sha256": "b7a74a8391eaa63aec991c9514cc30aa4e4f440aba5556410efa4caed48cad50",
+  "sourceAssets": [
+    {
+      "path": "src/assets/foliage/cc0/original-lod/original-canopy-lod-1k.glb",
+      "bytes": 17439104,
+      "sha256": "19ce8153bdbecbe173b555d6094609a527b5da395f9b5ca9c6d95de654469f3c",
+      "embedded": true
+    },
+    {
+      "path": "src/assets/foliage/cc0/native-v60/canopy1/original-canopy-lod-1k.glb",
+      "bytes": 13770124,
+      "sha256": "2307b2cb4441c5565de5146fd40676229632cd2b8ca5f3f93e94ee2a3257d294",
+      "embedded": true
+    },
+    {
+      "path": "src/assets/foliage/cc0/native-v60/canopy2/original-canopy-lod-1k.glb",
+      "bytes": 20548360,
+      "sha256": "e63a6bc6b988d39c66862bf6de6e5f77c10c89dd8b54bc51e0ea44c4f2af62a1",
+      "embedded": true
+    }
+  ],
+  "developerQAExcluded": true,
+  "standaloneScriptAndCssEmbedded": true,
+  "browserExecution": "not established by static checks"
+}

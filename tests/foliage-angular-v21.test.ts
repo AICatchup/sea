@@ -3,6 +3,21 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {FoliageLodField} from '../src/world/foliage-lod.ts';
 
+test('coverage priority avoids sacrificing the whole canopy to a few near trees under the same budget',()=>{
+ const material=new THREE.MeshStandardMaterial();material.userData.foliageRole='trunk';
+ const make=(triangles:number)=>{const g=new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute([0,0,0,5,0,0,0,5,5],3));g.setIndex(Array.from({length:triangles*3},(_,i)=>i%3));return{parts:[{geometry:g,material}],triangles};};
+ const near=make(1200),mid=make(300),far=make(60),distant=make(12),levels={near:[near],mid:[mid],far:[far],distant:[distant]};
+ const matrices=[Array.from({length:100},(_,i)=>new THREE.Matrix4().makeTranslation(i-50,0,-60))];
+ const groups=[new THREE.Group(),new THREE.Group()],settings={nearDistance:10,midDistance:20,nearCapacity:24,midCapacity:100,triangleBudget:10000,nearPixels:48,midPixels:24,farPixels:12};
+ const fields=groups.map((g,i)=>new FoliageLodField(g,'test',levels,matrices,{...settings,preserveCrowns:i===1}));
+ fields.forEach(f=>f.update(new THREE.Vector3(),true,new THREE.Vector3(0,0,-1),1000));
+ assert.ok(groups[1].userData.test.instances.distant<groups[0].userData.test.instances.distant);
+ assert.ok(groups[1].userData.test.instances.near>0);
+ for(const group of groups){const d=group.userData.test;const triangles=group.children.reduce((s,o)=>s+(o instanceof THREE.InstancedMesh?o.count*o.geometry.index!.count/3:0),0);assert.equal(d.triangles,triangles);assert.ok(triangles<=10000);assert.equal(Object.values(d.instances).reduce((s:any,n:any)=>s+n,0),100);}
+ assert.deepEqual(fields[0].getTrunkProxies(),fields[1].getTrunkProxies());
+ fields.forEach(f=>f.dispose());[near,mid,far,distant].forEach(v=>v.parts[0].geometry.dispose());material.dispose();
+});
+
 test('angular LOD honours visible crown size and total budget on resize without moving trunks',()=>{
  const material=new THREE.MeshStandardMaterial();material.userData.foliageRole='trunk';
  const make=(triangles:number)=>{const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute([0,0,0,5,0,0,0,5,5],3));geometry.setIndex(Array.from({length:triangles*3},(_,i)=>i%3));return{parts:[{geometry,material}],triangles};};

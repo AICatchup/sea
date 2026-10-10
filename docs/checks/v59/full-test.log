@@ -190,23 +190,23 @@ grounded reef scan evidence [{"file":"coast-rocks-01-2k.glb","x":-138,"z":-119,"
 ✔ remote floating points use bounded exact requests and expire with the local cache (3.0442ms)
 ✔ invalid coordinates cannot leak NaN into swimming or camera medium selection (0.7396ms)
 FFT surface-height cache unavailable; mean sea level retained Error: sample render failed
-    at Object.render (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/tests/local-water-heights.test.ts:22:145)
-    at LocalWaterHeights.update (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/src/ocean/local-water-heights.ts:106:68)
-    at update (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/tests/local-water-heights.test.ts:26:33)
+    at Object.render (file:///<repo>/tests/local-water-heights.test.ts:22:145)
+    at LocalWaterHeights.update (file:///<repo>/src/ocean/local-water-heights.ts:106:68)
+    at update (file:///<repo>/tests/local-water-heights.test.ts:26:33)
     at getActual (node:assert:611:5)
     at strict.doesNotThrow (node:assert:779:32)
-    at TestContext.<anonymous> (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/tests/local-water-heights.test.ts:81:12)
+    at TestContext.<anonymous> (file:///<repo>/tests/local-water-heights.test.ts:81:12)
     at Test.runInAsyncScope (node:async_hooks:227:14)
     at Test.run (node:internal/test_runner/test:1382:25)
     at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
     at Test.postRun (node:internal/test_runner/test:1522:19)
 FFT surface-height cache unavailable; mean sea level retained Error: readback creation failed
-    at Object.readRenderTargetPixelsAsync (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/tests/local-water-heights.test.ts:23:64)
-    at LocalWaterHeights.update (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/src/ocean/local-water-heights.ts:108:30)
-    at update (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/tests/local-water-heights.test.ts:26:33)
+    at Object.readRenderTargetPixelsAsync (file:///<repo>/tests/local-water-heights.test.ts:23:64)
+    at LocalWaterHeights.update (file:///<repo>/src/ocean/local-water-heights.ts:108:30)
+    at update (file:///<repo>/tests/local-water-heights.test.ts:26:33)
     at getActual (node:assert:611:5)
     at strict.doesNotThrow (node:assert:779:32)
-    at TestContext.<anonymous> (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/tests/local-water-heights.test.ts:81:12)
+    at TestContext.<anonymous> (file:///<repo>/tests/local-water-heights.test.ts:81:12)
     at Test.runInAsyncScope (node:async_hooks:227:14)
     at Test.run (node:internal/test_runner/test:1382:25)
     at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
@@ -316,8 +316,8 @@ FFT surface-height cache unavailable; mean sea level retained Error: readback cr
 {"scope":"CPU native/render floor rays and static surface sweeps; no browser movement or photoreal acceptance","rayChecks":40,"maxRayErrorM":8.661021411171532e-7,"wallChecks":3,"cliff":{"state":"ready","reason":"","inputTriangles":580589,"renderTriangles":799066,"removedNativeTriangles":102818,"numericalCoverageAreaToleranceM2":1e-12,"finalCoverageAreaToleranceM2":1e-12,"footprintSha256":"f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449","version":54,"variant":"legacy","querySnapDistanceM":0,"stitch":{"inputTriangles":102818,"boundaryEdges":51676,"subdivisions":103352,"outputTriangles":206685,"zeroAreaTriangles":19,"queries":155028,"missingQueries":0,"maximumHeightDeltaM":30.896174611375358,"signCrossings":23248},"kind":"inferred-poisson-surface","watertight":false,"centimetreAccuracyEstablished":false}}
 ✔ actual clipped LiDAR study shares native floor, water map and static mesh collision with source intact (48617.8314ms)
 Inferred cliff unavailable; native surface retained Error: Cliff asset hash differs from the clipped study
-    at file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/src/world/niijima-point-cliff.ts:85:134
-    at async TestContext.<anonymous> (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-v12-runtime/tests/niijima-point-cliff.test.ts:56:6)
+    at file:///<repo>/src/world/niijima-point-cliff.ts:85:134
+    at async TestContext.<anonymous> (file:///<repo>/tests/niijima-point-cliff.test.ts:56:6)
     at async Test.run (node:internal/test_runner/test:1389:7)
     at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
 ✔ failed load and disposed pending load leave native topology unchanged (7.991ms)

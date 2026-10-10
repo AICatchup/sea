@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { crownSupportedPlacements } from './crown-support.ts';
+import {surveyCanopyPlacements,withinSurveyCanopy} from './tomari-canopy.ts';
 import {tomariCliffCover} from './tomari-cliff-cover.ts';
 import type { GroundSampler, PlaceableKind } from './contracts';
 import { CoastalModels } from './models/props';
@@ -9,7 +10,7 @@ import { FoliageLodField } from './foliage-lod.ts';
 import type { TrunkProxy } from './foliage-lod.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
-export interface AssetWorldOptions { canopyContinuity?: boolean; crownSupport?: boolean; originalCanopy?:boolean; branchCanopy?:boolean; cliffCoverSurface?:{group:THREE.Group;ready:Promise<void>};leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
+export interface AssetWorldOptions {surveyCanopy?:boolean;nativeCanopies?:boolean; canopyContinuity?: boolean; crownSupport?: boolean; originalCanopy?:boolean; branchCanopy?:boolean; cliffCoverSurface?:{group:THREE.Group;ready:Promise<void>};leafVolumeRefinement?:Parameters<CoastalFoliage['loadDetailed']>[1]; }
 
 interface Placement { kind: PlaceableKind; x: number; y: number; z: number; yaw: number; }
 interface PlacementBatch { mesh: THREE.InstancedMesh; local: THREE.Matrix4; variant?: number; }
@@ -25,6 +26,7 @@ export class AssetWorld {
   private pineField!: FoliageLodField;
   private shrubField!: FoliageLodField;
   private cliffCoverField?:FoliageLodField;
+  private surveyCanopyField?:FoliageLodField;
   private cliffTreeField?:FoliageLodField;
   readonly ready: Promise<void>;
   private readonly placements: Placement[] = [];
@@ -57,9 +59,11 @@ export class AssetWorld {
     this.populateStrand();
     this.preparePlacementBatches();
     this.group.userData.foliage = { status: typeof document === 'undefined' ? 'cpu-proxies' : 'loading', source: 'Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified', photoPass: false };
-    const foliageReady = this.foliage.loadDetailed(this.options.canopyContinuity===true,this.options.leafVolumeRefinement??false,this.options.originalCanopy??false,this.options.branchCanopy??false).then(() => {
+    const foliageReady = this.foliage.loadDetailed(this.options.canopyContinuity===true,this.options.leafVolumeRefinement??false,this.options.originalCanopy??false,this.options.branchCanopy??false,this.options.nativeCanopies??false).then(() => {
       if (this.disposed || typeof document === 'undefined') return;
-      if (this.options.crownSupport) this.rebuildCrownSupport();
+      // Point-guided replacement owns this region; don't rebuild a second
+      // unfiltered authored canopy over it when experimental flags combine.
+      if (this.options.crownSupport&&!this.options.surveyCanopy) this.rebuildCrownSupport();
       else { this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels); }
       this.pineField.update(this.foliagePosition, true); this.shrubField.update(this.foliagePosition, true);
       this.group.userData.foliage.status = 'ready';
@@ -67,7 +71,16 @@ export class AssetWorld {
       if(this.options.branchCanopy)this.group.userData.foliage.source+='; authored distance-faded branch atlas supplements distant pine crowns';
     }).catch((error: unknown) => { if (!this.disposed) this.group.userData.foliage.status = `proxy fallback: ${error instanceof Error ? error.message : String(error)}`; });
     this.ready = Promise.all([foliageReady, this.models.boatClothReady,this.options.cliffCoverSurface?.ready]).then(() => {
-      if(this.disposed||!this.options.cliffCoverSurface)return;
+      if(this.disposed)return;
+      if(this.options.surveyCanopy&&this.group.userData.foliage.status==='ready'){
+        const canopy=surveyCanopyPlacements(this.ground,this.foliage.pineLevels);
+        this.surveyCanopyField=new FoliageLodField(this.group,'tomariSurveyCanopyLod',canopy.levels,canopy.matrices,{nearDistance:140,midDistance:240,nearCapacity:240,midCapacity:400,triangleBudget:6500000,viewAware:true});
+        this.group.userData.surveyCanopy=canopy.diagnostics;
+      }else if(this.options.surveyCanopy){
+        this.pineField.dispose();this.shrubField.dispose();this.populateHeadlands(true);
+        this.group.userData.surveyCanopy={status:'fallback: native sources unavailable'};
+      }
+      if(!this.options.cliffCoverSurface)return;
       const cover=tomariCliffCover(this.ground,this.options.cliffCoverSurface.group);
       this.cliffCoverField=new FoliageLodField(this.group,'tomariCliffCoverLod',this.foliage.shrubLevels,cover.placements,{nearDistance:110,midDistance:210,nearCapacity:320,midCapacity:320,triangleBudget:800000,viewAware:true});
       this.cliffTreeField=new FoliageLodField(this.group,'tomariCliffTreeLod',this.foliage.pineLevels,cover.trees,{nearDistance:100,midDistance:210,nearCapacity:96,midCapacity:96,triangleBudget:1000000,viewAware:true});
@@ -79,7 +92,7 @@ export class AssetWorld {
     const supported = crownSupportedPlacements(this.ground, this.foliage.pineLevels.near, this.foliage.shrubLevels.near);
     this.pineField.dispose(); this.shrubField.dispose();
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, supported.trees,
-      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000, viewAware: true,...(this.options.originalCanopy?{nearPixels:48,midPixels:24,farPixels:12}:{}) });
+      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000, viewAware: true,...((this.options.originalCanopy||this.options.nativeCanopies)?{nearPixels:48,midPixels:24,farPixels:12}:{}),...(this.options.nativeCanopies?{triangleBudget:6500000,midCapacity:300,preserveCrowns:true}:{}) });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, supported.shrubs,
       { nearDistance: 26, midDistance: 210, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000, viewAware: true });
     this.lastPineSignature = '!native-rebuild'; this.rebuildPlacements(0);
@@ -88,7 +101,7 @@ export class AssetWorld {
   }
 
   get placedCount(): number { return this.placements.length; }
-  getTrunkProxies(): readonly TrunkProxy[] { return this.cliffTreeField?[...this.pineField.getTrunkProxies(),...this.cliffTreeField.getTrunkProxies()]:this.pineField.getTrunkProxies(); }
+  getTrunkProxies(): readonly TrunkProxy[] { if(this.surveyCanopyField)return [...this.pineField.getTrunkProxies(),...this.surveyCanopyField.getTrunkProxies(),...(this.cliffTreeField?.getTrunkProxies()??[])];return this.cliffTreeField?[...this.pineField.getTrunkProxies(),...this.cliffTreeField.getTrunkProxies()]:this.pineField.getTrunkProxies(); }
 
   private addInstances(geometry: THREE.BufferGeometry, material: THREE.Material, positions: THREE.Matrix4[], name: string): void {
     if (!positions.length) return;
@@ -101,7 +114,7 @@ export class AssetWorld {
     return new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(this.yAxis, yaw), new THREE.Vector3(scale * sx, scale * sy, scale * sz));
   }
 
-  private populateHeadlands(): void {
+  private populateHeadlands(ignoreSurvey=false): void {
     const random = randomSeed(0x544f4d41);
     const trees: THREE.Matrix4[][] = [[], [], []];
     const shrubs: THREE.Matrix4[][] = [[], [], []];
@@ -111,6 +124,7 @@ export class AssetWorld {
       const x = gx + (random() - .5) * 2.5, z = gz + (random() - .5) * 2.5;
       if ((x + 36) ** 2 + (z - 27) ** 2 > 320 ** 2) continue;
       const height = this.ground.heightAt(x, z);
+      const surveyReplaced=!ignoreSurvey&&this.options.surveyCanopy&&withinSurveyCanopy(x,z);
       if (!Number.isFinite(height)) continue;
       if (Math.hypot(x + 25, z - 36) < 6) continue;
       const variant = Math.floor(random() * 3), yaw = random() * Math.PI * 2;
@@ -124,7 +138,7 @@ export class AssetWorld {
       const cluster = THREE.MathUtils.clamp(.55 + Math.sin(x * .034 + Math.sin(z * .021) * 1.9) * .27 + Math.cos(z * .039 - x * .012) * .22, 0, 1);
       if (height > 6 && height < 68 && slope < (height > 14 ? 1.65 : 1.12) && isHeadland && random() < (.14 + cluster * .22)) {
         const size = .74 + random() * .38;
-        trees[variant].push(this.transform(x, height - .07, z, size, yaw, 1.35 + random() * .3, .9 + random() * .18, 1.35)); treeCount++;
+        const treeMatrix=this.transform(x, height - .07, z, size, yaw, 1.35 + random() * .3, .9 + random() * .18, 1.35);if(!surveyReplaced){trees[variant].push(treeMatrix); treeCount++;}
       }
       if (height > 3.1 && height < 68 && isHeadland && slope < 1.75 && random() < (.67 + cluster * .3)) {
         const low = random() < .43, size = .88 + random() * .46;
@@ -157,13 +171,12 @@ export class AssetWorld {
           }
           matrix.compose(new THREE.Vector3(x, supportY, z), orientation, scale);
         }
-        shrubs[variant].push(matrix);
-        shrubCount++; if (low) groundCoverCount++;
+        if(!surveyReplaced){shrubs[variant].push(matrix);shrubCount++; if (low) groundCoverCount++;}
       }
     }
     // Same deterministic transforms, now partitioned into mutually exclusive distance bands.
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, trees,
-      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000,viewAware:this.options.canopyContinuity===true||this.options.originalCanopy===true,...(this.options.originalCanopy?{nearPixels:48,midPixels:24,farPixels:12}:{}) });
+      { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000,viewAware:this.options.canopyContinuity===true||this.options.originalCanopy===true,...((this.options.originalCanopy||this.options.nativeCanopies)?{nearPixels:48,midPixels:24,farPixels:12}:{}),...(this.options.nativeCanopies?{triangleBudget:6500000,midCapacity:300,preserveCrowns:true}:{}) });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
       { nearDistance: 26, midDistance: this.options.canopyContinuity ? 210 : 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000,viewAware:this.options.canopyContinuity===true });
     this.group.userData.canopyContinuity = this.options.canopyContinuity === true;
@@ -342,6 +355,7 @@ export class AssetWorld {
     this.pineField.update(position,false,forward,projectionScale); this.shrubField.update(position,false,forward,projectionScale);
     this.cliffCoverField?.update(position,false,forward,projectionScale);
     this.cliffTreeField?.update(position,false,forward,projectionScale);
+    this.surveyCanopyField?.update(position,false,forward,projectionScale);
     for (const marker of this.floatingMarkers) {
       marker.object.position.y = this.waterAt(marker.object.position.x,marker.object.position.z)+0.06+Math.sin(time*1.55+marker.phase)*0.052;
       marker.object.rotation.z = Math.sin(time * 1.05 + marker.phase) * 0.04;
@@ -359,7 +373,7 @@ export class AssetWorld {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true; this.instanceMeshes.forEach((mesh) => mesh.dispose());
-    this.foliage.dispose(); this.pineField.dispose(); this.shrubField.dispose();this.cliffCoverField?.dispose();this.cliffTreeField?.dispose();
+    this.foliage.dispose(); this.pineField.dispose(); this.shrubField.dispose();this.cliffCoverField?.dispose();this.cliffTreeField?.dispose();this.surveyCanopyField?.dispose();
     this.models.resources.dispose(); this.group.clear(); this.placements.length = 0; this.placementBatches.clear();
   }
 }

@@ -23,6 +23,7 @@ export interface FoliageVariant { parts: readonly FoliagePart[]; triangles: numb
 export interface FoliageLevels { near: FoliageVariant[]; mid: FoliageVariant[]; far: FoliageVariant[]; distant?:FoliageVariant[]; }
 export interface LeafVolumeRefinement { pineTriangles?: number; shrubTriangles?: number; alphaAware?: boolean; preserveMidCoverage?: boolean; }
 const originalCanopyURL=new URL('../assets/foliage/cc0/original-lod/original-canopy-lod-1k.glb',import.meta.url).href;
+const nativeCanopyURLs=[originalCanopyURL,new URL('../assets/foliage/cc0/native-v60/canopy1/original-canopy-lod-1k.glb',import.meta.url).href,new URL('../assets/foliage/cc0/native-v60/canopy2/original-canopy-lod-1k.glb',import.meta.url).href];
 const originalAlphaURL=new URL('../assets/foliage/cc0/original-lod/original-lod-leaf-alpha-1k.png',import.meta.url).href;
 const branchAtlasURL=new URL('../assets/foliage/tomari-black-pine-v1.png',import.meta.url).href;
 
@@ -59,7 +60,7 @@ export class CoastalFoliage {
   private triangles(geometry: THREE.BufferGeometry): number { return (geometry.index?.count ?? geometry.getAttribute('position').count) / 3; }
 
   /** AssetWorld alone owns and loads the original photographic maps and 3D LODs. */
-  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement: boolean | LeafVolumeRefinement=false,originalCanopy=false,branchCanopy=false): Promise<void> {
+  async loadDetailed(fullerUnderstory=false, leafVolumeRefinement: boolean | LeafVolumeRefinement=false,originalCanopy=false,branchCanopy=false,nativeCanopies=false): Promise<void> {
     if (typeof document === 'undefined') return;
     let branchMaterial:THREE.MeshStandardMaterial|undefined;
     if(branchCanopy){
@@ -101,8 +102,8 @@ export class CoastalFoliage {
     const pineTriangles=refinementTargets.pineTriangles??720,shrubTriangles=refinementTargets.shrubTriangles??(fullerUnderstory?160:96);
     if(leafVolumeRefinement&&(!Number.isInteger(pineTriangles)||pineTriangles<1||pineTriangles>2880||!Number.isInteger(shrubTriangles)||shrubTriangles<1||shrubTriangles>640))throw new Error('Leaf refinement targets must be integer pine 1..2880 and shrub 1..640');
     for (const source of sourceAssets) {
-      const restored=originalCanopy&&source.kind==='pine'&&source.variant===0;
-      const gltf = await new GLTFLoader().loadAsync(restored?originalCanopyURL:source.url);
+      const restored=source.kind==='pine'&&(nativeCanopies||(originalCanopy&&source.variant===0));
+      const gltf = await new GLTFLoader().loadAsync(restored?nativeCanopyURLs[source.variant]:source.url);
       if (this.disposed) {
         const abandoned = new ModelResources();
         gltf.scene.traverse(child => { if (child instanceof THREE.Mesh) {
@@ -112,7 +113,7 @@ export class CoastalFoliage {
           }
         } }); abandoned.dispose(); return;
       }
-      const nativeAlpha = source.kind === 'pine' ? await new THREE.TextureLoader().loadAsync(restored?originalAlphaURL:canopyAlpha[source.variant]) : null;
+      const nativeAlpha = source.kind === 'pine' ? await new THREE.TextureLoader().loadAsync(restored&&source.variant===0?originalAlphaURL:canopyAlpha[source.variant]) : null;
       if (this.disposed) {
         nativeAlpha?.dispose(); const abandoned = new ModelResources();
         gltf.scene.traverse(child => { if (child instanceof THREE.Mesh) {
@@ -210,10 +211,10 @@ export class CoastalFoliage {
         (['near','mid','far'] as const).forEach((level,index)=>{variants[level][i]=branchLevels[index];});
       }
       for (const level of ['near', 'mid', 'far'] as const) variants[level].forEach((variant, index) => { levels[level][source.variant + index] = variant; });
-      if(source.kind==='pine'&&originalCanopy)distantVariants[source.variant]=restored?variants.distant[0]:variants.far[0];
+      if(source.kind==='pine'&&(originalCanopy||nativeCanopies))distantVariants[source.variant]=restored?variants.distant[0]:variants.far[0];
       if (this.disposed) return;
     }
-    if(originalCanopy)this.pineLevels.distant=distantVariants;
+    if(originalCanopy||nativeCanopies)this.pineLevels.distant=distantVariants;
   }
 
   dispose(): void { this.disposed = true; }

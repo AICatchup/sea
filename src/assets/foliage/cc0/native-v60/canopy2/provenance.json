@@ -1,0 +1,1085 @@
+{
+  "glbVerification": {
+    "header": true,
+    "accessorCardinality": true,
+    "finiteAttributes": true,
+    "indexBounds": true,
+    "normalsMaximumDeviation": 4.949031884304844e-8,
+    "groundAnchorY": 0,
+    "geometryBytes": 15219808,
+    "embeddedTextureImages": 9,
+    "uniqueTextures": 9,
+    "materials": 3,
+    "meshPrimitives": 12,
+    "imageChecks": [
+      {
+        "image": 0,
+        "bytes": 1051809,
+        "sha256": "c8d37a704416decd72b43b78b13ef23ffbb9f0df1db6686289784af02aff7db6"
+      },
+      {
+        "image": 1,
+        "bytes": 757828,
+        "sha256": "e7fc1f1e82cd2fb3deee5fb3ca821e8f54b3a6e5ba414a31b87692fbfc12464a"
+      },
+      {
+        "image": 2,
+        "bytes": 611708,
+        "sha256": "58e95c08ab80cf9bacdb5e1b7a89c842cdbaca68110d3d675e0e26cf835fa2fa"
+      },
+      {
+        "image": 3,
+        "bytes": 379443,
+        "sha256": "07ba461c0c95da4e49a42981766bdb6191d4c3c4d815796c082266dcc3cecdb8"
+      },
+      {
+        "image": 4,
+        "bytes": 191886,
+        "sha256": "f56d762a1507754752abf164cc12acbc1e87ce87fa609ac44b98a1b0037c89d8"
+      },
+      {
+        "image": 5,
+        "bytes": 489476,
+        "sha256": "90da3a072dbcb052715b1313b9dbc69a4aa8a09a31a4b3868411a2bb51d72037"
+      },
+      {
+        "image": 6,
+        "bytes": 819101,
+        "sha256": "2d67393ba76a0f49cf965fa0c99d8c16268e71e87b1203d35539bfdb971a514e"
+      },
+      {
+        "image": 7,
+        "bytes": 528304,
+        "sha256": "bee5ec22196e9e31ad0c95a5a9b4636571cc0124d5bb27a92f1e307d289cc60d"
+      },
+      {
+        "image": 8,
+        "bytes": 484806,
+        "sha256": "9e3f82263247ce4f619692cea4c4f6fe9936ff465a86623481849062642c7d05"
+      }
+    ]
+  },
+  "validation": [
+    {
+      "resolution": 128,
+      "offset": 0,
+      "levels": [
+        {
+          "level": "near",
+          "directions": [
+            {
+              "azimuth": 0,
+              "elevation": 18,
+              "sourcePixels": 991,
+              "outputPixels": 955,
+              "retention": 0.9394550958627649,
+              "iou": 0.9172413793103448
+            },
+            {
+              "azimuth": 60,
+              "elevation": 18,
+              "sourcePixels": 959,
+              "outputPixels": 914,
+              "retention": 0.9384775808133472,
+              "iou": 0.9249743062692704
+            },
+            {
+              "azimuth": 120,
+              "elevation": 18,
+              "sourcePixels": 911,
+              "outputPixels": 872,
+              "retention": 0.9385290889132821,
+              "iou": 0.9213362068965517
+            },
+            {
+              "azimuth": 180,
+              "elevation": 18,
+              "sourcePixels": 910,
+              "outputPixels": 874,
+              "retention": 0.9384615384615385,
+              "iou": 0.9182795698924732
+            },
+            {
+              "azimuth": 240,
+              "elevation": 18,
+              "sourcePixels": 944,
+              "outputPixels": 924,
+              "retention": 0.951271186440678,
+              "iou": 0.9257731958762887
+            },
+            {
+              "azimuth": 300,
+              "elevation": 18,
+              "sourcePixels": 1061,
+              "outputPixels": 1009,
+              "retention": 0.9255419415645617,
+              "iou": 0.9025735294117647
+            }
+          ]
+        },
+        {
+          "level": "mid",
+          "directions": [
+            {
+              "azimuth": 0,
+              "elevation": 18,
+              "sourcePixels": 991,
+              "outputPixels": 971,
+              "retention": 0.7023208879919274,
+              "iou": 0.5497630331753555
+            },
+            {
+              "azimuth": 60,
+              "elevation": 18,
+              "sourcePixels": 959,
+              "outputPixels": 874,
+              "retention": 0.6777893639207507,
+              "iou": 0.5494505494505495
+            },
+            {
+              "azimuth": 120,
+              "elevation": 18,
+              "sourcePixels": 911,
+              "outputPixels": 825,
+              "retention": 0.677277716794731,
+              "iou": 0.5513851653261841
+            },
+            {
+              "azimuth": 180,
+              "elevation": 18,
+              "sourcePixels": 910,
+              "outputPixels": 903,
+              "retention": 0.7373626373626374,
+              "iou": 0.5875656742556917
+            },
+            {
+              "azimuth": 240,
+              "elevation": 18,
+              "sourcePixels": 944,
+              "outputPixels": 877,
+              "retention": 0.7002118644067796,
+              "iou": 0.5698275862068966
+            },
+            {
+              "azimuth": 300,
+              "elevation": 18,
+              "sourcePixels": 1061,
+              "outputPixels": 947,
+              "retention": 0.6229971724787936,
+              "iou": 0.49072011878247956
+            }
+          ]
+        },
+        {
+          "level": "far",
+          "directions": [
+            {
+              "azimuth": 0,
+              "elevation": 18,
+              "sourcePixels": 991,
+              "outputPixels": 943,
+              "retention": 0.6589303733602422,
+              "iou": 0.5097580015612803
+            },
+            {
+              "azimuth": 60,
+              "elevation": 18,
+              "sourcePixels": 959,
+              "outputPixels": 846,
+              "retention": 0.643378519290928,
+              "iou": 0.5193602693602694
+            },
+            {
+              "azimuth": 120,
+              "elevation": 18,
+              "sourcePixels": 911,
+              "outputPixels": 799,
+              "retention": 0.6443468715697036,
+              "iou": 0.5227070347284061
+            },
+            {
+              "azimuth": 180,
+              "elevation": 18,
+              "sourcePixels": 910,
+              "outputPixels": 819,
+              "retention": 0.6516483516483517,
+              "iou": 0.5220070422535211
+            },
+            {
+              "azimuth": 240,
+              "elevation": 18,
+              "sourcePixels": 944,
+              "outputPixels": 821,
+              "retention": 0.6366525423728814,
+              "iou": 0.5163230240549829
+            },
+            {
+              "azimuth": 300,
+              "elevation": 18,
+              "sourcePixels": 1061,
+              "outputPixels": 892,
+              "retention": 0.5711592836946278,
+              "iou": 0.44988864142538976
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resolution": 64,
+      "offset": 30,
+      "levels": [
+        {
+          "level": "near",
+          "directions": [
+            {
+              "azimuth": 30,
+              "elevation": 18,
+              "sourcePixels": 252,
+              "outputPixels": 246,
+              "retention": 0.9563492063492064,
+              "iou": 0.9377431906614786
+            },
+            {
+              "azimuth": 90,
+              "elevation": 18,
+              "sourcePixels": 245,
+              "outputPixels": 234,
+              "retention": 0.9428571428571428,
+              "iou": 0.9314516129032258
+            },
+            {
+              "azimuth": 150,
+              "elevation": 18,
+              "sourcePixels": 234,
+              "outputPixels": 227,
+              "retention": 0.9615384615384616,
+              "iou": 0.9533898305084746
+            },
+            {
+              "azimuth": 210,
+              "elevation": 18,
+              "sourcePixels": 247,
+              "outputPixels": 235,
+              "retention": 0.9352226720647774,
+              "iou": 0.9203187250996016
+            },
+            {
+              "azimuth": 270,
+              "elevation": 18,
+              "sourcePixels": 230,
+              "outputPixels": 223,
+              "retention": 0.9347826086956522,
+              "iou": 0.9033613445378151
+            },
+            {
+              "azimuth": 330,
+              "elevation": 18,
+              "sourcePixels": 263,
+              "outputPixels": 250,
+              "retention": 0.9315589353612167,
+              "iou": 0.914179104477612
+            }
+          ]
+        },
+        {
+          "level": "mid",
+          "directions": [
+            {
+              "azimuth": 30,
+              "elevation": 18,
+              "sourcePixels": 252,
+              "outputPixels": 225,
+              "retention": 0.6944444444444444,
+              "iou": 0.5794701986754967
+            },
+            {
+              "azimuth": 90,
+              "elevation": 18,
+              "sourcePixels": 245,
+              "outputPixels": 235,
+              "retention": 0.7387755102040816,
+              "iou": 0.6053511705685619
+            },
+            {
+              "azimuth": 150,
+              "elevation": 18,
+              "sourcePixels": 234,
+              "outputPixels": 228,
+              "retention": 0.7692307692307693,
+              "iou": 0.6382978723404256
+            },
+            {
+              "azimuth": 210,
+              "elevation": 18,
+              "sourcePixels": 247,
+              "outputPixels": 222,
+              "retention": 0.7044534412955465,
+              "iou": 0.5898305084745763
+            },
+            {
+              "azimuth": 270,
+              "elevation": 18,
+              "sourcePixels": 230,
+              "outputPixels": 219,
+              "retention": 0.691304347826087,
+              "iou": 0.5482758620689655
+            },
+            {
+              "azimuth": 330,
+              "elevation": 18,
+              "sourcePixels": 263,
+              "outputPixels": 231,
+              "retention": 0.6349809885931559,
+              "iou": 0.5107033639143731
+            }
+          ]
+        },
+        {
+          "level": "far",
+          "directions": [
+            {
+              "azimuth": 30,
+              "elevation": 18,
+              "sourcePixels": 252,
+              "outputPixels": 221,
+              "retention": 0.6349206349206349,
+              "iou": 0.5111821086261981
+            },
+            {
+              "azimuth": 90,
+              "elevation": 18,
+              "sourcePixels": 245,
+              "outputPixels": 215,
+              "retention": 0.6448979591836734,
+              "iou": 0.5231788079470199
+            },
+            {
+              "azimuth": 150,
+              "elevation": 18,
+              "sourcePixels": 234,
+              "outputPixels": 210,
+              "retention": 0.6666666666666666,
+              "iou": 0.5416666666666666
+            },
+            {
+              "azimuth": 210,
+              "elevation": 18,
+              "sourcePixels": 247,
+              "outputPixels": 212,
+              "retention": 0.6356275303643725,
+              "iou": 0.5198675496688742
+            },
+            {
+              "azimuth": 270,
+              "elevation": 18,
+              "sourcePixels": 230,
+              "outputPixels": 229,
+              "retention": 0.7130434782608696,
+              "iou": 0.5559322033898305
+            },
+            {
+              "azimuth": 330,
+              "elevation": 18,
+              "sourcePixels": 263,
+              "outputPixels": 223,
+              "retention": 0.596958174904943,
+              "iou": 0.47720364741641336
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resolution": 32,
+      "offset": 30,
+      "levels": [
+        {
+          "level": "near",
+          "directions": [
+            {
+              "azimuth": 30,
+              "elevation": 18,
+              "sourcePixels": 56,
+              "outputPixels": 56,
+              "retention": 0.9821428571428571,
+              "iou": 0.9649122807017544
+            },
+            {
+              "azimuth": 90,
+              "elevation": 18,
+              "sourcePixels": 60,
+              "outputPixels": 60,
+              "retention": 0.9833333333333333,
+              "iou": 0.9672131147540983
+            },
+            {
+              "azimuth": 150,
+              "elevation": 18,
+              "sourcePixels": 56,
+              "outputPixels": 55,
+              "retention": 0.9642857142857143,
+              "iou": 0.9473684210526315
+            },
+            {
+              "azimuth": 210,
+              "elevation": 18,
+              "sourcePixels": 58,
+              "outputPixels": 57,
+              "retention": 0.9310344827586207,
+              "iou": 0.8852459016393442
+            },
+            {
+              "azimuth": 270,
+              "elevation": 18,
+              "sourcePixels": 58,
+              "outputPixels": 59,
+              "retention": 0.9655172413793104,
+              "iou": 0.9180327868852459
+            },
+            {
+              "azimuth": 330,
+              "elevation": 18,
+              "sourcePixels": 55,
+              "outputPixels": 56,
+              "retention": 0.9636363636363636,
+              "iou": 0.9137931034482759
+            }
+          ]
+        },
+        {
+          "level": "mid",
+          "directions": [
+            {
+              "azimuth": 30,
+              "elevation": 18,
+              "sourcePixels": 56,
+              "outputPixels": 58,
+              "retention": 0.6964285714285714,
+              "iou": 0.52
+            },
+            {
+              "azimuth": 90,
+              "elevation": 18,
+              "sourcePixels": 60,
+              "outputPixels": 59,
+              "retention": 0.6166666666666667,
+              "iou": 0.45121951219512196
+            },
+            {
+              "azimuth": 150,
+              "elevation": 18,
+              "sourcePixels": 56,
+              "outputPixels": 50,
+              "retention": 0.7321428571428571,
+              "iou": 0.6307692307692307
+            },
+            {
+              "azimuth": 210,
+              "elevation": 18,
+              "sourcePixels": 58,
+              "outputPixels": 61,
+              "retention": 0.7758620689655172,
+              "iou": 0.6081081081081081
+            },
+            {
+              "azimuth": 270,
+              "elevation": 18,
+              "sourcePixels": 58,
+              "outputPixels": 48,
+              "retention": 0.603448275862069,
+              "iou": 0.49295774647887325
+            },
+            {
+              "azimuth": 330,
+              "elevation": 18,
+              "sourcePixels": 55,
+              "outputPixels": 64,
+              "retention": 0.7454545454545455,
+              "iou": 0.5256410256410257
+            }
+          ]
+        },
+        {
+          "level": "far",
+          "directions": [
+            {
+              "azimuth": 30,
+              "elevation": 18,
+              "sourcePixels": 56,
+              "outputPixels": 56,
+              "retention": 0.625,
+              "iou": 0.45454545454545453
+            },
+            {
+              "azimuth": 90,
+              "elevation": 18,
+              "sourcePixels": 60,
+              "outputPixels": 50,
+              "retention": 0.6,
+              "iou": 0.4864864864864865
+            },
+            {
+              "azimuth": 150,
+              "elevation": 18,
+              "sourcePixels": 56,
+              "outputPixels": 45,
+              "retention": 0.6785714285714286,
+              "iou": 0.6031746031746031
+            },
+            {
+              "azimuth": 210,
+              "elevation": 18,
+              "sourcePixels": 58,
+              "outputPixels": 53,
+              "retention": 0.6896551724137931,
+              "iou": 0.5633802816901409
+            },
+            {
+              "azimuth": 270,
+              "elevation": 18,
+              "sourcePixels": 58,
+              "outputPixels": 59,
+              "retention": 0.7241379310344828,
+              "iou": 0.56
+            },
+            {
+              "azimuth": 330,
+              "elevation": 18,
+              "sourcePixels": 55,
+              "outputPixels": 53,
+              "retention": 0.6,
+              "iou": 0.44
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resolution": 16,
+      "offset": 30,
+      "levels": [
+        {
+          "level": "distant",
+          "directions": [
+            {
+              "azimuth": 30,
+              "elevation": 18,
+              "sourcePixels": 13,
+              "outputPixels": 11,
+              "retention": 0.46153846153846156,
+              "iou": 0.3333333333333333
+            },
+            {
+              "azimuth": 90,
+              "elevation": 18,
+              "sourcePixels": 14,
+              "outputPixels": 4,
+              "retention": 0.21428571428571427,
+              "iou": 0.2
+            },
+            {
+              "azimuth": 150,
+              "elevation": 18,
+              "sourcePixels": 13,
+              "outputPixels": 13,
+              "retention": 0.8461538461538461,
+              "iou": 0.7333333333333333
+            },
+            {
+              "azimuth": 210,
+              "elevation": 18,
+              "sourcePixels": 16,
+              "outputPixels": 9,
+              "retention": 0.4375,
+              "iou": 0.3888888888888889
+            },
+            {
+              "azimuth": 270,
+              "elevation": 18,
+              "sourcePixels": 12,
+              "outputPixels": 9,
+              "retention": 0.4166666666666667,
+              "iou": 0.3125
+            },
+            {
+              "azimuth": 330,
+              "elevation": 18,
+              "sourcePixels": 15,
+              "outputPixels": 9,
+              "retention": 0.4,
+              "iou": 0.3333333333333333
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sourceManifest": {
+    "source": "https://polyhaven.com/a/island_tree_03",
+    "license": "CC0-1.0",
+    "api": "https://api.polyhaven.com/files/island_tree_03",
+    "files": [
+      {
+        "file": "source.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/island_tree_03/island_tree_03_1k.gltf",
+        "bytes": 8557,
+        "sha256": "5efbe24ad6fc769db55ac771eec7a2ee7aa389c5667656f279d0743e455ef04a",
+        "md5": "d8cdd620bf86e2a3e5fa8acb07c0b253"
+      },
+      {
+        "file": "textures/island_tree_03_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_nor_gl_1k.jpg",
+        "bytes": 1051809,
+        "sha256": "c8d37a704416decd72b43b78b13ef23ffbb9f0df1db6686289784af02aff7db6",
+        "md5": "631d4c7f51eaf6fb54928c5bc731fb89"
+      },
+      {
+        "file": "textures/island_tree_03_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_diff_1k.jpg",
+        "bytes": 757828,
+        "sha256": "e7fc1f1e82cd2fb3deee5fb3ca821e8f54b3a6e5ba414a31b87692fbfc12464a",
+        "md5": "5c7fa31f9b4b818755f015ed1fd58519"
+      },
+      {
+        "file": "textures/island_tree_03_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_arm_1k.jpg",
+        "bytes": 611708,
+        "sha256": "58e95c08ab80cf9bacdb5e1b7a89c842cdbaca68110d3d675e0e26cf835fa2fa",
+        "md5": "4e643865b2b52a18cc66774f4c96cccb"
+      },
+      {
+        "file": "textures/island_tree_03_leaves_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_leaves_nor_gl_1k.jpg",
+        "bytes": 379443,
+        "sha256": "07ba461c0c95da4e49a42981766bdb6191d4c3c4d815796c082266dcc3cecdb8",
+        "md5": "a08ffb98b5ffb7dfa682e05a1639c642"
+      },
+      {
+        "file": "textures/island_tree_03_leaves_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_leaves_diff_1k.jpg",
+        "bytes": 191886,
+        "sha256": "f56d762a1507754752abf164cc12acbc1e87ce87fa609ac44b98a1b0037c89d8",
+        "md5": "1356cbb5a5dd1318f9f2a01eddbf03e1"
+      },
+      {
+        "file": "textures/island_tree_03_leaves_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_leaves_arm_1k.jpg",
+        "bytes": 489476,
+        "sha256": "90da3a072dbcb052715b1313b9dbc69a4aa8a09a31a4b3868411a2bb51d72037",
+        "md5": "27b06c4a53ff115ed7d51ee94e417257"
+      },
+      {
+        "file": "textures/island_tree_03_branches_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_branches_nor_gl_1k.jpg",
+        "bytes": 819101,
+        "sha256": "2d67393ba76a0f49cf965fa0c99d8c16268e71e87b1203d35539bfdb971a514e",
+        "md5": "789084affb01f4a22290a848558f5e12"
+      },
+      {
+        "file": "textures/island_tree_03_branches_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_branches_diff_1k.jpg",
+        "bytes": 528304,
+        "sha256": "bee5ec22196e9e31ad0c95a5a9b4636571cc0124d5bb27a92f1e307d289cc60d",
+        "md5": "7792907fe2b2b748c129a2384192a579"
+      },
+      {
+        "file": "textures/island_tree_03_branches_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/island_tree_03/island_tree_03_branches_arm_1k.jpg",
+        "bytes": 484806,
+        "sha256": "9e3f82263247ce4f619692cea4c4f6fe9936ff465a86623481849062642c7d05",
+        "md5": "5b6f5b3838f4a8f60fea14fa3a3fef9f"
+      },
+      {
+        "file": "island_tree_03.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/island_tree_03/island_tree_03.bin",
+        "bytes": 79562548,
+        "sha256": "ac0631f236502155307ac0320b53201a0d3bab6348699ad9edd3172322aaf08b",
+        "md5": "fc2c29ce9665baa6964ea137d1f25ec7"
+      }
+    ]
+  },
+  "alphaSource": {
+    "file": "canopy0-leaf-alpha-1k.png",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/island_tree_01/island_tree_01_leaves_alpha_1k.png",
+    "bytes": 57438,
+    "md5": "5ad9fb9a06e70c069bd3d3ba23577375",
+    "sha256": "f4341f147988dbe6b58d9ca841a8f0e4bcff25bc40d05f9877da82006d489c39",
+    "usage": "Unmodified native alpha PNG; alphaMap uses green grayscale channel"
+  },
+  "output": {
+    "file": "original-canopy-lod-1k.glb",
+    "bytes": 20548360,
+    "sha256": "e63a6bc6b988d39c66862bf6de6e5f77c10c89dd8b54bc51e0ea44c4f2af62a1",
+    "alphaSha256": "f4341f147988dbe6b58d9ca841a8f0e4bcff25bc40d05f9877da82006d489c39"
+  },
+  "recipe": {
+    "sourceHeight": 2.6150591848418117,
+    "height": 4.9,
+    "widthScale": 1.28,
+    "depthScale": 1.18,
+    "sourceLeafComponents": 58696,
+    "leafSourceTriangles": 1408704,
+    "leafTargetTrianglesPerComponent": 4,
+    "leafSimplificationMaximumError": 0.17373092472553253,
+    "leafSimplificationMeanError": 0.08099202218499653,
+    "midLeafSizeCompensation": 4.25,
+    "farLeafSizeCompensation": 7,
+    "distantLeafSizeCompensation": 12,
+    "distantSelectedComponents": 180,
+    "midSelectedComponents": 2900,
+    "farSelectedComponents": 950,
+    "projectionResolution": 64,
+    "directions": [
+      {
+        "azimuth": 0,
+        "elevation": 18
+      },
+      {
+        "azimuth": 60,
+        "elevation": 18
+      },
+      {
+        "azimuth": 120,
+        "elevation": 18
+      },
+      {
+        "azimuth": 180,
+        "elevation": 18
+      },
+      {
+        "azimuth": 240,
+        "elevation": 18
+      },
+      {
+        "azimuth": 300,
+        "elevation": 18
+      }
+    ],
+    "alphaThreshold": 0.38,
+    "discardedStrategy": "Pixel-ray set-cover falsely achieved 94% trained-view retention but only 14-15% held-out retention; rejected before integration"
+  },
+  "levels": [
+    {
+      "name": "canopy_original_near",
+      "projectionResolution": 64,
+      "triangles": [
+        994,
+        232248,
+        1696
+      ],
+      "vertices": [
+        818,
+        345469,
+        2890
+      ],
+      "bounds": {
+        "min": [
+          -1.2701194286346436,
+          0,
+          -1.7950111627578735
+        ],
+        "max": [
+          3.3827223777770996,
+          3.199934244155884,
+          2.410846471786499
+        ]
+      },
+      "coverage": [
+        {
+          "azimuth": 0,
+          "elevation": 18,
+          "sourcePixels": 263,
+          "outputPixels": 253,
+          "retention": 0.9543726235741445,
+          "iou": 0.9471698113207547
+        },
+        {
+          "azimuth": 60,
+          "elevation": 18,
+          "sourcePixels": 235,
+          "outputPixels": 229,
+          "retention": 0.948936170212766,
+          "iou": 0.9253112033195021
+        },
+        {
+          "azimuth": 120,
+          "elevation": 18,
+          "sourcePixels": 235,
+          "outputPixels": 231,
+          "retention": 0.9702127659574468,
+          "iou": 0.957983193277311
+        },
+        {
+          "azimuth": 180,
+          "elevation": 18,
+          "sourcePixels": 251,
+          "outputPixels": 250,
+          "retention": 0.9840637450199203,
+          "iou": 0.9724409448818898
+        },
+        {
+          "azimuth": 240,
+          "elevation": 18,
+          "sourcePixels": 248,
+          "outputPixels": 246,
+          "retention": 0.9637096774193549,
+          "iou": 0.9372549019607843
+        },
+        {
+          "azimuth": 300,
+          "elevation": 18,
+          "sourcePixels": 267,
+          "outputPixels": 251,
+          "retention": 0.9250936329588015,
+          "iou": 0.9114391143911439
+        }
+      ]
+    },
+    {
+      "name": "canopy_original_mid",
+      "projectionResolution": 64,
+      "triangles": [
+        238,
+        11495,
+        1108
+      ],
+      "vertices": [
+        276,
+        17088,
+        2194
+      ],
+      "bounds": {
+        "min": [
+          -1.16364324092865,
+          0,
+          -1.7890651226043701
+        ],
+        "max": [
+          3.388076066970825,
+          3.0610010623931885,
+          2.456251382827759
+        ]
+      },
+      "coverage": [
+        {
+          "azimuth": 0,
+          "elevation": 18,
+          "sourcePixels": 263,
+          "outputPixels": 248,
+          "retention": 0.7262357414448669,
+          "iou": 0.596875
+        },
+        {
+          "azimuth": 60,
+          "elevation": 18,
+          "sourcePixels": 235,
+          "outputPixels": 242,
+          "retention": 0.7063829787234043,
+          "iou": 0.5337620578778135
+        },
+        {
+          "azimuth": 120,
+          "elevation": 18,
+          "sourcePixels": 235,
+          "outputPixels": 235,
+          "retention": 0.7489361702127659,
+          "iou": 0.5986394557823129
+        },
+        {
+          "azimuth": 180,
+          "elevation": 18,
+          "sourcePixels": 251,
+          "outputPixels": 210,
+          "retention": 0.6932270916334662,
+          "iou": 0.6062717770034843
+        },
+        {
+          "azimuth": 240,
+          "elevation": 18,
+          "sourcePixels": 248,
+          "outputPixels": 217,
+          "retention": 0.6451612903225806,
+          "iou": 0.5245901639344263
+        },
+        {
+          "azimuth": 300,
+          "elevation": 18,
+          "sourcePixels": 267,
+          "outputPixels": 256,
+          "retention": 0.6704119850187266,
+          "iou": 0.5203488372093024
+        }
+      ]
+    },
+    {
+      "name": "canopy_original_far",
+      "projectionResolution": 32,
+      "triangles": [
+        125,
+        3766,
+        1104
+      ],
+      "vertices": [
+        169,
+        5608,
+        2186
+      ],
+      "bounds": {
+        "min": [
+          -1.16364324092865,
+          0,
+          -1.8047024011611938
+        ],
+        "max": [
+          3.435054063796997,
+          3.0610010623931885,
+          2.423510789871216
+        ]
+      },
+      "coverage": [
+        {
+          "azimuth": 0,
+          "elevation": 18,
+          "sourcePixels": 54,
+          "outputPixels": 64,
+          "retention": 0.7407407407407407,
+          "iou": 0.5128205128205128
+        },
+        {
+          "azimuth": 60,
+          "elevation": 18,
+          "sourcePixels": 56,
+          "outputPixels": 45,
+          "retention": 0.625,
+          "iou": 0.5303030303030303
+        },
+        {
+          "azimuth": 120,
+          "elevation": 18,
+          "sourcePixels": 61,
+          "outputPixels": 49,
+          "retention": 0.6557377049180327,
+          "iou": 0.5714285714285714
+        },
+        {
+          "azimuth": 180,
+          "elevation": 18,
+          "sourcePixels": 60,
+          "outputPixels": 53,
+          "retention": 0.7,
+          "iou": 0.5915492957746479
+        },
+        {
+          "azimuth": 240,
+          "elevation": 18,
+          "sourcePixels": 57,
+          "outputPixels": 58,
+          "retention": 0.7543859649122807,
+          "iou": 0.5972222222222222
+        },
+        {
+          "azimuth": 300,
+          "elevation": 18,
+          "sourcePixels": 63,
+          "outputPixels": 58,
+          "retention": 0.6507936507936508,
+          "iou": 0.5125
+        }
+      ]
+    },
+    {
+      "name": "canopy_original_distant",
+      "projectionResolution": 16,
+      "triangles": [
+        111,
+        715,
+        1104
+      ],
+      "vertices": [
+        156,
+        1065,
+        2186
+      ],
+      "bounds": {
+        "min": [
+          -1.1008011102676392,
+          0,
+          -1.6311496496200562
+        ],
+        "max": [
+          3.330078125,
+          3.0610010623931885,
+          2.310880184173584
+        ]
+      },
+      "coverage": [
+        {
+          "azimuth": 30,
+          "elevation": 18,
+          "sourcePixels": 13,
+          "outputPixels": 11,
+          "retention": 0.46153846153846156,
+          "iou": 0.3333333333333333
+        },
+        {
+          "azimuth": 90,
+          "elevation": 18,
+          "sourcePixels": 14,
+          "outputPixels": 4,
+          "retention": 0.21428571428571427,
+          "iou": 0.2
+        },
+        {
+          "azimuth": 150,
+          "elevation": 18,
+          "sourcePixels": 13,
+          "outputPixels": 13,
+          "retention": 0.8461538461538461,
+          "iou": 0.7333333333333333
+        },
+        {
+          "azimuth": 210,
+          "elevation": 18,
+          "sourcePixels": 16,
+          "outputPixels": 9,
+          "retention": 0.4375,
+          "iou": 0.3888888888888889
+        },
+        {
+          "azimuth": 270,
+          "elevation": 18,
+          "sourcePixels": 12,
+          "outputPixels": 9,
+          "retention": 0.4166666666666667,
+          "iou": 0.3125
+        },
+        {
+          "azimuth": 330,
+          "elevation": 18,
+          "sourcePixels": 15,
+          "outputPixels": 9,
+          "retention": 0.4,
+          "iou": 0.3333333333333333
+        }
+      ]
+    }
+  ],
+  "budget": {
+    "triangleCeiling": 3600000,
+    "nearPoolCapacityMaximum": 24,
+    "nearActualRecommendedMaximum": 5,
+    "midMaximum": 180,
+    "exampleTriangles": 2781256,
+    "drawCallsPerTree": 3
+  },
+  "limits": [
+    "CPU orthographic binary alpha silhouette only; lighting, depth-density and native GPU image acceptance unverified",
+    "Mid/far preserve sampled whole components with enlarged physical leaf size; the scale compensation is an explicit LOD tradeoff, not botanical truth",
+    "Full original near prototype remains local verified source.gltf + source bin; runtime GLB includes component-preserving near"
+  ],
+  "build": {
+    "seconds": 13.024403,
+    "peakRSSBytes": 1109635072
+  }
+}

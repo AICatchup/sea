@@ -5,7 +5,7 @@ import { makeInstances, updateInstanceBounds } from './models/procedural.ts';
 type LodLevel='near'|'mid'|'far'|'distant';
 interface Plant { matrix: THREE.Matrix4; position: THREE.Vector3; variant: number; level: LodLevel; height: number; visible?:boolean; pixels?:number; }
 interface Batch { mesh: THREE.InstancedMesh; variant: number; triangles: number; }
-export interface FoliageLodSettings { nearDistance: number; midDistance: number; nearCapacity: number; midCapacity: number; triangleBudget?: number; viewAware?:boolean; nearPixels?:number;midPixels?:number;farPixels?:number; }
+export interface FoliageLodSettings { nearDistance: number; midDistance: number; nearCapacity: number; midCapacity: number; triangleBudget?: number; viewAware?:boolean; nearPixels?:number;midPixels?:number;farPixels?:number; preserveCrowns?:boolean; }
 export interface TrunkProxy { readonly x: number; readonly y: number; readonly z: number; readonly radius: number; readonly height: number; }
 
 /** Exclusive LOD partitions reuse the original placement matrices. No duplicated coverage. */
@@ -68,7 +68,9 @@ export class FoliageLodField {
   /** Read-only world coordinates; render LOD selection never moves these physical trunks. */
   getTrunkProxies(): readonly TrunkProxy[] {
     if (this.trunkProxies) return this.trunkProxies;
-    const bases = this.levels.far.map(variant => {
+    // Physical roots come from the full near source, just like authored plant
+    // placement. A far reduction can move the base centroid by tens of cm.
+    const bases = this.levels.near.map(variant => {
       const bark = variant.parts.find(part => part.material.userData.foliageRole === 'trunk' || part.material.name.includes('bark'))?.geometry;
       if (!bark) return { center: new THREE.Vector3(), radius: .18, height: 6.3 };
       bark.computeBoundingBox(); const minY = bark.boundingBox!.min.y, points = bark.getAttribute('position');
@@ -140,18 +142,29 @@ export class FoliageLodField {
     let budgetUsed = this.plants.reduce((sum, p) => sum + (p.visible===false?0:this.levels[baseline]![p.variant].triangles), 0);
     const budget = this.settings.triangleBudget ?? Infinity;
     const selectedNear: typeof near = [], selectedMid: typeof near = [],selectedFar:typeof near=[];
-    const select = (list: typeof near, level: 'near' | 'mid'|'far', capacity: number, output: typeof near) => {
+    const select = (list: typeof near, level: 'near' | 'mid'|'far', capacity: number, output: typeof near,limit=budget) => {
       for (const entry of list) {
         if (output.length >= capacity) break;
-        const extra = this.levels[level][entry.plant.variant].triangles - this.levels[baseline]![entry.plant.variant].triangles;
-        if (budgetUsed + extra > budget) continue;
+        const extra = this.levels[level][entry.plant.variant].triangles - this.levels[entry.plant.level]![entry.plant.variant].triangles;
+        if (budgetUsed + extra > limit) continue;
         budgetUsed += extra; entry.plant.level = level; output.push(entry);
       }
     };
+    if(this.settings.preserveCrowns&&this.levels.distant){
+      // Six important close crowns retain a near reserve. The rest of the
+      // budget first prevents hundreds of visible crowns falling to tiny LOD.
+      const reserve=Math.min(budget*.25,near.slice(0,Math.min(6,this.settings.nearCapacity)).reduce((sum,e)=>sum+Math.max(0,this.levels.near[e.plant.variant].triangles-this.levels.far[e.plant.variant].triangles),0));
+      select([...near,...mid,...far].sort((a,b)=>b.score-a.score),'far',this.plants.length,selectedFar,budget-reserve);
+      select([...near,...mid].sort((a,b)=>b.score-a.score),'mid',this.settings.midCapacity,selectedMid,budget-reserve);
+      select(near,'near',this.settings.nearCapacity,selectedNear);
+      selectedMid.splice(0,selectedMid.length,...selectedMid.filter(e=>e.plant.level==='mid'));
+      selectedFar.splice(0,selectedFar.length,...selectedFar.filter(e=>e.plant.level==='far'));
+    }else{
     select(near, 'near', this.settings.nearCapacity, selectedNear);
     const middleCandidates = [...near.filter(e => e.plant.level === baseline), ...mid].sort((a, b) => b.score - a.score);
     select(middleCandidates, 'mid', this.settings.midCapacity, selectedMid);
     if(this.levels.distant)select([...middleCandidates.filter(e=>e.plant.level===baseline),...far].sort((a,b)=>b.score-a.score),'far',this.plants.length,selectedFar);
+    }
     let draws = 0, triangles = 0;
     const rendered=this.plants.filter(p=>p.visible!==false).length;
     const counts = { near: selectedNear.length, mid: selectedMid.length, far:this.levels.distant?selectedFar.length:rendered-selectedNear.length-selectedMid.length,distant:this.levels.distant?rendered-selectedNear.length-selectedMid.length-selectedFar.length:0 };

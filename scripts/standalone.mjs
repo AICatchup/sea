@@ -38,6 +38,8 @@ html = html.replace(/href="\.\/favicon\.svg"/, `href="data:image/svg+xml,${encod
 const licenseFiles = ['node_modules/three/LICENSE', 'public/fonts/NotoSansJP-OFL.txt', 'public/fonts/Outfit-OFL.txt', 'src/assets/marine/LICENSE.txt', 'src/assets/sand/README.md', 'src/assets/niijima/README.md', 'src/assets/niijima/rock-face-03/README.md', 'src/assets/coast/README.md', 'src/assets/foliage/cc0/README.md', 'src/assets/foliage/cc0/canopy/LICENSE.txt', 'src/assets/foliage/cc0/canopy/README.md', 'THIRD_PARTY_NOTICES.md'];
 const licenses = await Promise.all(licenseFiles.map(async file => `${file}\n${await readFile(resolve(root, file), 'utf8')}`));
 licenses.push(await readFile(resolve(root,'src/assets/boat/terlenka/README.md'),'utf8'));
+for(const variant of [1,2])licenses.push(await readFile(resolve(root,`src/assets/foliage/cc0/native-v60/canopy${variant}/README.md`),'utf8'));
+licenses.push(await readFile(resolve(root,'src/assets/foliage/cc0/original-lod/README.md'),'utf8'));
 licenses.push(await readFile(resolve(root,'src/assets/audio/README.md'),'utf8'));
 licenses.push('HDR sky: CC0-1.0, Poly Haven / Greg Zaal and Jarod Guest. https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky https://polyhaven.com/license');
 html = html.replace('</body>', () => `<script type="text/plain" id="third-party-licenses">${licenses.join('\n\n').replace(/<\/script/gi, '<\\/script')}</script></body>`);

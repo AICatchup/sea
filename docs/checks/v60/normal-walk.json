@@ -1,0 +1,119 @@
+{
+  "adventure": {
+    "avatarAction": "idle",
+    "boarding": 0,
+    "boat": [
+      -118.5950068345507,
+      0.02695992384251203,
+      -90.9578943776148
+    ],
+    "boatYaw": -0.6,
+    "depth": 0,
+    "grounded": true,
+    "interaction": "",
+    "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+    "mode": "walk",
+    "oxygen": 1,
+    "placed": 0,
+    "remaining": 0,
+    "speed": 0,
+    "stamina": 1,
+    "voyage": null
+  },
+  "camera": {
+    "height": 1.8602590980208995,
+    "pitch": -0.035,
+    "x": -43.33398592741151,
+    "yaw": -0.6,
+    "z": 16.279940272079408
+  },
+  "errors": {
+    "added": 3241,
+    "colliders": 3241,
+    "instances": 120,
+    "meshes": 23,
+    "removed": 0,
+    "replaced": 0,
+    "syncMs": 5035.5,
+    "triangles": 3492816,
+    "trunks": 3098,
+    "unchanged": 0
+  },
+  "foliage": {
+    "byVariant": [
+      {
+        "distant": 281,
+        "far": 0,
+        "mid": 16,
+        "near": 1
+      },
+      {
+        "distant": 275,
+        "far": 0,
+        "mid": 11,
+        "near": 3
+      },
+      {
+        "distant": 310,
+        "far": 0,
+        "mid": 9,
+        "near": 4
+      }
+    ],
+    "culled": 2188,
+    "draws": 30,
+    "exclusiveLod": true,
+    "instances": {
+      "distant": 866,
+      "far": 0,
+      "mid": 36,
+      "near": 8
+    },
+    "levelTriangles": {
+      "distant": [
+        2228,
+        1503,
+        1930
+      ],
+      "far": [
+        5477,
+        4766,
+        5163
+      ],
+      "mid": [
+        13682,
+        12991,
+        13513
+      ],
+      "near": [
+        177354,
+        120486,
+        234938
+      ]
+    },
+    "nearTriangles": 1478564,
+    "originalPlacements": 3098,
+    "oversized": {
+      "distant": 865,
+      "far": 0,
+      "mid": 0
+    },
+    "placements": 3098,
+    "rendered": 910,
+    "selection": "actual transformed crown angular span within distance / triangle caps",
+    "source": "Native CC0 wood and leaves retained, with authored supplementary distant branch patches",
+    "status": "ready",
+    "thresholds": {
+      "midCapacity": 180,
+      "midDistance": 210,
+      "nearCapacity": 24,
+      "nearDistance": 35,
+      "triangleBudget": 3600000,
+      "viewAware": true
+    },
+    "triangles": 3599687,
+    "viewAware": true
+  },
+  "fps": 56.8,
+  "frames": 2561
+}

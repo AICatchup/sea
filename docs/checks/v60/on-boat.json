@@ -1,0 +1,35 @@
+{
+  "adventure": {
+    "avatarAction": "helm",
+    "boarding": 0,
+    "boat": [
+      -118.5950068345507,
+      0.10084446521737926,
+      -90.9578943776148
+    ],
+    "boatYaw": -0.6,
+    "depth": 0,
+    "grounded": true,
+    "interaction": "船から降りる",
+    "message": "乗船しました。W/Sで加減速、A/Dで舵取り。地図から島へ出航できます。",
+    "mode": "boat",
+    "oxygen": 1,
+    "placed": 0,
+    "remaining": 0,
+    "speed": 0,
+    "stamina": 1,
+    "voyage": null
+  },
+  "camera": {
+    "height": 1.5459131885150652,
+    "pitch": -0.035,
+    "x": -117.76030265373652,
+    "yaw": -0.6,
+    "z": -90.6035706337334
+  },
+  "cloth": {
+    "source": "Poly Haven CC0 terlenka; candidate fabric, exact vessel material unverified",
+    "status": "loaded"
+  },
+  "fps": 56.4
+}
