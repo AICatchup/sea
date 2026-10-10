@@ -5,6 +5,8 @@ interface PoseInput {
   /** The first-person eye the body and gameplay already use. */
   eye:THREE.Vector3;yaw:number;pitch:number;mode:'walk'|'swim'|'dive'|'boat';
   heightAt:(x:number,z:number)=>number;waterAt:(x:number,z:number)=>number;
+  /** Optional solids (scanned cliffs, rocks, boat): first-hit fraction along pivot→lens. */
+  blocked?:(from:THREE.Vector3,to:THREE.Vector3)=>number;
 }
 /** Over-the-shoulder follow camera. Distances in metres; the boat uses a wider frame. */
 export const THIRD_PERSON={walk:{distance:3.3,lift:.38,shoulder:.42},water:{distance:2.9,lift:.3,shoulder:.32},boat:{distance:8.5,lift:1.6,shoulder:0},
@@ -28,8 +30,10 @@ export function thirdPersonPose(input:PoseInput,position:THREE.Vector3,aim:THREE
   const pivot=eye.clone().addScaledVector(right,frame.shoulder).add(new THREE.Vector3(0,frame.lift,0));
   const wanted=Math.min(frame.distance,maxDistance);
   position.copy(pivot).addScaledVector(forward,-wanted);
-  const fraction=unobstructedFraction(pivot,position,input.heightAt,THIRD_PERSON.ground,THIRD_PERSON.samples);
-  const distance=wanted*fraction;
+  const terrain=unobstructedFraction(pivot,position,input.heightAt,THIRD_PERSON.ground,THIRD_PERSON.samples);
+  // Stop short of a solid by a lens clearance so the near plane cannot cut into it.
+  const solid=input.blocked?input.blocked(pivot,position):1;
+  const distance=Math.max(0,Math.min(wanted*terrain,solid<1?wanted*solid-THIRD_PERSON.ground:Infinity));
   position.copy(pivot).addScaledVector(forward,-distance);
   position.y=Math.max(position.y,input.heightAt(position.x,position.z)+THIRD_PERSON.ground);
   // A lens straddling the waterline shows a split frame; stay on the player's side of it.
@@ -38,6 +42,21 @@ export function thirdPersonPose(input:PoseInput,position:THREE.Vector3,aim:THREE
   else position.y=Math.max(position.y,water+THIRD_PERSON.surface);
   aim.copy(eye).addScaledVector(forward,8).addScaledVector(right,frame.shoulder);
   return distance;
+}
+
+/** Fraction along from→to where the segment enters an oriented box (1 when it never does).
+ * `inverse` maps world into the box's local frame. Used for the vessel, which is not a
+ * registered world solid. */
+export function segmentBoxFraction(from:THREE.Vector3,to:THREE.Vector3,box:THREE.Box3,inverse:THREE.Matrix4):number{
+  const a=from.clone().applyMatrix4(inverse),b=to.clone().applyMatrix4(inverse),d=b.sub(a);
+  let t0=0,t1=1;
+  for(const axis of ['x','y','z'] as const){
+    if(Math.abs(d[axis])<1e-12){if(a[axis]<box.min[axis]||a[axis]>box.max[axis])return 1;continue;}
+    let n=(box.min[axis]-a[axis])/d[axis],f=(box.max[axis]-a[axis])/d[axis];if(n>f)[n,f]=[f,n];
+    t0=Math.max(t0,n);t1=Math.min(t1,f);if(t0>t1)return 1;
+  }
+  // Starting inside (on deck) means the lens may leave through the far side freely.
+  return t0===0?1:t0;
 }
 
 /** Smooths distance: pulls in at once when blocked, eases back out when clear. */

@@ -328,6 +328,19 @@ export class WorldCollision {
     }
     return {position:plain(point(from).addScaledVector(delta,fraction)),fraction,blocked:fraction<1,normal:plain(normal),colliderId};
   }
+  /** First hit along a thin segment as a 0..1 fraction (1 when clear). Double-sided,
+   * for camera lines of sight; it does not move or resolve any body. */
+  segmentFraction(from: BodyPoint, to: BodyPoint): number {
+    if (!valid(from) || !valid(to)) return 0;
+    const a = point(from), b = point(to), delta = b.clone().sub(a), length = delta.length();
+    if (length < 1e-9) return 1;
+    const bounds = new THREE.Box3().setFromPoints([a, b]).expandByScalar(.01), ray = new THREE.Ray(a, delta.divideScalar(length)), hit = new THREE.Vector3();
+    let best = 1;
+    for (const entry of this.candidates(bounds)) for (const t of this.worldTriangles(entry, bounds)) {
+      if (ray.intersectTriangle(t.a, t.b, t.c, false, hit)) best = Math.min(best, hit.distanceTo(a) / length);
+    }
+    return best;
+  }
   bodySegmentBlocked(from: BodyPoint,to: BodyPoint,radius: number = PLAYER_DIMENSIONS.radius,height: number = PLAYER_DIMENSIONS.height): boolean {
     return this.sweepBody(from,to,radius,height).blocked;
   }

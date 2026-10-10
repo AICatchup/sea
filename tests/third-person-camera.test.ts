@@ -41,3 +41,22 @@ test('saves from before the view key keep their bindings and get a free key',()=
  const parsed=parseControls(JSON.stringify({version:1,...old,bindings}));
  assert.deepEqual(parsed.bindings.activity,['KeyV','']);assert.deepEqual(parsed.bindings.view,['KeyB','']);
 });
+import {segmentBoxFraction} from '../src/world/third-person-camera.ts';
+import {WorldCollision} from '../src/world/world-collision.ts';
+test('an overhanging solid between eye and lens pulls the lens in front of it',()=>{
+ const solids=new WorldCollision();
+ // A 4m-wide rock slab hanging 1-3m above the beach, 2m behind the player.
+ solids.addBox(new THREE.Box3(new THREE.Vector3(-2,1,6.5),new THREE.Vector3(2,3,7.5)));
+ const eye=new THREE.Vector3(0,1.7,5),p=new THREE.Vector3(),aim=new THREE.Vector3();
+ const free=thirdPersonPose({eye,yaw:0,pitch:0,mode:'walk',heightAt:flat,waterAt:sea},p,aim);
+ const d=thirdPersonPose({eye,yaw:0,pitch:0,mode:'walk',heightAt:flat,waterAt:sea,blocked:(a,b)=>solids.segmentFraction(a,b)},p,aim);
+ assert.equal(free,THIRD_PERSON.walk.distance);assert.ok(d<1.5,`lens stopped at ${d}`);assert.ok(p.z<6.5,'lens stays in front of the slab');
+ assert.equal(solids.segmentFraction({x:0,y:5,z:0},{x:0,y:5,z:10}),1,'clear line above it');
+});
+test('the vessel box blocks a lens line from outside but not from its own deck',()=>{
+ const box=new THREE.Box3(new THREE.Vector3(-1.5,-.5,-4),new THREE.Vector3(1.5,2,4)),pose=new THREE.Matrix4().makeRotationY(.6).setPosition(10,0,0),inverse=pose.clone().invert();
+ const outside=segmentBoxFraction(new THREE.Vector3(10,1,-10),new THREE.Vector3(10,1,10),box,inverse);
+ assert.ok(outside>0&&outside<.5);
+ assert.equal(segmentBoxFraction(new THREE.Vector3(10,1,0),new THREE.Vector3(10,1,10),box,inverse),1,'from the deck outwards');
+ assert.equal(segmentBoxFraction(new THREE.Vector3(30,1,-10),new THREE.Vector3(30,1,10),box,inverse),1,'miss');
+});

@@ -20,7 +20,7 @@ import { WaveCaustics } from './caustics';
 import { loadPhotographicSky } from './photographic-sky';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { FirstPersonBody } from '../world/player-body';
-import {ThirdPersonCamera} from '../world/third-person-camera.ts';
+import {ThirdPersonCamera,segmentBoxFraction} from '../world/third-person-camera.ts';
 import {targetCameraFov,approachCameraFov} from '../world/camera-lens.ts';
 import { LocalWaterHeights, cameraSubmersion } from './local-water-heights.ts';
 import { WorldCollision, withWorldCollision } from '../world/world-collision';
@@ -426,7 +426,8 @@ export class Ocean {
     this.activityWorld.update(state,this.camera,this.waterHeights.sample,this.time);
     // Third person moves only the drawing camera, after everything posed from the eye.
     this.viewCamera.apply(this.camera,{eye:this.camera.position.clone(),yaw:state.yaw,pitch:state.pitch,mode:state.mode,
-      heightAt:(x,z)=>this.world.heightAt(x,z),waterAt:(x,z)=>this.waterHeights.sample(x,z)},delta);
+      heightAt:(x,z)=>this.world.heightAt(x,z),waterAt:(x,z)=>this.waterHeights.sample(x,z),
+      blocked:(from,to)=>Math.min(this.collision.segmentFraction(from,to),this.boatLensFraction(from,to))},delta);
     const underwater=cameraSubmersion(this.camera.position.y,this.waterHeights.sample(this.camera.position.x,this.camera.position.z));
     this.uniforms.uUnderwater.value=underwater;
     this.world.update(this.time);this.assets.update(this.time,this.camera.position,underwater>.5,this.camera.getWorldDirection(new THREE.Vector3()),this.canvas.height/(2*Math.tan(THREE.MathUtils.degToRad(this.camera.fov)*.5)));
@@ -503,6 +504,21 @@ export class Ocean {
     this.animationFrame=requestAnimationFrame(this.frame);
   };
 
+  private boatBounds:THREE.Box3|null=null;
+  private readonly boatInverse=new THREE.Matrix4();
+  /** The vessel is controller-owned, not a world solid; its hull and cabin still block the lens. */
+  private boatLensFraction(from:THREE.Vector3,to:THREE.Vector3):number{
+    const boat=this.assets.boat;
+    boat.updateWorldMatrix(true,true);this.boatInverse.copy(boat.matrixWorld).invert();
+    if(!this.boatBounds){
+      // Hull and cabin bounds in the vessel's own frame, measured once.
+      const bounds=new THREE.Box3(),local=new THREE.Matrix4();
+      boat.traverse(object=>{const mesh=object as THREE.Mesh;if(!mesh.isMesh)return;if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();
+        bounds.union(mesh.geometry.boundingBox!.clone().applyMatrix4(local.multiplyMatrices(this.boatInverse,mesh.matrixWorld)));});
+      this.boatBounds=bounds;
+    }
+    return segmentBoxFraction(from,to,this.boatBounds,this.boatInverse);
+  }
   resize():void{
     const width=window.innerWidth,height=window.innerHeight;
     const scale={auto:this.automaticScale,high:1,medium:.85,low:.55}[this.quality];
