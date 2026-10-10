@@ -28,8 +28,9 @@ test('patch boundary coincides with both existing terrain lattices',()=>{
 test('render triangle centroids and sampled footing agree, including chunk edges',()=>{
  let count=0;
  measured.group.traverse(o=>{if(!(o instanceof THREE.Mesh))return;
-  const p=o.geometry.getAttribute('position'),idx=o.geometry.index!;
-  for(const k of [0,3,Math.floor(idx.count/6)*3,idx.count-3]){
+  // Native triangles occupy the default draw range; coarser LOD indices follow it.
+  const p=o.geometry.getAttribute('position'),idx=o.geometry.index!,native=Math.min(idx.count,o.geometry.drawRange.count);
+  for(const k of [0,3,Math.floor(native/6)*3,native-3]){
    const ids=[idx.getX(k),idx.getX(k+1),idx.getX(k+2)];
    const x=ids.reduce((s,n)=>s+p.getX(n),0)/3+o.position.x,z=ids.reduce((s,n)=>s+p.getZ(n),0)/3+o.position.z,y=ids.reduce((s,n)=>s+p.getY(n),0)/3;
    const h=measured.heightAt(x,z);assert.notEqual(h,null);assert.ok(Math.abs(h!-y)<1e-4,`${x},${z}: ${h} vs ${y}`);count++;

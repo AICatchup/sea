@@ -6,14 +6,23 @@ export interface MeasuredGrid {
   width:number;height:number;heights:Float32Array;valid?:Uint8Array;
   origin:GridVector;column:GridVector;row:GridVector;
 }
-export interface MeasuredPatchOptions {chunkCells?:number;blendStartMetres?:number;blendEndMetres?:number;cutInsetMetres?:number}
+/** lodPixels: largest projected cell edge (drawing-buffer px) a coarser level may
+ * draw; 0 keeps every chunk at native resolution. */
+export interface MeasuredPatchOptions {chunkCells?:number;blendStartMetres?:number;blendEndMetres?:number;cutInsetMetres?:number;lodPixels?:number}
 export interface MeasuredPoint extends GridVector {y:number}
 export interface MeasuredPatchDiagnostics {
   vertices:number;triangles:number;chunks:number;unknownSamples:number;
-  nativeSamples:number;fullResolutionOnly:true;maxUnblendedHeightError:number;
+  /** False when distant chunks may draw a coarser index over the same vertices. */
+  nativeSamples:number;fullResolutionOnly:boolean;maxUnblendedHeightError:number;
   /** No absolute surveying accuracy is inferred by this helper. */
   kind:'measured-heightfield';
   replacement?:{checkedTriangles:number;removedTriangles:number};
+  lod:MeasuredPatchLodDiagnostics;
+}
+export interface MeasuredPatchLodDiagnostics {
+  pixels:number;strides:number[];lockedChunks:number;
+  /** Most recent selection; render-side only, height queries stay native. */
+  drawnTriangles:number;chunksByStride:Record<number,number>;
 }
 /** Coverage promises a finite query across the entire accepted triangle, not
  * just its corners. The replacement and its resources remain caller-owned. */
@@ -47,9 +56,64 @@ export async function measuredReplacementFootprintSha256(plan:Pick<MeasuredRepla
   for(let i=0;i<idx.count;i++){const n=idx.getX(i);view.setFloat32(28+i*12,p.getX(n),true);view.setFloat32(32+i*12,p.getY(n),true);view.setFloat32(36+i*12,p.getZ(n),true);}
   const digest=await crypto.subtle.digest('SHA-256',bytes);return Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,'0')).join('');
 }
-interface Chunk {i:number;j:number;nx:number;nz:number;x:number;z:number;geometry:THREE.BufferGeometry;removed?:Uint8Array}
+/** error: largest vertical distance (m) from a native sample to this level's surface. */
+interface ChunkLevel {stride:number;start:number;count:number;error:number}
+interface Chunk {i:number;j:number;nx:number;nz:number;x:number;z:number;geometry:THREE.BufferGeometry;removed?:Uint8Array;
+  /** Native triangles occupy index [0,fine); coarser levels follow in the same buffer. */
+  fine:number;levels:ChunkLevel[];level:number;locked:boolean}
 const smooth=(v:number)=>{const t=Math.max(0,Math.min(1,v));return t*t*(3-2*t);};
-/** Native affine heightfield, full resolution at every distance. Geometry is owned;
+const LOD_STRIDES=[2,4,8,16,32,64];
+/** Smaller chunks save too few triangles to justify extra index ranges. */
+const LOD_MIN_CELLS=32;
+/** Largest projected vertical error a coarser level may introduce. Steep cliffs keep
+ * native triangles far longer than flat ground, which spacing alone cannot tell apart. */
+const LOD_ERROR_PIXELS=1;
+/** Vertical error of the stride-s surface over native samples (i0..i0+nx, j0..j0+nz).
+ * Border fans are approximated by the interior cell split; seams are exact anyway. */
+function coarseError(sample:(i:number,j:number)=>number,nx:number,nz:number,stride:number):number{
+  let error=0;
+  for(let a=0;a<nx;a+=stride)for(let c=0;c<nz;c+=stride){
+    const b=Math.min(nx,a+stride),d=Math.min(nz,c+stride);
+    const y00=sample(a,c),y10=sample(b,c),y01=sample(a,d),y11=sample(b,d);
+    for(let j=c;j<=d;j++)for(let i=a;i<=b;i++){
+      if(i===0||j===0||i===nx||j===nz)continue; // native border samples are kept exactly
+      const u=(i-a)/(b-a),v=(j-c)/(d-c);
+      const y=u+v<=1?y00+u*(y10-y00)+v*(y01-y00):y11+(1-u)*(y01-y11)+(1-v)*(y10-y11);
+      error=Math.max(error,Math.abs(sample(i,j)-y));
+    }
+  }
+  return error;
+}
+/** Coarse triangles over the chunk's own native vertices. The outer ring keeps every
+ * native edge vertex, so any mix of neighbouring levels shares identical seams and
+ * never opens T-junction cracks. `negative` is the ij orientation of native triangles. */
+export function coarseChunkIndices(nx:number,nz:number,stride:number,negative:boolean):number[]|null{
+  const axis=(n:number)=>{const v:number[]=[];for(let k=0;k<n;k+=stride)v.push(k);v.push(n);return v;};
+  const xs=axis(nx),zs=axis(nz);if(xs.length<3||zs.length<3)return null;
+  const row=nx+1,out:number[]=[];
+  const tri=(p:readonly number[],q:readonly number[],r:readonly number[])=>{
+    const cross=(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);if(cross===0)return;
+    if((cross<0)===negative)out.push(p[1]*row+p[0],q[1]*row+q[0],r[1]*row+r[0]);
+    else out.push(p[1]*row+p[0],r[1]*row+r[0],q[1]*row+q[0]);
+  };
+  for(let cj=0;cj<zs.length-1;cj++)for(let ci=0;ci<xs.length-1;ci++){
+    const a=xs[ci],b=xs[ci+1],c=zs[cj],d=zs[cj+1],left=a===0,right=b===nx,bottom=c===0,top=d===nz;
+    if(!left&&!right&&!bottom&&!top){tri([a,c],[a,d],[b,c]);tri([b,c],[a,d],[b,d]);continue;}
+    const ring:number[][]=[];
+    for(let i=a;i<b;i+=bottom?1:b-a)ring.push([i,c]);
+    for(let j=c;j<d;j+=right?1:d-c)ring.push([b,j]);
+    for(let i=b;i>a;i-=top?1:b-a)ring.push([i,d]);
+    for(let j=d;j>c;j-=left?1:d-c)ring.push([a,j]);
+    // With at least two cells per axis, one corner touches no subdivided edge.
+    const apex=[[a,c,!bottom&&!left],[b,c,!bottom&&!right],[b,d,!right&&!top],[a,d,!top&&!left]].find(v=>v[2])!;
+    const k0=ring.findIndex(p=>p[0]===apex[0]&&p[1]===apex[1]);
+    for(let k=1;k<ring.length-1;k++)tri(ring[k0],ring[(k0+k)%ring.length],ring[(k0+k+1)%ring.length]);
+  }
+  return out;
+}
+/** Native affine heightfield. Height queries, raycasts, replacement and footprints
+ * always use native triangles; only rendering may select a coarser index per chunk
+ * from the drawing camera (lodPixels). Geometry is owned;
  * input arrays, fallback and material/textures are borrowed and never modified/disposed.
  * It restores neither overhangs nor closed solids, and does not register worldSolid/BVH.
  */
@@ -62,7 +126,10 @@ export function createMeasuredGridPatch(grid:MeasuredGrid,fallbackGround:GroundS
   if(![cl,rl,det].every(Number.isFinite)||cl<1e-6||rl<1e-6||Math.abs(det)/(cl*rl)<1e-6)throw new Error('Degenerate measured grid affine');
   if(cl*(w-1)+rl*(h-1)>3e38||![o.x+c.x*(w-1)+r.x*(h-1),o.z+c.z*(w-1)+r.z*(h-1)].every(Number.isFinite))throw new Error('Affine exceeds finite render coordinates');
   const cells=options.chunkCells??128,start=options.blendStartMetres??12,end=options.blendEndMetres??32,inset=options.cutInsetMetres??8;
-  if(!Number.isInteger(cells)||cells<1||cells>256||start<0||end<=start||inset<0)throw new Error('Invalid measured patch options');
+  // terrainlod=0 compares the native-only rendering in the same build.
+  const query=typeof location!=='undefined'?new URLSearchParams(location.search).get('terrainlod'):null;
+  const lodPixels=options.lodPixels??(query!==null?Math.max(0,Number(query)||0):4);
+  if(!Number.isInteger(cells)||cells<1||cells>256||start<0||end<=start||inset<0||lodPixels<0)throw new Error('Invalid measured patch options');
   // Perpendicular distance to the four affine boundary lines, in world metres.
   const ci=Math.abs(det)/rl,rj=Math.abs(det)/cl;
   const border=(i:number,j:number)=>Math.min(i*ci,(w-1-i)*ci,j*rj,(h-1-j)*rj);
@@ -78,7 +145,35 @@ export function createMeasuredGridPatch(grid:MeasuredGrid,fallbackGround:GroundS
   }
   const group=new THREE.Group();group.name='native-measured-grid-patch';group.userData.recon_part='native-measured-heightfield';group.userData.heightfieldSurface=true;
   const geometries:THREE.BufferGeometry[]=[],chunks=new Map<string,Chunk>();
-  const diagnostics:MeasuredPatchDiagnostics={vertices:0,triangles:0,chunks:0,unknownSamples,nativeSamples:total,fullResolutionOnly:true,maxUnblendedHeightError,kind:'measured-heightfield'};
+  const lod:MeasuredPatchLodDiagnostics={pixels:lodPixels,strides:[],lockedChunks:0,drawnTriangles:0,chunksByStride:{1:0}};
+  const diagnostics:MeasuredPatchDiagnostics={vertices:0,triangles:0,chunks:0,unknownSamples,nativeSamples:total,fullResolutionOnly:true,maxUnblendedHeightError,kind:'measured-heightfield',lod};
+  // Rendering-only selection. The same drawing camera picks the level for every pass
+  // it draws; shadow passes reuse the most recent perspective choice.
+  const cellMetres=Math.min(cl,rl),eye=new THREE.Vector3(),worldBox=new THREE.Box3();
+  const selectLevel=(chunk:Chunk,mesh:THREE.Mesh,renderer:THREE.WebGLRenderer,camera:THREE.Camera)=>{
+    if(chunk.locked||!chunk.levels.length||!(camera as THREE.PerspectiveCamera).isPerspectiveCamera)return;
+    const target=renderer.getRenderTarget(),height=target?target.height:renderer.getContext().drawingBufferHeight;
+    eye.setFromMatrixPosition(camera.matrixWorld);worldBox.copy(chunk.geometry.boundingBox!).applyMatrix4(mesh.matrixWorld);
+    // Drawing-buffer pixels per metre at the chunk's nearest point.
+    const scale=camera.projectionMatrix.elements[5]*height*.5/Math.max(.001,worldBox.distanceToPoint(eye)),current=chunk.level;
+    // Coarsening needs a 20% margin, so a chunk cannot alternate at a threshold.
+    let next=0;
+    for(let level=1;level<=chunk.levels.length;level++){
+      const l=chunk.levels[level-1],margin=level>current?.8:1;
+      if(cellMetres*l.stride*scale>lodPixels*margin||l.error*scale>LOD_ERROR_PIXELS*margin)break;
+      next=level;
+    }
+    if(next!==current)setLevel(chunk,next);
+  };
+  const levelStart=(chunk:Chunk,level:number)=>level===0?0:chunk.levels[level-1].start;
+  const levelCount=(chunk:Chunk,level:number)=>level===0?chunk.fine:chunk.levels[level-1].count;
+  const levelStride=(chunk:Chunk,level:number)=>level===0?1:chunk.levels[level-1].stride;
+  const setLevel=(chunk:Chunk,level:number)=>{
+    const from=levelStride(chunk,chunk.level),to=levelStride(chunk,level);
+    chunk.geometry.setDrawRange(levelStart(chunk,level),levelCount(chunk,level));
+    lod.drawnTriangles+=(levelCount(chunk,level)-levelCount(chunk,chunk.level))/3;
+    lod.chunksByStride[from]--;lod.chunksByStride[to]=(lod.chunksByStride[to]??0)+1;chunk.level=level;
+  };
   for(let j0=0;j0<h-1;j0+=cells)for(let i0=0;i0<w-1;i0+=cells){
     const nx=Math.min(cells,w-1-i0),nz=Math.min(cells,h-1-j0),stride=nx+1;
     // One shared origin means duplicated chunk-edge Float32 positions are bit-identical.
@@ -94,10 +189,22 @@ export function createMeasuredGridPatch(grid:MeasuredGrid,fallbackGround:GroundS
       uvs[n*2]=gi*cl/2.7;uvs[n*2+1]=gj*rl/2.7;
     }
     for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*stride+i,b=a+1,d=a+stride,e=d+1;if(det>0)indices.push(a,d,b,b,d,e);else indices.push(a,b,d,b,e,d);}
-    const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));geometry.setAttribute('normal',new THREE.BufferAttribute(normals,3));geometry.setAttribute('uv',new THREE.BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.computeBoundingBox();geometry.computeBoundingSphere();geometry.userData.nativeCellOrigin={i:i0,j:j0};geometry.userData.nativeCellSize={width:nx,height:nz};
-    const mesh=new THREE.Mesh(geometry,material);mesh.position.set(x,0,z);mesh.name=`measured-grid-${i0}-${j0}`;mesh.userData.heightfieldSurface=true;mesh.frustumCulled=true;group.add(mesh);geometries.push(geometry);chunks.set(`${Math.floor(i0/cells)},${Math.floor(j0/cells)}`,{i:i0,j:j0,nx,nz,x,z,geometry});diagnostics.vertices+=positions.length/3;diagnostics.triangles+=indices.length/3;
+    const fine=indices.length,levels:ChunkLevel[]=[];
+    if(lodPixels>0&&Math.min(nx,nz)>=LOD_MIN_CELLS)for(const s of LOD_STRIDES){
+      const coarse=coarseChunkIndices(nx,nz,s,det>0);if(!coarse)break;
+      // Errors never shrink with a coarser stride, so later levels stay monotonic.
+      const error=Math.max(levels.at(-1)?.error??0,coarseError((i,j)=>values[(j0+j)*w+i0+i],nx,nz,s));
+      levels.push({stride:s,start:indices.length,count:coarse.length,error});for(const n of coarse)indices.push(n);
+    }
+    const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));geometry.setAttribute('normal',new THREE.BufferAttribute(normals,3));geometry.setAttribute('uv',new THREE.BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.setDrawRange(0,fine);geometry.computeBoundingBox();geometry.computeBoundingSphere();geometry.userData.nativeCellOrigin={i:i0,j:j0};geometry.userData.nativeCellSize={width:nx,height:nz};
+    const mesh=new THREE.Mesh(geometry,material);mesh.position.set(x,0,z);mesh.name=`measured-grid-${i0}-${j0}`;mesh.userData.heightfieldSurface=true;mesh.frustumCulled=true;group.add(mesh);geometries.push(geometry);
+    const chunk:Chunk={i:i0,j:j0,nx,nz,x,z,geometry,fine,levels,level:0,locked:false};chunks.set(`${Math.floor(i0/cells)},${Math.floor(j0/cells)}`,chunk);
+    if(levels.length)mesh.onBeforeRender=(renderer,_scene,camera)=>selectLevel(chunk,mesh,renderer,camera);
+    diagnostics.vertices+=positions.length/3;diagnostics.triangles+=fine/3;lod.drawnTriangles+=fine/3;lod.chunksByStride[1]++;
   }
   diagnostics.chunks=geometries.length;
+  for(const chunk of chunks.values())for(const level of chunk.levels)if(!lod.strides.includes(level.stride))lod.strides.push(level.stride);
+  lod.strides.sort((a,b)=>a-b);diagnostics.fullResolutionOnly=lod.strides.length===0;
   const inverse=(x:number,z:number)=>{const dx=x-o.x,dz=z-o.z;return {i:(dx*r.z-dz*r.x)/det,j:(dz*c.x-dx*c.z)/det};};
   let disposed=false,replacement:MeasuredInteriorSurface|null=null;
   const surfaceHeightAt=(x:number,z:number):number|null=>{
@@ -137,7 +244,7 @@ export function createMeasuredGridPatch(grid:MeasuredGrid,fallbackGround:GroundS
       const box=g.boundingBox!.clone().translate(new THREE.Vector3(chunk.x,0,chunk.z));
       if(!box.intersectsBox(bounds))continue;
       const mask=new Uint8Array(chunk.nx*chunk.nz*2),kept:number[]=[],removedIndex:number[]=[];
-      for(let k=0;k<idx.count;k+=3){
+      for(let k=0;k<chunk.fine;k+=3){
         const ids=[idx.getX(k),idx.getX(k+1),idx.getX(k+2)] as const;
         const points=ids.map(n=>({x:p.getX(n)+chunk.x,y:p.getY(n),z:p.getZ(n)+chunk.z})) as [MeasuredPoint,MeasuredPoint,MeasuredPoint];
         let remove=false;
@@ -187,7 +294,13 @@ export function createMeasuredGridPatch(grid:MeasuredGrid,fallbackGround:GroundS
             }
           }
         }
-        for(const e of checked){e.chunk.geometry.setIndex(e.indices);e.chunk.removed=e.mask;}
+        // Coarse levels cannot honour a partial cut, so replaced chunks stay native.
+        for(const e of checked){
+          if(e.chunk.level!==0)setLevel(e.chunk,0);
+          lod.drawnTriangles+=(e.indices.length-e.chunk.fine)/3;
+          e.chunk.geometry.setIndex(e.indices);e.chunk.geometry.setDrawRange(0,Infinity);e.chunk.fine=e.indices.length;e.chunk.levels=[];
+          e.chunk.locked=true;lod.lockedChunks++;e.chunk.removed=e.mask;
+        }
         replacement=chosen;diagnostics.replacement={checkedTriangles,removedTriangles};consumed=true;
       },
       dispose(){if(released)return;released=true;coverageGeometry.dispose();}
