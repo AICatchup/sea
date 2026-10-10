@@ -1,0 +1,40 @@
+✔ hemi-octahedral grid and direction mappings invert each other over the upper hemisphere (1.648ms)
+✔ impostor card bounds cover the whole crown sphere for instance culling (0.8691ms)
+✔ only crowns below the card size leave far/distant meshes; near/mid choices are unchanged (6.6753ms)
+✔ a later atlas bake failure rolls back all targets and restores the renderer (390.1194ms)
+✔ GPU export retains unique vertices, unnormalized weights and leaf triangle layout (8.6654ms)
+✔ renderer-created padded bone textures retain the same used palette (2.654ms)
+✔ pose export preserves normal matrix, visibility and rejects source/singular mutations (2.7389ms)
+✔ CC0 MakeHuman body data is intact and every joint key maps onto the game skeleton (309.4673ms)
+✔ swapping to MakeHuman changes no bone, keeps the gear and skins finitely across actions (600.4551ms)
+✔ wear fields open the hood on the face only and bare the hands (0.1672ms)
+✔ refraction retains the actual continuous garment fields and wet material values (502.9403ms)
+✔ a failed texture load collects successful peers; unadopted sources release once (1.7231ms)
+✔ map gamma metadata preserves raw normals and independent native UV/wrap/flip (2.4185ms)
+✔ unsupported UV and object normal encodings fail explicitly (0.9089ms)
+✔ scalar wetness and mixed extra material updates preserve static geometry and atlas epochs (10.8492ms)
+✔ triangle basis handles nonuniform reflected transforms without derivatives (0.4078ms)
+✔ texture epoch refresh is independent of geometry; GPU budget fails without dropping maps (6.0552ms)
+{"skinnedBody":{"available":true,"reason":"","triangles":36700,"vertices":19372,"nodes":16055,"bytes":10457648,"rebuilds":1,"refits":22,"skipped":0,"timeMs":15.656000000000176,"excludedSurfaces":0,"maxDepth":14},"maxRefitMs":30.496099999999956,"oracleHits":42}
+✔ unchanged posed buffers skip refit while changed pose and replaced attributes remain authoritative (6.1731ms)
+✔ posed refit preserves allocations, nearest double-sided hits, bind modes and negative/nonuniform transforms (5.0777ms)
+✔ unsupported morph, alpha, budgets, visibility and borrowed ownership (1.2847ms)
+✔ actual FirstPersonBody seven actions, three poses each agree with independent source oracle and packed BVH (1587.321ms)
+✔ decoded normalized/interleaved inputs agree with Three and in-place version changes require rebuild (3.0313ms)
+✔ open ground places the lens behind and above the eye, aiming along the view (1.3978ms)
+✔ a hill behind the player pulls the lens in instead of burying it (0.2675ms)
+✔ the lens stays on the player side of the water surface (0.3172ms)
+✔ toggling eases out from the eye and first person leaves the camera alone (8.4271ms)
+✔ saves from before the view key keep their bindings and get a free key (1.027ms)
+✔ an overhanging solid between eye and lens pulls the lens in front of it (2.1577ms)
+✔ the vessel box blocks a lens line from outside but not from its own deck (0.2571ms)
+✔ solid occlusion uses the water-corrected lens line (0.4109ms)
+✔ a shallow dive keeps feasible margins on both sides of the lens (0.1942ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1859.7353

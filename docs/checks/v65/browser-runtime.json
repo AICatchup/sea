@@ -1,0 +1,29 @@
+{
+  "appCommit": "f1f93892e354a8487388d1f894602ab11910475c",
+  "browser": "Codex in-app browser",
+  "productionIndex": {
+    "url": "http://127.0.0.1:5199/?body=makehuman&motion=cmu&camera=third",
+    "renderedAfterAssetFix": true,
+    "makeHumanNewLoadFailure": false,
+    "viewToggleToastAndImages": true,
+    "mapKeyOpensActualMap": true,
+    "settingsShowViewBindingV": true,
+    "boatFovSetting": 95,
+    "walkInput": {
+      "initialNoteDistanceM": 9,
+      "after2500msForwardM": 5,
+      "laterDistanceM": 50,
+      "observed": "rendered beach to shallow shoreline movement with actual keyboard input"
+    },
+    "photo": "third-person-makehuman.png",
+    "warnings": ["Current shaders logged potentially uninitialized waterLightIntegral / skyRadiance compiler warnings; no current MakeHuman load failure. Earlier pre-fix logs remained in the tab history."],
+    "fullDiveBoardSailJourney": false,
+    "fpsMeasured": false
+  },
+  "standalone": {
+    "httpStatus": 200,
+    "tabCreatedWithSEATitle": true,
+    "visualRuntimeAccepted": false,
+    "reason": "Large inline HTML navigation / Page.getFrameTree timed out or was interrupted in the in-app browser. Production index evidence remains separate."
+  }
+}

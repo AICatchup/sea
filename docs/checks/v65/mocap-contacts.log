@@ -1,0 +1,13 @@
+✔ baked CMU clips carry provenance, steady cycles and seamless loops (3.8257ms)
+✔ mocap leaves idle, helm and climb untouched and keeps the first-person eye on the camera (2397.1619ms)
+✔ captured walk and run plant the stance sole on the floor; running keeps its flight (925.3018ms)
+✔ running stride rate is a human cadence and walking is unchanged (0.306ms)
+✔ fishing and physical tool transitions retain the procedural contact pose (2811.4307ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6323.8476

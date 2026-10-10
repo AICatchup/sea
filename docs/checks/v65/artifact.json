@@ -1,0 +1,21 @@
+{
+  "builtFromAppCommit": "f1f93892e354a8487388d1f894602ab11910475c",
+  "bytes": 365872989,
+  "sha256": "bd54fc6c955bf8d1ae48cfebcab5ed859d4954b25f596664ffb43b1e345c17f0",
+  "externalScript": false,
+  "externalStylesheet": false,
+  "residualAssets": [],
+  "embeddedJSON": [
+    {
+      "path": "src/assets/player/makehuman-v65/makehuman-body.json",
+      "embedded": true
+    },
+    {
+      "path": "src/assets/player/cmu-mocap-v65/gait-clips.json",
+      "embedded": true
+    }
+  ],
+  "makeHumanNotice": true,
+  "cmuNotice": true,
+  "embeddedAssets": 64
+}
