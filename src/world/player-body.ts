@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { AdventureState } from './contracts.ts';
 import { createPlayerSkin } from './player-skin.ts';
 import {helmHandPose,HELM_FINGER_CURL} from './helm-contact.ts';
+import {boneKey,diverBodyMaterial,isHandKey,makeHumanGeometries,wearFields,type MakeHumanSource} from './makehuman-body.ts';
 
 /**
  * Original, metre-scale anatomy; no downloaded model, photographed skin or likeness.
@@ -195,6 +196,9 @@ export class FirstPersonBody {
   private boarding = 0;
   private initialized = false;
   private disposed = false;
+  /** Gear triangles per material group; kept when the anatomy is swapped for MakeHuman. */
+  private readonly gearFaces: number[][];
+  private makehuman: { meshes: THREE.SkinnedMesh[]; materials: THREE.Material[]; textures: THREE.Texture[]; skin: THREE.MeshStandardMaterial; anatomy: THREE.BufferGeometry } | null = null;
 
   constructor() {
     this.group.name = 'First-person diver';
@@ -214,7 +218,9 @@ export class FirstPersonBody {
       this.arms.push(this.sculptArm(sculpt, side));
       this.legs.push(this.sculptLeg(sculpt, side));
     }
+    const beforeGear = sculpt.faces.map(faces => faces.length);
     this.sculptGear(sculpt);
+    this.gearFaces = sculpt.faces.map((faces, material) => faces.slice(beforeGear[material]));
     const clothNormal = microTexture(true), clothRoughness = microTexture(false);
     this.textures = [...this.skin.textures, clothNormal, clothRoughness];
     const standard = (color: number, roughness: number, metalness = 0) => new THREE.MeshStandardMaterial({
@@ -270,6 +276,49 @@ export class FirstPersonBody {
     this.group.userData.handMorphology = { creaseConstruction: 'concave shell displacement',
       palmCreaseDepthMetres: [.0008, .00115], fingerPulpOffsetMetres: .0022,
       phalanxWaistRatio: [.78, .88], raisedSkinCreaseTubes: 0 };
+  }
+
+  /** Replace the sculpted anatomy with the CC0 MakeHuman body bound to the SAME skeleton.
+   * Bones, rest pose, eye anchor, IK, helm and fishing contacts are untouched; only the
+   * rendered skin changes. The worn gear (vest, cylinder, weights, hose) is kept. */
+  useMakeHuman(source: MakeHumanSource): void {
+    if (this.disposed || this.makehuman) return;
+    const geometries = makeHumanGeometries(source, this.bones), textures = source.textures ?? {};
+    const skin = diverBodyMaterial(textures.skin ?? null);
+    // The cornea shell samples the texture's transparent corner: cut it so the iris shows.
+    const eyes = new THREE.MeshStandardMaterial({ name: 'MakeHuman brown eyes (CC0)', map: textures.eyes ?? null, alphaTest: .5, roughness: .3, envMapIntensity: .5 });
+    const hair = (map: THREE.Texture | undefined, name: string) => new THREE.MeshStandardMaterial({ name, map: map ?? null, alphaTest: .35, side: THREE.DoubleSide, roughness: .7, color: 0x2a2018 });
+    const body = geometries.get('body')!;
+    // Wear fields from the rest position, normal and hand-bone weight of every vertex.
+    const position = body.getAttribute('position'), normals = body.getAttribute('normal'), joints = body.getAttribute('skinIndex'), weights = body.getAttribute('skinWeight');
+    const face = new Float32Array(position.count), hand = new Float32Array(position.count), boot = new Float32Array(position.count);
+    const p = new THREE.Vector3(), n = new THREE.Vector3();
+    for (let i = 0; i < position.count; i++) {
+      let handWeight = 0;
+      for (let k = 0; k < 4; k++) if (isHandKey(boneKey(this.bones[joints.getComponent(i, k)]))) handWeight += weights.getComponent(i, k);
+      const w = wearFields(p.fromBufferAttribute(position, i), n.fromBufferAttribute(normals, i), handWeight);
+      face[i] = w.face; hand[i] = w.hand; boot[i] = w.boot;
+    }
+    body.setAttribute('wearFace', new THREE.BufferAttribute(face, 1)); body.setAttribute('wearHand', new THREE.BufferAttribute(hand, 1)); body.setAttribute('wearBoot', new THREE.BufferAttribute(boot, 1));
+    const meshes: THREE.SkinnedMesh[] = [];
+    const add = (geometry: THREE.BufferGeometry | undefined, material: THREE.Material | THREE.Material[], name: string, shadow = true) => {
+      if (!geometry) return;
+      const mesh = new THREE.SkinnedMesh(geometry, material); mesh.name = name; mesh.frustumCulled = false;
+      mesh.castShadow = shadow; mesh.receiveShadow = true; this.group.add(mesh);
+      mesh.bind(this.mesh.skeleton, this.mesh.bindMatrix); meshes.push(mesh);
+    };
+    add(body, skin, 'MakeHuman diver anatomy (CC0)');
+    add(geometries.get('eyes'), eyes, 'MakeHuman eyes (CC0)', false);
+    add(geometries.get('eyebrows'), hair(textures.eyebrows, 'MakeHuman eyebrows (CC0)'), 'MakeHuman eyebrows (CC0)', false);
+    add(geometries.get('eyelashes'), hair(textures.eyelashes, 'MakeHuman eyelashes (CC0)'), 'MakeHuman eyelashes (CC0)', false);
+    // Keep only the worn gear from the sculpt; its vertex buffers are shared, not copied.
+    const anatomy = this.mesh.geometry, gear = new THREE.BufferGeometry(), gearIndex: number[] = [];
+    for (const name of Object.keys(anatomy.attributes)) gear.setAttribute(name, anatomy.getAttribute(name));
+    this.gearFaces.forEach((faces, material) => { gear.addGroup(gearIndex.length, faces.length, material); gearIndex.push(...faces); });
+    gear.setIndex(gearIndex); gear.boundingSphere = anatomy.boundingSphere?.clone() ?? null;
+    this.mesh.geometry = gear;
+    this.makehuman = { meshes, materials: [skin, eyes, ...meshes.slice(2).map(m => m.material as THREE.Material)], textures: Object.values(textures).filter((t): t is THREE.Texture => !!t), skin, anatomy };
+    this.group.userData.makehuman = { triangles: body.index!.count / 3, gearTriangles: gearIndex.length / 3, provenance: source.meta.provenance };
   }
 
   private bone(name: string, point: THREE.Vector3, parent?: THREE.Bone): THREE.Bone {
@@ -621,6 +670,7 @@ export class FirstPersonBody {
     const gait = Math.sin(this.phase), water = swim + dive;
     this.wet += (clamp(finite(state.immersion, water), 0, 1) - this.wet) * (1 - Math.exp(-dt * 3));
     this.skin.setWetness(this.wet);
+    if (this.makehuman) { this.makehuman.skin.roughness = .52 - this.wet * .26; (this.makehuman.skin.userData.wear as { suitRoughness: { value: number } }).suitRoughness.value = .89 - this.wet * .28; }
     this.materials[SUIT].roughness = .89 - this.wet * .28; this.materials[PANEL].roughness = .91 - this.wet * .24;
     const leanTarget = swim * 1.03 + dive * 1.16;
     this.lean = this.initialized ? this.lean + clamp(leanTarget - this.lean, -dt * 1.8, dt * 1.8) : leanTarget;
@@ -774,6 +824,13 @@ export class FirstPersonBody {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true; this.group.removeFromParent();
+    if (this.makehuman) {
+      for (const mesh of this.makehuman.meshes) mesh.geometry.dispose();
+      this.makehuman.materials.forEach(m => m.dispose()); this.makehuman.textures.forEach(t => t.dispose());
+      this.makehuman.anatomy.dispose();
+      // The gear view shares the sculpt's attributes, which the anatomy dispose already released.
+      this.mesh.geometry.setIndex(null);
+    }
     this.mesh.geometry.dispose(); this.mesh.skeleton.dispose();
     for (const material of this.materials) material.dispose();
     for (const texture of this.textures) texture.dispose();
