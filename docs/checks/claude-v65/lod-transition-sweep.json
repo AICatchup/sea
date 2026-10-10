@@ -1,0 +1,37 @@
+{
+ "niijima": {
+  "blackFramesExcluded": [],
+  "steps": 90,
+  "maxStepExcess": 1.612,
+  "meanStepExcess": 0.144,
+  "onlyOnChangedPx_p50": 6332,
+  "onlyOnChangedPx_max": 11781,
+  "onlyOffChangedPx_p50": 6022,
+  "onlyOffChangedPx_max": 11530,
+  "worstStep": 88
+ },
+ "pines": {
+  "blackFramesExcluded": [
+   7
+  ],
+  "steps": 88,
+  "maxStepExcess": 0.638,
+  "meanStepExcess": -0.416,
+  "onlyOnChangedPx_p50": 12199,
+  "onlyOnChangedPx_max": 20688,
+  "onlyOffChangedPx_p50": 13805,
+  "onlyOffChangedPx_max": 21176,
+  "worstStep": 38
+ },
+ "rocks": {
+  "blackFramesExcluded": [],
+  "steps": 90,
+  "maxStepExcess": 0.411,
+  "meanStepExcess": -0.189,
+  "onlyOnChangedPx_p50": 5406,
+  "onlyOnChangedPx_max": 17911,
+  "onlyOffChangedPx_p50": 5414,
+  "onlyOffChangedPx_max": 16946,
+  "worstStep": 89
+ }
+}
