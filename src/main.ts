@@ -228,13 +228,15 @@ try {
         finally{captureHost.restoreState(before);}
       }
     },
-    async captureStaticCoast(pose:{x:number;z:number;yaw:number;pitch:number;eyeY:number},name='static-coast',diagnostic:'normal'|'no-shadow'='normal',probes:readonly{x:number;y:number}[]=[]) {
+    async captureStaticCoast(pose:{x:number;z:number;yaw:number;pitch:number;eyeY:number},name='static-coast',diagnostic:'normal'|'no-shadow'|'no-water'='normal',probes:readonly{x:number;y:number}[]=[]) {
       const tomari=pose.x>=-350&&pose.x<=350&&pose.z>=-300&&pose.z<=200;
       const niijima=pose.x>=5400&&pose.x<=6500&&pose.z>=-3500&&pose.z<=200;
       if(!captureOnly||![pose.x,pose.z,pose.yaw,pose.pitch,pose.eyeY].every(Number.isFinite)||(!tomari&&!niijima))throw new Error('Bounded dedicated coast observation required');
-      if(!['normal','no-shadow'].includes(diagnostic)||probes.length>16||probes.some(p=>![p.x,p.y].every(Number.isFinite)||p.x<0||p.x>1||p.y<0||p.y>1))throw new Error('Bounded static diagnostic and probes required');
+      if(!['normal','no-shadow','no-water'].includes(diagnostic)||probes.length>16||probes.some(p=>![p.x,p.y].every(Number.isFinite)||p.x<0||p.x>1||p.y<0||p.y>1))throw new Error('Bounded static diagnostic and probes required');
       await ocean.ready;const before=captureHost.readState(),clock=ocean.diagnostics.time;
       const receivers:{mesh:import('three').Mesh;receive:boolean}[]=[];
+      const savedWater=ocean.waterScene.children.map(object=>({object,visible:object.visible}));
+      if(diagnostic==='no-water')for(const entry of savedWater)entry.object.visible=false;
       if(diagnostic==='no-shadow')ocean.scene.traverse(object=>{if((object as import('three').Mesh).isMesh){const mesh=object as import('three').Mesh;receivers.push({mesh,receive:mesh.receiveShadow});mesh.receiveShadow=false;}});
       try{
         captureHost.visualLock(true);captureHost.setPaused(true);captureHost.setQuality('high');captureHost.setPreset('day');
@@ -244,6 +246,7 @@ try {
         let png='';for(let i=0;i<12;i++)png=ocean.renderStaticSnapshot();
         return{png,metadata:{name,pose,diagnostic,state:captureHost.readState(),time:ocean.diagnostics.time,materials:ocean.diagnostics.niijimaMaterials,topography:ocean.diagnostics.topography,foliage:ocean.diagnostics.foliage,draws:ocean.diagnostics.draws,triangles:ocean.diagnostics.triangles,terrain:probes.map(p=>({point:p,hits:ocean.probeFoliage(p.x*2-1,1-p.y*2,false,true)})),scope:'Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.'}};
       }finally{
+        for(const entry of savedWater)entry.object.visible=entry.visible;
         for(const r of receivers)r.mesh.receiveShadow=r.receive;
         try{ocean.setObservationClock(clock);captureHost.restoreState(before);captureHost.visualLock(true);captureHost.setPaused(true);ocean.renderStaticSnapshot();}
         finally{captureHost.restoreState(before);}

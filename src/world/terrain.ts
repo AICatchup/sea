@@ -14,6 +14,7 @@ import { HabushiMainGate } from './habushi-main-gate.ts';
 import { HabushiGround } from './habushi-ground.ts';
 import { NiijimaScarpVolume } from './niijima-scarp-volume.ts';
 import {TomariMeasuredCoast} from './tomari-measured.ts';
+import {TOMARI_EAST_SURVEY} from './tomari-east-survey.generated.ts';
 import { TomariCliffVolume } from './tomari-cliff-volume.ts';
 const atlasURL=new URL('../assets/tomari-atlas-v1.png',import.meta.url).href;
 
@@ -103,9 +104,11 @@ export class IslandWorld {
     this.textures.push(atlas);
     const sand=loadSandTextures(8,this.sandAppearance);this.textures.push(...sand.textures);
     const terrainMaterial = makeTerrainMaterial(grain, atlas, sand,forestGround); this.materials.push(terrainMaterial);
-    this.tomariMeasured=typeof location!=='undefined'&&new URLSearchParams(location.search).get('tomarisurvey')==='1'?new TomariMeasuredCoast(this.elevation,terrainMaterial):null;
+    const tomariSurvey=typeof location!=='undefined'?new URLSearchParams(location.search).get('tomarisurvey'):null;
+    this.tomariMeasured=tomariSurvey==='1'?new TomariMeasuredCoast(this.elevation,terrainMaterial):
+      tomariSurvey==='0'?null:new TomariMeasuredCoast(this.elevation,terrainMaterial,TOMARI_EAST_SURVEY,true);
     if(this.tomariMeasured)this.group.add(this.tomariMeasured.group);
-    this.cliffVolume=!this.tomariMeasured&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('cliffvolume')!=='0'?new TomariCliffVolume(terrainMaterial):null;
+    this.cliffVolume=tomariSurvey!=='1'&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('cliffvolume')!=='0'?new TomariCliffVolume(terrainMaterial):null;
     if(this.cliffVolume)this.group.add(this.cliffVolume.group);
     const scarp=typeof location!=='undefined'&&new URLSearchParams(location.search).get('scarp')==='1';
     const volume=typeof location!=='undefined'&&new URLSearchParams(location.search).get('volume')==='1';

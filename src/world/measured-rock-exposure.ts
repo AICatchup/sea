@@ -1,4 +1,18 @@
 import * as THREE from 'three';
+import {TOMARI_STRAND_POINTS} from './tomari-strand.ts';
+
+/** Photographic substrate inference for the east headland, away from the
+ * mapped sandy strand. Low rock shelves do not become sand just by facing up.
+ * Underwater ground remains unclassified; this is not a geological survey. */
+export function eastHeadlandExposure(x:number,z:number,height:number):number {
+  let distance=Infinity;
+  for(let i=1;i<TOMARI_STRAND_POINTS.length;i++){
+    const [ax,az]=TOMARI_STRAND_POINTS[i-1],[bx,bz]=TOMARI_STRAND_POINTS[i],dx=bx-ax,dz=bz-az;
+    const t=THREE.MathUtils.clamp(((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz),0,1);
+    distance=Math.min(distance,Math.hypot(x-ax-t*dx,z-az-t*dz));
+  }
+  return THREE.MathUtils.smoothstep(distance,18,30)*THREE.MathUtils.smoothstep(height,.08,.65);
+}
 
 /** Authored substrate inference, not a LAS material class. A newly measured
  * dry ledge above the old low strand should not inherit that strand's sand.
