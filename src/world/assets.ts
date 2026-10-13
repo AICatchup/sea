@@ -7,7 +7,7 @@ import { CoastalModels } from './models/props';
 import { makeInstances, ModelBatch, randomSeed, rockGeometry, standard, updateInstanceBounds } from './models/procedural';
 import { CoastalFoliage } from './foliage.ts';
 import { FoliageLodField } from './foliage-lod.ts';
-import type { FoliageImpostors, TrunkProxy } from './foliage-lod.ts';
+import type { FoliageImpostors, FoliageLodSettings, TrunkProxy } from './foliage-lod.ts';
 import { bakeImpostor, impostorGeometry, impostorMaterial, type ImpostorAtlas } from './foliage-impostor.ts';
 import type { ScannedRockVariant } from './scanned-rocks.ts';
 
@@ -96,10 +96,22 @@ export class AssetWorld {
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, supported.trees,
       { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000, viewAware: true,...((this.options.originalCanopy||this.options.nativeCanopies)?{nearPixels:48,midPixels:24,farPixels:12}:{}),...(this.options.nativeCanopies?{triangleBudget:6500000,midCapacity:300,preserveCrowns:true}:{}) });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, supported.shrubs,
-      { nearDistance: 26, midDistance: 210, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000, viewAware: true });
+      this.shrubLodSettings(true));
     this.lastPineSignature = '!native-rebuild'; this.rebuildPlacements(0);
     this.group.userData.crownSupport = { ...supported.diagnostics, trees: supported.trees.flat().length, shrubs: supported.shrubs.flat().length,
       coverageMeaning: 'sum of crown footprint areas; overlaps included, not measured canopy coverage', photoPass: false };
+  }
+
+  private shrubLodSettings(viewAware: boolean): FoliageLodSettings {
+    // The original 180 middle-detail slots sent metre-wide foreground shrubs
+    // to 160-triangle proxies. Allocate detail by projected size, retaining the
+    // existing total triangle budget and the same physical plant transforms.
+    const detail = viewAware && !(typeof location !== 'undefined'
+      && new URLSearchParams(location.search).get('shrubdetail') === '0');
+    return { nearDistance: 26, midDistance: viewAware ? 210 : 110,
+      nearCapacity: 48, midCapacity: detail ? 1200 : 180,
+      triangleBudget: 1_350_000, viewAware,
+      ...(detail ? { nearPixels: 40, midPixels: 8 } : {}) };
   }
 
   /** Bakes native near pine crowns once and lets every pine field draw distant crowns as cards. */
@@ -196,7 +208,7 @@ export class AssetWorld {
     this.pineField = new FoliageLodField(this.group, 'coastalPineLod', this.foliage.pineLevels, trees,
       { nearDistance: 35, midDistance: 210, nearCapacity: 24, midCapacity: 180, triangleBudget: 3_600_000,viewAware:this.options.canopyContinuity===true||this.options.originalCanopy===true,...((this.options.originalCanopy||this.options.nativeCanopies)?{nearPixels:48,midPixels:24,farPixels:12}:{}),...(this.options.nativeCanopies?{triangleBudget:6500000,midCapacity:300,preserveCrowns:true}:{}) });
     this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, shrubs,
-      { nearDistance: 26, midDistance: this.options.canopyContinuity ? 210 : 110, nearCapacity: 48, midCapacity: 180, triangleBudget: 1_350_000,viewAware:this.options.canopyContinuity===true });
+      this.shrubLodSettings(this.options.canopyContinuity === true));
     this.group.userData.canopyContinuity = this.options.canopyContinuity === true;
     this.group.userData.environmentCounts = { trees: treeCount, shrubs: shrubCount, groundCover: groundCoverCount,
       strata: 'low wide nonuniform coastal crowns / overlapping shrubs / low true-3D leaf cover; lower steep rock faces exposed',

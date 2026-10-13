@@ -1,0 +1,34 @@
+{
+  "result": {
+    "type": "object",
+    "value": {
+      "end": {
+        "fps": 60,
+        "frames": 2978,
+        "paused": false,
+        "quality": "high",
+        "resolution": [
+          1280,
+          720
+        ],
+        "stamp": 74903.5,
+        "time": 40.06646666666704
+      },
+      "shrubs": {
+        "midCapacity": 1200,
+        "midDistance": 210,
+        "midPixels": 8,
+        "nearCapacity": 48,
+        "nearDistance": 26,
+        "nearPixels": 40,
+        "triangleBudget": 1350000,
+        "viewAware": true
+      },
+      "start": {
+        "frames": 2617,
+        "stamp": 68895.09999999404,
+        "time": 34.04996666666667
+      }
+    }
+  }
+}

@@ -2,6 +2,8 @@
 
 2026-10-13。全体の写実性を改善する依頼に対する比較版。通常描画へ採用済みとは扱わない。
 
+追記: Chrome使用承認後のGPU確認と同一カメラ比較は [V68](graphics-v68.md) を参照。下記のブラウザ承認待ちは当時の記録であり、現在の阻害条件ではない。比較後も本候補は既定OFF。
+
 ## 実景との差
 
 参照: [式根島観光協会・泊海水浴場](https://shikinejima.tokyo/play/beach/tomari_beach/)、同ページの [公式写真](https://shikinejima.tokyo/cms/wp-content/uploads/2021/08/tomari_beach_01_photo01.jpg)。写真は形状・植生分布の参照だけに用い、ゲーム素材・Git配布物へ転用しない。
