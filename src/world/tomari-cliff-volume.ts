@@ -4,7 +4,7 @@ import {makeCliffMaterial} from './coast-material.ts';
 
 const defaultUrl=new URL('../assets/coast/tomari-west-volume-v32.glb',import.meta.url).href;
 const jointPlanesUrl=new URL('../assets/coast/tomari-west-volume-v69-jointplanes.glb',import.meta.url).href;
-const jointPlanes=import.meta.env.DEV&&typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('cliffvolume')==='jointplanes';
+const jointPlanes=typeof window!=='undefined'&&import.meta.env?.DEV===true&&new URLSearchParams(window.location.search).get('cliffvolume')==='jointplanes';
 const url=jointPlanes?jointPlanesUrl:defaultUrl;
 /** Closed inferred western cliff relief. The original DEM remains authoritative. */
 export class TomariCliffVolume {

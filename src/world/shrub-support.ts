@@ -33,7 +33,8 @@ export function supportLowShrubs(ground: GroundSampler, variants: FoliageVariant
   });
   const diagnostics = { tested: 0, changed: 0, shrunk: 0, lifted: 0, invalid: 0, unresolved: 0,
     maxLift: 0, maxBurialBefore: 0, maxBurialAfter: 0, minWidthFactor: 1,
-    maxRootGap: 0, samples: measured.map(m => m.leaves.length) };
+    maxRootGap: 0, samples: measured.map(m => m.leaves.length),
+    exampleSites: [] as {x:number;z:number;soil:number;before:number;after:number}[] };
   const position = new THREE.Vector3(), scale = new THREE.Vector3(), rotation = new THREE.Quaternion();
   const point = new THREE.Vector3(), foot = new THREE.Vector3(), candidate = new THREE.Matrix4();
   for (let variant = 0; variant < matrices.length; variant++) for (const original of matrices[variant]) {
@@ -84,6 +85,8 @@ export function supportLowShrubs(ground: GroundSampler, variants: FoliageVariant
       diagnostics.maxLift = Math.max(diagnostics.maxLift, bestLift);
       diagnostics.minWidthFactor = Math.min(diagnostics.minWidthFactor, bestFactor);
       diagnostics.maxRootGap = Math.max(diagnostics.maxRootGap, bestLift - .015);
+      if(diagnostics.exampleSites.length<8&&rootX>-180&&rootX<-60&&rootZ>-40&&rootZ<15&&before-bestDeficit>.1)
+        diagnostics.exampleSites.push({x:rootX,z:rootZ,soil,before,after:bestDeficit});
     } else bestDeficit = before;
     diagnostics.maxBurialAfter = Math.max(diagnostics.maxBurialAfter, bestDeficit);
     if (bestDeficit > .02) diagnostics.unresolved++;

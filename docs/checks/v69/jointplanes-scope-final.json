@@ -1,0 +1,14 @@
+{
+  "scope": "Cliff asset perimeter and terrain/data source preservation only; root renderer integration reviewed separately",
+  "protectedDigests": {
+    "src/assets/coast/tomari-west-volume-v32.glb": "a174055ccafd091ca04829afee4bcef62614c5a44a47eb29c46f006d6455251a",
+    "scripts/build-tomari-cliff.py": "0f8aab5d1bb1b68a31c6714616843322e6c334e4870674d349f77a0e2f23ea1e",
+    "src/world/geodata.ts": "ec5b43e535fc8feacdedd86595db3046c193fd4a234c4fe5f28f9a2d54ea3eb7",
+    "src/world/terrain.ts": "5b968a339ff034ec0df32f1bd96c12d1e8a896d0880f3c9d9cf056aaee03d9e9"
+  },
+  "guardSamples": 39566,
+  "changedInterior": 17604,
+  "baselineVertices": 62382,
+  "candidateExportVertices": 77672,
+  "candidateAssetSha256": "5dc2901779b11287e825d1f8b67f293ff201ffded14d102af8aa454b78e0bc3d"
+}

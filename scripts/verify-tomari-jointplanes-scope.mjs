@@ -4,7 +4,9 @@ import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-const protectedFiles=['src/assets/coast/tomari-west-volume-v32.glb','scripts/build-tomari-cliff.py','src/world/geodata.ts','src/world/terrain.ts','src/world/bathymetry.ts','src/ocean/renderer.ts'];
+// Root's independent rock seating integration changes renderer.ts. This check
+// certifies the cliff's terrain/data guards, not an unchanged whole renderer.
+const protectedFiles=['src/assets/coast/tomari-west-volume-v32.glb','scripts/build-tomari-cliff.py','src/world/geodata.ts','src/world/terrain.ts','src/world/bathymetry.ts'];
 const protectedDigests={};
 for(const file of protectedFiles){
  if(!fs.existsSync(file))continue;
@@ -19,6 +21,6 @@ let guardSamples=0,changedInterior=0;
 for(const p of candidate){const outside=p[2]<=-34||p[2]>=17||p[1]<=5||p[1]>=23;if(outside){guardSamples++;assert.ok(baseSet.has(key(p)),`Guard differs: ${p}`);}else if(!baseSet.has(key(p)))changedInterior++;}
 assert.ok(changedInterior>1000,'No meaningful physical geometry change');
 const source=fs.readFileSync('src/world/tomari-cliff-volume.ts','utf8');
-assert.match(source,/import\.meta\.env\.DEV/);assert.match(source,/get\('cliffvolume'\)==='jointplanes'/);assert.match(source,/jointPlanes\?jointPlanesUrl:defaultUrl/);
-const result={protectedDigests,guardSamples,changedInterior,baselineVertices:baseline.length,candidateExportVertices:candidate.length,candidateAssetSha256:hash(fs.readFileSync('src/assets/coast/tomari-west-volume-v69-jointplanes.glb'))};
+assert.match(source,/import\.meta\.env\?\.DEV===true/);assert.match(source,/get\('cliffvolume'\)==='jointplanes'/);assert.match(source,/jointPlanes\?jointPlanesUrl:defaultUrl/);
+const result={scope:'Cliff asset perimeter and terrain/data source preservation only; root renderer integration reviewed separately',protectedDigests,guardSamples,changedInterior,baselineVertices:baseline.length,candidateExportVertices:candidate.length,candidateAssetSha256:hash(fs.readFileSync('src/assets/coast/tomari-west-volume-v69-jointplanes.glb'))};
 console.log(JSON.stringify(result,null,2));if(process.argv[2])fs.writeFileSync(process.argv[2],JSON.stringify(result,null,2));

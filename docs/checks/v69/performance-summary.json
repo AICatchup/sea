@@ -1,0 +1,32 @@
+{
+  "baseline": {
+    "meanMs": 31.249720670391046,
+    "p95Ms": 31.599999999998545,
+    "frames": 180,
+    "durationMs": 5614.9000000059605,
+    "fpsReported": 32,
+    "quality": "high",
+    "camera": {
+      "height": 3.1169102586470796,
+      "pitch": -0.035,
+      "x": -36,
+      "yaw": -0.6,
+      "z": 27
+    }
+  },
+  "default": {
+    "meanMs": 31.2480446927374,
+    "p95Ms": 31.60000000000582,
+    "frames": 180,
+    "durationMs": 5622.299999982119,
+    "fpsReported": 32,
+    "quality": "high",
+    "camera": {
+      "height": 3.1169102586470796,
+      "pitch": -0.035,
+      "x": -36,
+      "yaw": -0.6,
+      "z": 27
+    }
+  }
+}

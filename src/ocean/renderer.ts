@@ -40,6 +40,7 @@ import {Expedition,createExpeditionMap,type SaveStore} from '../game/expedition.
 import {ExpeditionWorld} from '../game/expedition-world.ts';
 import {resizeReflectionTarget} from './reflection-target.ts';
 import {groundScannedShelf} from '../world/grounded-reef.ts';
+import {seatCoastalRock} from '../world/rock-support.ts';
 import {ReflectionCull} from './mirror-cull.ts';
 import {InstancedScanLod,simplifiedScanLevels} from '../world/scan-lod.ts';
 
@@ -293,6 +294,9 @@ export class Ocean {
       }
       let seed=31851;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
       const groundedReef=new URLSearchParams(location.search).get('reefseat')!=='0';
+      const groundOutcrops=new URLSearchParams(location.search).get('outcropseat')!=='0';
+      const outcropSupport={enabled:groundOutcrops,tested:0,changed:0,unresolved:0,maxInset:0};
+      this.scannedCoast.userData.outcropSupport=outcropSupport;
       const helper=new THREE.Object3D(),scanLodReady:Promise<void>[]=[];
       for(const variant of variants){
         const matrices:THREE.Matrix4[]=[];
@@ -306,7 +310,15 @@ export class Ocean {
           const normal=new THREE.Vector3(-dx,1,-dz).normalize();
           helper.position.set(x,h,z).addScaledVector(normal,variant.kind==='shelf'?-.85*s:-.45*s);helper.scale.set(s,.85*s,s);
           helper.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),normal);
-          helper.rotateY(random()*Math.PI*2);helper.updateMatrix();matrices.push(helper.matrix.clone());
+          helper.rotateY(random()*Math.PI*2);helper.updateMatrix();
+          const matrix=helper.matrix.clone();
+          if(groundOutcrops){
+            const support=seatCoastalRock(variant.geometry,matrix,(x,z)=>this.world.heightAt(x,z),normal,Math.min(1.5,variant.footprint*s*.45));
+            outcropSupport.tested++;if(support.moved>0)outcropSupport.changed++;
+            if(support.unresolved)outcropSupport.unresolved++;
+            outcropSupport.maxInset=Math.max(outcropSupport.maxInset,support.moved);
+          }
+          matrices.push(matrix);
         }
         if(variant.kind==='shelf'){
           const patches:THREE.BufferGeometry[]=[],seating:ReturnType<typeof groundScannedShelf>['diagnostics'][]=[];
@@ -765,7 +777,7 @@ export class Ocean {
         grounded:state.grounded,stamina:state.stamina,avatarAction:state.avatarAction},
       topography:{tomariSurvey:this.world.tomariMeasured?.diagnostics??null,coherentRock:this.world.elevation.coherentRock,dryToe:this.world.elevation.dryToe,connectedForm:this.world.elevation.connectedForm,strandProfile:this.world.elevation.beach?.strandDiagnostics??null,canopyContinuity:this.assets.group.userData.canopyContinuity===true,cliffVolume:this.world.cliffVolume?.group.userData.cliffVolume??null,niijimaCoastConfidence:this.world.niijimaCoast.dem.coastConfidence,niijimaCliffSkin:this.world.niijimaCliffSkin?.diagnostics??null,niijimaPointCliff:this.world.niijimaPointCliff?.diagnostics??null,niijimaCliffReplacement:this.world.niijimaCoast.cliffReplacement,niijimaMeasured:this.world.niijimaCoast.measured?.diagnostics??null,niijimaMeasuredPatch:this.world.niijimaCoast.measuredPatch?.diagnostics??null},
       geometryReceivers:this.probeGeometryReceivers(),
-      foliage:{...this.assets.group.userData.foliage,surveyCanopy:this.assets.group.userData.surveyCanopy,surveyLod:this.assets.group.userData.tomariSurveyCanopyLod,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
+      foliage:{...this.assets.group.userData.foliage,shrubGround:this.assets.group.userData.shrubGround??null,surveyCanopy:this.assets.group.userData.surveyCanopy,surveyLod:this.assets.group.userData.tomariSurveyCanopyLod,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       expedition:{...this.expedition.snapshot,credits:this.expedition.credits,capacity:this.expedition.capacity,rank:this.expedition.rank,race:this.expedition.race?{next:this.expedition.race.next,elapsed:this.expedition.race.elapsed}:null,target:this.expedition.target(state),save:this.expedition.saveStatus},
       photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
@@ -774,6 +786,7 @@ export class Ocean {
       spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,habushiGround:this.world.habushiGround.diagnostics,
       shoreSolver:this.shoreSolver?{...this.shoreSolver.diagnostics,ready:this.uniforms.uShoreReady.value}:null,
       sandMoisture:this.sandMoisture?.diagnostics??null,
+      outcropSupport:this.scannedCoast.userData.outcropSupport,
       photoCoast:this.photoCoast?{instances:this.photoCoast.diagnostics.instances,triangles:this.photoCoast.diagnostics.triangles,draws:this.photoCoast.diagnostics.draws,roles:this.photoCoast.diagnostics.roles}:null,
       scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),scanLod:this.scanLods.map(l=>l.diagnostics),
       reflectionCulling:{enabled:this.reflectionCull.enabled,skippedMeshes:this.reflectionCull.hiddenCount},

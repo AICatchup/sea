@@ -71,7 +71,7 @@ export class AssetWorld {
       if (this.options.crownSupport&&!this.options.surveyCanopy) this.rebuildCrownSupport();
       else {
         this.pineField.replaceLevels(this.foliage.pineLevels);
-        if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('shrubground') === '1') {
+        if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('shrubground') !== '0') {
           this.group.userData.shrubGround = supportLowShrubs(this.ground, this.foliage.shrubLevels.near, this.shrubMatrices, this.lowShrubMatrices);
           this.shrubField.dispose();
           this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, this.shrubMatrices,

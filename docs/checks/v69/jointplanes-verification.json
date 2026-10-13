@@ -1,0 +1,284 @@
+{
+  "meshes": 1,
+  "bytes": 3362416,
+  "vertices": 77672,
+  "triangles": 124760,
+  "nonfinite": 0,
+  "hiddenSamples": 431326,
+  "maxHiddenExposure": -0.0533177406359826,
+  "exposedFront": 35670,
+  "minExposedY": 3.108093738555908,
+  "maxExposedY": 26.270000457763672,
+  "edgesNotPaired": 0,
+  "probes": [
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 8,
+        "z": -32
+      },
+      "to": {
+        "x": -143,
+        "y": 8,
+        "z": -32
+      },
+      "blocked": true,
+      "fraction": 0.25758289560922376
+    },
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 10,
+        "z": -22
+      },
+      "to": {
+        "x": -143,
+        "y": 10,
+        "z": -22
+      },
+      "blocked": true,
+      "fraction": 0.3723028573427584
+    },
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 12,
+        "z": -9
+      },
+      "to": {
+        "x": -143,
+        "y": 12,
+        "z": -9
+      },
+      "blocked": true,
+      "fraction": 0.5896400167634605
+    },
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 10,
+        "z": 4
+      },
+      "to": {
+        "x": -143,
+        "y": 10,
+        "z": 4
+      },
+      "blocked": true,
+      "fraction": 0.5490258330701523
+    },
+    {
+      "kind": "wall",
+      "from": {
+        "x": -75,
+        "y": 10,
+        "z": 15
+      },
+      "to": {
+        "x": -143,
+        "y": 10,
+        "z": 15
+      },
+      "blocked": true,
+      "fraction": 0.4429324173034843
+    },
+    {
+      "kind": "shore/boat-clearance",
+      "from": {
+        "x": -86,
+        "y": 0,
+        "z": -36
+      },
+      "to": {
+        "x": -86,
+        "y": 0,
+        "z": -10
+      },
+      "blocked": false
+    },
+    {
+      "kind": "shore/boat-clearance",
+      "from": {
+        "x": -42,
+        "y": 0,
+        "z": 9
+      },
+      "to": {
+        "x": -36,
+        "y": 0,
+        "z": 27
+      },
+      "blocked": false
+    },
+    {
+      "kind": "shore/boat-clearance",
+      "from": {
+        "x": -56,
+        "y": -1,
+        "z": -50
+      },
+      "to": {
+        "x": -20,
+        "y": -1,
+        "z": -40
+      },
+      "blocked": false
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 7,
+        "z": -36
+      },
+      "to": {
+        "x": -143,
+        "y": 7,
+        "z": -28
+      },
+      "blocked": true,
+      "fraction": 0.2591272025440391
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 7,
+        "z": -28
+      },
+      "to": {
+        "x": -143,
+        "y": 7,
+        "z": -36
+      },
+      "blocked": true,
+      "fraction": 0.26068023164866705
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 12,
+        "z": -32
+      },
+      "to": {
+        "x": -143,
+        "y": 12,
+        "z": -24
+      },
+      "blocked": true,
+      "fraction": 0.28580710382750807
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 12,
+        "z": -24
+      },
+      "to": {
+        "x": -143,
+        "y": 12,
+        "z": -32
+      },
+      "blocked": true,
+      "fraction": 0.3075914175075748
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 19,
+        "z": -22
+      },
+      "to": {
+        "x": -143,
+        "y": 19,
+        "z": -14
+      },
+      "blocked": true,
+      "fraction": 0.6042617630540931
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 19,
+        "z": -14
+      },
+      "to": {
+        "x": -143,
+        "y": 19,
+        "z": -22
+      },
+      "blocked": true,
+      "fraction": 0.5726977550720732
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 17,
+        "z": 1
+      },
+      "to": {
+        "x": -143,
+        "y": 17,
+        "z": 9
+      },
+      "blocked": true,
+      "fraction": 0.5934026521544535
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 17,
+        "z": 9
+      },
+      "to": {
+        "x": -143,
+        "y": 17,
+        "z": 1
+      },
+      "blocked": true,
+      "fraction": 0.609023050607778
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 8,
+        "z": 11
+      },
+      "to": {
+        "x": -143,
+        "y": 8,
+        "z": 19
+      },
+      "blocked": true,
+      "fraction": 0.4300947997852459
+    },
+    {
+      "kind": "wall-oblique",
+      "from": {
+        "x": -75,
+        "y": 8,
+        "z": 19
+      },
+      "to": {
+        "x": -143,
+        "y": 8,
+        "z": 11
+      },
+      "blocked": true,
+      "fraction": 0.42612680679495274
+    }
+  ],
+  "exposedHiddenFaces": [],
+  "exposedHiddenFaceCount": 0
+}
