@@ -1,0 +1,130 @@
+{
+  "kind": "V69 inferred unequal joint-plane wedges with sparse branched bevels; V32 perimeter and DEM guards",
+  "patch_zy": [
+    -34,
+    17,
+    5,
+    23
+  ],
+  "wedges": [
+    [
+      -29,
+      10,
+      7.4,
+      5.2,
+      0.94,
+      0.13
+    ],
+    [
+      -21,
+      16,
+      8.2,
+      6.3,
+      1.2,
+      -0.18
+    ],
+    [
+      -13,
+      9,
+      6.8,
+      4.9,
+      0.82,
+      0.23
+    ],
+    [
+      -9,
+      19,
+      8.5,
+      5.1,
+      1.1,
+      0.11
+    ],
+    [
+      -1,
+      13,
+      7.2,
+      6.4,
+      1.15,
+      -0.21
+    ],
+    [
+      8,
+      17,
+      7.8,
+      5.5,
+      0.99,
+      0.19
+    ],
+    [
+      12,
+      8,
+      5.2,
+      4.0,
+      0.75,
+      -0.13
+    ]
+  ],
+  "triangles": 124760,
+  "vertices": 62382,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "degenerate_faces": 0,
+  "finite": true,
+  "max_outward_offset_m": 1.229903605230456,
+  "min_front_back_x_gap_m": 0.549999999999983,
+  "bounds_world": {
+    "min": [
+      -136.58681640625,
+      -0.5420307090020275,
+      -44.0
+    ],
+    "max": [
+      -85.90693359375,
+      28.007272727272728,
+      26.0
+    ]
+  },
+  "sources": [
+    {
+      "asset": "coast-rocks-01-2k.glb",
+      "sha256": "3c8ae71b23589c22ad1b0b673b509a1be1a9d55f6d9076195f41aefcfa930200",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    },
+    {
+      "asset": "coast-rocks-03-2k.glb",
+      "sha256": "f0001e9f71059afcbeb0848fb572a1244790a9d6df1092a101d5c44e3573a4a5",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    },
+    {
+      "asset": "boulder-01-2k.glb",
+      "sha256": "c9ce15df5031723038f21924bd4af5ccfddd2862dca54883dfa7abb48f0bda92",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    },
+    {
+      "asset": "namaqualand-boulder-02-2k.glb",
+      "sha256": "1489de97fe99fea99895a8dd605fb4942692121e7e331904073a61241a778d7b",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    },
+    {
+      "asset": "namaqualand-boulder-03-2k.glb",
+      "sha256": "1b6df6557941ee44f0774b0f8a411287aa7575626be2af5238a86824dfea6731",
+      "role": "physical scan relief sampled along measured scan up axis; inferred vertical cliff placement"
+    }
+  ],
+  "targeted_intersection": {
+    "changed_front_faces": 29098,
+    "back_faces": 61600,
+    "aabb_pairs": 0,
+    "segment_triangle_intersections": 0,
+    "front_y_injective": true,
+    "scope": "changed interior front/back; original guard points checked separately"
+  },
+  "normal_policy": "smooth scan/plane interiors; split at adjacent face angle > 0.45 radians",
+  "readback_export_vertices": 77672,
+  "readback": {
+    "triangles": 124760,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0
+  },
+  "elapsed_seconds": 6.4019691944122314
+}

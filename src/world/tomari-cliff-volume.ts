@@ -2,7 +2,10 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {makeCliffMaterial} from './coast-material.ts';
 
-const url=new URL('../assets/coast/tomari-west-volume-v32.glb',import.meta.url).href;
+const defaultUrl=new URL('../assets/coast/tomari-west-volume-v32.glb',import.meta.url).href;
+const jointPlanesUrl=new URL('../assets/coast/tomari-west-volume-v69-jointplanes.glb',import.meta.url).href;
+const jointPlanes=import.meta.env.DEV&&typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('cliffvolume')==='jointplanes';
+const url=jointPlanes?jointPlanesUrl:defaultUrl;
 /** Closed inferred western cliff relief. The original DEM remains authoritative. */
 export class TomariCliffVolume {
   readonly group=new THREE.Group();
@@ -12,7 +15,7 @@ export class TomariCliffVolume {
   private disposed=false;
   constructor(terrain:THREE.MeshStandardMaterial){
     this.group.name='Tomari western joined scan crags';
-    this.group.userData.cliffVolume={status:'loading',source:'CC0 scan geometry / inferred placement',triangles:0};
+    this.group.userData.cliffVolume={status:'loading',source:'CC0 scan geometry / inferred placement',candidate:jointPlanes?'v69-jointplanes':'v32',triangles:0};
     this.material=makeCliffMaterial(terrain);this.material.vertexColors=false;
     this.material.name='Tomari scan volume / shared world rock PBR';
     if(typeof document==='undefined'){this.group.userData.cliffVolume.status='cpu-only';this.ready=Promise.resolve();}
