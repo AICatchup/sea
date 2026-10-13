@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { supportLowShrubs } from './shrub-support.ts';
 import { crownSupportedPlacements } from './crown-support.ts';
 import {surveyCanopyPlacements,withinSurveyCanopy} from './tomari-canopy.ts';
 import {tomariCliffCover} from './tomari-cliff-cover.ts';
@@ -26,6 +27,8 @@ export class AssetWorld {
   private readonly pines = this.foliage.pines;
   private pineField!: FoliageLodField;
   private shrubField!: FoliageLodField;
+  private shrubMatrices: THREE.Matrix4[][] = [];
+  private lowShrubMatrices = new Set<THREE.Matrix4>();
   private cliffCoverField?:FoliageLodField;
   private surveyCanopyField?:FoliageLodField;
   private cliffTreeField?:FoliageLodField;
@@ -66,7 +69,15 @@ export class AssetWorld {
       // Point-guided replacement owns this region; don't rebuild a second
       // unfiltered authored canopy over it when experimental flags combine.
       if (this.options.crownSupport&&!this.options.surveyCanopy) this.rebuildCrownSupport();
-      else { this.pineField.replaceLevels(this.foliage.pineLevels); this.shrubField.replaceLevels(this.foliage.shrubLevels); }
+      else {
+        this.pineField.replaceLevels(this.foliage.pineLevels);
+        if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('shrubground') === '1') {
+          this.group.userData.shrubGround = supportLowShrubs(this.ground, this.foliage.shrubLevels.near, this.shrubMatrices, this.lowShrubMatrices);
+          this.shrubField.dispose();
+          this.shrubField = new FoliageLodField(this.group, 'coastalShrubLod', this.foliage.shrubLevels, this.shrubMatrices,
+            this.shrubLodSettings(this.options.canopyContinuity === true));
+        } else this.shrubField.replaceLevels(this.foliage.shrubLevels);
+      }
       this.pineField.update(this.foliagePosition, true); this.shrubField.update(this.foliagePosition, true);
       this.group.userData.foliage.status = 'ready';
       this.group.userData.foliage.branchClusters=this.options.branchCanopy===true;
@@ -148,6 +159,8 @@ export class AssetWorld {
     const random = randomSeed(0x544f4d41);
     const trees: THREE.Matrix4[][] = [[], [], []];
     const shrubs: THREE.Matrix4[][] = [[], [], []];
+    this.lowShrubMatrices.clear();
+    this.shrubMatrices = shrubs;
     let treeCount = 0, shrubCount = 0, groundCoverCount = 0;
     // Independent cover strata: a pine never suppresses the shrub layer below it.
     for (let gz = -300; gz < 290; gz += 3.6) for (let gx = -355; gx < 320; gx += 3.6) {
@@ -201,7 +214,7 @@ export class AssetWorld {
           }
           matrix.compose(new THREE.Vector3(x, supportY, z), orientation, scale);
         }
-        if(!surveyReplaced){shrubs[variant].push(matrix);shrubCount++; if (low) groundCoverCount++;}
+        if(!surveyReplaced){shrubs[variant].push(matrix);shrubCount++; if (low) { groundCoverCount++; this.lowShrubMatrices.add(matrix); }}
       }
     }
     // Same deterministic transforms, now partitioned into mutually exclusive distance bands.
