@@ -41,6 +41,7 @@ import {ExpeditionWorld} from '../game/expedition-world.ts';
 import {resizeReflectionTarget} from './reflection-target.ts';
 import {groundScannedShelf} from '../world/grounded-reef.ts';
 import {seatCoastalRock} from '../world/rock-support.ts';
+import {seatShelfBoundary} from '../world/shelf-support.ts';
 import {ReflectionCull} from './mirror-cull.ts';
 import {InstancedScanLod,simplifiedScanLevels} from '../world/scan-lod.ts';
 
@@ -295,7 +296,9 @@ export class Ocean {
       let seed=31851;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
       const groundedReef=new URLSearchParams(location.search).get('reefseat')!=='0';
       const groundOutcrops=new URLSearchParams(location.search).get('outcropseat')!=='0';
-      const outcropSupport={enabled:groundOutcrops,tested:0,changed:0,unresolved:0,maxInset:0};
+      const rimSeating=groundOutcrops&&new URLSearchParams(location.search).get('shelfrim')!=='0';
+      const outcropSupport={enabled:groundOutcrops,tested:0,changed:0,unresolved:0,maxInset:0,
+        rim:{enabled:rimSeating,tested:0,seated:0,rejected:0,maxInset:0,maxExposureBefore:0}};
       this.scannedCoast.userData.outcropSupport=outcropSupport;
       const helper=new THREE.Object3D(),scanLodReady:Promise<void>[]=[];
       for(const variant of variants){
@@ -319,6 +322,17 @@ export class Ocean {
             outcropSupport.maxInset=Math.max(outcropSupport.maxInset,support.moved);
           }
           matrices.push(matrix);
+        }
+        // Evaluate after the seeded population is complete: rejected cliff sites
+        // cannot shift RNG consumption, later variants or the underwater reefs.
+        if(rimSeating&&variant.kind==='shelf'){
+          for(let i=matrices.length-1;i>=0;i--){
+            const matrix=matrices[i],normal=new THREE.Vector3(0,1,0).transformDirection(matrix);
+            const support=seatShelfBoundary(variant.geometry,matrix,(x,z)=>this.world.heightAt(x,z),normal);
+            outcropSupport.rim.tested++;outcropSupport.rim.maxExposureBefore=Math.max(outcropSupport.rim.maxExposureBefore,support.maxExposureBefore);
+            if(!support.accepted){matrices.splice(i,1);outcropSupport.rim.rejected++;}
+            else if(support.moved>0){outcropSupport.rim.seated++;outcropSupport.rim.maxInset=Math.max(outcropSupport.rim.maxInset,support.moved);}
+          }
         }
         if(variant.kind==='shelf'){
           const patches:THREE.BufferGeometry[]=[],seating:ReturnType<typeof groundScannedShelf>['diagnostics'][]=[];
@@ -354,7 +368,7 @@ export class Ocean {
         instances.name='Photo-scanned cliff outcrops '+variant.id;instances.castShadow=true;instances.receiveShadow=true;
         instances.computeBoundingSphere();this.scannedCoastInstances.push(instances);this.scannedCoast.add(instances);
         // Distance LOD draws meshoptimizer reductions; the full scan stays the hidden collider.
-        if(new URLSearchParams(location.search).get('scanlod')!=='0')scanLodReady.push(simplifiedScanLevels(variant.geometry,[.22,.06]).then(levels=>{
+        if(new URLSearchParams(location.search).get('scanlod')!=='0')scanLodReady.push(simplifiedScanLevels(variant.geometry,[.22,.06],variant.kind==='shelf').then(levels=>{
           if(this.disposed){levels.forEach(l=>{l.geometry.attributes={};l.geometry.dispose();});return;}
           const lod=new InstancedScanLod(instances,levels,[260,70]);instances.visible=false;
           this.scanLods.push(lod);this.scannedCoast.add(lod.group);

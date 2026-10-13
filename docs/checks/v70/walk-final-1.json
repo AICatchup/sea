@@ -1,0 +1,30 @@
+{
+  "adventure": {
+    "avatarAction": "walk",
+    "boarding": 0,
+    "boat": [
+      -118.5950068345507,
+      0.07005303146528519,
+      -90.9578943776148
+    ],
+    "boatYaw": -0.6,
+    "depth": 0,
+    "grounded": true,
+    "interaction": "",
+    "message": "浜から歩いて海へ。画面をクリックして見回せます。感度やキーは右上の操作設定へ。",
+    "mode": "walk",
+    "oxygen": 1,
+    "placed": 0,
+    "remaining": 0,
+    "speed": 1.0878215608592718,
+    "stamina": 1,
+    "voyage": null
+  },
+  "camera": {
+    "height": 0.5067824879670484,
+    "pitch": -0.035,
+    "x": -54.72631643470535,
+    "yaw": -0.6,
+    "z": -32.67013393966919
+  }
+}

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {MeshoptSimplifier} from 'three/examples/jsm/libs/meshopt_simplifier.module.js';
+import {scanBoundaryEdges} from './grounded-reef.ts';
 
 /** A reduced index over the source's own vertices; attributes are shared, never copied. */
 export interface ScanLevel {geometry:THREE.BufferGeometry;triangles:number;error:number}
@@ -10,23 +11,36 @@ function positions(geometry:THREE.BufferGeometry):Float32Array{
   const out=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){out[i*3]=p.getX(i);out[i*3+1]=p.getY(i);out[i*3+2]=p.getZ(i);}return out;
 }
 
-/** meshoptimizer reductions to the given triangle ratios. Vertices that share a position but
- * differ in UV/normal are seams the simplifier keeps, so photo charts do not tear. */
-export async function simplifiedScanLevels(source:THREE.BufferGeometry,ratios:readonly number[]):Promise<ScanLevel[]>{
+function boundarySignature(geometry:THREE.BufferGeometry):string{
+  const p=geometry.getAttribute('position');
+  const key=(i:number)=>[p.getX(i),p.getY(i),p.getZ(i)].map(n=>Math.round(n*1e5)).join(',');
+  return scanBoundaryEdges(geometry).map(([a,b])=>[key(a),key(b)].sort().join('|')).sort().join(';');
+}
+
+/** Reduced indices over the source attributes. Open shelves preserve their seated crop rim:
+ * a collapsed border can expose a new chord even when the native scan is buried. */
+export async function simplifiedScanLevels(source:THREE.BufferGeometry,ratios:readonly number[],preserveBoundary=false):Promise<ScanLevel[]>{
   await MeshoptSimplifier.ready;
   const index=source.index;if(!index)throw new Error('Indexed scan geometry required');
   const indices=Uint32Array.from(index.array as ArrayLike<number>),points=positions(source),levels:ScanLevel[]=[];
+  const boundary=preserveBoundary?boundarySignature(source):'';
   for(const ratio of ratios){
     const target=Math.max(3,Math.floor(indices.length*ratio/3)*3);
     // Unbounded error: the ratio alone sets the budget; the error is reported for selection.
-    let [reduced,error]=MeshoptSimplifier.simplify(indices.slice(),points,3,target,1),method='simplify';
+    let [reduced,error]=MeshoptSimplifier.simplify(indices.slice(),points,3,target,1,preserveBoundary?['LockBorder']:[]),method='simplify';
     // Scans with split per-triangle vertices cannot collapse edges at all; cluster instead.
-    if(reduced.length>target*2){[reduced,error]=MeshoptSimplifier.simplifySloppy(indices.slice(),points,3,null,target,1);method='sloppy';}
+    if(!preserveBoundary&&reduced.length>target*2){[reduced,error]=MeshoptSimplifier.simplifySloppy(indices.slice(),points,3,null,target,1);method='sloppy';}
+    if(preserveBoundary){
+      const probe=new THREE.BufferGeometry().setAttribute('position',source.getAttribute('position'));
+      probe.setIndex(new THREE.BufferAttribute(reduced,1));
+      // Validate welded positions too: raw vertex locks alone are not a seam invariant.
+      if(boundarySignature(probe)!==boundary){reduced=indices.slice();error=0;method='source boundary fallback';}
+    }
     const geometry=new THREE.BufferGeometry();
     for(const [name,attribute] of Object.entries(source.attributes))geometry.setAttribute(name,attribute);
     geometry.setIndex(new THREE.BufferAttribute(reduced,1));
     geometry.boundingBox=source.boundingBox?.clone()??null;geometry.boundingSphere=source.boundingSphere?.clone()??null;
-    geometry.userData={derivation:`meshoptimizer ${method} (three bundled), shared source attributes`,ratio,relativeError:error};
+    geometry.userData={derivation:`meshoptimizer ${method} (three bundled), shared source attributes`,ratio,relativeError:error,preserveBoundary};
     levels.push({geometry,triangles:reduced.length/3,error});
   }
   return levels;

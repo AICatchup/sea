@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-13",
+  "baseRevision": "fcf864fe374eb027d906f2fbaa205fa864ae6c22",
+  "local": {
+    "standalone": true,
+    "productionBuild": true,
+    "typecheck": true,
+    "focusedFinal": {
+      "pass": 8,
+      "fail": 0
+    },
+    "fullSuite": {
+      "durationMs": 101123.9968,
+      "fail": 0,
+      "pass": 570
+    }
+  },
+  "device": {
+    "visual": [
+      "fixed time shore",
+      "near shelf 2 directions",
+      "aerial",
+      "measured coast candidate foot",
+      "underwater"
+    ],
+    "performance": {
+      "scope": "Single matched-camera requestAnimationFrame comparison; no GPU timing or all-scene performance guarantee",
+      "samples": 180,
+      "afterP95Ms": 18.60000000000582,
+      "liveWaves": true,
+      "afterMeanMs": 18.09333333333343,
+      "beforeMeanMs": 18.1544444444444,
+      "foreground": true,
+      "beforeP95Ms": 18.60000000000582,
+      "quality": "high",
+      "resolution": [
+        1280,
+        720
+      ]
+    },
+    "browser": "Chrome",
+    "webglErrors": 0,
+    "travel": {
+      "finalDepth": 4.616212014194478,
+      "end": [
+        -126.47625520563231,
+        -137.5041183352802
+      ],
+      "start": [
+        -36,
+        27
+      ],
+      "transitions": [
+        "walk",
+        "swim",
+        "dive"
+      ],
+      "boatTested": false,
+      "method": "ordinary click, W, W+D, W, W, W, C, Esc"
+    }
+  },
+  "adoption": {
+    "shelfLodBorder": "default",
+    "measuredSubstrate": "tomarisurvey=1 opt-in only",
+    "shelfRim": "default"
+  },
+  "limitations": [
+    "Whole-world photorealism unachieved",
+    "Source crop sampling is finite, not a continuous contact proof",
+    "Full measured terrain remains opt-in",
+    "No new actual travel evidence for boat or other island",
+    "Blade fix does not replace large cliff/strand shape"
+  ],
+  "review": {
+    "independentSupplement": true,
+    "priorLedgerReopened": false,
+    "files": [
+      "supplementary-review.md",
+      "shelf-review.md",
+      "lod-review.md"
+    ]
+  }
+}

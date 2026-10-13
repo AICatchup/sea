@@ -1,0 +1,337 @@
+{
+  "diagnostic": "normal",
+  "draws": 485,
+  "foliage": {
+    "branchClusters": true,
+    "photoPass": false,
+    "pines": {
+      "byVariant": [
+        {
+          "distant": 0,
+          "far": 72,
+          "impostor": 222,
+          "mid": 33,
+          "near": 0
+        },
+        {
+          "distant": 0,
+          "far": 72,
+          "impostor": 227,
+          "mid": 28,
+          "near": 5
+        },
+        {
+          "distant": 0,
+          "far": 62,
+          "impostor": 237,
+          "mid": 18,
+          "near": 1
+        }
+      ],
+      "culled": 2072,
+      "draws": 33,
+      "exclusiveLod": true,
+      "instances": {
+        "distant": 0,
+        "far": 206,
+        "impostor": 686,
+        "mid": 79,
+        "near": 6
+      },
+      "levelTriangles": {
+        "distant": [
+          2228,
+          1503,
+          1930
+        ],
+        "far": [
+          5477,
+          4766,
+          5163
+        ],
+        "mid": [
+          13682,
+          12991,
+          13513
+        ],
+        "near": [
+          177354,
+          120486,
+          234938
+        ]
+      },
+      "nearTriangles": 837368,
+      "originalPlacements": 3049,
+      "oversized": {
+        "distant": 0,
+        "far": 206,
+        "mid": 79
+      },
+      "placements": 3049,
+      "rendered": 977,
+      "selection": "actual transformed crown angular span within distance / triangle caps",
+      "source": "Native CC0 wood and leaves retained, with authored supplementary distant branch patches",
+      "status": "ready",
+      "thresholds": {
+        "farPixels": 12,
+        "midCapacity": 300,
+        "midDistance": 210,
+        "midPixels": 24,
+        "nearCapacity": 24,
+        "nearDistance": 35,
+        "nearPixels": 48,
+        "preserveCrowns": true,
+        "triangleBudget": 6500000,
+        "viewAware": true
+      },
+      "triangles": 2954830,
+      "viewAware": true
+    },
+    "shrubGround": {
+      "changed": 2503,
+      "exampleSites": [],
+      "invalid": 0,
+      "lifted": 2503,
+      "maxBurialAfter": 3.575788138198923,
+      "maxBurialBefore": 3.779925763726733,
+      "maxLift": 0.095,
+      "maxRootGap": 0.08,
+      "minWidthFactor": 0.7,
+      "samples": [
+        43,
+        48,
+        48
+      ],
+      "shrunk": 180,
+      "tested": 4652,
+      "unresolved": 251
+    },
+    "shrubs": {
+      "byVariant": [
+        {
+          "distant": 0,
+          "far": 901,
+          "mid": 326,
+          "near": 10
+        },
+        {
+          "distant": 0,
+          "far": 870,
+          "mid": 381,
+          "near": 12
+        },
+        {
+          "distant": 0,
+          "far": 747,
+          "mid": 493,
+          "near": 26
+        }
+      ],
+      "culled": 7154,
+      "draws": 9,
+      "exclusiveLod": true,
+      "instances": {
+        "distant": 0,
+        "far": 2518,
+        "mid": 1200,
+        "near": 48
+      },
+      "levelTriangles": {
+        "far": [
+          160,
+          160,
+          160
+        ],
+        "mid": [
+          420,
+          416,
+          434
+        ],
+        "near": [
+          2299,
+          2297,
+          2293
+        ]
+      },
+      "nearTriangles": 110172,
+      "originalPlacements": 10920,
+      "oversized": {
+        "distant": 0,
+        "far": 1941,
+        "mid": 121
+      },
+      "placements": 10920,
+      "rendered": 3766,
+      "selection": "actual transformed crown angular span within distance / triangle caps",
+      "source": "CC0 all-angle branch/needle/leaf models in every ready band",
+      "status": "ready",
+      "thresholds": {
+        "midCapacity": 1200,
+        "midDistance": 210,
+        "midPixels": 8,
+        "nearCapacity": 48,
+        "nearDistance": 26,
+        "nearPixels": 40,
+        "triangleBudget": 1350000,
+        "viewAware": true
+      },
+      "triangles": 1022430,
+      "viewAware": true
+    },
+    "source": "Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified; authored distance-faded branch atlas supplements distant pine crowns",
+    "status": "ready"
+  },
+  "materials": {
+    "detail": "ready",
+    "detailAsset": "CC0-rock-face-03-analogue",
+    "pumice": "ready",
+    "tileMetres": 2.7
+  },
+  "name": "foot-survey-supported",
+  "pose": {
+    "eyeY": 6,
+    "pitch": -0.08,
+    "x": -76,
+    "yaw": -1.4,
+    "z": -36
+  },
+  "scope": "Explicit paused same-engine WebGL observation. No realtime FPS, input, walking or travel acceptance.",
+  "state": {
+    "action": "idle",
+    "camera": [
+      -76,
+      6,
+      -36,
+      -0.030585529827355417,
+      0.6437023818007903,
+      0.025761836383888462,
+      0.7642303951134757
+    ],
+    "disposed": false,
+    "eyeY": 6,
+    "fov": 62,
+    "height": 720,
+    "hidden": false,
+    "locked": true,
+    "oxygen": 1,
+    "paused": true,
+    "pose": {
+      "depth": 0,
+      "mode": "walk",
+      "pitch": -0.08,
+      "x": -76,
+      "yaw": -1.4,
+      "z": -36
+    },
+    "preset": "day",
+    "quality": "high",
+    "stamina": 1,
+    "swell": 1,
+    "width": 1280,
+    "wind": 8.5
+  },
+  "terrain": [],
+  "time": 34,
+  "topography": {
+    "canopyContinuity": true,
+    "cliffVolume": null,
+    "coherentRock": true,
+    "connectedForm": false,
+    "dryToe": true,
+    "niijimaCliffReplacement": {
+      "queriedTriangles": 123220,
+      "removedTriangles": 114586
+    },
+    "niijimaCliffSkin": null,
+    "niijimaCoastConfidence": {
+      "compatible": true,
+      "removed": 1968
+    },
+    "niijimaMeasured": {
+      "centimetreAccuracyEstablished": false,
+      "datumTransformAccuracyMetres": 1,
+      "id": "tokyo-09QC1701-1711-native",
+      "nativeGridSpacingMetres": 0.25,
+      "nativeSamples": 3840000,
+      "numericalComparison": {
+        "maximumHeightEncodingErrorMetres": 0.005000000000009663,
+        "maximumHorizontalErrorMetres": 0.006630673760028973,
+        "maximumVertexErrorMetres": 0.008285493951898815,
+        "scope": "Against the declared transform of both provider grids, before outer-boundary blending. Excludes source survey and datum uncertainty; NOT physical centimetre accuracy.",
+        "vertices": 3840000
+      },
+      "source": "https://www.geospatial.jp/ckan/dataset/tokyopc-shima-2023",
+      "sourceTiles": [
+        {
+          "columns": 1600,
+          "id": "09QC1701",
+          "nativeNorthing": -183000,
+          "nativePixelMetres": 0.25,
+          "rows": 1200,
+          "tiffSha256": "f0046ebf015834b00b4889fa9cd2e11dfe6f9dce66f172aa7da0b65c6dcb24cb",
+          "url": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/17/09QC1701.zip",
+          "zipSha256": "0a82fad30bb148c54a990874b2bd535f6c5595c4e01177380348c00e8aef2909"
+        },
+        {
+          "columns": 1600,
+          "id": "09QC1711",
+          "nativeNorthing": -183300,
+          "nativePixelMetres": 0.25,
+          "rows": 1200,
+          "tiffSha256": "517493120bf9952d641968a7e5dbd577eacbd9d5d9140c00133c10bb8185bf23",
+          "url": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/17/09QC1711.zip",
+          "zipSha256": "89fefd0cfcd4484ea477bec98c6c4919a767b37a15d1220de389205447a77f47"
+        }
+      ]
+    },
+    "niijimaMeasuredPatch": {
+      "chunks": 247,
+      "fullResolutionOnly": false,
+      "kind": "measured-heightfield",
+      "lod": {
+        "chunksByStride": {
+          "1": 247
+        },
+        "drawnTriangles": 7672002,
+        "lockedChunks": 0,
+        "pixels": 4,
+        "strides": [
+          2,
+          4,
+          8,
+          16,
+          32,
+          64
+        ]
+      },
+      "maxUnblendedHeightError": 0,
+      "nativeSamples": 3840000,
+      "triangles": 7672002,
+      "unknownSamples": 0,
+      "vertices": 3897816
+    },
+    "niijimaPointCliff": null,
+    "strandProfile": {
+      "changed": 17846,
+      "maximumDelta": 0.8011924102902412,
+      "meanAbsoluteDelta": 0.1647245723231761,
+      "westernJoinVertices": 990
+    },
+    "tomariSurvey": {
+      "centimetreSurveyAccuracyEstablished": false,
+      "id": "tomari-west-tokyo-09QC1546",
+      "nativeSpacingMetres": 0.25,
+      "rockExposure": {
+        "attributeBytes": 2597544,
+        "correctedVertices": 35958,
+        "enabled": true,
+        "inferred": true,
+        "vertices": 649386
+      },
+      "runtimeReprojected": true,
+      "sourceURL": "https://japan-pointcloud.s3.ap-northeast-1.amazonaws.com/Tokyo/2023/01/LP/Grid/TIFF/09/QC/15/09QC1546.zip",
+      "sourceZipSha256": "1b766ace1472e0d2722ae251aaf33215c43e3c8ea5a855ac43ef00a1ad7ba386"
+    }
+  },
+  "triangles": 24372177
+}

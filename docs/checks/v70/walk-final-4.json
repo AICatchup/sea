@@ -1,0 +1,30 @@
+{
+  "adventure": {
+    "avatarAction": "swim",
+    "boarding": 0,
+    "boat": [
+      -118.5950068345507,
+      0.06914486820949683,
+      -90.9578943776148
+    ],
+    "boatYaw": -0.6,
+    "depth": 0,
+    "grounded": false,
+    "interaction": "",
+    "message": "海に浮かんでいます。移動キーで泳ぎ、Cでゆっくり潜れます。",
+    "mode": "swim",
+    "oxygen": 1,
+    "placed": 0,
+    "remaining": 0,
+    "speed": 0,
+    "stamina": 1,
+    "voyage": null
+  },
+  "camera": {
+    "height": 0.41507438773174615,
+    "pitch": -0.035,
+    "x": -126.47625520563231,
+    "yaw": -0.6,
+    "z": -137.5041183352802
+  }
+}

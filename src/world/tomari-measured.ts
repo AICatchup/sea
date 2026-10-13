@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {TOMARI_SURVEY as data} from './tomari-survey.generated.ts';
 import {createMeasuredGridPatch,type MeasuredGridPatch} from './measured-grid-patch.ts';
 import type {IslandElevation} from './geodata.ts';
+import {makeMeasuredCoastMaterial,measuredRockExposure} from './measured-rock-exposure.ts';
 
 /** Survey-derived land, on a grid aligned with the existing terrain cells.
  * One triangle surface drives visible ground, feet and ocean depth. */
@@ -10,7 +11,8 @@ export class TomariMeasuredCoast {
  readonly group:THREE.Group;
  readonly ready=Promise.resolve();
  readonly bounds={minX:data.origin.x,minZ:data.origin.z,maxX:data.origin.x+(data.width-1)*data.column.x,maxZ:data.origin.z+(data.height-1)*data.row.z};
- readonly diagnostics={id:data.id,sourceURL:data.sourceURL,sourceZipSha256:data.sourceZipSha256,nativeSpacingMetres:data.nativeSpacingMetres,runtimeReprojected:true,centimetreSurveyAccuracyEstablished:false};
+ readonly diagnostics={id:data.id,sourceURL:data.sourceURL,sourceZipSha256:data.sourceZipSha256,nativeSpacingMetres:data.nativeSpacingMetres,runtimeReprojected:true,centimetreSurveyAccuracyEstablished:false,
+  rockExposure:{enabled:false,inferred:true,vertices:0,correctedVertices:0,attributeBytes:0}};
  private readonly material:THREE.MeshStandardMaterial;
  constructor(elevation:IslandElevation,terrain:THREE.MeshStandardMaterial){
   // The original renderer uses this diagonal, so boundary subdivisions lie on
@@ -34,10 +36,22 @@ export class TomariMeasuredCoast {
    const blend=THREE.MathUtils.smoothstep(y,.3,2.0);
    heights[k]=old+(y-old)*blend;valid[k]=1;
   }
-  this.material=terrain.clone();this.material.vertexColors=false;
-  this.material.onBeforeCompile=terrain.onBeforeCompile;
-  this.material.customProgramCacheKey=terrain.customProgramCacheKey;
+  const exposedRock=typeof location==='undefined'||new URLSearchParams(location.search).get('surveyrock')!=='0';
+  this.diagnostics.rockExposure.enabled=exposedRock;
+  this.material=makeMeasuredCoastMaterial(terrain,exposedRock);
   this.patch=createMeasuredGridPatch({...data,heights,valid},{heightAt:fallback},this.material,{blendStartMetres:1,blendEndMetres:12,cutInsetMetres:0});
+  if(exposedRock)for(const geometry of this.patch.geometries){
+   const p=geometry.getAttribute('position'),exposure=new Float32Array(p.count);
+   // Use the rendered, boundary-blended surface: the attribute fades back to
+   // zero wherever the measured patch meets the unchanged original triangles.
+   for(let i=0;i<p.count;i++){
+    exposure[i]=measuredRockExposure(p.getY(i),fallback(p.getX(i)+data.origin.x,p.getZ(i)+data.origin.z));
+    if(exposure[i]>.001)this.diagnostics.rockExposure.correctedVertices++;
+   }
+   this.diagnostics.rockExposure.vertices+=exposure.length;
+   this.diagnostics.rockExposure.attributeBytes+=exposure.byteLength;
+   geometry.setAttribute('measuredRockExposure',new THREE.BufferAttribute(exposure,1));
+  }
   this.group=this.patch.group;this.group.name='Tomari western 25cm survey-derived coast';
   this.group.userData.tomariSurvey=this.diagnostics;
   this.group.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});

@@ -1,0 +1,35 @@
+{
+  "camera": {
+    "height": 3.1169102586470796,
+    "pitch": -0.035,
+    "x": -36,
+    "yaw": -0.6,
+    "z": 27
+  },
+  "fps": 55.1,
+  "mean": 18.09333333333343,
+  "p95": 18.60000000000582,
+  "paused": false,
+  "quality": "high",
+  "resolution": [
+    1280,
+    720
+  ],
+  "samples": 180,
+  "scope": "foreground Chrome requestAnimationFrame intervals; not GPU timestamps",
+  "support": {
+    "changed": 15,
+    "enabled": true,
+    "maxInset": 0.25,
+    "rim": {
+      "enabled": true,
+      "maxExposureBefore": 3.4929047034944176,
+      "maxInset": 1.15,
+      "rejected": 3,
+      "seated": 18,
+      "tested": 60
+    },
+    "tested": 120,
+    "unresolved": 0
+  }
+}
