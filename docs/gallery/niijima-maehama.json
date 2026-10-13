@@ -1,0 +1,272 @@
+{
+  "camera": [
+    2800,
+    6,
+    -3320,
+    -0.021218464971053657,
+    -0.7065071336284545,
+    -0.021201574862978,
+    0.7070699683197603
+  ],
+  "evidence": "visual-only",
+  "fov": 62,
+  "height": 720,
+  "humanAccepted": false,
+  "locked": true,
+  "movementVerified": false,
+  "name": "custom",
+  "paused": true,
+  "pose": {
+    "depth": 1.2215380344152342,
+    "mode": "walk",
+    "pitch": -0.06,
+    "x": 2800,
+    "yaw": 1.57,
+    "z": -3320
+  },
+  "preset": "day",
+  "provenance": "Authored developer comparison camera; no travel or surveyed camera claim",
+  "quality": "high",
+  "runtime": {
+    "draws": 296,
+    "foliage": {
+      "branchClusters": true,
+      "photoPass": false,
+      "pines": {
+        "byVariant": [
+          {
+            "distant": 0,
+            "far": 0,
+            "impostor": 0,
+            "mid": 0,
+            "near": 0
+          },
+          {
+            "distant": 0,
+            "far": 0,
+            "impostor": 0,
+            "mid": 0,
+            "near": 0
+          },
+          {
+            "distant": 0,
+            "far": 0,
+            "impostor": 0,
+            "mid": 0,
+            "near": 0
+          }
+        ],
+        "culled": 3142,
+        "draws": 0,
+        "exclusiveLod": true,
+        "instances": {
+          "distant": 0,
+          "far": 0,
+          "impostor": 0,
+          "mid": 0,
+          "near": 0
+        },
+        "levelTriangles": {
+          "distant": [
+            2228,
+            1503,
+            1930
+          ],
+          "far": [
+            5477,
+            4766,
+            5163
+          ],
+          "mid": [
+            13682,
+            12991,
+            13513
+          ],
+          "near": [
+            177354,
+            120486,
+            234938
+          ]
+        },
+        "nearTriangles": 0,
+        "originalPlacements": 3142,
+        "oversized": {
+          "distant": 0,
+          "far": 0,
+          "mid": 0
+        },
+        "placements": 3142,
+        "rendered": 0,
+        "selection": "actual transformed crown angular span within distance / triangle caps",
+        "source": "Native CC0 wood and leaves retained, with authored supplementary distant branch patches",
+        "status": "ready",
+        "thresholds": {
+          "farPixels": 12,
+          "midCapacity": 300,
+          "midDistance": 210,
+          "midPixels": 24,
+          "nearCapacity": 24,
+          "nearDistance": 35,
+          "nearPixels": 48,
+          "preserveCrowns": true,
+          "triangleBudget": 6500000,
+          "viewAware": true
+        },
+        "triangles": 0,
+        "viewAware": true
+      },
+      "shrubGround": {
+        "changed": 2617,
+        "exampleSites": [
+          {
+            "after": 0.05009713905113841,
+            "before": 0.19242672624581303,
+            "soil": 21.065912324395864,
+            "x": -114.886261442025,
+            "z": -20.02413895775172
+          },
+          {
+            "after": 0.7769966040679452,
+            "before": 0.941066701532378,
+            "soil": 27.816519419688387,
+            "x": -175.2083028521151,
+            "z": -15.314747776743037
+          },
+          {
+            "after": 0.2027841862140842,
+            "before": 0.35266596251064897,
+            "soil": 20.801033752879977,
+            "x": -113.95259029343686,
+            "z": 13.431986306025635
+          },
+          {
+            "after": 0.013927486079675616,
+            "before": 0.12220148645330298,
+            "soil": 11.616027640244274,
+            "x": -179.74745384955264,
+            "z": -1.2287574925460034
+          },
+          {
+            "after": 0,
+            "before": 0.11709004809381796,
+            "soil": 17.28480590591621,
+            "x": -167.5964291466628,
+            "z": 5.364820226328437
+          },
+          {
+            "after": 0.5110038646514823,
+            "before": 1.027224434851984,
+            "soil": 7.773576771204852,
+            "x": -110.50545677931476,
+            "z": 6.144580404739816
+          }
+        ],
+        "invalid": 0,
+        "lifted": 2617,
+        "maxBurialAfter": 3.0651550247808212,
+        "maxBurialBefore": 3.4433001051777943,
+        "maxLift": 0.095,
+        "maxRootGap": 0.08,
+        "minWidthFactor": 0.7,
+        "samples": [
+          43,
+          48,
+          48
+        ],
+        "shrunk": 211,
+        "tested": 4655,
+        "unresolved": 280
+      },
+      "shrubs": {
+        "byVariant": [
+          {
+            "distant": 0,
+            "far": 0,
+            "mid": 0,
+            "near": 0
+          },
+          {
+            "distant": 0,
+            "far": 0,
+            "mid": 0,
+            "near": 0
+          },
+          {
+            "distant": 0,
+            "far": 0,
+            "mid": 0,
+            "near": 0
+          }
+        ],
+        "culled": 10755,
+        "draws": 0,
+        "exclusiveLod": true,
+        "instances": {
+          "distant": 0,
+          "far": 0,
+          "mid": 0,
+          "near": 0
+        },
+        "levelTriangles": {
+          "far": [
+            160,
+            160,
+            160
+          ],
+          "mid": [
+            420,
+            416,
+            434
+          ],
+          "near": [
+            2299,
+            2297,
+            2293
+          ]
+        },
+        "nearTriangles": 0,
+        "originalPlacements": 10755,
+        "oversized": {
+          "distant": 0,
+          "far": 0,
+          "mid": 0
+        },
+        "placements": 10755,
+        "rendered": 0,
+        "selection": "actual transformed crown angular span within distance / triangle caps",
+        "source": "CC0 all-angle branch/needle/leaf models in every ready band",
+        "status": "ready",
+        "thresholds": {
+          "midCapacity": 1200,
+          "midDistance": 210,
+          "midPixels": 8,
+          "nearCapacity": 48,
+          "nearDistance": 26,
+          "nearPixels": 40,
+          "triangleBudget": 1350000,
+          "viewAware": true
+        },
+        "triangles": 0,
+        "viewAware": true
+      },
+      "source": "Poly Haven CC0 island_tree_01/02/03 + shrub_02; coastal evergreens, botanical species unverified; authored distance-faded branch atlas supplements distant pine crowns",
+      "status": "ready"
+    },
+    "frames": 37611,
+    "time": 621.3770999998233,
+    "triangles": 2963314,
+    "worldSolids": {
+      "added": 3283,
+      "colliders": 3283,
+      "instances": 118,
+      "meshes": 23,
+      "removed": 0,
+      "replaced": 0,
+      "syncMs": 3869.800000011921,
+      "triangles": 3459222,
+      "trunks": 3142,
+      "unchanged": 0
+    }
+  },
+  "width": 1280
+}

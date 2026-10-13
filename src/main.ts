@@ -513,10 +513,11 @@ try {
         try{await ocean.setGeometryRefraction(previous);}finally{captureHost.restoreState(before);}
       }
     },
-    captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4,eyeY?:number)=>{
+    captureAt:(x:number,z:number,yaw:number,pitch:number,mode:'walk'|'swim'|'dive'='walk',depth=4,eyeY?:number,preset:PresetName='day')=>{
+      if(!(preset in presets))throw new Error('Known photo preset required');
       if(![x,z,yaw,pitch,depth].every(Number.isFinite)||depth<0||depth>100||!['walk','swim','dive'].includes(mode))throw new Error('Finite capture pose required');
       if(eyeY!==undefined&&!Number.isFinite(eyeY))throw new Error('Finite comparison eye height required');
-      return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth,eyeY},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset:'day',width:1280,height:720,timeoutMs:30000,warmupFrames:30});
+      return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth,eyeY},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset,width:1280,height:720,timeoutMs:30000,warmupFrames:30});
     },
     async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false,compareContact=false,compareLight=false,compareFoam=false){
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');
