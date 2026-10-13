@@ -281,6 +281,18 @@ function board(controls: ExplorerControls): void {
   assert.equal(controls.state.mode, 'boat');
 }
 
+test('boat demand follows propulsion input while hull retains coasting speed',()=>{
+ const {controls,state}=setup({heightAt:()=>-12});
+ try{
+  board(controls);controls.setMove(0,1);advance(controls,1);
+  assert.equal(state.boatThrottle,1);assert.ok(state.speed>1);
+  controls.setMove(0,0);advance(controls,.1);
+  assert.equal(state.boatThrottle,0);assert.ok(state.speed>1);
+  controls.setMove(0,-1);advance(controls,.1);assert.equal(state.boatThrottle,1);
+  controls.setInputBlocked(true);assert.equal(state.boatThrottle,0);
+ }finally{controls.dispose();}
+});
+
 test('the actually drawn stern ladder boards continuously from the observed failing approach',()=>{
   const {controls,state}=setup({heightAt:()=>-20});
   state.boatPosition.set(-118.5950068345507,0,-90.9578943776148);state.boatYaw=-.6;

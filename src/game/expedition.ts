@@ -64,7 +64,7 @@ export class Expedition {
   this.saved.cargo=unique(s.cargo,ids).filter(id=>!this.saved.banked.includes(id)).slice(0,5);
   this.saved.stamps=unique(s.stamps,new Set(this.map.destinations.map(d=>d.id)));
   this.saved.captain=s.captain===true;
-  this.saved.bestRace=typeof s.bestRace==='number'&&Number.isFinite(s.bestRace)&&s.bestRace>=10&&s.bestRace<=720?s.bestRace:null;
+  this.saved.bestRace=typeof s.bestRace==='number'&&Number.isFinite(s.bestRace)&&s.bestRace>0&&s.bestRace<=720?s.bestRace:null;
   for(const gear of unique(s.gear,new Set(Object.keys(GEAR))) as Gear[])if(this.credits>=GEAR[gear].cost)this.saved.gear.push(gear);
   // Preserve recovered items from a save even if a previous bag upgrade is malformed.
  }

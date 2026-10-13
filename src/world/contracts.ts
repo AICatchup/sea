@@ -63,6 +63,8 @@ export interface AdventureState {
   activity?:'fishing'|'surf';
   boatPitch?: number;
   boatRoll?: number;
+  /** Normalized propeller demand, independent of hull speed while coasting. */
+  boatThrottle?: number;
 }
 export interface MapOutline { id: string; label: string; points: [number, number][]; }
 export interface AdventureCallbacks {

@@ -223,7 +223,7 @@ export class ExplorerControls {
   private resetInput: EventListener = () => {
     this.keys.clear(); this.padX = 0; this.padForward = 0; this.padVertical = 0;
     this.velocity.set(0, 0, 0); this.boatVelocity = 0; this.jumpRequested = false; this.releasePointer();
-    this.state.speed = 0;
+    this.state.speed = 0; this.state.boatThrottle = 0;
   };
   setMove(x: number, forward: number): void {
     if (this.blocked) return;
@@ -403,6 +403,8 @@ export class ExplorerControls {
       this.cancelVoyage(`手動操船に戻りました。${this.settings.primary('forward')}/${this.settings.primary('back')}で加減速、${this.settings.primary('left')}/${this.settings.primary('right')}で舵取り。`);
     }
     this.updateBoatFloat(dt);
+    this.state.boatThrottle = this.state.mode === 'boat' && !this.boarding
+      ? (this.state.voyageTarget ? 1 : Math.abs(input.forward)) : 0;
     const steps = Math.ceil(dt / .02);
     for (let step = 0; step < steps; step++) {
       if (this.boarding) this.updateBoarding(dt / steps);
@@ -523,7 +525,7 @@ export class ExplorerControls {
   }
   private finishVoyage(): void {
     const label = this.destinations.find(destination => destination.id === this.state.voyageTarget)?.label ?? '目的地';
-    this.boatVelocity = 0; this.state.speed = 0;
+    this.boatVelocity = 0; this.state.speed = 0; this.state.boatThrottle = 0;
     this.cancelVoyage(`${label}の海岸付近へ到着しました。${this.settings.primary('interact')}で船のそばへ下り、泳いで浜へ進めます。`);
   }
   private updatePerson(dt: number, input: MotionInput, resourceDelta: number): void {

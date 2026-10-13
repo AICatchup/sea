@@ -10,7 +10,7 @@ export interface SoundscapeFrame {
   depth: number; immersion: number; bodyImmersion?:number; grounded: boolean;
   /** Accumulated radians, with footfalls crossing 0 and PI each cycle. */
   gaitPhase: number;
-  boat: {pitch: number; roll: number; speed: number};
+  boat: {pitch: number; roll: number; speed: number; throttle?:number};
   environment: {windSpeed: number; windDirection: number; exposure?:number};
   wave: {ready: boolean; level: number; slope: number; shoreDistance?: number; shoreStrength?: number};
 }
@@ -32,9 +32,10 @@ export class SoundscapeState {
   private previous: SoundscapeFrame | null = null;
   private birdRemaining = 12;
   private breathTime=0;
+  private engineDemand=0;
   constructor(seed = 0x534541) {this.seed = finite(seed, 1) >>> 0;}
   /** Explicit lifecycle reset; does not alter the deterministic random sequence. */
-  reset(): void {this.previous = null; this.birdRemaining = 12;}
+  reset(): void {this.previous = null; this.birdRemaining = 12;this.engineDemand=0;}
   private random(): number {
     this.seed = (Math.imul(this.seed, 1664525) + 1013904223) >>> 0;
     return this.seed / 4294967296;
@@ -56,6 +57,10 @@ export class SoundscapeState {
     const roughness = f.wave.ready ? clamp(Math.abs(finite(f.wave.slope)) * 1.5) : 0;
     const waterMotion = clamp(speed / 3);
     const aboard = f.mode === 'boat';
+    // Legacy callers may omit demand; the live controller always supplies it.
+    const demand = clamp(f.boat.throttle ?? boatSpeed / 12);
+    if(!aboard)this.engineDemand=0;
+    else if(active)this.engineDemand+=(demand-this.engineDemand)*(1-Math.exp(-dt*5));
     const p = this.previous;
     const jump = p !== null && Math.hypot(finite(f.position.x) - p.position.x,
       finite(f.position.y) - p.position.y, finite(f.position.z) - p.position.z) > 12;
@@ -69,13 +74,13 @@ export class SoundscapeState {
       surf: clamp(shore * (.12 + .4 * windSpeed / 20 + .25 * roughness) * airTransmission),
       hullwash: aboard ? clamp((boatSpeed / 10 * .6 + roughness * .18) * airTransmission) : 0,
       creak: aboard ? clamp(rocking * .55 * airTransmission) : 0,
-      engine: aboard ? clamp((.08 + .62 * smooth(boatSpeed / 12)) * airTransmission) : 0,
+      engine: aboard ? clamp((.08 + .62 * smooth(this.engineDemand)) * airTransmission) : 0,
       swim: (f.mode === 'swim' || f.mode === 'dive') ? clamp(waterMotion * wet * .55) : 0,
       breath: f.mode==='dive' ? .1+.09*Math.max(0,Math.sin(this.breathTime*1.45)) : f.mode === 'swim' ? clamp(.08 * airTransmission * wet) : 0,
       bubbles: (f.mode === 'swim' || f.mode === 'dive') ? clamp(wet * (1 - airTransmission) * (waterMotion*.32+.08*Math.max(0,-Math.sin(this.breathTime*1.45)))) : 0,
       footsteps: [], bird: null, cutoffHz: 350 + 13650 * airTransmission,
       windCutoffHz: 600 + 7400 * clamp(relativeWindSpeed / 25) * airTransmission,
-      pan, enginePitch: .65 + .9 * smooth(boatSpeed / 12), relativeWindSpeed, airTransmission,
+      pan, enginePitch: .65 + .9 * smooth(this.engineDemand), relativeWindSpeed, airTransmission,
     };
     if (active) {
       this.breathTime+=dt;

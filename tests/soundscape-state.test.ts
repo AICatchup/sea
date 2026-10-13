@@ -29,6 +29,18 @@ test('continuous air cut and quiet sheltered bay, wave readiness gates surf', ()
   const bay = s.update(f); assert.equal(bay.surf, 0); assert.ok(bay.wind < .04);
   f.wave.ready = false; f.wave.shoreStrength = 1; assert.equal(s.update(f).surf, 0);
 });
+
+test('propeller demand changes engine sound independently from coasting hull speed',()=>{
+ const s=new SoundscapeState(),f=frame();f.mode='boat';f.boat.speed=10;f.boat.throttle=0;
+ const coast=s.update(f);assert.equal(coast.engine,.08);assert.ok(coast.hullwash>0);
+ f.boat.throttle=1;f.boat.speed=0;
+ for(let i=0;i<30;i++)s.update(f);
+ const power=s.update(f);assert.ok(power.engine>coast.engine*5);assert.ok(power.enginePitch>coast.enginePitch);assert.equal(power.hullwash,0);
+ f.dt=0;f.boat.throttle=0;assert.equal(s.update(f).engine,power.engine,'paused time cannot spool down');
+ f.dt=.1;f.boat.speed=10;for(let i=0;i<30;i++)s.update(f);
+ const released=s.update(f);assert.ok(released.engine<.081);assert.ok(released.hullwash>0);
+ f.mode='swim';assert.equal(s.update(f).engine,0);
+});
 test('footfalls cross gait boundaries and pause, large dt, pose reset cannot burst', () => {
   const s = new SoundscapeState(), f = frame(); f.velocity.z = 2; f.gaitPhase = .4 * 2 * Math.PI; s.update(f);
   f.gaitPhase = .6 * 2 * Math.PI; assert.equal(s.update(f).footsteps.length, 1);

@@ -91,3 +91,34 @@ test('the actual Tomari targets sit on valid ground and all course legs have hul
  assert.ok(m.finds.find(f=>f.id==='capsule')!.y< -7&&m.finds.find(f=>f.id==='capsule')!.y> -10);
  assert.ok(m.finds.every(f=>Number.isFinite(f.y)&&f.y>actual.heightAt(f.x,f.z)));
 });
+
+test('a sub-ten-second accepted finish preserves its reward and purchased gear after reload',()=>{
+ const storage=store(),g=new Expedition(map(),ground,storage),s=state();collect(g,s,'notebook');
+ collect(g,s,'glass');camp(g,s);g.interact(s);
+ const course=g.map.course;
+ const points=course.map((p,i)=>{
+  if(i===0||i===course.length-1)return p;
+  const before=course[i-1],after=course[i+1];
+  const a=Math.hypot(before.x-p.x,before.z-p.z),b=Math.hypot(after.x-p.x,after.z-p.z);
+  const x=(before.x-p.x)/a+(after.x-p.x)/b,z=(before.z-p.z)/a+(after.z-p.z)/b,l=Math.hypot(x,z);
+  return {...p,x:p.x+5.9*x/l,z:p.z+5.9*z/l};
+ });
+ s.mode='boat';s.avatarAction='helm';s.boatPosition.set(course[0].x,0,course[0].z);
+ const start=new THREE.Vector3(points[1].x,0,points[1].z).sub(s.boatPosition).normalize();s.boatPosition.addScaledVector(start,11.9);
+ assert.equal(g.startRace(s),true);
+ for(let i=0;i<2000&&g.race;i++){
+  const p=points[g.race.next],dx=p.x-s.boatPosition.x,dz=p.z-s.boatPosition.z,d=Math.hypot(dx,dz),step=Math.min(.6,d);
+  if(d>0){s.boatPosition.x+=dx/d*step;s.boatPosition.z+=dz/d*step;}g.update(.05,s);
+ }
+ assert.equal(g.race,null);assert.ok(g.bestRace!==null&&g.bestRace>0&&g.bestRace<10);
+ assert.equal(g.credits,3);camp(g,s);assert.equal(g.buy('fins',s),true);
+ const restored=new Expedition(map(),ground,storage);
+ assert.equal(restored.bestRace,g.bestRace);assert.equal(restored.hasGear('fins'),true);assert.equal(restored.credits,0);
+});
+
+test('invalid race times cannot create completion rewards',()=>{
+ for(const bestRace of [0,-1,721,'9',null]){
+  const g=new Expedition(map(),ground,{getItem:()=>JSON.stringify({version:1,bestRace}),setItem:()=>{}});
+  assert.equal(g.bestRace,null);assert.equal(g.credits,0);
+ }
+});

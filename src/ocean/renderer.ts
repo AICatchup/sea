@@ -796,7 +796,8 @@ export class Ocean {
     const gz=(this.waterHeights.sample(p.x,p.z+1)-this.waterHeights.sample(p.x,p.z-1))*.5;
     return{dt:this.adventure.inputBlocked?0:Math.min(.05,Math.max(0,dt)),time:this.time,mode:s.mode,position:{x:p.x,y:p.y,z:p.z},velocity:{x:s.velocity?.x??0,y:s.velocity?.y??0,z:s.velocity?.z??0},yaw:s.yaw,
       depth:Math.max(0,w-p.y),immersion:cameraSubmersion(p.y,w),bodyImmersion:s.immersion??0,grounded:!!s.grounded,gaitPhase:s.gaitPhase??0,
-      boat:{pitch:s.boatPitch??0,roll:s.boatRoll??0,speed:s.mode==='boat'?s.speed:0},
+      boat:{pitch:s.boatPitch??0,roll:s.boatRoll??0,speed:s.mode==='boat'?s.speed:0,
+        throttle:this.adventure.inputBlocked?0:s.boatThrottle??0},
       environment:{windSpeed:this.wind,windDirection:Math.atan2(OCEAN_PROPAGATION_DIRECTION.x,-OCEAN_PROPAGATION_DIRECTION.z),exposure:THREE.MathUtils.lerp(.35,.85,THREE.MathUtils.smoothstep(Math.hypot(p.x,p.z),180,300))},
       wave:{ready,level:w,slope:Math.hypot(gx,gz),shoreDistance:this.soundShoreDistance}};
   }
