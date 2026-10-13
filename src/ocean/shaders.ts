@@ -9,6 +9,7 @@ import {packedReceiverGLSL,receiverMaterialGLSL} from './receiver-bridge.ts';
 import {waveCausticsSampling} from './caustics.ts';
 import {skinnedReceiverTraceGLSL} from './skinned-receivers-glsl.ts';
 import {waterVolumeGLSL} from './water-volume.ts';
+import {marineSurfaceSampling} from './marine-surface-field.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -194,6 +195,7 @@ export const oceanVertex = /* glsl */ `
   varying float vDistance;
   ${shoreWaveSampling}
   ${shoreSolverSampling}
+  ${marineSurfaceSampling}
 
   #ifdef GEOMETRIC_REFRACTION
   vec4 receiverGround(vec2 uv){
@@ -225,7 +227,7 @@ export const oceanVertex = /* glsl */ `
     vec3 world=vec3(origin.x,0.0,origin.y);
     world.xz += displacement.xz*uChoppiness*uSwell;
     world.y = displacement.y*uSwell;
-    world.y = shoreSolvedSurface(world.xz,world.y,0.).x;
+    world.y = shoreSolvedSurface(world.xz,world.y,0.).x+marineSurface(world.xz).b;
     // Earth's curvature keeps the far mesh below a true, softly hazed horizon.
     world.y -= distanceToEye*distanceToEye/(2.0*6371000.0);
     vWorld=world;
@@ -252,7 +254,7 @@ export const oceanFragment = /* glsl */ `
   uniform float uContactDebug;
   uniform float uWetStencil;
   uniform float uFarWaveFilter;
-  uniform float uHideSurfaceFoam;
+  uniform float uHideSurfaceFoam,uHideMarineFoam;
   uniform float uFoamFilm;
   uniform float uFoamStructure;
   uniform float uSnellRay;
@@ -269,9 +271,13 @@ export const oceanFragment = /* glsl */ `
   #ifdef CURVED_SURFACE
   varying float vEnvelope, vLip, vWaterThickness;
   #endif
+  #ifdef CONNECTED_FRONT
+  varying float vAeration;
+  #endif
   ${atmosphere}
   ${shoreWaveSampling}
   ${shoreSolverSampling}
+  ${marineSurfaceSampling}
 
   #ifdef GEOMETRIC_REFRACTION
   vec4 receiverGround(vec2 uv){
@@ -297,7 +303,7 @@ export const oceanFragment = /* glsl */ `
   vec3 shortDisplacement(vec2 p) { return texture2D(uShortWaves,p/24.0).xyz*shoalAt(p); }
   float renderedSurface(vec2 world){
     vec2 p=world;for(int i=0;i<3;i++)p=world-(longDisplacement(p)+shortDisplacement(p)).xz*uSwell*uChoppiness;
-    return shoreSolvedSurface(world,(longDisplacement(p).y+shortDisplacement(p).y)*uSwell,0.).x;
+    return shoreSolvedSurface(world,(longDisplacement(p).y+shortDisplacement(p).y)*uSwell,0.).x+marineSurface(world).b;
   }
   float linearDepth(float d){float n=uNearFar.x,f=uNearFar.y;return 2.0*n*f/(f+n-(d*2.0-1.0)*(f-n));}
   ${refractedSceneGLSL}
@@ -409,6 +415,7 @@ export const oceanFragment = /* glsl */ `
     vec3 tangentZ=vec3(dz.x*chop,dz.y*uSwell,1.0+dz.z*chop);
     vec3 normal=normalize(cross(tangentZ,tangentX));
     #ifndef CURVED_SURFACE
+    bool solvedNormal=false;
     vec2 shoreUV=(vWorld.xz-uShoreBounds.xy)/uShoreBounds.zw;
     // The solved surface can run above 2m on a sloping beach. Its geometry
     // already uses SWE there; reverting only the optical normal to a flat
@@ -424,8 +431,14 @@ export const oceanFragment = /* glsl */ `
       float sz=shoreWetSurfaceSlope(contactHeight,renderedSurface(nz),coastAt(nz).x,renderedSurface(pz),coastAt(pz).x,step);
       if(uWetStencil<.5){sx=(renderedSurface(px)-renderedSurface(nx))/(2.*step);sz=(renderedSurface(pz)-renderedSurface(nz))/(2.*step);}
       normal=normalize(vec3(-sx,1.,-sz));
+      solvedNormal=true;
     }
     normal.y=max(abs(normal.y),0.14);
+    if(uMarineReady>.5&&!solvedNormal){
+      float marineStep=max(uMarineBounds.z/uMarineResolution,footprint*.65);
+      normal.x-=(marineSurface(vWorld.xz+vec2(marineStep,0)).b-marineSurface(vWorld.xz-vec2(marineStep,0)).b)/(2.*marineStep)*normal.y;
+      normal.z-=(marineSurface(vWorld.xz+vec2(0,marineStep)).b-marineSurface(vWorld.xz-vec2(0,marineStep)).b)/(2.*marineStep)*normal.y;
+    }
     #else
     // The curl is multivalued: FFT/SWE height stencils cannot describe it.
     normal=normalize(cross(dFdx(vWorld),dFdy(vWorld)));
@@ -499,6 +512,9 @@ export const oceanFragment = /* glsl */ `
         vec3 skylight=skyRadiance(normalize(through),true);
         underwaterColor=mix(skylight,underwaterColor,belowFresnel);
       }
+      vec4 submergedFoam=marineSurface(vWorld.xz);
+      submergedFoam.rg*=1.-uHideMarineFoam;
+      underwaterColor=mix(underwaterColor,uCloudColor*.34,clamp((submergedFoam.r*.25+submergedFoam.g*.45)*(1.-uHideSurfaceFoam),0.,.7));
       gl_FragColor=vec4(underwaterColor,1.0);return;
     }
     float nV=max(dot(normal,view),0.001);
@@ -628,7 +644,10 @@ export const oceanFragment = /* glsl */ `
       float lace=mix(.5,noise(vOcean*3.7+foamDrift*.7),exp(-pow(footprint*3.7,2.)));
       foamPattern=.33*broadFoam+.36*foamDetail+.31*lace;
     }
-    float solvedFoam=shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y;
+    vec4 marine=marineSurface(vWorld.xz);
+    marine.rg*=1.-uHideMarineFoam;
+    float solvedFoam=max(shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y,clamp(marine.r,0.,1.));
+    color=mix(color,uCloudColor*.43,clamp(marine.g*.18,0.,.24)*(1.-uHideSurfaceFoam));
     float materialFoam=foamMaterialConcentration(solvedFoam,foam);
     float pocketField=uFoamStructure>.5?foamPocketField(vOcean+foamDrift*.35):.5;
     float solvedCoverage=uFoamStructure>.5?structuredFoamCoverage(solvedFoam,smoothstep(.25,.75,foamPattern),smoothstep(.25,.75,pocketField),footprint):surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern));
@@ -639,6 +658,11 @@ export const oceanFragment = /* glsl */ `
     foam*=1.-smoothstep(.015,.14,vLip)*(1.-smoothstep(.86,.985,vLip));
     // Aeration remains a narrow lip detail; the rolling face keeps optics.
     foam=max(foam,smoothstep(.88,1.,vLip)*vEnvelope*pores*.35);
+    #ifdef CONNECTED_FRONT
+    float fallingFoam=vAeration*vEnvelope*smoothstep(.14,.62,vLip);
+    foam=max(foam,fallingFoam*(.80+.20*pores));
+    materialFoam=max(materialFoam,fallingFoam);
+    #endif
     #endif
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
     if(uFoamFilm>.5&&foam>.001){
@@ -646,7 +670,7 @@ export const oceanFragment = /* glsl */ `
       foam*=film.x;
       foamColor*=film.y*(.90+.18*nL)*(.80+.20*sunVisibility);
     }
-    color=mix(color,foamColor,clamp(foam,0.0,0.85)*(1.-uHideSurfaceFoam));
+    color=mix(color,foamColor,clamp(foam,0.0,mix(.85,.94,clamp(marine.r,0.,1.)))*(1.-uHideSurfaceFoam));
     float shoreDepth=max(0.0,-coast.x);
     float shallowBreaking=(1.0-smoothstep(.6,3.8,shoreDepth))*smoothstep(.10,.38,shoreDepth);
     float crestArrival=smoothstep(.06,.18+shoreDepth*.10,vWorld.y);

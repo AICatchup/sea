@@ -368,6 +368,7 @@ try {
       finally{captureHost.restoreState(before);}
     },
     shoreState:()=>ocean.probeShoreState(),
+    marineSurface:()=>ocean.probeMarineSurface(),
     whitewaterSites:()=>ocean.probeWhitewaterSites(),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},
     capturePixels:capturePNG,

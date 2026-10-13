@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
+import {marineSurfaceSampling} from './marine-surface-field.ts';
 type Uniforms = Record<string, THREE.IUniform>;
 
 /** Same finite wave-height envelope as ExplorerControls.waterAt, including the
@@ -33,6 +34,7 @@ export class LocalWaterHeights {
       uniform float uSwell,uChoppiness,uWind;
       ${shoreWaveSampling}
       ${shoreSolverSampling}
+      ${marineSurfaceSampling}
       vec3 displacement(vec2 p){
         vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;vec2 coast=vec2(-110,1);
         if(all(greaterThanEqual(uv,vec2(0)))&&all(lessThanEqual(uv,vec2(1)))){
@@ -47,10 +49,10 @@ export class LocalWaterHeights {
           :center+(vec2(gl_FragCoord.x,mod(gl_FragCoord.y,8.0))-.5-3.5)*2.0;
         vec2 parameter=world;
         for(int i=0;i<3;i++)parameter=world-displacement(parameter).xz*uChoppiness;
-        float h=shoreSolvedSurface(world,displacement(parameter).y,0.).x;
+        float h=shoreSolvedSurface(world,displacement(parameter).y,0.).x+marineSurface(world).b;
         float code=floor(clamp(h/16.0+.5,0.0,1.0)*65535.0+.5);
         gl_FragColor=vec4(floor(code/256.0),mod(code,256.0),137.0,255.0)/255.0;
-      }`,uniforms:{...createShoreSolverUniforms(),uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},
+      }`,uniforms:{...createShoreSolverUniforms(),uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},
         uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},
         uPlayer:{value:new THREE.Vector2()},uBoat:{value:new THREE.Vector2()},uSwell:{value:1},uChoppiness:{value:1.55},uWind:{value:8.5}}});
   private pixels:Uint8Array|null=null;
@@ -122,7 +124,7 @@ export class LocalWaterHeights {
     console.warn('FFT surface-height cache unavailable; mean sea level retained',error);
   }
   get diagnostics(){return {ready:!!this.pixels,failed:this.failed,samples:256,requestedPoints:this.pointHeights.size,requestCapacity:128,interval:.2,readbackBytes:1024};}
-  bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
+  bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uMarineSurface','uMarineBounds','uMarineReady','uMarineResolution'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
   dispose():void{
     if(this.disposed)return;
     this.disposed=true;this.pixels=null;this.pointHeights.clear();this.requested.clear();this.requestedTexture.dispose();

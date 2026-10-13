@@ -1,0 +1,103 @@
+{
+  "version": 74,
+  "date": "2026-10-13T20:02:38.108258+00:00",
+  "baseCommit": "f7bbac5b557bbce600477ef7ce4ace25f109b5b5",
+  "sourceHashNormalization": "CRLF normalized to LF, matching Git source blobs",
+  "sourceSHA256": {
+    "src/main.ts": "951ba79f9f1874a0e551f28a740a619c2b33d0929bf91a281114c1f3b6067720",
+    "src/ocean/renderer.ts": "77001fd0243bb5542570271ffa4b3db5c0eb1379ad8840080ebf689cdc019d99",
+    "src/ocean/shaders.ts": "88d1be8116426708c05dd0e733e3bea7080bc2035d9af55e7449d8d744b55e60",
+    "src/ocean/local-water-heights.ts": "0172792ac37192535631aeca433fb5b9bc758ef68357df2325b381d217206058",
+    "src/ocean/shore-spray.ts": "b48740ce87238621036d6370469658654e199fcc76989abca64572e6ab501ed3",
+    "src/ocean/connected-breakers.ts": "87494a2e8aeb0fb88b9e8322e76b286ed7714d3aeaf6c55fb0f58afa676ca85a",
+    "src/ocean/marine-surface-field.ts": "678d4475fd727bcaabdb59d0b397c1b50ceb44011358f54d558e7e5eb5102c9c",
+    "tests/connected-breakers.test.ts": "089955fd6ebf4d0f16134cbe8b31ab92870c717f6fb8414c7e3fee8a28f87e7e"
+  },
+  "tests": {
+    "tests-release": {
+      "tests": 589,
+      "pass": 589,
+      "fail": 0
+    },
+    "targeted-final": {
+      "tests": 32,
+      "pass": 32,
+      "fail": 0
+    }
+  },
+  "testScope": "Full 589-case run; latest thin-swash source gate rechecked with all 32 affected cases afterwards.",
+  "typecheck": true,
+  "productionBuild": true,
+  "standaloneBuilt": true,
+  "device": "Chrome WebGL2 / ANGLE AMD Radeon RX 7600 XT Direct3D11",
+  "performance": {
+    "samples": 180,
+    "meanMs": 17.457777777777746,
+    "medianMs": 17.39999999999418,
+    "p95Ms": 18.10000000000582
+  },
+  "performanceScope": "One high-quality live shoreline viewpoint, with recording; not a baseline-relative optimization or all-device claim.",
+  "imageComparisons": {
+    "without-impact-foam": {
+      "meanRGBDifference": 0.45617071915227597,
+      "scope": "Frozen camera/history; hides impact aeration or all surface foam. Different render cadence can affect reflection/shadow samples."
+    },
+    "without-all-foam": {
+      "meanRGBDifference": 7.967090411237745,
+      "scope": "Frozen camera/history; hides impact aeration or all surface foam. Different render cadence can affect reflection/shadow samples."
+    }
+  },
+  "boatAndMapAcceptance": true,
+  "media": {
+    "source": "Actual continuous Chrome canvas recording; silent, no generated or interpolated imagery",
+    "mp4": {
+      "ffmpeg_version": "7.1-essentials_build-www.gyan.dev built with gcc 14.2.0 (Rev1, Built by MSYS2 project)",
+      "codec": "h264",
+      "pix_fmt": "yuv420p(tv, bt709, progressive)",
+      "fps": 29.99,
+      "source_size": [
+        1142,
+        744
+      ],
+      "size": [
+        1142,
+        744
+      ],
+      "rotate": 0,
+      "duration": 7.93
+    },
+    "decodedVideoFrames": 239,
+    "gifFrames": 79,
+    "gifDurationMs": 7900,
+    "gifSize": [
+      640,
+      417
+    ],
+    "adjacentFrameDifferenceMin": 0.7790779876099121,
+    "adjacentFrameDifferenceMax": 2.055283273381295,
+    "loop": "Forward replay with a last-to-first cut, not a seamless physical cycle",
+    "files": {
+      "breaking-waves.webm": {
+        "bytes": 5791076,
+        "sha256": "bfefda47adf728249fc8f5bd8981522dc6fe533b288c03196ca6d3687e05806c"
+      },
+      "breaking-waves.mp4": {
+        "bytes": 1845451,
+        "sha256": "ef22de7a879db393209608d1d79cd79f42fa81f29a29af754dcfaee65dfd5dea"
+      },
+      "breaking-v74.gif": {
+        "bytes": 5224565,
+        "sha256": "7fee539a9636bff6810cdf57fc5c0e7b8c195877ebe40e2d7e169067b3f40fc5"
+      }
+    }
+  },
+  "fullPhotorealGoal": "unmet",
+  "humanAccepted": false,
+  "independentVisualReview": false,
+  "fullJourneyAcceptance": false,
+  "limitations": [
+    "Visual breaking sheets and foam closure, not volume-conserving 3D CFD",
+    "Small damped linear wake ripples, not a full dispersed Kelvin-wake solver",
+    "No new calibrated coastal photogrammetry reconstruction"
+  ]
+}

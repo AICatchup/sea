@@ -1,0 +1,43 @@
+{
+  "source": "Actual continuous Chrome canvas recording; silent, no generated or interpolated imagery",
+  "mp4": {
+    "ffmpeg_version": "7.1-essentials_build-www.gyan.dev built with gcc 14.2.0 (Rev1, Built by MSYS2 project)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(tv, bt709, progressive)",
+    "fps": 29.99,
+    "source_size": [
+      1142,
+      744
+    ],
+    "size": [
+      1142,
+      744
+    ],
+    "rotate": 0,
+    "duration": 7.93
+  },
+  "decodedVideoFrames": 239,
+  "gifFrames": 79,
+  "gifDurationMs": 7900,
+  "gifSize": [
+    640,
+    417
+  ],
+  "adjacentFrameDifferenceMin": 0.7790779876099121,
+  "adjacentFrameDifferenceMax": 2.055283273381295,
+  "loop": "Forward replay with a last-to-first cut, not a seamless physical cycle",
+  "files": {
+    "breaking-waves.webm": {
+      "bytes": 5791076,
+      "sha256": "bfefda47adf728249fc8f5bd8981522dc6fe533b288c03196ca6d3687e05806c"
+    },
+    "breaking-waves.mp4": {
+      "bytes": 1845451,
+      "sha256": "ef22de7a879db393209608d1d79cd79f42fa81f29a29af754dcfaee65dfd5dea"
+    },
+    "breaking-v74.gif": {
+      "bytes": 5224565,
+      "sha256": "7fee539a9636bff6810cdf57fc5c0e7b8c195877ebe40e2d7e169067b3f40fc5"
+    }
+  }
+}

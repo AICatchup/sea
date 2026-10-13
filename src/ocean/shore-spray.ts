@@ -1,4 +1,6 @@
 import { ShoreBreakingLips } from './shore-breaking-lips.ts';
+import {ConnectedShoreBreakers,traceBreakingFront,type BreakerImpact} from './connected-breakers.ts';
+import {marineSurfaceSampling} from './marine-surface-field.ts';
 import * as THREE from 'three';
 /** Integer births plus a fractional Bernoulli retain the expected rate even
  * when a frame contains more than one event. The caller keeps its pool cap. */
@@ -13,7 +15,7 @@ import { ShoreWhitewaterVolume } from './shore-whitewater-volume.ts';
 import { whitewaterFlowSampling, decodeWhitewaterVelocity, whitewaterAerationStrength } from './whitewater-flow.ts';
 import { ShoreWhitewater, whitewaterBirthRate, type WhitewaterSample } from './shore-whitewater.ts';
 
-const GRID=24, SPAN=144, INTERVAL=.2, LIMIT=1500;
+const SPAN=144, INTERVAL=.2, LIMIT=1500;
 type Uniforms=Record<string,THREE.IUniform>;
 export interface SprayBirth {x:number;y:number;z:number;vx:number;vy:number;vz:number;windX:number;windZ:number;drag:number;life:number;size:number;opacity:number}
 
@@ -26,6 +28,7 @@ export class SprayPool {
   private readonly births:(SprayBirth|null)[];
   private readonly ages:Float64Array;
   private cursor=0;
+  private readonly hitSample:WhitewaterSample={height:0,compression:0,depth:0,shelter:1,ground:0,gradientX:0,gradientZ:0};
   active=0;
   readonly capacity:number;
   constructor(capacity=LIMIT){
@@ -41,7 +44,7 @@ export class SprayPool {
       this.positions.set([b.x,b.y,b.z],i*3);this.active++;this.cursor=(i+1)%this.capacity;return true;
     }return false;
   }
-  advance(delta:number):void{
+  advance(delta:number,sampler?:import('./shore-whitewater.ts').WhitewaterSampler,hit?:(x:number,y:number,z:number)=>void):void{
     if(!Number.isFinite(delta)||delta<=0)return;
     for(let i=0;i<this.capacity;i++){
       const b=this.births[i];if(!b)continue;
@@ -51,10 +54,17 @@ export class SprayPool {
       this.positions[i*3]=b.x+b.windX*t+(b.vx-b.windX)*travel;
       this.positions[i*3+1]=b.y+b.vy*t-4.905*t*t;
       this.positions[i*3+2]=b.z+b.windZ*t+(b.vz-b.windZ)*travel;
+      if(sampler&&t>.06){
+        const s=this.hitSample;
+        if(sampler(this.positions[i*3],this.positions[i*3+2],s)&&this.positions[i*3+1]<=s.height&&s.depth>.02){
+          hit?.(this.positions[i*3],s.height,this.positions[i*3+2]);this.births[i]=null;this.alpha[i]=0;this.active--;continue;
+        }
+      }
       const fade=Math.min(1,t/.06)*Math.pow(1-t/b.life,1.4);
       this.alpha[i]=b.opacity*fade;
     }
   }
+  clear():void{this.births.fill(null);this.alpha.fill(0);this.active=0;}
 }
 
 /** 36m² sampled cell: one sparse mist packet per m² per unit instantaneous
@@ -95,7 +105,9 @@ export class ShoreSpray {
   private disposed=false;
   private failed=false;
   private randomState=0x137a942;
-  private credits=new Float32Array(GRID*GRID);
+  private generation=0;
+  private readonly energizedCells:Uint16Array;
+  private energizedCount=0;
   private emitted=0;
   private whitewaterEmitted=0;
   private foamScanCursor=0;
@@ -106,22 +118,30 @@ export class ShoreSpray {
   private sampleWetEligibleCount=0;
   private updateMs=0;
   readonly whitewater:ShoreWhitewater|ShoreWhitewaterVolume|null;
-  readonly lips:ShoreBreakingLips|null;
-  private readonly foamCredits=new Float32Array(GRID*GRID);
+  readonly lips:ShoreBreakingLips|ConnectedShoreBreakers|null;
+  private readonly grid:number;private readonly span:number;
+  private lastFrontSample=-Infinity;
+  private fronts:{x:number;z:number;nx:number;nz:number;halfWidth:number;time:number}[]=[];
+  private impactSink:((b:import('./shore-whitewater.ts').WhitewaterBirth&Partial<BreakerImpact>)=>boolean)|null=null;
   private readonly foamSample:WhitewaterSample={height:0,compression:0,depth:0,shelter:1,ground:0,gradientX:0,gradientZ:0};
   private foamCacheValid=false;
   private readonly sampleFoam=(x:number,z:number,out:WhitewaterSample):boolean=>{
     if(!this.foamCacheValid||!this.pixels)return false;
-    const cx=(x-this.sampleOrigin.x)/6+GRID/2-.5,cz=(z-this.sampleOrigin.y)/6+GRID/2-.5;
+    const GRID=this.grid,step=this.span/GRID;
+    const cx=(x-this.sampleOrigin.x)/step+GRID/2-.5,cz=(z-this.sampleOrigin.y)/step+GRID/2-.5;
     if(cx<0||cz<0||cx>GRID-1||cz>GRID-1)return false;
     const ix=Math.floor(cx),iz=Math.floor(cz),fx=cx-ix,fz=cz-iz;
     const h=(a:number,b:number)=>{const i=(b*GRID+a)*4;return (this.pixels![i]*256+this.pixels![i+1])/65535*16-8;};
     out.height=THREE.MathUtils.lerp(THREE.MathUtils.lerp(h(ix,iz),h(Math.min(ix+1,GRID-1),iz),fx),THREE.MathUtils.lerp(h(ix,Math.min(iz+1,GRID-1)),h(Math.min(ix+1,GRID-1),Math.min(iz+1,GRID-1)),fx),fz);
     const i=(Math.round(cz)*GRID+Math.round(cx))*4;
-    out.waveGradientX=(h(Math.min(ix+1,GRID-1),iz)-h(Math.max(ix-1,0),iz))/(ix>0&&ix<GRID-1?12:6);
-    out.waveGradientZ=(h(ix,Math.min(iz+1,GRID-1))-h(ix,Math.max(iz-1,0)))/(iz>0&&iz<GRID-1?12:6);
+    out.waveGradientX=(h(Math.min(ix+1,GRID-1),iz)-h(Math.max(ix-1,0),iz))/(ix>0&&ix<GRID-1?2*step:step);
+    out.waveGradientZ=(h(ix,Math.min(iz+1,GRID-1))-h(ix,Math.max(iz-1,0)))/(iz>0&&iz<GRID-1?2*step:step);
     out.compression=this.pixels[i+2]/255;out.shelter=1;
-    out.ground=this.ground.heightAt(x,z);out.gradientX=this.ground.heightAt(x+2,z)-this.ground.heightAt(x-2,z);out.gradientZ=this.ground.heightAt(x,z+2)-this.ground.heightAt(x,z-2);
+    if(GRID>24){
+      const g=(a:number,b:number)=>h(a,b)-this.pixels![(b*GRID+a)*4+3]/255*8;
+      out.ground=THREE.MathUtils.lerp(THREE.MathUtils.lerp(g(ix,iz),g(Math.min(ix+1,GRID-1),iz),fx),THREE.MathUtils.lerp(g(ix,Math.min(iz+1,GRID-1)),g(Math.min(ix+1,GRID-1),Math.min(iz+1,GRID-1)),fx),fz);
+      out.gradientX=g(Math.min(ix+1,GRID-1),iz)-g(Math.max(ix-1,0),iz);out.gradientZ=g(ix,Math.min(iz+1,GRID-1))-g(ix,Math.max(iz-1,0));
+    }else{out.ground=this.ground.heightAt(x,z);out.gradientX=this.ground.heightAt(x+2,z)-this.ground.heightAt(x-2,z);out.gradientZ=this.ground.heightAt(x,z+2)-this.ground.heightAt(x,z-2);}
     out.depth=Math.max(0,out.height-out.ground);
     delete out.flowX;delete out.flowZ;
     if(this.flowReadback){
@@ -135,24 +155,29 @@ export class ShoreSpray {
     }
     return true;
   };
-  constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number},options:{whitewater?:boolean;volume?:boolean;lips?:boolean}={}){
+  constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number},options:{whitewater?:boolean;patches?:boolean;volume?:boolean;lips?:boolean;connected?:boolean;resolution?:number;span?:number}={}){
     this.renderer=renderer;this.ground=ground;
-    this.lips=options.lips?new ShoreBreakingLips():null;if(this.lips)this.group.add(this.lips.group);
+    this.grid=options.resolution??24;this.span=options.span??SPAN;
+    if(!Number.isInteger(this.grid)||this.grid<24||this.grid>64||this.span<=0)throw Error('Bounded spray cache required');
+    const GRID=this.grid;
+    this.energizedCells=new Uint16Array(GRID*GRID);
+    this.lips=options.lips?(options.connected?new ConnectedShoreBreakers():new ShoreBreakingLips()):null;if(this.lips)this.group.add(this.lips.group);
     this.flowReadback=!!options.volume||!!options.whitewater;
     this.target=new THREE.WebGLRenderTarget(GRID,GRID*(this.flowReadback?2:1),{type:THREE.UnsignedByteType,depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
-    this.whitewater=options.volume?new ShoreWhitewaterVolume():options.whitewater?new ShoreWhitewater():null;
+    this.whitewater=options.patches===false?null:options.volume?new ShoreWhitewaterVolume():options.whitewater?new ShoreWhitewater():null;
     if(this.whitewater)this.group.add(this.whitewater.group);
     this.sampleMaterial=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,
-      uniforms:{...createShoreSolverUniforms(),uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55},uDepthCapLoss:{value:(options.whitewater||options.volume)?1:0}},
+      uniforms:{...createShoreSolverUniforms(),uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},uSampleSize:{value:GRID},uSampleStep:{value:this.span/GRID},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uCenter:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55},uDepthCapLoss:{value:(options.whitewater||options.volume)?1:0}},
       vertexShader:'void main(){gl_Position=vec4(position.xy,0,1);}',fragmentShader:/* glsl */`
       precision highp float;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;
       uniform vec4 uBathyBounds;uniform vec2 uBathyResolution,uCenter;
-      uniform float uSwell,uWind,uChoppiness,uDepthCapLoss;
+      uniform float uSwell,uWind,uChoppiness,uDepthCapLoss,uSampleSize,uSampleStep;
       ${shoreWaveSampling}
       ${shoreSolverSampling}
       ${shoreBreakerDissipationSampling}
       ${whitewaterFlowSampling}
+      ${marineSurfaceSampling}
       vec2 coastAt(vec2 p){
         vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;
         if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);
@@ -162,9 +187,9 @@ export class ShoreSpray {
       vec3 shortAt(vec2 p){return texture2D(uShortWaves,p/24.0).xyz*shoreWaveScale(coastAt(p),uSwell,uWind);}
       vec3 displacement(vec2 p){return (longAt(p)+shortAt(p))*uSwell;}
       void main(){
-        vec2 world=uCenter+(vec2(gl_FragCoord.x,mod(gl_FragCoord.y,24.))-vec2(12.0))*6.0;
+        vec2 world=uCenter+(vec2(gl_FragCoord.x,mod(gl_FragCoord.y,uSampleSize))-vec2(uSampleSize*.5))*uSampleStep;
         vec4 flow=whitewaterSolvedFlow(world);
-        if(gl_FragCoord.y>=24.){
+        if(gl_FragCoord.y>=uSampleSize){
           gl_FragColor=vec4(floor(clamp(flow.xy/12.,vec2(-1),vec2(1))*127.+128.+.5)/255.,flow.w,137./255.);return;
         }
         vec2 p=world;
@@ -184,7 +209,7 @@ export class ShoreSpray {
           float depthLoss=shoreBreakerDissipation(rawFftHeight,coast,uSwell,uWind);
           energy=max(energy,depthLoss*smoothstep(.2,.6,depth)*(1.0-smoothstep(2.8,4.0,depth)));
         }
-        h=shoreSolvedSurface(world,h,0.).x;
+        h=shoreSolvedSurface(world,h,0.).x+marineSurface(world).b;
         // The solver's alpha is advected old foam, not instantaneous breaking.
         energy=mix(energy,flow.z,flow.w);
         depth=max(0.,h-coastAt(world).x);
@@ -207,10 +232,36 @@ export class ShoreSpray {
     const points=new THREE.Points(this.geometry,this.material);points.frustumCulled=false;this.group.add(points);
   }
   private random():number{let x=this.randomState;x^=x<<13;x^=x>>>17;x^=x<<5;this.randomState=x;return (x>>>0)/4294967296;}
+  setImpactSink(sink:typeof this.impactSink):void{this.impactSink=sink;}
+  resetHistory():void{this.generation++;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();this.pool.clear();}
+  private emitConnectedFronts(time:number):void{
+    if(!(this.lips instanceof ConnectedShoreBreakers)||!this.pixels||this.lastFrontSample===this.sampleTime)return;
+    this.lastFrontSample=this.sampleTime;this.fronts=this.fronts.filter(f=>time-f.time<1.1);
+    const grid=this.grid,step=this.span/grid,candidates:number[]=[];
+    for(let cell=0;cell<grid*grid;cell++){
+      const i=cell*4,depth=this.pixels[i+3]/255*8,height=(this.pixels[i]*256+this.pixels[i+1])/65535*16-8;
+      // A compressed thin swash film over emergent sand is a bore, not a
+      // detached curling sheet. Native SWE foam still covers that water.
+      if(this.pixels[i+2]>3&&depth>.45&&depth<4.2&&height-depth<=.15)candidates.push(cell);
+    }
+    candidates.sort((a,b)=>this.pixels![b*4+2]-this.pixels![a*4+2]);
+    let emitted=0;
+    for(const cell of candidates.slice(0,128)){
+      const x=this.sampleOrigin.x+(cell%grid+.5-grid/2)*step,z=this.sampleOrigin.y+(Math.floor(cell/grid)+.5-grid/2)*step;
+      if(this.fronts.some(f=>Math.abs((x-f.x)*f.nx+(z-f.z)*f.nz)<4+(time-f.time)*5&&Math.abs(-(x-f.x)*f.nz+(z-f.z)*f.nx)<f.halfWidth+3))continue;
+      const nodes=traceBreakingFront(x,z,this.sampleFoam,this.random());if(nodes.length<3)continue;
+      if(!this.lips.pool.emitFront(nodes))break;
+      const first=nodes[0],last=nodes[nodes.length-1];
+      this.fronts.push({x:(first.x+last.x)*.5,z:(first.z+last.z)*.5,nx:first.nx,nz:first.nz,halfWidth:Math.hypot(last.x-first.x,last.z-first.z)*.5,time});
+      if(++emitted>=2)break;
+    }
+  }
   update(time:number,delta:number,camera:THREE.Camera,uniforms:Uniforms):void{
     if(this.disposed)return;
+    const GRID=this.grid,SPAN=this.span,step=SPAN/GRID,connected=this.lips instanceof ConnectedShoreBreakers;
     const underwater=Number(uniforms.uUnderwater?.value??0)>.5;
-    this.group.visible=!underwater;
+    this.group.visible=!underwater||connected;
+    const points=this.group.children.find(object=>object instanceof THREE.Points);if(points)points.visible=!underwater;
     const viewport=this.renderer.getDrawingBufferSize(new THREE.Vector2());
     for(const material of [this.material,this.whitewater?.material])if(material){
       material.uniforms.uOccludingDepth.value=uniforms.uSceneDepth?.value??null;
@@ -222,36 +273,36 @@ export class ShoreSpray {
     this.lips?.bind(uniforms);
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
-    this.pool.advance(dt);
     this.foamCacheValid=!!this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime;
+    this.pool.advance(dt,this.impactSink?this.sampleFoam:undefined,this.impactSink?(x,height,z)=>{this.impactSink?.({x,z,height,energy:.035,nx:1,nz:0,seed:0,width:.12,speed:.2});}:undefined);
     this.whitewater?.update(delta,this.sampleFoam,underwater);
+    if(this.impactSink&&this.whitewater)this.whitewater.group.visible=false;
     if(this.lips){this.lips.update(delta,this.sampleFoam,b=>{
-      if(this.whitewater?.pool.emit(b))this.whitewaterEmitted++;
+      if(this.impactSink?this.impactSink(b):this.whitewater?.pool.emit(b))this.whitewaterEmitted++;
       // Landing, rather than old residual foam, launches a short impact fan.
       const strength=whitewaterAerationStrength(b.energy);
-      for(let j=0;j<8;j++){
-        const along=(j/7-.5)*2.6,fan=(this.random()-.5)*1.8;
+      const width='width' in b?Number(b.width):2.6,packets=connected?3:8;
+      for(let j=0;j<packets;j++){
+        const along=(j/Math.max(1,packets-1)-.5)*width,fan=(this.random()-.5)*1.8;
         if(this.pool.emit({x:b.x-b.nz*along,y:b.height+.04,z:b.z+b.nx*along,
           vx:b.nx*(.5+strength)-b.nz*fan,vy:.6+this.random()*1.8*strength,vz:b.nz*(.5+strength)+b.nx*fan,
-          windX:0,windZ:0,drag:1.8,life:.25+this.random()*.3,size:.035+this.random()*.09,opacity:.28}))this.emitted++;
+          windX:-b.nx*Number(uniforms.uWind?.value??0)*.10,windZ:-b.nz*Number(uniforms.uWind?.value??0)*.10,drag:1.8,life:.35+this.random()*.4,size:.025+this.random()*.07,opacity:.28}))this.emitted++;
       }
     });}
-    if(!underwater){
+    if(!underwater||connected){
       this.requestSample(time,camera,uniforms);
       const wind=Math.max(0,Math.min(35,Number(uniforms.uWind?.value??0)));
-      if(this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime){
+      if(!underwater&&this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime){
         // Maximum 100 births per update; this bounds both CPU work and draw size.
         let births=0;
-        for(let cell=0;cell<GRID*GRID&&births<100&&this.pool.active<this.pool.capacity;cell++){
+        for(let slot=0;slot<this.energizedCount&&births<100&&this.pool.active<this.pool.capacity;slot++){
+          const cell=this.energizedCells[slot];
           const index=cell*4,x=this.sampleOrigin.x+(cell%GRID+.5-GRID/2)*SPAN/GRID;
           const z=this.sampleOrigin.y+(Math.floor(cell/GRID)+.5-GRID/2)*SPAN/GRID;
-          const h=(this.pixels[index]*256+this.pixels[index+1])/65535*16-8;
           const depth=this.pixels[index+3]/255*8,energy=this.pixels[index+2]/255;
           const distance=Math.hypot(camera.position.x-x,camera.position.z-z);
-          const ground=this.ground.heightAt(x,z);
-          if(!Number.isFinite(ground)||ground>=h-.08){this.credits[cell]=0;continue;}
           const rate=sprayBirthRate(depth,energy,1,distance);
-          if(rate<=0){this.credits[cell]=0;continue;}
+          if(rate<=0)continue;
           // A short crest event must have a chance to emit immediately. Requiring
           // a whole credit before a source switches off erased weak pulses.
           // Bernoulli sampling preserves expected rate and decorrelates cells.
@@ -276,13 +327,15 @@ export class ShoreSpray {
           }
         }
       }
-      if(this.whitewater&&this.foamCacheValid){
+      if(connected&&this.foamCacheValid)this.emitConnectedFronts(time);
+      if(!connected&&(this.whitewater||this.lips)&&this.foamCacheValid){
+        const birthPool=this.lips?.pool??this.whitewater!.pool;
         let count=0;
-        for(let offset=0;offset<GRID*GRID&&count<24&&this.whitewater.pool.active<this.whitewater.pool.capacity;offset++){
+        for(let offset=0;offset<GRID*GRID&&count<24&&birthPool.active<birthPool.capacity;offset++){
           const cell=(offset+this.foamScanCursor)%(GRID*GRID);
-          const x=this.sampleOrigin.x+(cell%GRID+.5-GRID/2)*6,z=this.sampleOrigin.y+(Math.floor(cell/GRID)+.5-GRID/2)*6;
+          const x=this.sampleOrigin.x+(cell%GRID+.5-GRID/2)*step,z=this.sampleOrigin.y+(Math.floor(cell/GRID)+.5-GRID/2)*step;
           const s=this.foamSample;if(!this.sampleFoam(x,z,s))continue;
-          const rate=whitewaterBirthRate(s);if(rate<=0){this.foamCredits[cell]=0;continue;}
+          const rate=whitewaterBirthRate(s);if(rate<=0)continue;
           if(this.random()>=Math.min(1,rate*dt))continue;
           const norm=Math.hypot(s.gradientX,s.gradientZ),seed=this.random(),along=(seed-.5)*4;
           const nx=s.gradientX/norm,nz=s.gradientZ/norm;
@@ -293,7 +346,7 @@ export class ShoreSpray {
           if(!this.sampleFoam(bx,bz,s)||whitewaterBirthRate(s)<=0)continue;
           const birth={x:bx,z:bz,height:s.height,energy:s.compression,nx,nz,seed};
           if(this.lips){if(this.lips.pool.emit(birth))count++;}
-          else if(this.whitewater.pool.emit(birth)){count++;this.whitewaterEmitted++;}
+          else if(this.whitewater?.pool.emit(birth)){count++;this.whitewaterEmitted++;}
         }
         if(this.lips||this.whitewater instanceof ShoreWhitewaterVolume)this.foamScanCursor=(this.foamScanCursor+137)%(GRID*GRID);
       }
@@ -306,10 +359,12 @@ export class ShoreSpray {
     this.updateMs=performance.now()-start;
   }
   private requestSample(time:number,camera:THREE.Camera,uniforms:Uniforms):void{
+    const GRID=this.grid,step=this.span/GRID;
     if(this.pending||this.failed||time-this.lastRequest<INTERVAL||!uniforms.uLongWaves?.value||!uniforms.uShortWaves?.value||!uniforms.uBathymetry?.value)return;
     this.lastRequest=time;this.pending=true;
-    const origin=new THREE.Vector2(Math.round(camera.position.x/6)*6,Math.round(camera.position.z/6)*6);
-    for(const name of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness','uShoreState','uShoreBounds','uShoreReady','uShoreResolution']){
+    const generation=this.generation;
+    const origin=new THREE.Vector2(Math.round(camera.position.x/step)*step,Math.round(camera.position.z/step)*step);
+    for(const name of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness','uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uMarineSurface','uMarineBounds','uMarineReady','uMarineResolution']){
       if(uniforms[name])this.sampleMaterial.uniforms[name].value=uniforms[name].value;
     }
     this.sampleMaterial.uniforms.uCenter.value.copy(origin);
@@ -321,25 +376,25 @@ export class ShoreSpray {
     try{readback=this.renderer.readRenderTargetPixelsAsync(this.target,0,0,GRID,GRID*(this.flowReadback?2:1),new Uint8Array(GRID*GRID*4*(this.flowReadback?2:1))) as Promise<Uint8Array>;}
     catch{this.pending=false;this.failReadback();return;}
     void readback.then(pixels=>{
-      if(this.disposed)return;
+      if(this.disposed||generation!==this.generation)return;
       if(!(pixels instanceof Uint8Array)||pixels.length!==GRID*GRID*4*(this.flowReadback?2:1))throw new Error('Invalid spray readback');
       if(this.flowReadback)for(let i=GRID*GRID*4+3;i<pixels.length;i+=4)if(pixels[i]!==137)throw new Error('Uninitialized flow framebuffer');
       // Black framebuffer is not a valid height field (zero height encodes 128,0).
       if(!pixels.some((value,i)=>i<GRID*GRID*4&&i%4<2&&value!==0))throw new Error('Uninitialized spray framebuffer');
-      this.maxSampleEnergy=0;this.maxSampleCrest=0;this.maxEstimatedHeightDepthRatio=0;this.sampleEnergyPositiveCount=0;this.sampleWetEligibleCount=0;
+      this.maxSampleEnergy=0;this.maxSampleCrest=0;this.maxEstimatedHeightDepthRatio=0;this.sampleEnergyPositiveCount=0;this.sampleWetEligibleCount=0;this.energizedCount=0;
       for(let i=0;i<GRID*GRID*4;i+=4){
         const height=(pixels[i]*256+pixels[i+1])/65535*16-8,depth=pixels[i+3]/255*8,energy=pixels[i+2]/255;
         this.maxSampleEnergy=Math.max(this.maxSampleEnergy,energy);this.maxSampleCrest=Math.max(this.maxSampleCrest,height);
-        if(energy>0)this.sampleEnergyPositiveCount++;
+        if(energy>0){this.sampleEnergyPositiveCount++;this.energizedCells[this.energizedCount++]=i/4;}
         if(depth>=.2&&depth<=3.8){this.sampleWetEligibleCount++;this.maxEstimatedHeightDepthRatio=Math.max(this.maxEstimatedHeightDepthRatio,Math.max(0,height)/depth);}
       }
-      if(!origin.equals(this.sampleOrigin)){this.credits.fill(0);this.foamCredits.fill(0);}
+      if(origin.distanceTo(this.sampleOrigin)>this.span){this.lips?.pool.clear();this.fronts=[];}
       this.pixels=pixels;this.sampleOrigin.copy(origin);this.sampleTime=time;
     }).catch(()=>{if(!this.disposed)this.failReadback();}).finally(()=>{this.pending=false;if(this.disposed)this.target.dispose();});
   }
   private failReadback():void{
     this.failed=true;this.pixels=null;this.foamCacheValid=false;
-    this.credits.fill(0);this.foamCredits.fill(0);
+    this.energizedCount=0;
   }
   /** Developer observation of existing cached values, without a GPU request. */
   probeWhitewaterSites(){
@@ -352,7 +407,7 @@ export class ShoreSpray {
       sites.push({slot:i,seed:pool.seeds[i],x,y,z,alpha:pool.alpha[i],flowX:valid?sample.flowX??null:null,flowZ:valid?sample.flowZ??null:null,shorewardFlow:valid&&slope>1e-6&&sample.flowX!==undefined&&sample.flowZ!==undefined?(sample.flowX*sample.gradientX+sample.flowZ*sample.gradientZ)/slope:null});
     }return sites;
   }
-  get diagnostics(){return {lipActive:this.lips?.pool.active??0,lipImpacts:this.lips?.pool.impacts??0,active:this.pool.active,capacity:LIMIT,drawCalls:1+(this.whitewater?1:0)+(this.lips?1:0),whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?49152:0,whitewaterMode:this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input',approximation:this.whitewater instanceof ShoreWhitewaterVolume?'6m grid / <=0.5s cache; instantaneous compression births; sampled SWE flow with FFT-only heuristic fallback; no overturning CFD':'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback'};}
+  get diagnostics(){const GRID=this.grid;return {connectedFronts:this.lips instanceof ConnectedShoreBreakers,frontEvents:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.fronts:0,lipActive:this.lips?.pool.active??0,lipImpacts:this.lips?.pool.impacts??0,active:this.pool.active,capacity:LIMIT,drawCalls:1+(this.whitewater&&!this.impactSink?1:0)+(this.lips?1:0),whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.impactSink?0:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?49152:0,whitewaterMode:this.impactSink?'world-field':this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'Current SWE compression / FFT instantaneous dissipation; residual foam never starts a front',approximation:`${this.span/GRID}m / <=0.5s cache; connected wave-line sheets, not volume-conserving CFD; ground validity rechecked in marine field shader`};}
   dispose():void{
     if(this.disposed)return;this.disposed=true;
     this.whitewater?.dispose();this.lips?.dispose();

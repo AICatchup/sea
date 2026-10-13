@@ -26,6 +26,7 @@ import { LocalWaterHeights, cameraSubmersion } from './local-water-heights.ts';
 import { WorldCollision, withWorldCollision } from '../world/world-collision';
 import { WorldSolidBinding } from '../world/world-solid-binding';
 import { ShoreSpray } from './shore-spray';
+import {MarineSurfaceField} from './marine-surface-field.ts';
 import { ShoreBreaker } from './shore-breaker';
 import { ShoreSolver, createShoreSolverUniforms } from './shore-solver.ts';
 import { buildPhotoCoastPresentation } from '../world/photo-coast-presentation';
@@ -86,6 +87,7 @@ export class Ocean {
   private photoCoast:ReturnType<typeof buildPhotoCoastPresentation>|null=null;
   private solidContactReady=false;
   private readonly spray:ShoreSpray;
+  private readonly marineSurface:MarineSurfaceField|null;
   private readonly breaker:ShoreBreaker|null;
   private readonly shoreSolver:ShoreSolver|null;
   private readonly sandMoisture:SandMoisture|null;
@@ -173,7 +175,10 @@ export class Ocean {
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0',new URLSearchParams(location.search).get('strandprofile')!=='0');
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
-    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')!=='0'});
+    const connected=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('connectedbreakers')!=='0';
+    this.marineSurface=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('marinefield')!=='0'?new MarineSurfaceField(this.renderer):null;
+    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')!=='0',connected,resolution:connected?64:24,span:connected?128:144});
+    if(this.marineSurface)this.spray.setImpactSink(b=>this.marineSurface!.deposit({x:b.x,z:b.z,nx:b.nx,nz:b.nz,radius:.28+.6*Math.sqrt(b.energy),halfLength:(b.width??2)*.5,foam:.35+.5*Math.sqrt(b.energy),bubbles:.55*Math.sqrt(b.energy),pressure:.10*b.energy}));
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);
@@ -205,8 +210,9 @@ export class Ocean {
     this.adventure.setContextInteraction({label:state=>this.activities.tool!=='none'?'道具をしまう':this.expedition.context(state)?.label??'',activate:state=>this.activities.stow(state)||this.expedition.interact(state)});
     const p=presets.day;
     this.uniforms={
+      uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},
       uSandAppearance:this.world.sandAppearance,
-      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},uHideSurfaceFoam:{value:0},uFoamFilm:{value:new URLSearchParams(location.search).get('foamfilm')==='0'?0:1},uFoamStructure:{value:new URLSearchParams(location.search).get('foamstructure')==='0'?0:1},uFarWaveFilter:{value:new URLSearchParams(location.search).get('wavefilter')==='0'?0:1},
+      ...createShoreSolverUniforms(),uPointwiseContact:{value:1},uContactDebug:{value:0},uWetStencil:{value:1},uHideSurfaceFoam:{value:0},uHideMarineFoam:{value:0},uFoamFilm:{value:new URLSearchParams(location.search).get('foamfilm')==='0'?0:1},uFoamStructure:{value:new URLSearchParams(location.search).get('foamstructure')==='0'?0:1},uFarWaveFilter:{value:new URLSearchParams(location.search).get('wavefilter')==='0'?0:1},
       uSnellRay:{value:new URLSearchParams(location.search).get('ray')==='1'?1:0},uWaterProjection:{value:this.camera.projectionMatrix},
       uTime:{value:this.time},uSunDirection:{value:new THREE.Vector3(...p.sun).normalize()},
       uSunColor:{value:new THREE.Vector3(...p.sunColor)},uZenith:{value:new THREE.Vector3(...p.zenith)},
@@ -228,6 +234,7 @@ export class Ocean {
     this.caustics=new WaveCaustics(this.renderer,{span:32,photonResolution:new URLSearchParams(location.search).get('light')==='legacy'?256:512});
     if(this.shoreSolver){this.shoreSolver.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.shoreSolver.uniforms);}
     if(this.sandMoisture){this.sandMoisture.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.sandMoisture.uniforms);}
+    if(this.marineSurface){Object.assign(this.uniforms,this.marineSurface.uniforms);this.marineSurface.bindUniforms(this.uniforms);}
     this.waterHeights.bindShore(this.uniforms);this.caustics.bindShore(this.uniforms);
     this.world.niijimaCoast.bindWaterSurface(this.uniforms);
     this.uniforms.uCaustics.value=this.caustics.texture;this.uniforms.uCausticBounds.value=this.caustics.bounds;
@@ -503,11 +510,16 @@ export class Ocean {
       if(waterMap.triangulated)this.sandMoisture.update(this.paused?0:delta,this.camera.position.x,this.camera.position.z);
       else this.sandMoisture.reset();
     }
-    this.waterHeights.update(stamp*.001,textures,waterMap,state.position,state.boatPosition,this.swell,this.uniforms.uChoppiness.value,this.wind);
     this.caustics.update(this.time,this.paused?0:delta,textures[0],textures[1],waterMap,this.camera.position,this.uniforms.uSunDirection.value,this.swell,this.wind,1.55);
     this.uniforms.uCaustics.value=this.caustics.texture;
     this.uniforms.uTime.value=this.time;this.uniforms.uSwell.value=this.swell;this.uniforms.uWind.value=this.wind;
     this.spray.update(this.time,this.paused?0:delta,this.camera,this.uniforms);
+    if(this.marineSurface){
+      const dt=this.paused?0:Math.min(.05,delta),v=state.mode==='boat'?state.velocity:undefined;
+      this.marineSurface.wake(state.boatPosition.x,state.boatPosition.z,state.boatYaw,v?.x??0,v?.z??0,state.mode==='boat'?state.boatThrottle??0:0,dt);
+      this.marineSurface.update(dt,this.camera.position.x,this.camera.position.z);
+    }
+    this.waterHeights.update(stamp*.001,textures,waterMap,state.position,state.boatPosition,this.swell,this.uniforms.uChoppiness.value,this.wind);
     if(this.breaker){
       this.breaker.bindUniforms(this.uniforms);
       this.breaker.update(this.camera.position.x,this.camera.position.z,underwater>.5,this.paused?0:delta,this.time);
@@ -693,6 +705,7 @@ export class Ocean {
     // history. Start it from this same FFT phase on the next normal frame.
     this.shoreSolver?.reset();
     this.sandMoisture?.reset();
+    this.marineSurface?.reset();this.spray.resetHistory();
   }
   setLeafAlphaThreshold(value:number){
     if(!Number.isFinite(value)||value<.05||value>.6)throw new Error('Leaf threshold .05..6 required');
@@ -729,9 +742,17 @@ export class Ocean {
     return {width:target.width,height:target.height,type:target.texture.type,minFilter:target.texture.minFilter,generateMipmaps:target.texture.generateMipmaps,status,depthImage:target.depthTexture?{width:target.depthTexture.image.width,height:target.depthTexture.image.height}:null,depthType:target.depthTexture?.type,colorImage:{width:colour.width,height:colour.height},initialError,framebuffer:!!(this.renderer.properties.get(target) as {__webglFramebuffer?:unknown}).__webglFramebuffer,normal:normal.toArray(),eye:eye.toArray(),facingDot:origin.sub(eye).dot(normal),underwater:this.uniforms.uUnderwater.value,samples};
   }
   probeShoreState(){return this.shoreSolver?.probeState()??null;}
+  probeMarineSurface(){return this.marineSurface?.probe()??null;}
   setSandMemoryEnabled(enabled:boolean):boolean {const u=this.uniforms.uSandMemoryEnabled;if(!u)return false;const previous=u.value>.5;u.value=enabled?1:0;return previous;}
   probeCrestDriver(expanded=false){return this.breaker?.probeDriver(this.renderer,expanded)??null;}
-  setWhitewaterVisible(visible:boolean):boolean{const material=this.spray.whitewater?.material;const before=material?.visible??false;if(material)material.visible=visible;return before;}
+  setWhitewaterVisible(visible:boolean):boolean{
+    const material=this.spray.whitewater?.material;
+    const before=this.marineSurface?this.uniforms.uHideMarineFoam.value<.5:material?.visible??false;
+    if(material)material.visible=visible;
+    // Hide aeration for comparisons, retaining identical wake geometry,
+    // swimmer height and simulation history.
+    this.uniforms.uHideMarineFoam.value=visible?0:1;return before;
+  }
   probeWhitewaterSites(){return this.spray.probeWhitewaterSites().map(site=>({...site,distance:Math.hypot(site.x-this.camera.position.x,site.z-this.camera.position.z)}));}
   /** Raw floating-point water-only probes; no tone mapping or temporal update. */
   probeWaterContact(points:readonly{x:number;y:number}[]){
@@ -800,6 +821,7 @@ export class Ocean {
       spray:this.spray.diagnostics,habushiGate:this.world.habushiGate.diagnostics,habushiGround:this.world.habushiGround.diagnostics,
       shoreSolver:this.shoreSolver?{...this.shoreSolver.diagnostics,ready:this.uniforms.uShoreReady.value}:null,
       sandMoisture:this.sandMoisture?.diagnostics??null,
+      marineSurface:this.marineSurface?.diagnostics??null,
       outcropSupport:this.scannedCoast.userData.outcropSupport,
       photoCoast:this.photoCoast?{instances:this.photoCoast.diagnostics.instances,triangles:this.photoCoast.diagnostics.triangles,draws:this.photoCoast.diagnostics.draws,roles:this.photoCoast.diagnostics.roles}:null,
       scannedCoast:this.scannedCoastInstances.map(m=>({name:m.name,count:m.count})),scanLod:this.scanLods.map(l=>l.diagnostics),
@@ -836,6 +858,7 @@ export class Ocean {
     this.reefGeometries.forEach(geometry=>geometry.dispose());
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();
     this.shoreSolver?.dispose();
+    this.marineSurface?.dispose();
     this.sandMoisture?.dispose();
     this.activityWorld.dispose();this.expeditionWorld.dispose();this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
