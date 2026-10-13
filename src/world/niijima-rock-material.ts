@@ -18,8 +18,29 @@ export function loadCliffTextures(pumiceGrain=false):CliffTextureSet{
 /** Shared world-metre projection. No camera-facing image or baked illumination. */
 export const cliffMaterialCommon=/*glsl*/`
  uniform sampler2D uCliffAlbedo,uCliffNormal,uCliffARM;
- uniform float uCliffReady,uCliffDetail,uCliffTileMetres,uCliffMeanLuminance;
+ uniform float uCliffReady,uCliffDetail,uCliffTileMetres,uCliffMeanLuminance,uCliffVariation;
+ vec2 cliffCellOffset(vec2 cell){
+   vec3 h=fract(vec3(cell.xyx)*vec3(.1031,.1030,.0973));
+   h+=dot(h,h.yxz+33.33);
+   return fract((h.xx+h.yz)*h.zy)*19.;
+ }
+ // Translate all PBR channels together. Preserve bedding direction and physical
+ // grain size; explicit derivatives prevent seams from selecting coarse mips.
+ vec3 cliffIrregularScan(sampler2D source,vec2 uv,vec2 dx,vec2 dy){
+   vec2 lattice=vec2(uv.x-.5773502692*uv.y,1.1547005384*uv.y);
+   vec2 base=floor(lattice),f=fract(lattice),a,b,c;vec3 w;
+   if(f.x+f.y<1.){
+     a=base;b=base+vec2(1,0);c=base+vec2(0,1);w=vec3(1.-f.x-f.y,f.x,f.y);
+   }else{
+     a=base+vec2(1,1);b=base+vec2(0,1);c=base+vec2(1,0);w=vec3(f.x+f.y-1.,1.-f.x,1.-f.y);
+   }
+   w=pow(max(w,vec3(0)),vec3(5));w/=max(dot(w,vec3(1)),1e-7);
+   return textureGrad(source,uv+cliffCellOffset(a),dx,dy).rgb*w.x
+     +textureGrad(source,uv+cliffCellOffset(b),dx,dy).rgb*w.y
+     +textureGrad(source,uv+cliffCellOffset(c),dx,dy).rgb*w.z;
+ }
  vec3 cliffScan(sampler2D source,vec2 uv,vec2 dx,vec2 dy,float blend){
+   if(uCliffVariation>.5)return cliffIrregularScan(source,uv,dx,dy);
    return mix(textureGrad(source,uv,dx,dy).rgb,textureGrad(source,uv+vec2(.371,.619),dx,dy).rgb,blend);
  }
  vec3 cliffTriScan(sampler2D source,vec3 p,vec3 dx,vec3 dy,vec3 weights,vec3 signs,float blend){

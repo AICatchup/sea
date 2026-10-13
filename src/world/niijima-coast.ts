@@ -56,6 +56,7 @@ function pumiceMaterial(base: THREE.MeshStandardMaterial,sand?:SandTextureSet,pu
   material.vertexColors = true; material.color.set(0xffffff); material.roughness = .96; material.metalness = 0;
   material.map = material.normalMap = material.bumpMap = material.roughnessMap = material.metalnessMap = material.aoMap = null;
   material.onBeforeCompile = shader => {
+    shader.uniforms.uCliffVariation={value:typeof location!=='undefined'&&new URLSearchParams(location.search).get('rockvariation')==='1'?1:0};
     Object.assign(shader.uniforms,{uPumicePhoto:{value:pumice},uPumiceReady:ready??{value:0}});
     if(detail)Object.assign(shader.uniforms,{uCliffAlbedo:{value:detail.albedo},uCliffNormal:{value:detail.normal},uCliffARM:{value:detail.arm},uCliffReady:detail.available,uCliffDetail:detailAmount,uCliffTileMetres:detail.tileMetres,uCliffMeanLuminance:detail.meanLuminance});
     if(sand&&water)Object.assign(shader.uniforms,water);
