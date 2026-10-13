@@ -173,7 +173,7 @@ export class Ocean {
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0',new URLSearchParams(location.search).get('strandprofile')!=='0');
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
-    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume});
+    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')!=='0'});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);

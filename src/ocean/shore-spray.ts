@@ -1,3 +1,4 @@
+import { ShoreBreakingLips } from './shore-breaking-lips.ts';
 import * as THREE from 'three';
 /** Integer births plus a fractional Bernoulli retain the expected rate even
  * when a frame contains more than one event. The caller keeps its pool cap. */
@@ -71,7 +72,8 @@ export function sprayBirthRate(depth:number,energy:number,shelter:number,distanc
  * The shader recomputes compression: FFT alpha contains historical foam, not
  * the instantaneous Jacobian. Bathymetry uses the renderer's half-texel map.
  * Birth sites are a 6m grid and at most 0.2s old: this is a bounded approximation
- * to crest spray, not a resolved fluid or lip-impact simulation. */
+ * to crest spray, not a resolved fluid simulation. Optional ballistic lips
+ * delay foam and an impact fan until sampled surface contact. */
 export class ShoreSpray {
   readonly group=new THREE.Group();
   private readonly pool=new SprayPool();
@@ -104,6 +106,7 @@ export class ShoreSpray {
   private sampleWetEligibleCount=0;
   private updateMs=0;
   readonly whitewater:ShoreWhitewater|ShoreWhitewaterVolume|null;
+  readonly lips:ShoreBreakingLips|null;
   private readonly foamCredits=new Float32Array(GRID*GRID);
   private readonly foamSample:WhitewaterSample={height:0,compression:0,depth:0,shelter:1,ground:0,gradientX:0,gradientZ:0};
   private foamCacheValid=false;
@@ -132,8 +135,9 @@ export class ShoreSpray {
     }
     return true;
   };
-  constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number},options:{whitewater?:boolean;volume?:boolean}={}){
+  constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number},options:{whitewater?:boolean;volume?:boolean;lips?:boolean}={}){
     this.renderer=renderer;this.ground=ground;
+    this.lips=options.lips?new ShoreBreakingLips():null;if(this.lips)this.group.add(this.lips.group);
     this.flowReadback=!!options.volume||!!options.whitewater;
     this.target=new THREE.WebGLRenderTarget(GRID,GRID*(this.flowReadback?2:1),{type:THREE.UnsignedByteType,depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
     this.whitewater=options.volume?new ShoreWhitewaterVolume():options.whitewater?new ShoreWhitewater():null;
@@ -215,11 +219,23 @@ export class ShoreSpray {
     }
     if(this.whitewater)for(const key of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness','uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uSunDirection','uSunColor','uHorizon'])
       if(uniforms[key]&&this.whitewater.material.uniforms[key])this.whitewater.material.uniforms[key]=uniforms[key];
+    this.lips?.bind(uniforms);
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
     this.pool.advance(dt);
     this.foamCacheValid=!!this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime;
     this.whitewater?.update(delta,this.sampleFoam,underwater);
+    if(this.lips){this.lips.update(delta,this.sampleFoam,b=>{
+      if(this.whitewater?.pool.emit(b))this.whitewaterEmitted++;
+      // Landing, rather than old residual foam, launches a short impact fan.
+      const strength=whitewaterAerationStrength(b.energy);
+      for(let j=0;j<8;j++){
+        const along=(j/7-.5)*2.6,fan=(this.random()-.5)*1.8;
+        if(this.pool.emit({x:b.x-b.nz*along,y:b.height+.04,z:b.z+b.nx*along,
+          vx:b.nx*(.5+strength)-b.nz*fan,vy:.6+this.random()*1.8*strength,vz:b.nz*(.5+strength)+b.nx*fan,
+          windX:0,windZ:0,drag:1.8,life:.25+this.random()*.3,size:.035+this.random()*.09,opacity:.28}))this.emitted++;
+      }
+    });}
     if(!underwater){
       this.requestSample(time,camera,uniforms);
       const wind=Math.max(0,Math.min(35,Number(uniforms.uWind?.value??0)));
@@ -275,9 +291,11 @@ export class ShoreSpray {
           const across=this.whitewater instanceof ShoreWhitewaterVolume?(this.random()-.5)*5.4:0;
           const bx=x-nz*along+nx*across,bz=z+nx*along+nz*across;
           if(!this.sampleFoam(bx,bz,s)||whitewaterBirthRate(s)<=0)continue;
-          if(this.whitewater.pool.emit({x:bx,z:bz,height:s.height,energy:s.compression,nx,nz,seed})){count++;this.whitewaterEmitted++;}
+          const birth={x:bx,z:bz,height:s.height,energy:s.compression,nx,nz,seed};
+          if(this.lips){if(this.lips.pool.emit(birth))count++;}
+          else if(this.whitewater.pool.emit(birth)){count++;this.whitewaterEmitted++;}
         }
-        if(this.whitewater instanceof ShoreWhitewaterVolume)this.foamScanCursor=(this.foamScanCursor+137)%(GRID*GRID);
+        if(this.lips||this.whitewater instanceof ShoreWhitewaterVolume)this.foamScanCursor=(this.foamScanCursor+137)%(GRID*GRID);
       }
     }
     const size=this.renderer.getDrawingBufferSize(new THREE.Vector2());
@@ -334,10 +352,10 @@ export class ShoreSpray {
       sites.push({slot:i,seed:pool.seeds[i],x,y,z,alpha:pool.alpha[i],flowX:valid?sample.flowX??null:null,flowZ:valid?sample.flowZ??null:null,shorewardFlow:valid&&slope>1e-6&&sample.flowX!==undefined&&sample.flowZ!==undefined?(sample.flowX*sample.gradientX+sample.flowZ*sample.gradientZ)/slope:null});
     }return sites;
   }
-  get diagnostics(){return {active:this.pool.active,capacity:LIMIT,drawCalls:this.whitewater?2:1,whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?2048:0,whitewaterMode:this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input',approximation:this.whitewater instanceof ShoreWhitewaterVolume?'6m grid / <=0.5s cache; instantaneous compression births; sampled SWE flow with FFT-only heuristic fallback; no overturning CFD':'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback'};}
+  get diagnostics(){return {lipActive:this.lips?.pool.active??0,lipImpacts:this.lips?.pool.impacts??0,active:this.pool.active,capacity:LIMIT,drawCalls:1+(this.whitewater?1:0)+(this.lips?1:0),whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?49152:0,whitewaterMode:this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'SWE compression × 0.7s onset / FFT instantaneous dissipation proxy; no residual foam input',approximation:this.whitewater instanceof ShoreWhitewaterVolume?'6m grid / <=0.5s cache; instantaneous compression births; sampled SWE flow with FFT-only heuristic fallback; no overturning CFD':'6m grid / <=0.5s cache / finite-difference FFT compression; wind direction follows local offshore gradient; whitewater cached solved flow including backwash; bilinear cached height, ground-culling, FFT-only analytic fallback'};}
   dispose():void{
     if(this.disposed)return;this.disposed=true;
-    this.whitewater?.dispose();
+    this.whitewater?.dispose();this.lips?.dispose();
     this.geometry.dispose();this.material.dispose();this.quadGeometry.dispose();this.sampleMaterial.dispose();
     if(!this.pending)this.target.dispose();this.group.clear();this.scene.clear();this.pixels=null;
   }

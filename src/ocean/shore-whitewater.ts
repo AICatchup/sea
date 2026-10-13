@@ -80,17 +80,20 @@ export class WhitewaterPool {
   dispose():void {if(this.disposed)return;this.disposed=true;this.births.fill(null);this.alpha.fill(0);this.active=0;}
 }
 
-/** Fixed geometry, one draw and 2048 triangles; irregular perforated water-plane
+/** Fixed geometry, one draw and 49152 triangles; irregular perforated surface-conforming
  * fragments, not camera-facing mist cards. No per-frame geometry/texture creation. */
 export class ShoreWhitewater {
   readonly group=new THREE.Group();
   readonly pool=new WhitewaterPool();
   readonly material:THREE.ShaderMaterial;
-  private readonly geometry=new THREE.InstancedBufferGeometry();
+  readonly geometry=new THREE.InstancedBufferGeometry();
   private disposed=false;
   constructor(){
-    this.geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array([-.5,0,-.5,.5,0,-.5,.5,0,.5,-.5,0,.5]),3));
-    this.geometry.setIndex([0,2,1,0,3,2]);
+    // A two-triangle card cuts through the curved wave and hides its centre.
+    // Fixed subdivisions follow the same solved surface at every vertex.
+    const sheet=new THREE.PlaneGeometry(1,1,8,3);sheet.rotateX(-Math.PI/2);
+    this.geometry.setAttribute('position',sheet.getAttribute('position').clone());
+    this.geometry.setIndex(sheet.index!.clone());sheet.dispose();
     for(const [name,array,size] of [['aCenter',this.pool.positions,3],['aShape',this.pool.shape,3],['aAlpha',this.pool.alpha,1],['aSeed',this.pool.seeds,1]] as const)this.geometry.setAttribute(name,new THREE.InstancedBufferAttribute(array,size).setUsage(THREE.DynamicDrawUsage));
     this.geometry.instanceCount=this.pool.capacity;
     this.material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,side:THREE.FrontSide,
@@ -119,4 +122,3 @@ export class ShoreWhitewater {
   }
   dispose():void {if(this.disposed)return;this.disposed=true;this.pool.dispose();this.geometry.dispose();this.material.dispose();this.group.clear();}
 }
-

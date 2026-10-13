@@ -519,7 +519,7 @@ try {
       if(eyeY!==undefined&&!Number.isFinite(eyeY))throw new Error('Finite comparison eye height required');
       return captureNamed(captureHost,{name:'custom',pose:{x,z,yaw,pitch,mode,depth,eyeY},provenance:'Authored developer comparison camera; no travel or surveyed camera claim'},{quality:'high',preset,width:1280,height:720,timeoutMs:30000,warmupFrames:30});
     },
-    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number},compareBreaker=false,compareShore=false,compareContact=false,compareLight=false,compareFoam=false){
+    async captureLive(name:string,milliseconds=6000,wind=8.5,swell=1,look?:{yaw:number;pitch:number;x?:number;z?:number;mode?:'walk'|'swim'|'dive';depth?:number;eyeY?:number},compareBreaker=false,compareShore=false,compareContact=false,compareLight=false,compareFoam=false){
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown capture view');
       const previousLight=ocean.getCausticResolution();
       try{
@@ -529,7 +529,7 @@ try {
         const x=Number.isFinite(look?.x)?look!.x!:p.x,z=Number.isFinite(look?.z)?look!.z!:p.z;
         const mode=look?.mode&&['walk','swim','dive'].includes(look.mode)?look.mode:p.mode;
         const depth=Number.isFinite(look?.depth)?Math.max(0,Math.min(100,look!.depth!)):p.depth;
-        captureHost.viewpoint(x,z,yaw,pitch,mode,depth);captureHost.setPaused(false);
+        captureHost.viewpoint(x,z,yaw,pitch,mode,depth,look?.eyeY);captureHost.setPaused(false);
         await new Promise(resolve=>setTimeout(resolve,Math.max(2000,Math.min(15000,milliseconds))));
         captureHost.setPaused(true);await captureHost.nextFrame();await captureHost.nextFrame();
         const state=captureHost.readState(),png=await capturePNG();if(!png)throw new Error('No live capture');
@@ -579,14 +579,14 @@ try {
         return {png,pngWithoutWhitewater,pngWithoutSurfaceFoam,pngFoamFilm,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,lightComparison,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,foamComparison:compareFoam?'Frozen state: all foam, whitewater pool hidden, both pool and surface-shader foam hidden':null,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null,lightComparison:compareLight?'One frozen camera/FFT/solver/time/environment; legacy256->fine512->legacy256, caustic history reset only':null}};
       }finally{try{ocean.setCausticResolution(previousLight);}finally{captureHost.restoreState(before);}}
     },
-    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number},startClock?:number,probes:readonly{x:number;y:number}[]=[],compareSand=false,compareFoam=false){
+    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number;eyeY?:number},startClock?:number,probes:readonly{x:number;y:number}[]=[],compareSand=false,compareFoam=false){
       if(stops.length<1||stops.length>6||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown temporal capture view');
       if(startClock!==undefined&&(!Number.isFinite(startClock)||startClock<0||startClock>86400))throw new Error('Finite bounded QA clock required');
       const clock=ocean.diagnostics.time,frames=[];
       try{
         captureHost.visualLock(true);captureHost.setQuality('high');captureHost.setPreset('day');ocean.setWind(Math.max(2,Math.min(18,wind)));ocean.setSwell(Math.max(.3,Math.min(2,swell)));
-        const p=profile.pose;captureHost.viewpoint(Number.isFinite(look?.x)?look!.x!:p.x,Number.isFinite(look?.z)?look!.z!:p.z,Number.isFinite(look?.yaw)?look!.yaw!:p.yaw,Number.isFinite(look?.pitch)?Math.max(-1.35,Math.min(1.35,look!.pitch!)):p.pitch,look?.mode??p.mode,Number.isFinite(look?.depth)?Math.max(0,Math.min(100,look!.depth!)):p.depth);captureHost.setPaused(true);await captureHost.nextFrame();
+        const p=profile.pose;captureHost.viewpoint(Number.isFinite(look?.x)?look!.x!:p.x,Number.isFinite(look?.z)?look!.z!:p.z,Number.isFinite(look?.yaw)?look!.yaw!:p.yaw,Number.isFinite(look?.pitch)?Math.max(-1.35,Math.min(1.35,look!.pitch!)):p.pitch,look?.mode??p.mode,Number.isFinite(look?.depth)?Math.max(0,Math.min(100,look!.depth!)):p.depth,look?.eyeY);captureHost.setPaused(true);await captureHost.nextFrame();
         if(startClock!==undefined){ocean.setObservationClock(startClock);await captureHost.nextFrame();}
         for(let i=0;i<stops.length;i++){
           if(i){captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,(stops[i]-stops[i-1])*1000));captureHost.setPaused(true);}
