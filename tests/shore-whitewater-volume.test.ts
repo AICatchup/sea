@@ -63,6 +63,17 @@ test('geometry occupies all axes, has closed edges and fixed real normals',()=>{
   for(let i=0;i<p.count;i+=3)for(const [a,b] of [[i,i+1],[i+1,i+2],[i+2,i]]){const k=[key(a),key(b)].sort().join('|');edges.set(k,(edges.get(k)??0)+1);}
   assert.ok([...edges.values()].every(v=>v===2));g.dispose();
 });
+test('shared whitewater vertices have continuous normals instead of faceted rock lighting',()=>{
+  const g=createWhitewaterVolumeGeometry(5),p=g.getAttribute('position'),n=g.getAttribute('normal');
+  const normals=new Map<string,number[]>();
+  for(let i=0;i<p.count;i++){
+    const key=[p.getX(i),p.getY(i),p.getZ(i)].map(v=>v.toFixed(4)).join(',');
+    const normal=[n.getX(i),n.getY(i),n.getZ(i)],previous=normals.get(key);
+    if(previous)assert.ok(normal.every((v,j)=>Math.abs(v-previous[j])<1e-5));
+    else normals.set(key,normal);
+  }
+  assert.ok(normals.size<p.count);g.dispose();
+});
 test('volume material uses depth, has fixed attributes, hides underwater and disposes once',()=>{
   const v=new ShoreWhitewaterVolume();assert.equal(v.geometry.instanceCount,384);assert.equal(v.material.depthTest,true);assert.equal(v.material.depthWrite,false);assert.equal(v.material.transparent,true);
   const geometry=v.geometry,position=geometry.getAttribute('position');v.pool.emit(birth);v.update(.1,sample,true);assert.equal(v.group.visible,false);v.update(.1,sample,false);assert.equal(v.group.visible,true);

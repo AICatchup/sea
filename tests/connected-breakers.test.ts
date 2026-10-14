@@ -38,12 +38,12 @@ test('a large shallow-water crest survives the temporary-depth gate and plunges 
   assert.ok(impacts>0,'the high crest must land instead of remaining raised');assert.equal(pool.active,0);
 });
 test('one connected event gives one landing per node and collapses without repeat impacts',()=>{
-  const pool=new ConnectedBreakerPool();assert.ok(pool.emitFront(traceBreakingFront(0,0,front,.2)));
+  const pool=new ConnectedBreakerPool(),line=traceBreakingFront(0,0,front,.2);assert.ok(pool.emitFront(line));
   const events:{eventId:number;x:number;z:number;impactSpeed:number}[]=[];
   for(let i=0;i<90;i++)pool.advance(1/60,flat,b=>events.push(b));
   assert.equal(events.length,BREAKER_FRONT_NODES);assert.equal(new Set(events.map(b=>b.eventId)).size,1);assert.equal(pool.active,0);
-  assert.ok(events.every(b=>b.impactSpeed>2&&b.impactSpeed<4),'impact velocity follows gravitational fall from the sampled crest');
-  assert.ok(events.every(b=>b.x> -4));pool.advance(.2,flat,b=>events.push(b));assert.equal(events.length,BREAKER_FRONT_NODES);
+  for(const b of events){const born=line.reduce((a,c)=>Math.abs(c.z-b.z)<Math.abs(a.z-b.z)?c:a);const expected=Math.sqrt(.4*.4+2*9.81*(born.height-.025));assert.ok(Math.abs(b.impactSpeed-expected)<.18,'impact velocity follows the actual crest height within one integration step');assert.ok(b.x>born.x);}
+  pool.advance(.2,flat,b=>events.push(b));assert.equal(events.length,BREAKER_FRONT_NODES);
   assert.ok(pool.roots.every(Number.isFinite));assert.ok(pool.tips.every(Number.isFinite));
 });
 test('front geometry is deterministic before contact and bounded across frame partitions',()=>{

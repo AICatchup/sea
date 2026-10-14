@@ -32,3 +32,19 @@ test('unsupported sheets hand off airborne parcels once instead of stretching a 
   assert.ok(released.every(p=>p.y>.02&&p.vy<.4));
   const count=released.length;pool.advance(.5,flat,()=>{});assert.equal(released.length,count);
 });
+
+test('a uniform crest uses one physical clock across the whole connected front',()=>{
+ const pool=new ConnectedBreakerPool();
+ pool.emitFront([-8,0,8].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,drop:2})));
+ pool.advance(.2,(_x,_z,s)=>{s.height=0;s.ground=-2;s.depth=2;return true;},()=>assert.fail('too early'));
+ for(let j=1;j<17;j++){
+   assert.ok(Math.abs(pool.tips[j*4]-pool.tips[0])<1e-6);
+   assert.ok(Math.abs(pool.tips[j*4+1]-pool.tips[1])<1e-6);
+ }
+});
+
+test('new sheet rows overlap the supporting crest instead of only touching an edge',()=>{
+ const pool=new ConnectedBreakerPool();pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,drop:2})));
+ pool.advance(.1,(_x,_z,s)=>{s.height=0;s.ground=-2;s.depth=2;return true;},()=>{});
+ assert.ok(pool.sheet[0]<pool.roots[0]);assert.ok(pool.roots[0]-pool.sheet[0]<.5);
+});

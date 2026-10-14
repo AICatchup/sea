@@ -14,3 +14,24 @@ test('crest projection rejects invalid and emergent support',()=>{
  assert.equal(trackBreakerRoot(0,0,1,0,()=>false),null);
  for(const ground of [.2,1])assert.equal(trackBreakerRoot(0,0,1,0,(_x,_z,s)=>{s.height=2;s.depth=1;s.ground=ground;return true;}),null);
 });
+
+import {ConnectedBreakerPool} from '../src/ocean/connected-breakers.ts';
+test('root corrections accumulate along the live crest rather than restarting at the birth prediction',()=>{
+ const pool=new ConnectedBreakerPool();let time=0;
+ pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:2,speed:5,drop:2,reach:4})));
+ const moving:WhitewaterSampler=(x,_z,s)=>{s.height=Math.max(-20,2-.5*(x-time)**2);s.depth=2;s.ground=-25;return true;};
+ let previous=0;
+ for(let i=0;i<48;i++){
+  time+=1/60;pool.advance(1/60,moving,()=>{});
+  const x=pool.roots[8*4];assert.ok(Math.abs(x-previous)<.26,'projection must not teleport a root');previous=x;
+ }
+ assert.ok(Math.abs(previous-time)<1,`root ${previous}, live crest ${time}`);
+});
+
+import {traceBreakingFront} from '../src/ocean/connected-breakers.ts';
+test('compressed front emits from the higher crest even where crest compression is zero',()=>{
+ const wave:WhitewaterSampler=(x,_z,s)=>{const h=3*Math.exp(-(((x+4)/3)**2));Object.assign(s,{height:h,depth:2+h,ground:-2,compression:x>-2?.4:0,gradientX:.1,gradientZ:0,waveGradientX:-.3,waveGradientZ:0,flowX:2,flowZ:0});return true;};
+ const line=traceBreakingFront(0,0,wave,.2);assert.equal(line.length,17);
+ assert.ok(line.every(n=>n.height>2.8&&n.x< -3&&n.energy>.08));
+ assert.ok(line.every(n=>(n.drop??0)>2));
+});

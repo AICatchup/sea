@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
 import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling, createShoreSolverUniforms } from './shore-solver.ts';
 import { type WhitewaterBirth, type WhitewaterSample, type WhitewaterSampler } from './shore-whitewater.ts';
@@ -98,8 +99,13 @@ export function createWhitewaterVolumeGeometry(detail=1):THREE.InstancedBufferGe
     const warp=1+.055*Math.sin(x*5+z*3)+.035*Math.cos(y*6-z*4);
     p.setXYZ(i,x*warp,y*warp,z*warp);
   }
-  source.computeVertexNormals();
-  const geometry=new THREE.InstancedBufferGeometry();geometry.setAttribute('position',p.clone());geometry.setAttribute('normal',source.getAttribute('normal').clone());source.dispose();return geometry;
+  // IcosahedronGeometry is non-indexed. Computing normals on it directly
+  // gives each triangle a separate face normal, making foam look like rocks.
+  // Weld positions before computing normals, then retain the fixed draw layout.
+  source.deleteAttribute('normal');source.deleteAttribute('uv');
+  const welded=mergeVertices(source);welded.computeVertexNormals();
+  const smooth=welded.toNonIndexed();
+  const geometry=new THREE.InstancedBufferGeometry();geometry.setAttribute('position',smooth.getAttribute('position').clone());geometry.setAttribute('normal',smooth.getAttribute('normal').clone());source.dispose();welded.dispose();smooth.dispose();return geometry;
 }
 export class ShoreWhitewaterVolume {
   readonly group=new THREE.Group();
@@ -114,7 +120,7 @@ export class ShoreWhitewaterVolume {
     this.material=new THREE.ShaderMaterial({depthTest:true,depthWrite:false,transparent:true,side:THREE.FrontSide,
       uniforms:{...createShoreSolverUniforms(),uImpact:{value:impactsOnly?1:0},uFoamStructure:{value:1},uFoamAtlas:{value:null},uFoamAtlasReady:{value:0},uFoamClock:{value:0},uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},uTint:{value:new THREE.Color(.91,.96,.95)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`attribute vec3 aCenter;attribute vec4 aShape;attribute vec2 aMotion;attribute float aAlpha,aSeed;
-      varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet;
+      varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet,vClearance;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
       ${shoreWaveSampling}
       ${shoreSolverSampling}
@@ -139,6 +145,7 @@ export class ShoreWhitewaterVolume {
       vec2 coast=coastAt(world);float base=shoreSolvedSurface(world,displacement(p).y,0.).x+marineSurface(world).b;
       float centerBase=surfaceHeight(aCenter.xz);
       float height=centerBase+clamp(base-centerBase,-.3,.3)+q.y;
+      vClearance=height-base;
       vWet=min(base-coast.x,height-coast.x)*step(.18,coast.y)*step(-4.6,coast.x);
       vec2 horizon=world-cameraPosition.xz;height-=dot(horizon,horizon)/(2.*6371000.);
       n=normalize(n/vec3(aShape.z,aShape.y,aShape.x));vNormal=vec3(n.x*c-n.z*s,n.y,n.x*s+n.z*c);
@@ -150,7 +157,7 @@ export class ShoreWhitewaterVolume {
       vFoamWorld=vec3(world.x,height,world.y);
       gl_Position=projectionMatrix*viewMatrix*vec4(world.x,height,world.y,1);}`,
       fragmentShader:`uniform vec3 uTint,uSunDirection,uSunColor,uHorizon;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady,uImpact,uFoamStructure;uniform vec2 uViewport;
-      varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet;
+      varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet,vClearance;
       ${whitewaterPoreGLSL}
       ${foamAppearanceGLSL}
       void main(){if(vAlpha<.001||vWet<.02)discard;if(uOccludingDepthReady>.5&&texture2D(uOccludingDepth,gl_FragCoord.xy/uViewport).r<gl_FragCoord.z-.0000002)discard;
@@ -175,6 +182,9 @@ export class ShoreWhitewaterVolume {
       // hard-edged holes through a flattening opaque shell.
       float coverage=smoothstep(threshold+erosion-.18,threshold+erosion+.20,effectivePore)*vAlpha;
       coverage*=smoothstep(0.,.30,edge);
+      // Submerged flocs dissolve into the surface aeration field. Fade before
+      // the depth intersection exposes individual water-mesh triangles.
+      coverage*=smoothstep(.015,.20,vClearance);
       if(coverage<.005)discard;
       float cavityNoise=whitewaterNoise(vWorld*2.6);
       float resolved=1.-smoothstep(.035,.12,footprint);
