@@ -1,0 +1,11 @@
+# V88 — refract the rendered ocean behind a falling water sheet
+
+Base 8660b34. The connected lip previously sampled land-only scene color and used the base-ocean optical path. A thin elevated sheet therefore exposed sand or became an opaque cyan/dark slab. The compositor now renders base water first, snapshots its composite over land into a separate half-float buffer, then draws the foreground while preserving base color/depth. Connected lips use this snapshot with thickness-based absorption. Linear camera depth in alpha rejects foreground refraction samples; the snapshot is never sampled while being written.
+
+This is a screen-space approximation, not full double-interface ray tracing. Existing reflection remains approximate. An additional full-screen pass and target are allocated only for experimental connected-front rendering; realtime cost remains unmeasured. No wave height, wind, swell, geometry or emission trajectory was reduced. Default breakinglips remains off.
+
+135 focused tests, TypeScript and production build pass. New tests check separate read/write buffers, preserved base depth, visibility and autoClear restoration including draw failure. Chrome reported no console errors. Side capture: 81 frames from 0 to 8 seconds at fixed 1/60 simulation steps; front capture: 8 time checkpoints. This is not realtime FPS evidence. Frames are under work/v88-final-frames and work/v88-front-frames. Candidate GIF/MP4 are in outer outputs/breaking-waves-v88-candidate. JPEG95 was used to avoid redundant large PNG storage.
+
+Visual acceptance FAILS: opacity is improved but straight rectangular boundaries remain, and large plunging/overturning is not convincing. Do not call this photorealistic, or promote it to the accepted standalone. Goal remains ACTIVE.
+
+Prior primary implementation references retained: [Storm-Breakers](https://github.com/Stormrider31/Storm-Breakers), [Crest shorelines](https://github.com/wave-harmonic/crest/blob/master/docs/user/shallows-and-shorelines.rst), and [Thuerey et al. breaking waves](https://matthias-research.github.io/pages/publications/breakingWaves.pdf). No external source copied in V88. These references establish techniques, not acceptance of our result.

@@ -220,6 +220,8 @@ export class SceneCompositor {
     depthTest: false, depthWrite: false, toneMapped: false });
   private readonly quad: THREE.Mesh;
   private sunlight:THREE.DirectionalLight|null=null;
+  private behindWater:THREE.WebGLRenderTarget|null=null;
+  private behindCopy:THREE.ShaderMaterial|null=null;
   /** Optional photographic grade (?grade=photo): HDR target, bloom chain and finish pass. */
   private grade:{hdr:THREE.WebGLRenderTarget;mips:THREE.WebGLRenderTarget[];down:THREE.ShaderMaterial;up:THREE.ShaderMaterial;finish:THREE.ShaderMaterial}|null=null;
 
@@ -321,7 +323,7 @@ export class SceneCompositor {
   }
 
   resize(width:number,height:number):void {
-    this.landTarget.setSize(width,height);this.waterTarget.setSize(width,height);this.colorTarget.setSize(width,height);
+    this.landTarget.setSize(width,height);this.waterTarget.setSize(width,height);this.colorTarget.setSize(width,height);this.behindWater?.setSize(width,height);
     const aoWidth=Math.ceil(width/2),aoHeight=Math.ceil(height/2);
     this.occlusionTarget.setSize(aoWidth,aoHeight);
     this.occlusion.uniforms.uFullResolution.value.set(width,height);
@@ -340,7 +342,7 @@ export class SceneCompositor {
     this.shadowUniforms.uSunShadowMatrix.value=sun.shadow.matrix;
   }
 
-  render(land:THREE.Scene,water:THREE.Scene,camera:THREE.PerspectiveCamera):void {
+  render(land:THREE.Scene,water:THREE.Scene,camera:THREE.PerspectiveCamera,foreground?:THREE.Object3D):void {
     this.merge.uniforms.uNearFar.value.set(camera.near,camera.far);
     this.renderer.setClearColor(0,1);
     this.renderer.setRenderTarget(this.landTarget);this.renderer.render(land,camera);
@@ -351,7 +353,11 @@ export class SceneCompositor {
     this.quad.material=this.occlusion;
     this.renderer.setRenderTarget(this.occlusionTarget);this.renderer.render(this.scene,this.camera);
     this.renderer.setClearColor(0,0);
-    this.renderer.setRenderTarget(this.waterTarget);this.renderer.render(water,camera);
+        const split=foreground?.visible===true;
+    if(split)foreground!.visible=false;
+    try{this.renderer.setRenderTarget(this.waterTarget);this.renderer.render(water,camera);}
+    finally{if(split)foreground!.visible=true;}
+    if(split)this.renderWaterForeground(water,camera,foreground!);
     this.quad.material=this.merge;
     if(this.grade)this.renderGrade();
     else{this.renderer.setRenderTarget(this.colorTarget);this.renderer.render(this.scene,this.camera);}
@@ -359,6 +365,28 @@ export class SceneCompositor {
     this.renderer.setRenderTarget(null);this.renderer.render(this.scene,this.camera);
   }
 
+  /** Snapshot base water once; the lip must refract the ocean, not bare land.
+   * No render target is sampled while it is being written. */
+  private renderWaterForeground(water:THREE.Scene,camera:THREE.PerspectiveCamera,foreground:THREE.Object3D):void{
+    if(!this.behindWater){
+      this.behindWater=new THREE.WebGLRenderTarget(this.waterTarget.width,this.waterTarget.height,{type:THREE.HalfFloatType,depthBuffer:false});
+      this.behindCopy=new THREE.ShaderMaterial({vertexShader:vertex,depthTest:false,depthWrite:false,toneMapped:false,
+        uniforms:{water:{value:this.waterTarget.texture},land:{value:this.landTarget.texture},wd:{value:this.waterTarget.depthTexture},ld:{value:this.landTarget.depthTexture},nf:{value:new THREE.Vector2()}},
+        fragmentShader:`varying vec2 vUv;uniform sampler2D water,land,wd,ld;uniform vec2 nf;
+        void main(){vec4 w=texture2D(water,vUv);float d=mix(texture2D(ld,vUv).r,texture2D(wd,vUv).r,w.a);
+        float distance=2.*nf.x*nf.y/(nf.y+nf.x-(d*2.-1.)*(nf.y-nf.x));
+        gl_FragColor=vec4(mix(texture2D(land,vUv).rgb,w.rgb,w.a),distance);}`});
+    }
+    this.behindCopy!.uniforms.nf.value.set(camera.near,camera.far);
+    this.quad.material=this.behindCopy!;
+    this.renderer.setRenderTarget(this.behindWater);this.renderer.render(this.scene,this.camera);
+    foreground.traverse(object=>{if(object instanceof THREE.Mesh&&object.material instanceof THREE.ShaderMaterial&&object.material.uniforms.uBehindWater){object.material.uniforms.uBehindWater.value=this.behindWater!.texture;object.material.uniforms.uBehindWaterReady.value=1;}});
+    const visibility=water.children.map(object=>[object,object.visible] as const),autoClear=this.renderer.autoClear;
+    try{
+      for(const [object] of visibility)if(object!==foreground)object.visible=false;
+      this.renderer.autoClear=false;this.renderer.setRenderTarget(this.waterTarget);this.renderer.render(water,camera);
+    }finally{this.renderer.autoClear=autoClear;for(const [object,visible] of visibility)object.visible=visible;}
+  }
   private renderGrade():void{
     const g=this.grade!,r=this.renderer;
     r.setRenderTarget(g.hdr);r.render(this.scene,this.camera);
@@ -382,6 +410,7 @@ export class SceneCompositor {
   dispose():void {
     if(this.grade){this.grade.hdr.dispose();this.grade.mips.forEach(m=>m.dispose());this.grade.down.dispose();this.grade.up.dispose();this.grade.finish.dispose();this.grade=null;}
     this.landTarget.dispose();this.waterTarget.dispose();this.colorTarget.dispose();this.occlusionTarget.dispose();
+    this.behindWater?.dispose();this.behindCopy?.dispose();
     this.geometry.dispose();this.merge.dispose();this.occlusion.dispose();this.fxaa.dispose();
   }
 }

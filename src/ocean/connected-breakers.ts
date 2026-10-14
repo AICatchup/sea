@@ -226,7 +226,7 @@ export class ConnectedShoreBreakers {
     this.textures=[this.pool.roots,this.pool.tips,this.pool.shapes].map(data=>{const texture=new THREE.DataTexture(data,BREAKER_FRONT_NODES,BREAKER_FRONT_CAPACITY,THREE.RGBAFormat,THREE.FloatType);texture.minFilter=texture.magFilter=THREE.NearestFilter;texture.needsUpdate=true;return texture;});
     const sheetTexture=new THREE.DataTexture(this.pool.sheet,BREAKER_FRONT_NODES*SHEET_ROWS,BREAKER_FRONT_CAPACITY,THREE.RGBAFormat,THREE.FloatType);
     sheetTexture.minFilter=sheetTexture.magFilter=THREE.NearestFilter;sheetTexture.needsUpdate=true;this.textures.push(sheetTexture);
-    this.material=new THREE.ShaderMaterial({defines:{CURVED_SURFACE:1,CONNECTED_FRONT:1},side:THREE.DoubleSide,depthTest:true,depthWrite:true,uniforms:{uFrontRoots:{value:this.textures[0]},uFrontTips:{value:this.textures[1]},uFrontShapes:{value:this.textures[2]},uFrontSheet:{value:this.textures[3]}},fragmentShader:oceanFragment,vertexShader:/* glsl */`
+    this.material=new THREE.ShaderMaterial({defines:{CURVED_SURFACE:1,CONNECTED_FRONT:1},side:THREE.DoubleSide,depthTest:true,depthWrite:true,uniforms:{uBehindWater:{value:null},uBehindWaterReady:{value:0},uFrontRoots:{value:this.textures[0]},uFrontTips:{value:this.textures[1]},uFrontShapes:{value:this.textures[2]},uFrontSheet:{value:this.textures[3]}},fragmentShader:oceanFragment,vertexShader:/* glsl */`
       attribute float aSlot,aActive,aAge;uniform sampler2D uFrontRoots,uFrontTips,uFrontShapes,uFrontSheet;
       varying vec3 vWorld;varying vec2 vOcean;varying float vDistance,vEnvelope,vLip,vWaterThickness;
       varying float vAeration;varying vec3 vSheetNormal;

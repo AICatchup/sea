@@ -568,7 +568,7 @@ export class Ocean {
       this.uniforms.uHasReflection.value=this.reflectionSamplingEnabled?1:0;
       this.reflectionNeedsUpdate=false;
     }
-    this.compositor.render(this.scene,this.waterScene,this.camera);this.frames++;
+    this.compositor.render(this.scene,this.waterScene,this.camera,this.spray.lips?.material.defines?.CONNECTED_FRONT?this.spray.group:undefined);this.frames++;
     if(this.captureNextFrame){this.canvas.toBlob(this.captureNextFrame,'image/png');this.captureNextFrame=null;}
     this.measureTime+=elapsed;this.measureFrames++;
     if(this.measureTime>=2.5){

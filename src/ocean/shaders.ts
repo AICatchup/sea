@@ -274,6 +274,7 @@ export const oceanFragment = /* glsl */ `
   #endif
   #ifdef CONNECTED_FRONT
   varying float vAeration;varying vec3 vSheetNormal;
+  uniform sampler2D uBehindWater;uniform float uBehindWaterReady;
   #endif
   ${atmosphere}
   ${shoreWaveSampling}
@@ -636,6 +637,19 @@ export const oceanFragment = /* glsl */ `
     body=mix(body,refractedColor,visibleBottom);
     #endif
     body*=mix(1.0,0.60,uStorm);
+    #ifdef CONNECTED_FRONT
+    if(uBehindWaterReady>.5){
+      // The background already contains ocean optics. Only this thin shell
+      // adds absorption; a second seabed-depth path double-darkened the lip.
+      vec2 shellUV=clamp(screenUV+normal.xz*.006*min(1.,vWaterThickness),vec2(.001),vec2(.999));
+      vec4 behind=texture2D(uBehindWater,shellUV);
+      if(behind.a<surfaceDistance+.02)behind=texture2D(uBehindWater,screenUV);
+      float shellPath=min(2.,vWaterThickness/max(.08,abs(dot(normal,throughWave))));
+      vec3 shellTransmission=exp(-absorption*shellPath);
+      body=mix(body,behind.rgb*shellTransmission+waterScatter*(1.-shellTransmission),sheetDetached);
+    }
+    #endif
+
     vec3 color=mix(body,reflection,fresnel);
 
     // GGX direct solar reflection. The surface micro-normal controls the glitter.
