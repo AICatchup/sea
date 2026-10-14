@@ -385,6 +385,13 @@ export const oceanFragment = /* glsl */ `
     #endif
     vec3 coast=coastAt(vWorld.xz);
     float sheetDetached=smoothstep(.015,.10,abs(vWorld.y-renderedSurface(vWorld.xz)));
+    #ifdef CONNECTED_FRONT
+    // The landing surface is rendered separately. A plunging sheet below it
+    // must not overwrite it with a second refractive face: that created a
+    // rectangular grey/white board across the wave after contact.
+    float sheetClearance=vWorld.y-renderedSurface(vWorld.xz);
+    if(sheetClearance<.025)discard;
+    #endif
     #else
     vec3 coast=coastAt(uPointwiseContact>.5?vWorld.xz:vOcean);
     #endif
@@ -667,6 +674,9 @@ export const oceanFragment = /* glsl */ `
     if(uFoamAtlasReady>.5)froth=foamAppearance(vWorld,normal,footprint);
     float pocketField=uFoamAtlasReady>.5?froth.field:uFoamStructure>.5?foamPocketField(vOcean+foamDrift*.35):.5;
     float solvedCoverage=uFoamAtlasReady>.5?foamImageCoverage(solvedFoam,froth.field,footprint):uFoamStructure>.5?structuredFoamCoverage(solvedFoam,smoothstep(.25,.75,foamPattern),smoothstep(.25,.75,pocketField),footprint):surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern));
+    // FFT whitecaps need the same porous optical closure as transported foam;
+    // otherwise max() restores the broad opaque mask over all the fine holes.
+    if(uFoamAtlasReady>.5)foam=foamImageCoverage(foam,froth.field,footprint);
     foam=max(foam,solvedCoverage);
     #ifdef CURVED_SURFACE
     // Foam on the underlying heightfield is not a coating of the lifted face.
@@ -679,7 +689,10 @@ export const oceanFragment = /* glsl */ `
     // The aerated end thins into irregular holes as the falling lip breaks up.
     // Keep the root intact; the exposed pixels show the actual water behind.
     float tearing=smoothstep(.62,.98,vLip)*vAeration*vEnvelope;
-    if(noise(vOcean*8.3+vec2(vWorld.y*5.1))<.18*tearing)discard;
+    float fragmentation=noise(vOcean*8.3+vec2(vWorld.y*5.1));
+    float collapse=(1.-smoothstep(.08,.7,vEnvelope))*smoothstep(.25,.8,vLip)*vAeration;
+    float disintegration=smoothstep(.38,.88,vAeration)*smoothstep(.48,.96,vLip);
+    if(fragmentation<max(max(.32*tearing,.72*collapse),.82*disintegration))discard;
     foam=max(foam,uFoamAtlasReady>.5?foamImageCoverage(fallingFoam,froth.field,footprint):fallingFoam*(.80+.20*pores));
     materialFoam=max(materialFoam,fallingFoam);
     #endif

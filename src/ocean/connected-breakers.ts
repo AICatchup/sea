@@ -169,7 +169,9 @@ export class ConnectedShoreBreakers {
         float angle=1.2+2.65*smoothstep(0.,max(.1,radius*2.),peak-tip.y),theta=u*angle;
         vec2 section=vec2(radius*(1.-cos(theta)),rootHeight+radius*sin(theta));
         vec2 end=vec2(radius*(1.-cos(angle)),rootHeight+radius*sin(angle));
-        float tail=smoothstep(.93,1.,u);section+=(vec2(d,tip.y)-end)*tail*tail;
+        // Spread the ballistic tip correction over the falling quarter. A
+        // correction confined to the last 7% stretched a few cells into blades.
+        float tail=smoothstep(.68,1.,u);section+=(vec2(d,tip.y)-end)*tail*tail;
         vec2 world=root.xz+shape.xy*section.x;float base=lipSurface(world);
         // On contact, collapse every point onto its OWN rendered surface.
         // Lerp toward the root's height left a hanging curtain on slopes.

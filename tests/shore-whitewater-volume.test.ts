@@ -8,6 +8,19 @@ import {decodeWhitewaterVelocity,relaxWhitewaterVelocity} from '../src/ocean/whi
 const birth={x:0,z:0,height:.4,energy:.85,nx:1,nz:0,seed:.4};
 const water:WhitewaterSample={height:.4,compression:.85,depth:1,shelter:1,ground:-1,gradientX:1,gradientZ:0,waveGradientX:0,waveGradientZ:0};
 const sample=(_x:number,_z:number,out:WhitewaterSample)=>{Object.assign(out,water);return true;};
+
+test('spreading remnants lose aeration per unit area and expire without a new source',()=>{
+  const pool=new WhitewaterVolumePool(1);pool.emit(birth);
+  pool.advance(.2,sample);
+  const initialArea=pool.shape[0]*pool.shape[2],initialAlpha=pool.alpha[0];
+  const initialMass=initialArea*initialAlpha;
+  pool.advance(2,sample);
+  const lateArea=pool.shape[0]*pool.shape[2];
+  assert.ok(lateArea>initialArea*1.5);
+  assert.ok(pool.alpha[0]<initialAlpha*.6);
+  assert.ok(lateArea*pool.alpha[0]<initialMass,'spreading must not create more aeration');
+  pool.advance(12,sample);assert.equal(pool.active,0);assert.equal(pool.alpha[0],0);
+});
 test('fixed volume pool fills, rejects invalid input, pauses and recycles',()=>{
   const p=new WhitewaterVolumePool(2);assert.ok(p.emit(birth));assert.ok(p.emit(birth));assert.equal(p.emit(birth),false);
   p.advance(.15,sample);assert.ok(p.alpha[0]>0);assert.ok(p.positions[0]>0);

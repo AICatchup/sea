@@ -71,7 +71,10 @@ export class WhitewaterVolumePool {
       this.shape[i*4+1]=this.impactsOnly?Math.min(s.depth*.35,(.08+.65*strength+.22*(b.drop??0))*collapse+.025*remaining):(.06+.85*strength)*collapse+.055*remaining;
       this.shape[i*4+2]=(this.impactsOnly?.65+.13*(b.speed??2)+.35*(b.reach??0):1.2+1.1*strength)*(1+age*.38);
       this.motion[i*2]=(1-collapse)*(this.impactsOnly?1.5:.8);this.motion[i*2+1]=age/life;
-      this.alpha[i]=Math.min(1,age/(this.impactsOnly?.045:.12))*Math.pow(remaining,.7)*Math.min(1,s.depth/.2)*(.78+.2*b.energy);
+      // Spread transports the same finite amount of aeration over more area.
+      // Without dilution the collapsed floc becomes a growing opaque plate.
+      const areaGrowth=(1+age*.10)*(1+age*.38);
+      this.alpha[i]=Math.min(1,age/(this.impactsOnly?.045:.12))*Math.pow(remaining,.7)*Math.min(1,s.depth/.2)*(.78+.2*b.energy)/areaGrowth;
     }
   }
   clear():void{this.births.fill(null);this.alpha.fill(0);this.active=0;}
@@ -155,7 +158,11 @@ export class ShoreWhitewaterVolume {
       float threshold=whitewaterPoreThreshold(vAlpha,vAge);
       // Subpixel channels become their aggregate coverage, preventing glitter.
       float effectivePore=mix(.5,pore,poreResolved);
-      if(effectivePore<threshold)discard;
+      // Erode the perimeter as well as the internal channels. This avoids a
+      // clean ellipsoid rim surviving after the roller has flattened.
+      float edge=1.-smoothstep(.45,1.02,length(vLocal.xz));
+      float erosion=mix(0.,.16,smoothstep(.18,.85,vAge));
+      if(effectivePore<threshold+erosion+(1.-edge)*.18)discard;
       float cavityNoise=whitewaterNoise(vWorld*2.6);
       float resolved=1.-smoothstep(.035,.12,footprint);
       float fine=mix(.5,whitewaterNoise(vWorld*18.),resolved);

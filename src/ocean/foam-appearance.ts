@@ -15,7 +15,14 @@ struct FoamAppearance {float field;float tone;vec3 normal;};
 float foamImage(vec3 p,vec3 n){
   vec3 w=pow(abs(n),vec3(4));w/=max(.0001,w.x+w.y+w.z);
   vec3 x=texture2D(uFoamAtlas,p.zy/3.3).rgb,y=texture2D(uFoamAtlas,p.xz/3.3).rgb,z=texture2D(uFoamAtlas,p.xy/3.3).rgb;
-  return dot(x*w.x+y*w.y+z*w.z,vec3(.2126,.7152,.0722));
+  float macro=dot(x*w.x+y*w.y+z*w.z,vec3(.2126,.7152,.0722));
+  // Resolve small flocs inside the metre-scale rafts, using the same licensed
+  // image at a second scale. Mip filtering removes this detail at distance.
+  vec3 fineX=texture2D(uFoamAtlas,p.zy/.37+vec2(.27,.61)).rgb;
+  vec3 fineY=texture2D(uFoamAtlas,p.xz/.37+vec2(.27,.61)).rgb;
+  vec3 fineZ=texture2D(uFoamAtlas,p.xy/.37+vec2(.27,.61)).rgb;
+  float fine=dot(fineX*w.x+fineY*w.y+fineZ*w.z,vec3(.2126,.7152,.0722));
+  return macro*(.45+.55*fine);
 }
 FoamAppearance foamAppearance(vec3 world,vec3 n,float footprint){
   vec2 flow=vec2(0),uv=(world.xz-uShoreBounds.xy)/uShoreBounds.zw;
@@ -36,7 +43,12 @@ FoamAppearance foamAppearance(vec3 world,vec3 n,float footprint){
   return FoamAppearance(field,.70+.55*field,bubbleNormal);
 }
 float foamImageCoverage(float concentration,float field,float footprint){
-  float c=clamp(concentration,0.,1.),p=sqrt(c),aa=clamp(footprint*2.,.06,.22);
-  return mix(c,smoothstep(1.-p-aa,1.-p+aa,field)*min(1.,c/.025),exp(-pow(footprint*3.,2.)));
+  float c=clamp(concentration,0.,1.);
+  // Optical thickness decays continuously with the transported concentration.
+  // A sparse remnant must become translucent, not keep an opaque cutout until
+  // a moving threshold abruptly deletes it. Dense impact froth remains white.
+  float pores=smoothstep(.035,.46,field);
+  float density=mix(.42,pores*pores,exp(-pow(footprint*3.,2.)));
+  return (1.-exp(-4.2*c))*density;
 }
 `;
