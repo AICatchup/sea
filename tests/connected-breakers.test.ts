@@ -127,3 +127,17 @@ test('production field path still detects connected fronts and impacts without l
   assert.equal(spray.diagnostics.readbackBytes,32768);assert.equal(spray.diagnostics.whitewaterMode,'world-field');
   spray.dispose();texture.dispose();
 });
+
+test('absorbed sheet water cannot reappear when receiving sea level falls',()=>{
+  const pool=new ConnectedBreakerPool();
+  pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:1.2,depth:3})));
+  let lower=false;
+  const sea:WhitewaterSampler=(x,_z,s)=>{s.height=lower?-1:Math.max(0,2-x*1.4);s.ground=-2;s.depth=s.height+2;return true;};
+  for(let i=0;i<240&&pool.impacts===0;i++)pool.advance(1/120,sea,()=>{});
+  const absorbed:number[]=[];
+  for(let k=3;k<17*33*4;k+=4)if(pool.sheet[k]<0)absorbed.push(k);
+  assert.ok(absorbed.length>0,'contact marks parcels incorporated into the sea');
+  assert.ok(pool.active>0,'younger water remains airborne');
+  lower=true;pool.advance(1/120,sea,()=>{});
+  for(const k of absorbed)assert.equal(pool.sheet[k],-1,'contact survives receding sea level');
+});

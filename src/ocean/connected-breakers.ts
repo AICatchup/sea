@@ -91,6 +91,7 @@ export class ConnectedBreakerPool {
   readonly tips=new Float32Array(this.roots.length);
   readonly shapes=new Float32Array(this.roots.length);
   readonly sheet=new Float32Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*SHEET_ROWS*4);
+  private readonly absorbed=new Uint8Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*SHEET_ROWS);
   private readonly emissionScratch:CrestEmission={time:0,x:0,y:0,z:0};
   private readonly parcelScratch={x:0,y:0,z:0,vy:0};
   private readonly histories=Array.from({length:BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES},()=>new CrestHistory());
@@ -119,6 +120,7 @@ export class ConnectedBreakerPool {
       nodes.push({x:THREE.MathUtils.lerp(a.x,b.x,t),z:THREE.MathUtils.lerp(a.z,b.z,t),height:THREE.MathUtils.lerp(a.height,b.height,t),
         energy:THREE.MathUtils.lerp(a.energy,b.energy,t),nx:nx/n,nz:nz/n,seed:((Math.sin((j+1)*12.9898+a.seed*78.233)*43758.5453)%1+1)%1,depth:THREE.MathUtils.lerp(a.depth??1,b.depth??1,t),speed:THREE.MathUtils.lerp(a.speed??2,b.speed??2,t),drop:THREE.MathUtils.lerp(a.drop??.2,b.drop??.2,t),reach:THREE.MathUtils.lerp(a.reach??.6,b.reach??.6,t)});
     }
+    this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.births[slot]=nodes;this.ages[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
     for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=(b.speed??2)+.8+1.5*whitewaterAerationStrength(b.energy)+(b.reach??.6)*.35;this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy),b.drop??.2],i);}
     return true;
@@ -182,7 +184,13 @@ export class ConnectedBreakerPool {
           const u=row/(SHEET_ROWS-1),parcel=flyWaterParcel(history.sample(emissionEnd*(1-u),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
           const k=((slot*BREAKER_FRONT_NODES+j)*SHEET_ROWS+row)*4;
           this.sheet[k]=parcel.x-(this.emissionScratch.vx??vx)*SHEET_OVERLAP_SECONDS;this.sheet[k+1]=parcel.y;this.sheet[k+2]=parcel.z-(this.emissionScratch.vz??vz)*SHEET_OVERLAP_SECONDS;this.sheet[k+3]=Math.max(0,-parcel.vy);
-          if(sampler(this.sheet[k],this.sheet[k+2],s)&&parcel.y>s.height+.025)airborne=true;
+                    const validSurface=sampler(this.sheet[k],this.sheet[k+2],s)&&Number.isFinite(s.height);
+          // Row emission times stop changing after separation. From then on,
+          // contact is irreversible: falling sea level cannot resurrect water
+          // already incorporated into the receiving surface.
+          if(this.released[index]>=0&&validSurface&&parcel.vy<0&&parcel.y<=s.height+.025)this.absorbed[k/4]=1;
+          if(this.absorbed[k/4])this.sheet[k+3]=-1;
+          else if(validSurface&&parcel.y>s.height+.025)airborne=true;
         }
         if(airborne||landed<0)alive++;else this.roots[i+3]=0;
 
@@ -244,6 +252,7 @@ export class ConnectedShoreBreakers {
         // Temporal rows are emitted at the moving crest and retain their
         // own position/velocity under gravity. No arc is refitted to a tip.
         vec4 parcel=parcelState(along,u);
+        vEnvelope*=smoothstep(-.95,-.05,parcel.w);
         vec4 originParcel=parcelState(along,0.);
         // Only newly emitted water remains attached to the source. Correcting
         // the entire sheet every GPU frame bent old airborne water sideways.
