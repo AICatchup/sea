@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {trackBreakerRoot} from '../src/ocean/connected-breakers.ts';
+import {trackBreakerRoot,trackBreakerFace} from '../src/ocean/connected-breakers.ts';
 import type {WhitewaterSampler} from '../src/ocean/shore-whitewater.ts';
 
 test('live crest projection follows a displaced peak without jumping to another wave',()=>{
@@ -44,4 +44,28 @@ test('one crest line cannot tear into independently tracked neighbouring maxima'
  const split:WhitewaterSampler=(x,z,s)=>{const peak=time*(z<0?1:6);s.height=2-.05*(x-peak)**2;s.depth=4;s.ground=-3;return true;};
  for(let i=0;i<90;i++){time+=1/60;pool.advance(1/60,split,()=>{});}
  for(let j=1;j<17;j++)assert.ok(Math.abs(pool.roots[j*4]-pool.roots[(j-1)*4])<1e-6,'source phase stays coherent across the front');
+});
+
+
+test('wave-line projection selects steep front rather than the height maximum',()=>{
+ const wave:WhitewaterSampler=(x,_z,s)=>{const e=Math.exp(-x*x/4);Object.assign(s,{height:3*e,ground:-2,depth:2+3*e,compression:.4,waveGradientX:-1.5*x*e,waveGradientZ:0});return true;};
+ const face=trackBreakerFace(1.5,0,1,0,wave)!;assert.ok(face.x>=1.25&&face.x<=1.75);
+ assert.ok(face.height<3);assert.equal(trackBreakerFace(-2,0,1,0,wave),null,'rising rear is not a front');
+});
+
+test('tracked front and emitted crest remain separate and an unsteepened front stops feeding',()=>{
+ const pool=new ConnectedBreakerPool();
+ const wave:WhitewaterSampler=(x,_z,s)=>{const e=Math.exp(-x*x/4);Object.assign(s,{height:3*e,ground:-2,depth:2+3*e,compression:.4,waveGradientX:-1.5*x*e,waveGradientZ:0});return true;};
+ pool.emitFront([-1,0,1].map(z=>({x:0,z,frontX:1.5,frontZ:z,height:3,energy:.6,nx:1,nz:0,seed:.3,speed:1,depth:5})),wave);
+ pool.advance(.1,wave,()=>{});assert.ok(Math.abs(pool.roots[8*4])<.4,'emission returns to crest behind tracked face');
+ const flat:WhitewaterSampler=(_x,_z,s)=>{Object.assign(s,{height:0,ground:-2,depth:2,compression:0,waveGradientX:0,waveGradientZ:0});return true;};
+ pool.advance(.1,flat,()=>{});assert.equal(pool.geometryAudit.emittingNodes,0);
+});
+
+
+test('a tracked wave line emits horizontally before gravity rather than inheriting a noisy vertical cache launch',()=>{
+ const pool=new ConnectedBreakerPool();
+ const sea:WhitewaterSampler=(_x,_z,s)=>{Object.assign(s,{height:3,depth:5,ground:-2,compression:.4,waveGradientX:-.5,waveGradientZ:0,heightRate:-8});return true;};
+ pool.emitFront([-1,0,1].map(z=>({x:0,z,frontX:1,frontZ:z,height:3,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:5})),sea);
+ pool.advance(.05,sea,()=>{});assert.ok(Math.abs(pool.sheet[1]-(3-4.905*.05*.05))<1e-5);
 });
