@@ -20,6 +20,14 @@ export function breakerLipThickness(drop:number,energy:number):number{
 export function breakerSheetSpeed(frontSpeed:number,elevation:number):number{
   return Math.min(24,Math.max(0,frontSpeed)*(1+.08*9.81*Math.max(0,elevation)));
 }
+/** Kinematic free-surface condition: w = dh/dt + u dot grad(h).
+ * The measured Eulerian rate is optional while the cache warms up. A known
+ * stationary surface must not inject the old constant upward impulse. */
+export function breakerVerticalVelocity(s:WhitewaterSample,vx:number,vz:number):number{
+  if(s.heightRate===undefined||!Number.isFinite(s.heightRate))return .4;
+  const w=s.heightRate+vx*(s.waveGradientX??0)+vz*(s.waveGradientZ??0);
+  return Number.isFinite(w)?THREE.MathUtils.clamp(w,-8,8):0;
+}
 /** Project predicted crest back onto the live surface (Thuerey et al., 2007).
  * A bounded search prevents a root from jumping to the following wave. */
 export function trackBreakerRoot(x:number,z:number,nx:number,nz:number,sampler:WhitewaterSampler):{x:number;z:number;height:number}|null{
@@ -33,7 +41,7 @@ export function trackBreakerRoot(x:number,z:number,nx:number,nz:number,sampler:W
   return best;
 }
 export interface BreakerImpact extends WhitewaterBirth {width:number;speed:number;eventId:number;impactSpeed:number;drop?:number;reach?:number}
-type FrontNode=WhitewaterBirth&{speed?:number;depth?:number;drop?:number;reach?:number};
+type FrontNode=WhitewaterBirth&{up?:number;speed?:number;depth?:number;drop?:number;reach?:number};
 const sampleState=():WhitewaterSample=>({height:0,compression:0,depth:0,shelter:1,ground:0,gradientX:0,gradientZ:0});
 export function breakerRootSupport(surface:number,birthCrest:number):number{return birthCrest>.5?THREE.MathUtils.smoothstep(surface,birthCrest-.55,birthCrest-.12):1;}
 function wet(s:WhitewaterSample,source=true):boolean{return [s.height,s.depth,s.ground,s.compression].every(Number.isFinite)&&s.depth>.45&&s.depth<8&&s.ground> -4.2&&s.ground<=.15&&s.ground<s.height-.08&&(!source||s.compression>.08);}
@@ -83,6 +91,10 @@ export function traceBreakingFront(x:number,z:number,sampler:WhitewaterSampler,s
       let foot=best.height;
       for(let ahead=2;ahead<=8;ahead+=2)if(sampler(best.x+nx*ahead,best.z+nz*ahead,s)&&Number.isFinite(s.height)&&s.depth>.1&&s.ground<s.height-.08)foot=Math.min(foot,s.height);
       best.drop=Math.min(3.5,Math.max(.2,best.height-foot));best.reach=.6+best.drop*1.8;
+      if(sampler(best.x,best.z,s)){
+        const launch=breakerSheetSpeed(best.speed??2,best.height);
+        best.up=breakerVerticalVelocity(s,nx*launch,nz*launch);
+      }
       nodes.push(best);previousAcross=THREE.MathUtils.clamp(bestAcross,-4,4);
     }
     else if(nodes.length>=3)break;
@@ -127,11 +139,11 @@ export class ConnectedBreakerPool {
       const f=j/(BREAKER_FRONT_NODES-1)*(input.length-1),k=Math.min(input.length-2,Math.floor(f)),t=f-k,a=input[k],b=input[k+1];
       const nx=THREE.MathUtils.lerp(a.nx,b.nx,t),nz=THREE.MathUtils.lerp(a.nz,b.nz,t),n=Math.hypot(nx,nz);
       nodes.push({x:THREE.MathUtils.lerp(a.x,b.x,t),z:THREE.MathUtils.lerp(a.z,b.z,t),height:THREE.MathUtils.lerp(a.height,b.height,t),
-        energy:THREE.MathUtils.lerp(a.energy,b.energy,t),nx:nx/n,nz:nz/n,seed:((Math.sin((j+1)*12.9898+a.seed*78.233)*43758.5453)%1+1)%1,depth:THREE.MathUtils.lerp(a.depth??1,b.depth??1,t),speed:THREE.MathUtils.lerp(a.speed??2,b.speed??2,t),drop:THREE.MathUtils.lerp(a.drop??.2,b.drop??.2,t),reach:THREE.MathUtils.lerp(a.reach??.6,b.reach??.6,t)});
+        up:THREE.MathUtils.lerp(a.up??.4,b.up??.4,t),energy:THREE.MathUtils.lerp(a.energy,b.energy,t),nx:nx/n,nz:nz/n,seed:((Math.sin((j+1)*12.9898+a.seed*78.233)*43758.5453)%1+1)%1,depth:THREE.MathUtils.lerp(a.depth??1,b.depth??1,t),speed:THREE.MathUtils.lerp(a.speed??2,b.speed??2,t),drop:THREE.MathUtils.lerp(a.drop??.2,b.drop??.2,t),reach:THREE.MathUtils.lerp(a.reach??.6,b.reach??.6,t)});
     }
     this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.births[slot]=nodes;this.ages[slot]=0;this.clock[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
-    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
+    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:b.up??.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
     return true;
   }
   advance(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{
@@ -159,7 +171,7 @@ export class ConnectedBreakerPool {
         const rootY=s.height,history=this.histories[index];
 
         const launchSpeed=breakerSheetSpeed(this.trackedSpeeds[index],rootY);
-        const vx=b.nx*launchSpeed,vz=b.nz*launchSpeed,up=.4;
+        const vx=b.nx*launchSpeed,vz=b.nz*launchSpeed,up=breakerVerticalVelocity(s,b.nx*launchSpeed,b.nz*launchSpeed);
         // Store velocity at emission. Later crest acceleration must neither
         // drag older parcels nor leave all rows using the birth phase speed.
         if(this.released[index]<0)history.record({time:age,x:rootX,y:rootY,z:rootZ,vx,vz,up});
@@ -171,7 +183,7 @@ export class ConnectedBreakerPool {
           this.landed[index]=age;this.impacts++;
           this.flightAudit.push({age,drop:b.drop??0,launchHeight,landingHeight:s.height,flightDistance:Math.hypot(x-b.x,z-b.z),sourceReleased:this.released[index]});if(this.flightAudit.length>128)this.flightAudit.shift();
           const left=nodes[Math.max(0,j-1)],right=nodes[Math.min(BREAKER_FRONT_NODES-1,j+1)];
-          impact({...b,x,z,height:s.height,width:Math.max(.18,Math.hypot(right.x-left.x,right.z-left.z)*.5),speed:phaseSpeed,drop:Math.max(0,launchHeight-s.height),reach:Math.max(.15,Math.hypot(x-b.x,z-b.z)-phaseSpeed*flight),eventId:this.eventIds[slot],impactSpeed:Math.min(12,Math.max(0,9.81*flight-.4))});
+          impact({...b,x,z,height:s.height,width:Math.max(.18,Math.hypot(right.x-left.x,right.z-left.z)*.5),speed:phaseSpeed,drop:Math.max(0,launchHeight-s.height),reach:Math.max(.15,Math.hypot(x-b.x,z-b.z)-phaseSpeed*flight),eventId:this.eventIds[slot],impactSpeed:Math.min(12,Math.max(0,-endpoint.vy))});
         }
         const landed=this.landed[index];
         // Stop feeding a falling crest, but keep its emitted water in flight.

@@ -5,7 +5,7 @@ import { whitewaterAerationStrength } from './whitewater-flow.ts';
 import { relaxWhitewaterVelocity } from './whitewater-flow.ts';
 
 const LIMIT=1024;
-export interface WhitewaterSample {height:number;compression:number;depth:number;shelter:number;ground:number;gradientX:number;gradientZ:number;waveGradientX?:number;waveGradientZ?:number;flowX?:number;flowZ?:number}
+export interface WhitewaterSample {height:number;compression:number;depth:number;shelter:number;ground:number;gradientX:number;gradientZ:number;waveGradientX?:number;waveGradientZ?:number;flowX?:number;flowZ?:number;heightRate?:number}
 export type WhitewaterSampler=(x:number,z:number,out:WhitewaterSample)=>boolean;
 export interface WhitewaterBirth {x:number;z:number;height:number;energy:number;nx:number;nz:number;seed:number}
 /** Current birth proxy, never accumulated foam alpha. The SWE value is

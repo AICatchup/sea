@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,SHEET_ROWS,breakerRootSupport,breakerLipThickness} from '../src/ocean/connected-breakers.ts';
+import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,SHEET_ROWS,breakerRootSupport,breakerLipThickness,breakerVerticalVelocity} from '../src/ocean/connected-breakers.ts';
 import type {WhitewaterSample,WhitewaterSampler} from '../src/ocean/shore-whitewater.ts';
 import {marineDecay,MarineSurfaceField,validMarineDeposit} from '../src/ocean/marine-surface-field.ts';
 import * as THREE from 'three';
@@ -159,7 +159,7 @@ test('cached contact predicts moving water without moving the ground or requesti
   const encode=(height:number)=>{const a=new Uint8Array(24*24*4),v=Math.round((height+8)/16*65535);for(let i=0;i<a.length;i+=4){a[i]=v>>8;a[i+1]=v&255;a[i+3]=128;}return a;};
   state.previousPixels=encode(1);state.pixels=encode(2);state.previousTime=0;state.sampleTime=.2;state.simulationTime=.3;state.foamCacheValid=true;
   const sample:WhitewaterSample={height:0,compression:0,depth:0,shelter:0,ground:0,gradientX:0,gradientZ:0};
-  assert.ok(state.sampleFoam(0,0,sample));assert.ok(Math.abs(sample.height-2.5)<.001);assert.equal(sample.ground,-1);
+  assert.ok(state.sampleFoam(0,0,sample));assert.ok(Math.abs(sample.height-2.5)<.001);assert.equal(sample.ground,-1);assert.ok(Math.abs(sample.heightRate!-5)<.001);
   state.simulationTime=.45;state.sampleFoam(0,0,sample);assert.ok(Math.abs(sample.height-3)<.001,'prediction horizon stays bounded');
   spray.resetHistory();assert.equal(state.sampleFoam(0,0,sample),false);spray.dispose();
 });
@@ -172,4 +172,20 @@ test('a sheet row keeps its emission time as the source continues feeding',()=>{
   pool.advance(.05,sea,()=>{});
   const vy=.4-9.81*(.05-1/60),expected=y+vy*.05-4.905*.05*.05;
   assert.ok(Math.abs(pool.sheet[k+1]-expected)<1e-5,'later emission must not reassign this material row');
+});
+
+
+test('surface kinematics preserves rising and descending velocity and cancels a travelling profile',()=>{
+  const s:WhitewaterSample={height:2,depth:3,ground:-1,compression:.5,shelter:1,gradientX:0,gradientZ:0,heightRate:2,waveGradientX:0,waveGradientZ:0};
+  assert.equal(breakerVerticalVelocity(s,3,0),2);
+  s.heightRate=-2;assert.equal(breakerVerticalVelocity(s,3,0),-2);
+  s.heightRate=1.2;s.waveGradientX=-.4;assert.ok(Math.abs(breakerVerticalVelocity(s,3,0))<1e-12);
+  s.heightRate=0;s.waveGradientX=0;assert.equal(breakerVerticalVelocity(s,3,0),0,'stationary water gets no upward impulse');
+});
+
+test('an emitted rising parcel retains its initial vertical velocity after source reversal',()=>{
+  const pool=new ConnectedBreakerPool();pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3,drop:2,up:2})));
+  const sea:WhitewaterSampler=(_x,_z,s)=>{Object.assign(s,{height:0,depth:3,ground:-3,heightRate:-2,waveGradientX:0,waveGradientZ:0});return true;};
+  pool.advance(.1,sea,()=>{});
+  assert.ok(Math.abs(pool.sheet[1]-(2+2*.1-4.905*.01))<1e-5);
 });

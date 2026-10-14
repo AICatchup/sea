@@ -147,14 +147,16 @@ export class ShoreSpray {
     }else{out.ground=this.ground.heightAt(x,z);out.gradientX=this.ground.heightAt(x+2,z)-this.ground.heightAt(x-2,z);out.gradientZ=this.ground.heightAt(x,z+2)-this.ground.heightAt(x,z-2);}
         // Collision follows the moving heightfield between asynchronous samples.
     // Keep ground fixed: only water elevation may be extrapolated.
+    delete out.heightRate;
     if(this.lips instanceof ConnectedShoreBreakers&&this.previousPixels){
       const interval=this.sampleTime-this.previousTime,age=this.simulationTime-this.sampleTime;
       const px=(x-this.previousOrigin.x)/step+GRID/2-.5,pz=(z-this.previousOrigin.y)/step+GRID/2-.5;
-      if(interval>.001&&interval<=.5&&age>0&&age<=.5&&px>=0&&pz>=0&&px<=GRID-1&&pz<=GRID-1){
+      if(interval>.001&&interval<=.5&&age>=0&&age<=.5&&px>=0&&pz>=0&&px<=GRID-1&&pz<=GRID-1){
         const ax=Math.floor(px),az=Math.floor(pz),tx=px-ax,tz=pz-az;
         const old=(a:number,b:number)=>{const k=(b*GRID+a)*4;return (this.previousPixels![k]*256+this.previousPixels![k+1])/65535*16-8;};
         const before=THREE.MathUtils.lerp(THREE.MathUtils.lerp(old(ax,az),old(Math.min(ax+1,GRID-1),az),tx),THREE.MathUtils.lerp(old(ax,Math.min(az+1,GRID-1)),old(Math.min(ax+1,GRID-1),Math.min(az+1,GRID-1)),tx),tz);
-        out.height+=THREE.MathUtils.clamp((out.height-before)/interval,-8,8)*Math.min(age,.2);
+        out.heightRate=THREE.MathUtils.clamp((out.height-before)/interval,-8,8);
+        out.height+=out.heightRate*Math.min(age,.2);
       }
     }
     out.depth=Math.max(0,out.height-out.ground);

@@ -1,0 +1,9 @@
+# V90 — inherit local vertical surface motion at emission
+
+Base 2ec80ca. A fixed +0.4 m/s was assigned to all emitted water, including falling and stationary sources. The existing pair of asynchronous height snapshots now exposes a bounded Eulerian height rate (including at sample age zero), and the connected sheet uses w = dh/dt + vx*dh/dx + vz*dh/dz at emission. The rate has the existing +/-8 m/s cache bound. Missing history retains the old fallback; known stationary water gets zero vertical impulse. Emitted parcels keep their own velocity after later source changes. Impact speed now uses the actual parcel's vertical velocity rather than subtracting a hard-coded 0.4.
+
+This remains a coarse cached kinematic approximation, not a pressure-resolved or volume-conserving fluid solver. The horizontal launch closure remains unchanged. External baseline previously inspected: [Storm-Breakers](https://github.com/Stormrider31/Storm-Breakers), whose deformation-derived velocity is relevant to inheriting motion; no external code copied here. See V86/V88 for other primary references.
+
+137 focused tests pass, including rising/falling/stationary surfaces, travelling-profile cancellation, emitted velocity retention and cached height rate. TypeScript/build/diff pass. Chrome console errors empty. Side81 frames over 8 seconds, front8 checkpoints: work/v90-final-frames and work/v90-front-frames. Fixed 1/60 steps, not realtime FPS. GIF/MP4 in outer outputs/breaking-waves-v90-candidate; encoded from JPEG95.
+
+Visual acceptance FAILS. Strips and weak large-scale overturning remain. Last 128 side-view contacts average 0.13523 m actual fall and 0.13945 s age; a large assigned crest-to-trough difference still does not establish a large fall. This evidence calls for correcting crest separation and the moving receiving surface, not increasing foam or hiding the wave. No standalone promotion, no default activation, goal ACTIVE.
