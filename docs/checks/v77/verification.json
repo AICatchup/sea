@@ -1,7 +1,7 @@
 {
-  "frames": 320,
+  "frames": 240,
   "durationMs": 16000,
-  "uniqueFrames": 320,
+  "uniqueFrames": 240,
   "loop": 0,
   "relatedTestsPassed": 115,
   "buildPassed": true,
