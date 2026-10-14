@@ -397,9 +397,9 @@ export class Ocean {
       if(this.disposed){sky.texture.dispose();return;}
       this.photographicSky=sky;
       this.uniforms.uSkyTexture.value=sky.texture;this.uniforms.uSkyRotation.value=sky.rotation;this.uniforms.uSkyExposure.value=sky.exposure;
-      if(this.currentPreset==='day'){
+      if(this.currentPreset==='day'||this.currentPreset==='typhoon'){
         this.uniforms.uUseSky.value=1;this.uniforms.uSunDirection.value.copy(sky.sun);
-        this.environmentTargets.get('day')?.dispose();this.environmentTargets.delete('day');this.refreshEnvironment('day');
+        this.environmentTargets.get(this.currentPreset)?.dispose();this.environmentTargets.delete(this.currentPreset);this.refreshEnvironment(this.currentPreset);
       }
     }).catch(error=>console.warn('Photographic sky unavailable; procedural atmosphere retained',error));
     const worldReady=this.world.ready.then(()=>{
@@ -632,13 +632,13 @@ export class Ocean {
   setWind(wind:number):void{this.wind=THREE.MathUtils.clamp(wind,2,18);this.simulation.setWind(this.wind);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
   setSwell(swell:number):void{this.swell=THREE.MathUtils.clamp(swell,.3,2);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
   setPreset(name:PresetName):void{
-    this.currentPreset=name;this.uniforms.uUseSky.value=name==='day'&&this.photographicSky?1:0;
+    this.currentPreset=name;this.uniforms.uUseSky.value=(name==='day'||name==='typhoon')&&this.photographicSky?1:0;
     const p=presets[name];this.setWind(p.wind);this.setSwell(p.swell);
     for(const [key,value] of Object.entries({uSunDirection:p.sun,uSunColor:p.sunColor,uZenith:p.zenith,uHorizon:p.horizon,uCloudColor:p.cloud,uWaterTint:p.water})){
       this.uniforms[key].value.set(...value);
     }
     this.uniforms.uSunDirection.value.normalize();this.uniforms.uCloudCoverage.value=p.coverage;
-    if(name==='day'&&this.photographicSky)this.uniforms.uSunDirection.value.copy(this.photographicSky.sun);
+    if((name==='day'||name==='typhoon')&&this.photographicSky)this.uniforms.uSunDirection.value.copy(this.photographicSky.sun);
     this.uniforms.uExposure.value=p.exposure;this.uniforms.uStorm.value=p.storm;
     if(this.scene.fog instanceof THREE.FogExp2){this.scene.fog.color.setRGB(...p.horizon);this.scene.fog.density=.000028+.00009*p.storm;}
     this.refreshEnvironment(name);

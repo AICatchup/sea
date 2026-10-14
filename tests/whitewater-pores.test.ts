@@ -20,6 +20,6 @@ test('production pores use world metres without seed phase and sunlight uses inc
   assert.ok(shader.includes('fwidth(vWorld)'));
   assert.ok(shader.includes('sun/3.14159265'));
   assert.equal(v.pool.capacity,384);
-  assert.equal(v.geometry.getAttribute('position').count/3*384,30720);
+  assert.equal(v.geometry.getAttribute('position').count/3*384,122880);
   v.dispose();
 });

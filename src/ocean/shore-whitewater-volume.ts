@@ -46,7 +46,8 @@ export class WhitewaterVolumePool {
     if(this.disposed||!Number.isFinite(delta)||delta<=0)return;
     for(let i=0;i<this.capacity;i++){
       const b=this.births[i];if(!b)continue;
-      const previousAge=this.ages[i],age=this.ages[i]+=delta,strength=whitewaterAerationStrength(b.energy),life=this.impactsOnly?1.15+strength*.9:6+b.energy*4+b.seed*2;
+      const plunge=Math.max(0,Math.min(3.5,b.drop??0)-.5);
+      const previousAge=this.ages[i],age=this.ages[i]+=delta,strength=whitewaterAerationStrength(b.energy),life=this.impactsOnly?1.15+strength*.9+plunge*.45:6+b.energy*4+b.seed*2;
       const s=this.sample,x=this.positions[i*3],z=this.positions[i*3+2];
       if(age>=life||!sampler(x,z,s)||!finite(s)||Math.abs(s.height)>1e4||s.depth<=0||s.depth>(this.impactsOnly?8:4.6)||s.shelter<.18||s.ground>=s.height-.015){this.births[i]=null;this.alpha[i]=0;this.active--;continue;}
       // Use the solved flow when available: a retreating swash carries the
@@ -69,6 +70,12 @@ export class WhitewaterVolumePool {
       const collapse=Math.exp(-age*(this.impactsOnly?2.2:1.05)),remaining=1-age/life;
       this.shape[i*4]=(this.impactsOnly?Math.min(2.8,Math.max(.35,b.width??1.5)):3.2+2.8*b.seed)*(1+age*.10);
       this.shape[i*4+1]=this.impactsOnly?Math.min(s.depth*.35,(.08+.65*strength+.22*(b.drop??0))*collapse+.025*remaining):(.06+.85*strength)*collapse+.055*remaining;
+      // A plunging impact first blooms upward, then loses height. Its impulse
+      // scales with local fall distance rather than inflating every small wave.
+      if(this.impactsOnly&&plunge>0){
+        const bloom=(1-Math.exp(-age*9))*Math.exp(-age*1.35);
+        this.shape[i*4+1]=Math.min(s.depth*.65,this.shape[i*4+1]+plunge*1.15*bloom);
+      }
       this.shape[i*4+2]=(this.impactsOnly?.65+.13*(b.speed??2)+.35*(b.reach??0):1.2+1.1*strength)*(1+age*.38);
       this.motion[i*2]=(1-collapse)*(this.impactsOnly?1.5:.8);this.motion[i*2+1]=age/life;
       // Spread transports the same finite amount of aeration over more area.
@@ -101,7 +108,7 @@ export class ShoreWhitewaterVolume {
   readonly material:THREE.ShaderMaterial;
   private disposed=false;
   constructor(impactsOnly=false){
-    this.pool=new WhitewaterVolumePool(impactsOnly?256:VOLUME_CAPACITY,impactsOnly);this.geometry=createWhitewaterVolumeGeometry(impactsOnly?4:1);
+    this.pool=new WhitewaterVolumePool(impactsOnly?256:VOLUME_CAPACITY,impactsOnly);this.geometry=createWhitewaterVolumeGeometry(impactsOnly?5:3);
     for(const [name,array,size] of [['aCenter',this.pool.positions,3],['aShape',this.pool.shape,4],['aMotion',this.pool.motion,2],['aAlpha',this.pool.alpha,1],['aSeed',this.pool.seeds,1]] as const)this.geometry.setAttribute(name,new THREE.InstancedBufferAttribute(array,size).setUsage(THREE.DynamicDrawUsage));
     this.geometry.instanceCount=this.pool.capacity;
     this.material=new THREE.ShaderMaterial({depthTest:true,depthWrite:true,transparent:false,side:THREE.FrontSide,
@@ -130,7 +137,8 @@ export class ShoreWhitewaterVolume {
       float c=cos(aShape.w),s=sin(aShape.w);vec2 offset=vec2(q.x*c-q.z*s,q.x*s+q.z*c);vec2 world=aCenter.xz+offset,p=world;vWorld=world;
       for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;
       vec2 coast=coastAt(world);float base=shoreSolvedSurface(world,displacement(p).y,0.).x+marineSurface(world).b;
-      float height=base+q.y;
+      float centerBase=surfaceHeight(aCenter.xz);
+      float height=centerBase+clamp(base-centerBase,-.3,.3)+q.y;
       vWet=min(base-coast.x,height-coast.x)*step(.18,coast.y)*step(-4.6,coast.x);
       vec2 horizon=world-cameraPosition.xz;height-=dot(horizon,horizon)/(2.*6371000.);
       n=normalize(n/vec3(aShape.z,aShape.y,aShape.x));vNormal=vec3(n.x*c-n.z*s,n.y,n.x*s+n.z*c);
@@ -138,7 +146,7 @@ export class ShoreWhitewaterVolume {
       // shared solved surface rather than lighting a flat undeformed floc.
       const float slopeStep=.75;
       vec2 slope=vec2(surfaceHeight(world+vec2(slopeStep,0))-surfaceHeight(world-vec2(slopeStep,0)),surfaceHeight(world+vec2(0,slopeStep))-surfaceHeight(world-vec2(0,slopeStep)))/(2.*slopeStep);
-      slope-=horizon/6371000.;vNormal.xz-=slope*vNormal.y;
+      slope*=1.-step(.3,abs(base-centerBase));slope-=horizon/6371000.;vNormal.xz-=slope*vNormal.y;
       vFoamWorld=vec3(world.x,height,world.y);
       gl_Position=projectionMatrix*viewMatrix*vec4(world.x,height,world.y,1);}`,
       fragmentShader:`uniform vec3 uTint,uSunDirection,uSunColor,uHorizon;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady,uImpact,uFoamStructure;uniform vec2 uViewport;
@@ -156,6 +164,7 @@ export class ShoreWhitewaterVolume {
       float footprint=length(fwidth(vWorld));
       float poreResolved=1.-smoothstep(.20,.65,footprint);
       float threshold=whitewaterPoreThreshold(vAlpha,vAge);
+      threshold-=uImpact*.12*(1.-smoothstep(.12,.42,vAge));
       // Subpixel channels become their aggregate coverage, preventing glitter.
       float effectivePore=mix(.5,pore,poreResolved);
       // Erode the perimeter as well as the internal channels. This avoids a

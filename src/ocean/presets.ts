@@ -1,4 +1,4 @@
-export type PresetName = 'golden' | 'day' | 'storm' | 'dusk';
+export type PresetName = 'golden' | 'day' | 'storm' | 'dusk' | 'typhoon';
 export interface Environment {
   label: string;
   wind: number;
@@ -16,6 +16,10 @@ export interface Environment {
 }
 
 export const presets: Record<PresetName, Environment> = {
+  typhoon: { label: '台風うねり', wind: 16, swell: 1.8, height: 5.8,
+    sun: [0.45, 0.72, 0.50], sunColor: [2.7, 2.55, 2.30],
+    zenith: [0.026, 0.11, 0.34], horizon: [0.28, 0.44, 0.59], cloud: [0.85, 0.87, 0.88],
+    water: [0.76, 1.08, 1.12], coverage: 0.32, exposure: 0.96, storm: 0 },
   golden: { label: '夕凪', wind: 7.5, swell: 1, height: 3.6,
     sun: [0.26, 0.105, -0.96], sunColor: [3.1, 1.98, 0.99],
     zenith: [0.073, 0.13, 0.22], horizon: [0.46, 0.34, 0.25], cloud: [0.77, 0.64, 0.49],

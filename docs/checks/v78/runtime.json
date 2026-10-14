@@ -1,0 +1,32 @@
+{
+  "marine": {
+    "bounds": [
+      5784,
+      -996,
+      192,
+      192
+    ],
+    "bubbles": 0.90869140625,
+    "bytes": 1048576,
+    "deposits": 233698,
+    "droppedSeconds": 0,
+    "elapsed": 122.66666666666228,
+    "finite": true,
+    "foam": 1.1064453125,
+    "glError": 0,
+    "height": 0.060516357421875,
+    "passes": 3690,
+    "queued": 0,
+    "ready": true,
+    "resolution": 256,
+    "scope": "World-fixed half-float foam/bubble history plus bounded linear wake ripples; authored closures, not 3D CFD",
+    "span": 192
+  },
+  "programs": [],
+  "times": [
+    0,
+    6.016400000000017,
+    12.03289999999997,
+    18.049399999999917
+  ]
+}

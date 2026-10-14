@@ -599,7 +599,11 @@ export const oceanFragment = /* glsl */ `
     #endif
     #ifdef CURVED_SURFACE
     vec3 throughWave=refract(-view,normal,1.0/1.333);
-    opticalPath=mix(opticalPath,min(opticalPath,min(6.,vWaterThickness/max(.08,abs(dot(normal,throughWave))))),sheetDetached);
+    // Downward rays enter the ocean behind the lip; truncating their path to
+    // membrane thickness exposed raw sand through a tall blue wave. Only rays
+    // leaving upward into air use the short shell path.
+    float exitsWave=smoothstep(.05,.30,throughWave.y);
+    opticalPath=mix(opticalPath,min(opticalPath,min(6.,vWaterThickness/max(.08,abs(dot(normal,throughWave))))),sheetDetached*exitsWave);
     #endif
     vec3 absorption=vec3(.105,.021,.012);
     vec3 transmission=exp(-absorption*opticalPath);
@@ -685,13 +689,14 @@ export const oceanFragment = /* glsl */ `
     // Aeration remains a narrow lip detail; the rolling face keeps optics.
     foam=max(foam,smoothstep(.88,1.,vLip)*vEnvelope*pores*.35);
     #ifdef CONNECTED_FRONT
-    float fallingFoam=vAeration*vEnvelope*smoothstep(.14,.62,vLip);
+    // Preserve the thick blue barrel until the falling end entrains air.
+    float fallingFoam=vAeration*vEnvelope*smoothstep(.62,.98,vLip);
     // The aerated end thins into irregular holes as the falling lip breaks up.
     // Keep the root intact; the exposed pixels show the actual water behind.
     float tearing=smoothstep(.62,.98,vLip)*vAeration*vEnvelope;
     float fragmentation=noise(vOcean*8.3+vec2(vWorld.y*5.1));
     float collapse=(1.-smoothstep(.08,.7,vEnvelope))*smoothstep(.25,.8,vLip)*vAeration;
-    float disintegration=smoothstep(.38,.88,vAeration)*smoothstep(.48,.96,vLip);
+    float disintegration=smoothstep(.70,.99,vAeration)*smoothstep(.78,1.,vLip);
     if(fragmentation<max(max(.32*tearing,.72*collapse),.82*disintegration))discard;
     foam=max(foam,uFoamAtlasReady>.5?foamImageCoverage(fallingFoam,froth.field,footprint):fallingFoam*(.80+.20*pores));
     materialFoam=max(materialFoam,fallingFoam);

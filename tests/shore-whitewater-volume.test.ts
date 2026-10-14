@@ -9,6 +9,15 @@ const birth={x:0,z:0,height:.4,energy:.85,nx:1,nz:0,seed:.4};
 const water:WhitewaterSample={height:.4,compression:.85,depth:1,shelter:1,ground:-1,gradientX:1,gradientZ:0,waveGradientX:0,waveGradientZ:0};
 const sample=(_x:number,_z:number,out:WhitewaterSample)=>{Object.assign(out,water);return true;};
 
+test('deep plunging impacts bloom upward before collapsing and expire',()=>{
+  const pool=new WhitewaterVolumePool(1,true);pool.emit({...birth,drop:2.8,width:2,speed:4});
+  const deep=(_x:number,_z:number,out:WhitewaterSample)=>{Object.assign(out,{...water,depth:4,ground:-3.6});return true;};
+  pool.advance(.02,deep);const first=pool.shape[1];pool.advance(.20,deep);
+  const peak=pool.shape[1];assert.ok(peak>first*1.25);assert.ok(peak<=4*.65);
+  pool.advance(1.5,deep);assert.ok(pool.shape[1]<peak*.5);
+  pool.advance(5,deep);assert.equal(pool.active,0);
+});
+
 test('spreading remnants lose aeration per unit area and expire without a new source',()=>{
   const pool=new WhitewaterVolumePool(1);pool.emit(birth);
   pool.advance(.2,sample);
@@ -71,7 +80,7 @@ test('volume opt-in adds one flow layer to the same readback; legacy/off remain 
   const s=new ShoreSpray(renderer,ground,{volume:true});assert.ok(s.whitewater instanceof ShoreWhitewaterVolume);
   const u={uLongWaves:{value:new THREE.Texture()},uShortWaves:{value:new THREE.Texture()},uBathymetry:{value:new THREE.Texture()},uSunDirection:{value:new THREE.Vector3(1,1,0).normalize()}};
   const camera=new THREE.PerspectiveCamera();for(let i=0;i<30;i++){s.update(1+i*.05,.05,camera,u);await new Promise(r=>setImmediate(r));}
-  assert.ok(reads>0&&reads<12);assert.ok(s.diagnostics.whitewaterActive>0);assert.equal(s.diagnostics.whitewaterTriangles,30720);assert.equal(s.diagnostics.readbackBytes,4608);assert.equal(s.diagnostics.drawCalls,2);
+  assert.ok(reads>0&&reads<12);assert.ok(s.diagnostics.whitewaterActive>0);assert.equal(s.diagnostics.whitewaterTriangles,122880);assert.equal(s.diagnostics.readbackBytes,4608);assert.equal(s.diagnostics.drawCalls,2);
   assert.equal(s.whitewater!.material.uniforms.uSunDirection,u.uSunDirection);
   // Keep the old whitewater but turn off new breaking: the velocity layer
   // must move surviving flocs offshore, opposite their birth normal.

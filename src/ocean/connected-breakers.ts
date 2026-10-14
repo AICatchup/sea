@@ -7,6 +7,10 @@ import {whitewaterAerationStrength} from './whitewater-flow.ts';
 import type {WhitewaterBirth,WhitewaterSample,WhitewaterSampler} from './shore-whitewater.ts';
 
 export const BREAKER_FRONT_CAPACITY=24,BREAKER_FRONT_NODES=17;
+/** Optical thickness grows with the measured local crest-to-face drop. */
+export function breakerLipThickness(drop:number,energy:number):number{
+  return .06+.10*whitewaterAerationStrength(energy)+.20*Math.max(0,Math.min(3.5,drop)-.5);
+}
 export interface BreakerImpact extends WhitewaterBirth {width:number;speed:number;eventId:number;impactSpeed:number;drop?:number;reach?:number}
 type FrontNode=WhitewaterBirth&{speed?:number;depth?:number;drop?:number;reach?:number};
 const sampleState=():WhitewaterSample=>({height:0,compression:0,depth:0,shelter:1,ground:0,gradientX:0,gradientZ:0});
@@ -47,7 +51,7 @@ export function traceBreakingFront(x:number,z:number,sampler:WhitewaterSampler,s
       // the lower face ahead, rather than making every big wave a tiny lip.
       let foot=best.height;
       for(let ahead=2;ahead<=8;ahead+=2)if(sampler(best.x+nx*ahead,best.z+nz*ahead,s)&&Number.isFinite(s.height)&&s.depth>.1&&s.ground<s.height-.08)foot=Math.min(foot,s.height);
-      best.drop=Math.min(2.8,Math.max(.2,best.height-foot));best.reach=.6+best.drop*1.8;
+      best.drop=Math.min(3.5,Math.max(.2,best.height-foot));best.reach=.6+best.drop*1.8;
       nodes.push(best);previousAcross=THREE.MathUtils.clamp(bestAcross,-4,4);
     }
     else if(nodes.length>=3)break;
@@ -84,7 +88,7 @@ export class ConnectedBreakerPool {
         energy:THREE.MathUtils.lerp(a.energy,b.energy,t),nx:nx/n,nz:nz/n,seed:a.seed,depth:THREE.MathUtils.lerp(a.depth??1,b.depth??1,t),speed:THREE.MathUtils.lerp(a.speed??2,b.speed??2,t),drop:THREE.MathUtils.lerp(a.drop??.2,b.drop??.2,t),reach:THREE.MathUtils.lerp(a.reach??.6,b.reach??.6,t)});
     }
     this.births[slot]=nodes;this.ages[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
-    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,b.height],i);this.shapes.set([b.nx,b.nz,.06+.10*whitewaterAerationStrength(b.energy),b.drop??.2],i);}
+    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,b.height],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy),b.drop??.2],i);}
     return true;
   }
   advance(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{
@@ -97,9 +101,9 @@ export class ConnectedBreakerPool {
         const delay=.035*j+.04*(1+Math.sin(j*.48+b.seed*6.2))+.045*(b.depth??1)/4;
         const t=Math.max(0,age-delay),flight=Math.max(0,t-.12),strength=whitewaterAerationStrength(b.energy),phaseSpeed=b.speed??2;
         const rootX=b.x+b.nx*phaseSpeed*t,rootZ=b.z+b.nz*phaseSpeed*t,s=this.sample;
-        if(age>1.8||!sampler(rootX,rootZ,s)||s.depth<=.02||s.depth>8){this.roots[i+3]=0;continue;}
-        const rootY=s.height,travel=(.1+(.8+1.5*strength+(b.reach??.6)*2)*flight)*Math.min(1,t/.12),x=rootX+b.nx*travel,z=rootZ+b.nz*travel;
-        let tipY=b.height+.24+.60*strength+.4*flight-4.905*flight*flight;
+        if(age>2.4||!sampler(rootX,rootZ,s)||s.depth<=.02||s.depth>8){this.roots[i+3]=0;continue;}
+        const rootY=s.height,travel=(.1+(.8+1.5*strength+(b.reach??.6)*.35)*flight)*Math.min(1,t/.12),x=rootX+b.nx*travel,z=rootZ+b.nz*travel;
+        let tipY=b.height+.24+.60*strength+.20*Math.max(0,(b.drop??.2)-.8)+.4*flight-4.905*flight*flight;
         if(!sampler(x,z,s)||s.depth<=.02||s.depth>8||!Number.isFinite(s.height)){this.roots[i+3]=0;continue;}
         if(this.landed[index]<0&&t>.12&&tipY<=s.height+.025){
           this.landed[index]=age;this.impacts++;
@@ -128,7 +132,8 @@ export class ConnectedShoreBreakers {
   readonly material:THREE.ShaderMaterial;private readonly geometry=new THREE.InstancedBufferGeometry();
   private readonly textures:THREE.DataTexture[];
   constructor(){
-    const base=new THREE.PlaneGeometry(1,1,32,48);base.rotateX(-Math.PI/2);
+    // Closed outer/inner faces and end caps give the falling lip actual volume.
+    const base=new THREE.BoxGeometry(1,1,1,32,1,48);
     this.geometry.setIndex(base.index!.clone());this.geometry.setAttribute('position',base.getAttribute('position').clone());base.dispose();
     this.geometry.setAttribute('aSlot',new THREE.InstancedBufferAttribute(Float32Array.from({length:BREAKER_FRONT_CAPACITY},(_,i)=>i),1));
     this.geometry.setAttribute('aActive',new THREE.InstancedBufferAttribute(this.pool.visible,1).setUsage(THREE.DynamicDrawUsage));this.geometry.instanceCount=BREAKER_FRONT_CAPACITY;
@@ -161,7 +166,7 @@ export class ConnectedShoreBreakers {
         // Small bores spill into the transported foam/roller field. A broad
         // lifted sheet there looked like a grey board instead of moving water.
         vEnvelope*=smoothstep(.35,.85,shape.w);
-        float radius=min(1.15,min(shape.w*.5+.12*strength,max(.12,rootHeight-rootCoast.x)*.32));
+        float radius=min(2.1,min(shape.w*.58+.12*strength,max(.12,rootHeight-rootCoast.x)*.48));
         float peak=rootHeight+radius;
         vAeration=clamp((peak-tip.y-.08)/max(.35,peak-rootHeight+.35),0.,1.);
         // A circular upper section genuinely rolls beyond vertical. Only the
@@ -172,7 +177,9 @@ export class ConnectedShoreBreakers {
         // Spread the ballistic tip correction over the falling quarter. A
         // correction confined to the last 7% stretched a few cells into blades.
         float tail=smoothstep(.68,1.,u);section+=(vec2(d,tip.y)-end)*tail*tail;
-        vec2 world=root.xz+shape.xy*section.x;float base=lipSurface(world);
+        float thickness=shape.z*smoothstep(0.,.16,u)*edge;
+        section+=vec2(-cos(theta),sin(theta))*position.y*thickness;
+        vec2 world=root.xz+shape.xy*section.x*vEnvelope;float base=lipSurface(world);
         // On contact, collapse every point onto its OWN rendered surface.
         // Lerp toward the root's height left a hanging curtain on slopes.
         float height=mix(base,section.y,vEnvelope);

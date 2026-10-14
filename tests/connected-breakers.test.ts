@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,breakerRootSupport} from '../src/ocean/connected-breakers.ts';
+import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,breakerRootSupport,breakerLipThickness} from '../src/ocean/connected-breakers.ts';
 import type {WhitewaterSample,WhitewaterSampler} from '../src/ocean/shore-whitewater.ts';
 import {marineDecay,MarineSurfaceField,validMarineDeposit} from '../src/ocean/marine-surface-field.ts';
 import * as THREE from 'three';
@@ -8,6 +8,12 @@ import {ShoreSpray} from '../src/ocean/shore-spray.ts';
 
 const front:WhitewaterSampler=(x,z,s)=>{Object.assign(s,{height:.45-.04*x+.03*Math.sin(z*.2),compression:.2,depth:1.4,ground:-1,gradientX:.1,gradientZ:0,waveGradientX:-.04,waveGradientZ:0,flowX:1,flowZ:0});return true;};
 const flat:WhitewaterSampler=(_x,_z,s)=>{Object.assign(s,{height:0,depth:2,ground:-2});return true;};
+
+test('a tall plunging crest retains greater optical thickness than a small spilling lip',()=>{
+  const low=breakerLipThickness(.3,.5),high=breakerLipThickness(2.8,.5);
+  assert.ok(high>low*3);assert.ok(high<.8);
+  assert.equal(breakerLipThickness(10,.5),breakerLipThickness(3.5,.5));
+});
 test('wave-line tracer connects an alongshore front; no dry gap or back-face join',()=>{
   const line=traceBreakingFront(0,0,front,.2);assert.equal(line.length,17);
   assert.ok(Math.hypot(line.at(-1)!.x-line[0].x,line.at(-1)!.z-line[0].z)>30);
