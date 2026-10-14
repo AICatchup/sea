@@ -197,3 +197,14 @@ test('an initially submerged tip cannot become a new impact when receiving water
  for(let i=0;i<60;i++)pool.advance(1/60,sea,()=>impacts++);
  assert.equal(impacts,0);
 });
+
+
+test('resampled crest nodes start on the curved source instead of interpolated heights below it',()=>{
+ const pool=new ConnectedBreakerPool();
+ const curved:WhitewaterSampler=(_x,z,s)=>{Object.assign(s,{height:2-z*z*.2,depth:3-z*z*.2,ground:-1,heightRate:0,waveGradientX:0,waveGradientZ:-.4*z});return true;};
+ const nodes=[-2,0,2].map(z=>({x:0,z,height:2-z*z*.2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3}));
+ assert.ok(pool.emitFront(nodes,curved));
+ for(let j=0;j<BREAKER_FRONT_NODES;j++){
+  const k=j*4,z=pool.roots[k+2];assert.ok(Math.abs(pool.roots[k+1]-(2-z*z*.2))<1e-6);
+ }
+});

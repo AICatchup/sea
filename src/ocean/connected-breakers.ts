@@ -117,6 +117,7 @@ export class ConnectedBreakerPool {
   readonly visible=new Float32Array(BREAKER_FRONT_CAPACITY);
   readonly clock=new Float32Array(BREAKER_FRONT_CAPACITY);
   active=0;impacts=0;fronts=0;
+  readonly sourceAudit:{height:number;surface:number;up:number;speed:number;clearance:number;drop:number}[]=[];
   readonly flightAudit:{age:number;drop:number;launchHeight:number;landingHeight:number;flightDistance:number;sourceReleased:number}[]=[];
   releaseWater?: (p:{x:number;y:number;z:number;vx:number;vy:number;vz:number})=>void;
   private trackedSpeeds=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES);
@@ -132,7 +133,7 @@ export class ConnectedBreakerPool {
   emit(b:WhitewaterBirth):boolean{
     return this.emitFront(Array.from({length:3},(_,i)=>({...b,x:b.x-b.nz*(i-1)*1.5,z:b.z+b.nx*(i-1)*1.5})));
   }
-  emitFront(input:readonly FrontNode[]):boolean{
+  emitFront(input:readonly FrontNode[],sampler?:WhitewaterSampler):boolean{
     if(input.length<3||input.length>BREAKER_FRONT_NODES||input.some(b=>!Object.values(b).every(Number.isFinite)||b.energy<=0||b.energy>1||Math.abs(Math.hypot(b.nx,b.nz)-1)>.1))return false;
     const slot=this.births.indexOf(null);if(slot<0)return false;
     const nodes:FrontNode[]=[];
@@ -141,6 +142,15 @@ export class ConnectedBreakerPool {
       const nx=THREE.MathUtils.lerp(a.nx,b.nx,t),nz=THREE.MathUtils.lerp(a.nz,b.nz,t),n=Math.hypot(nx,nz);
       nodes.push({x:THREE.MathUtils.lerp(a.x,b.x,t),z:THREE.MathUtils.lerp(a.z,b.z,t),height:THREE.MathUtils.lerp(a.height,b.height,t),
         up:THREE.MathUtils.lerp(a.up??.4,b.up??.4,t),energy:THREE.MathUtils.lerp(a.energy,b.energy,t),nx:nx/n,nz:nz/n,seed:((Math.sin((j+1)*12.9898+a.seed*78.233)*43758.5453)%1+1)%1,depth:THREE.MathUtils.lerp(a.depth??1,b.depth??1,t),speed:THREE.MathUtils.lerp(a.speed??2,b.speed??2,t),drop:THREE.MathUtils.lerp(a.drop??.2,b.drop??.2,t),reach:THREE.MathUtils.lerp(a.reach??.6,b.reach??.6,t)});
+    }
+    // Resampling a curved front changes x/z. Interpolating its endpoint
+    // heights puts the new node inside a convex crest. Project every final
+    // emission node back to the actual source surface before starting flight.
+    if(sampler)for(const b of nodes){
+      if(!sampler(b.x,b.z,this.sample)||!wet(this.sample,false))return false;
+      b.height=this.sample.height;b.depth=this.sample.depth;
+      const launch=breakerSheetSpeed(b.speed??2,b.height);
+      b.up=breakerVerticalVelocity(this.sample,b.nx*launch,b.nz*launch);
     }
     this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.births[slot]=nodes;this.ages[slot]=0;this.clock[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
@@ -180,6 +190,10 @@ export class ConnectedBreakerPool {
         const endpoint=flyWaterParcel(emission,age,vx,vz,up,this.parcelScratch);
         const x=endpoint.x,z=endpoint.z;let tipY=endpoint.y;
         if(!sampler(x,z,s)||s.depth<=.02||s.depth>8||!Number.isFinite(s.height)){this.roots[i+3]=0;continue;}
+        if(j===8&&age<=dt+1e-8){
+          this.sourceAudit.push({height:launchHeight,surface:s.height,up:emission.up??up,speed:Math.hypot(emission.vx??vx,emission.vz??vz),clearance:tipY-s.height,drop:b.drop??0});
+          if(this.sourceAudit.length>128)this.sourceAudit.shift();
+        }
         // Contact is a return from air, not merely a point inside the sea.
         // The old age gate reported a splash at 0.13s even when no water had
         // ever left the surface, and prematurely stopped feeding the crest.
