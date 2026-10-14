@@ -257,7 +257,7 @@ export class ConnectedShoreBreakers {
         float u=position.x+.5,along=position.z+.5;
         vec4 root=frontState(uFrontRoots,along),tip=frontState(uFrontTips,along),shape=frontState(uFrontShapes,along);shape.xy=normalize(shape.xy);
         float edge=smoothstep(0.,.12,along)*(1.-smoothstep(.88,1.,along));
-        vEnvelope=clamp(root.w,0.,1.)*edge;vLip=u;vWaterThickness=shape.z;
+        vEnvelope=clamp(root.w,0.,1.)*edge;vLip=u;
         // Entraining air follows the actual tip's fall below the crest.
         // A rising, still-transparent face is not painted white.
         float rootHeight=lipSurface(parcelState(along,0.).xz);
@@ -282,7 +282,11 @@ export class ConnectedShoreBreakers {
         vec3 smoothNormal=cross(across,flightTangent);
         vSheetNormal=length(smoothNormal)>.000001?normalize(smoothNormal):vec3(0.,1.,0.);
         vec2 sideNormal=normalize(vec2(-tangent.y,tangent.x)+vec2(0.,.00001));
+        // Optical thickness must match the actual closed sheet, including its
+        // pinched free edges. A constant optical path painted a dark rectangle
+        // where the geometry had already narrowed to zero volume.
         float thickness=shape.z*sin(u*3.14159265)*edge;
+        vWaterThickness=max(0.,thickness);
         parcel.xz+=shape.xy*sideNormal.x*position.y*thickness;
         parcel.y+=sideNormal.y*position.y*thickness;
         vAeration=clamp(parcel.w/6.,0.,1.);
