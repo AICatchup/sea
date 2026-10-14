@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {CrestHistory,flyWaterParcel} from './breaker-parcels.ts';
+import {CrestHistory,flyWaterParcel,type CrestEmission} from './breaker-parcels.ts';
 import {oceanFragment} from './shaders.ts';
 import {shoreWaveSampling} from './surface-detail.ts';
 import {shoreSolverSampling} from './shore-solver.ts';
@@ -91,12 +91,13 @@ export class ConnectedBreakerPool {
   readonly tips=new Float32Array(this.roots.length);
   readonly shapes=new Float32Array(this.roots.length);
   readonly sheet=new Float32Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*SHEET_ROWS*4);
-  private readonly emissionScratch={time:0,x:0,y:0,z:0};
+  private readonly emissionScratch:CrestEmission={time:0,x:0,y:0,z:0};
   private readonly parcelScratch={x:0,y:0,z:0,vy:0};
   private readonly histories=Array.from({length:BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES},()=>new CrestHistory());
   readonly visible=new Float32Array(BREAKER_FRONT_CAPACITY);
   active=0;impacts=0;fronts=0;
   releaseWater?: (p:{x:number;y:number;z:number;vx:number;vy:number;vz:number})=>void;
+  private trackedSpeeds=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES);
   private trackedRoots=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*2);
   private released=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES).fill(-1);
   readonly capacity=BREAKER_FRONT_CAPACITY;
@@ -119,7 +120,7 @@ export class ConnectedBreakerPool {
         energy:THREE.MathUtils.lerp(a.energy,b.energy,t),nx:nx/n,nz:nz/n,seed:((Math.sin((j+1)*12.9898+a.seed*78.233)*43758.5453)%1+1)%1,depth:THREE.MathUtils.lerp(a.depth??1,b.depth??1,t),speed:THREE.MathUtils.lerp(a.speed??2,b.speed??2,t),drop:THREE.MathUtils.lerp(a.drop??.2,b.drop??.2,t),reach:THREE.MathUtils.lerp(a.reach??.6,b.reach??.6,t)});
     }
     this.births[slot]=nodes;this.ages[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
-    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:nodes[j].x,y:nodes[j].height,z:nodes[j].z});const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,b.height],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy),b.drop??.2],i);}
+    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=(b.speed??2)+.8+1.5*whitewaterAerationStrength(b.energy)+(b.reach??.6)*.35;this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy),b.drop??.2],i);}
     return true;
   }
   advance(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{
@@ -140,48 +141,50 @@ export class ConnectedBreakerPool {
         const tracked=trackBreakerRoot(predictedX,predictedZ,b.nx,b.nz,sampler);
         const follow=1-Math.exp(-10*dt);
         const rootX=predictedX+((tracked?.x??predictedX)-predictedX)*follow,rootZ=predictedZ+((tracked?.z??predictedZ)-predictedZ)*follow,s=this.sample;
+        const measuredSpeed=((rootX-this.trackedRoots[index*2])*b.nx+(rootZ-this.trackedRoots[index*2+1])*b.nz)/dt;
+        this.trackedSpeeds[index]+=(THREE.MathUtils.clamp(measuredSpeed,0,phaseSpeed*2)-this.trackedSpeeds[index])*(1-Math.exp(-dt/.15));
         this.trackedRoots[index*2]=rootX;this.trackedRoots[index*2+1]=rootZ;
         if(age>2.4||!sampler(rootX,rootZ,s)||s.depth<=.02||s.depth>8){this.roots[i+3]=0;continue;}
         const rootY=s.height,history=this.histories[index];
-        history.record({time:age,x:rootX,y:rootY,z:rootZ});
+
         const relativeSpeed=.8+1.5*strength+(b.reach??.6)*.35;
-        const vx=b.nx*(phaseSpeed+relativeSpeed),vz=b.nz*(phaseSpeed+relativeSpeed),up=.4;
+        const vx=b.nx*(this.trackedSpeeds[index]+relativeSpeed),vz=b.nz*(this.trackedSpeeds[index]+relativeSpeed),up=.4;
+        // Store velocity at emission. Later crest acceleration must neither
+        // drag older parcels nor leave all rows using the birth phase speed.
+        if(this.released[index]<0)history.record({time:age,x:rootX,y:rootY,z:rootZ,vx,vz,up});
         const emission=history.sample(age-flight,this.emissionScratch),launchHeight=emission.y;
         const endpoint=flyWaterParcel(emission,age,vx,vz,up,this.parcelScratch);
-        const x=endpoint.x-vx*SHEET_OVERLAP_SECONDS,z=endpoint.z-vz*SHEET_OVERLAP_SECONDS;let tipY=endpoint.y;
+        const x=endpoint.x-(emission.vx??vx)*SHEET_OVERLAP_SECONDS,z=endpoint.z-(emission.vz??vz)*SHEET_OVERLAP_SECONDS;let tipY=endpoint.y;
         if(!sampler(x,z,s)||s.depth<=.02||s.depth>8||!Number.isFinite(s.height)){this.roots[i+3]=0;continue;}
         if(this.landed[index]<0&&t>.12&&tipY<=s.height+.025){
           this.landed[index]=age;this.impacts++;
           const left=nodes[Math.max(0,j-1)],right=nodes[Math.min(BREAKER_FRONT_NODES-1,j+1)];
           impact({...b,x,z,height:s.height,width:Math.max(.18,Math.hypot(right.x-left.x,right.z-left.z)*.5),speed:phaseSpeed,eventId:this.eventIds[slot],impactSpeed:Math.min(12,Math.max(0,9.81*flight-.4))});
         }
-        const landed=this.landed[index],fade=landed<0?1:Math.max(0,1-(age-landed)/.16);
-        if(fade>0)alive++;
-        // Once the crest beneath the root has fallen away, retire the sheet.
-        // Keep its ballistic tip clock alive until contact still emits once.
-        // Support is evaluated against CURRENT GPU water in the vertex shader,
-        // not stepped in 5Hz CPU readbacks. The tip's W lane retains its birth
-        // crest height; it no longer freezes the sheet's peak in world space.
-        // When the supporting crest falls away, the already released water
-        // becomes spray with the SAME parcel positions and velocities. Do not
-        // stretch a transparent ribbon back to an unrelated lower surface.
-        if(this.releaseWater&&this.released[index]<0&&landed<0&&t>.18&&rootY<launchHeight-.45){
+        const landed=this.landed[index];
+        // Stop feeding a falling crest, but keep its emitted water in flight.
+        // Spray carries a small breakup detail; it does not replace the sheet.
+        if(this.released[index]<0&&landed<0&&t>.18&&rootY<launchHeight-.45){
           this.released[index]=age;
           for(let row=4;row<SHEET_ROWS;row+=4){
             const parcel=flyWaterParcel(history.sample(age-flight*row/(SHEET_ROWS-1),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
-            parcel.x-=vx*SHEET_OVERLAP_SECONDS;parcel.z-=vz*SHEET_OVERLAP_SECONDS;
-            if(sampler(parcel.x,parcel.z,s)&&parcel.y>s.height+.02)this.releaseWater({x:parcel.x,y:parcel.y,z:parcel.z,vx,vy:parcel.vy,vz});
+            const parcelVx=this.emissionScratch.vx??vx,parcelVz=this.emissionScratch.vz??vz;parcel.x-=parcelVx*SHEET_OVERLAP_SECONDS;parcel.z-=parcelVz*SHEET_OVERLAP_SECONDS;
+            if(sampler(parcel.x,parcel.z,s)&&parcel.y>s.height+.02)this.releaseWater?.({x:parcel.x,y:parcel.y,z:parcel.z,vx:parcelVx,vy:parcel.vy,vz:parcelVz});
           }
         }
-        const releaseFade=this.released[index]<0?1:Math.max(0,1-(age-this.released[index])/.10);
-        const ramp=Math.min(1,t/.12)*fade*releaseFade;
+        // First contact ends emission, not the flight of younger water.
+        if(landed>=0&&this.released[index]<0)this.released[index]=age;
+        const emissionEnd=this.released[index]<0?age:this.released[index];
+        const ramp=Math.min(1,t/.12);let airborne=false;
         if(landed>=0)tipY=s.height;
-        this.roots.set([rootX,rootY,rootZ,ramp],i);this.tips.set([x,tipY,z,launchHeight],i);
+        this.roots.set([rootX,rootY,rootZ,ramp],i);this.tips.set([x,tipY,z,this.released[index]<0?1:0],i);
         for(let row=0;row<SHEET_ROWS;row++){
-          const u=row/(SHEET_ROWS-1),parcel=flyWaterParcel(history.sample(age-flight*u,this.emissionScratch),age,vx,vz,up,this.parcelScratch);
+          const u=row/(SHEET_ROWS-1),parcel=flyWaterParcel(history.sample(emissionEnd*(1-u),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
           const k=((slot*BREAKER_FRONT_NODES+j)*SHEET_ROWS+row)*4;
-          this.sheet[k]=parcel.x-vx*SHEET_OVERLAP_SECONDS;this.sheet[k+1]=parcel.y;this.sheet[k+2]=parcel.z-vz*SHEET_OVERLAP_SECONDS;this.sheet[k+3]=Math.max(0,-parcel.vy);
+          this.sheet[k]=parcel.x-(this.emissionScratch.vx??vx)*SHEET_OVERLAP_SECONDS;this.sheet[k+1]=parcel.y;this.sheet[k+2]=parcel.z-(this.emissionScratch.vz??vz)*SHEET_OVERLAP_SECONDS;this.sheet[k+3]=Math.max(0,-parcel.vy);
+          if(sampler(this.sheet[k],this.sheet[k+2],s)&&parcel.y>s.height+.025)airborne=true;
         }
+        if(airborne||landed<0)alive++;else this.roots[i+3]=0;
 
       }
       if(!alive){this.births[slot]=null;this.visible[slot]=0;this.active--;for(let j=0;j<BREAKER_FRONT_NODES;j++)this.roots[(slot*BREAKER_FRONT_NODES+j)*4+3]=0;}
@@ -206,7 +209,7 @@ export class ConnectedShoreBreakers {
     this.material=new THREE.ShaderMaterial({defines:{CURVED_SURFACE:1,CONNECTED_FRONT:1},side:THREE.DoubleSide,depthTest:true,depthWrite:true,uniforms:{uFrontRoots:{value:this.textures[0]},uFrontTips:{value:this.textures[1]},uFrontShapes:{value:this.textures[2]},uFrontSheet:{value:this.textures[3]}},fragmentShader:oceanFragment,vertexShader:/* glsl */`
       attribute float aSlot,aActive;uniform sampler2D uFrontRoots,uFrontTips,uFrontShapes,uFrontSheet;
       varying vec3 vWorld;varying vec2 vOcean;varying float vDistance,vEnvelope,vLip,vWaterThickness;
-      varying float vAeration;
+      varying float vAeration;varying vec3 vSheetNormal;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
       ${shoreWaveSampling}
       ${shoreSolverSampling}
@@ -242,9 +245,15 @@ export class ConnectedShoreBreakers {
         // own position/velocity under gravity. No arc is refitted to a tip.
         vec4 parcel=parcelState(along,u);
         vec4 originParcel=parcelState(along,0.);
-        parcel.y+=(rootHeight-originParcel.y)*(1.-u);
+        // Only newly emitted water remains attached to the source. Correcting
+        // the entire sheet every GPU frame bent old airborne water sideways.
+        parcel.y+=(rootHeight-originParcel.y)*(1.-smoothstep(0.,.10,u))*clamp(tip.w,0.,1.);
         vec4 previous=parcelState(along,max(0.,u-.03125)),next=parcelState(along,min(1.,u+.03125));
         vec2 tangent=vec2(dot(next.xz-previous.xz,shape.xy),next.y-previous.y);
+        vec3 across=parcelState(min(1.,along+.0078125),u).xyz-parcelState(max(0.,along-.0078125),u).xyz;
+        vec3 flightTangent=next.xyz-previous.xyz;
+        vec3 smoothNormal=cross(across,flightTangent);
+        vSheetNormal=length(smoothNormal)>.000001?normalize(smoothNormal):vec3(0.,1.,0.);
         vec2 sideNormal=normalize(vec2(-tangent.y,tangent.x)+vec2(0.,.00001));
         float thickness=shape.z*sin(u*3.14159265)*edge;
         parcel.xz+=shape.xy*sideNormal.x*position.y*thickness;

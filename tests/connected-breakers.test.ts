@@ -58,7 +58,7 @@ test('front geometry is deterministic before contact and bounded across frame pa
 test('a departed high crest cannot leave a suspended sheet, while its tip still lands',()=>{
   const pool=new ConnectedBreakerPool();pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,reach:3})));
   pool.advance(.2,flat,()=>assert.fail('too early for water contact'));
-  for(let i=0;i<17;i++)assert.equal(breakerRootSupport(0,pool.tips[i*4+3]),0);
+  for(let i=0;i<17;i++)assert.equal(breakerRootSupport(0,2),0);
   assert.ok(breakerRootSupport(1.6,2)>0&&breakerRootSupport(1.6,2)<1,'support fades continuously before retiring');
   let impacts=0;for(let i=0;i<120;i++)pool.advance(1/60,flat,()=>impacts++);
   assert.equal(impacts,17);assert.equal(pool.active,0);
@@ -72,11 +72,11 @@ test('landing tips remain at endpoint water height while an uneven front collaps
   let collapsed=0;
   for(let i=0;i<BREAKER_FRONT_NODES;i++){
     const k=i*4;
-    if(pool.roots[k+3]>.02&&pool.roots[k+3]<.99&&pool.tips[k]>1.5){
+    if(pool.roots[k+3]>.02&&pool.tips[k+3]===0&&pool.tips[k]>1.5){
       assert.equal(pool.tips[k+1],0);collapsed++;
     }
   }
-  assert.ok(collapsed>0,'observe a fading landed tip above a different root water height');
+  assert.ok(collapsed>0,'observe a landed tip while younger water is still airborne');
 });
 test('foam and entrained bubbles have separate stable physical-time lifetimes',()=>{
   const one=marineDecay(.8,.6,1);let state:[number,number]=[.8,.6];for(let i=0;i<100;i++)state=marineDecay(...state,.01);

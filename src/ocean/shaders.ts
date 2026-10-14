@@ -273,7 +273,7 @@ export const oceanFragment = /* glsl */ `
   varying float vEnvelope, vLip, vWaterThickness;
   #endif
   #ifdef CONNECTED_FRONT
-  varying float vAeration;
+  varying float vAeration;varying vec3 vSheetNormal;
   #endif
   ${atmosphere}
   ${shoreWaveSampling}
@@ -459,6 +459,11 @@ export const oceanFragment = /* glsl */ `
     #else
     // The curl is multivalued: FFT/SWE height stencils cannot describe it.
     normal=normalize(cross(dFdx(vWorld),dFdy(vWorld)));
+    #ifdef CONNECTED_FRONT
+    // Differentiate the continuous parcel sheet, not each raster triangle.
+    // Flat triangle normals made reflected sky split into rectangular facets.
+    normal=normalize(vSheetNormal);
+    #endif
     // Orient toward the air camera, or away from the underwater camera so
     // the shared belowNormal=-normal branch sees its incident medium.
     vec3 incidentView=normalize(cameraPosition-vWorld);

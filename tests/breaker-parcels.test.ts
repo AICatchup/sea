@@ -20,6 +20,16 @@ test('intermediate emissions follow the same linear moving crest across frame pa
     for(const key of ['x','y','z'] as const)assert.ok(Math.abs(x[key]-y[key])<1e-12);
   }
 });
+test('each emission keeps its own velocity when the crest accelerates',()=>{
+ const history=new CrestHistory();history.reset({time:0,x:0,y:3,z:0,vx:3,vz:1,up:.4});
+ const before=flyWaterParcel(history.sample(0),.5,99,99,99);
+ history.record({time:.5,x:2,y:3,z:1,vx:8,vz:2,up:.4});
+ assert.deepEqual(flyWaterParcel(history.sample(0),.5,-99,-99,-99),before);
+ assert.equal(before.x,1.5);assert.equal(before.z,.5);
+ const mid=history.sample(.25);assert.equal(mid.vx,5.5);assert.equal(mid.vz,1.5);
+ const later=flyWaterParcel(history.sample(.5),1,0,0,0);
+ assert.equal(later.x,6);assert.equal(later.z,2);
+});
 
 import {ConnectedBreakerPool} from '../src/ocean/connected-breakers.ts';
 test('unsupported sheets hand off airborne parcels once instead of stretching a ribbon',()=>{
@@ -47,4 +57,18 @@ test('new sheet rows overlap the supporting crest instead of only touching an ed
  const pool=new ConnectedBreakerPool();pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,drop:2})));
  pool.advance(.1,(_x,_z,s)=>{s.height=0;s.ground=-2;s.depth=2;return true;},()=>{});
  assert.ok(pool.sheet[0]<pool.roots[0]);assert.ok(pool.roots[0]-pool.sheet[0]<.5);
+});
+test('after source separation younger sheet water keeps falling instead of vanishing with its tip',()=>{
+ const pool=new ConnectedBreakerPool();let height=2;
+ pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,drop:2})));
+ const sample=(x:number,_z:number,s:{height:number;ground:number;depth:number})=>{s.height=height?Math.max(0,2-x*1.4):0;s.ground=-2;s.depth=s.height+2;return true;};
+ pool.advance(.3,sample,()=>{});height=0;
+ pool.advance(.1,sample,()=>{});
+ const row=(8*33+16)*4,y0=pool.sheet[row+1];
+ assert.equal(pool.tips[8*4+3],0,'source is detached');
+ assert.ok(pool.roots[8*4+3]>.9,'airborne water remains visible');
+ pool.advance(.1,sample,()=>{});const y1=pool.sheet[row+1];
+ pool.advance(.1,sample,()=>{});const y2=pool.sheet[row+1];
+ assert.ok(y0>y1&&y1>y2);
+ assert.ok(Math.abs(y2-2*y1+y0+9.81*.01)<1e-5,'fixed parcel has gravitational acceleration');
 });
