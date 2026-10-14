@@ -180,7 +180,7 @@ export class Ocean {
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
     const connected=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('connectedbreakers')!=='0';
     this.marineSurface=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('marinefield')!=='0'?new MarineSurfaceField(this.renderer):null;
-    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')!=='0',connected,resolution:connected?64:24,span:connected?128:144});
+    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')==='1',connected,resolution:connected?64:24,span:connected?128:144});
     if(this.marineSurface)this.spray.setImpactSink(b=>{const droplet=(b.width??2)<.25&&b.energy<=.04;return this.marineSurface!.deposit({x:b.x,z:b.z,nx:b.nx,nz:b.nz,radius:(droplet?.08:.28)+.6*Math.sqrt(b.energy),halfLength:(b.width??2)*.5,foam:(droplet?.025:.35)+(droplet?.12:.5)*Math.sqrt(b.energy),bubbles:(droplet?.08:.55)*Math.sqrt(b.energy),pressure:.10*b.energy});});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.

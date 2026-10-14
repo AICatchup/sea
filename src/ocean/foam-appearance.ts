@@ -49,6 +49,8 @@ float foamImageCoverage(float concentration,float field,float footprint){
   // a moving threshold abruptly deletes it. Dense impact froth remains white.
   float pores=smoothstep(.035,.46,field);
   float density=mix(.42,pores*pores,exp(-pow(footprint*3.,2.)));
-  return (1.-exp(-4.2*c))*density;
+  // Coverage is bounded by transported area fraction. A weak remnant must
+  // not be optically amplified into a continuous white carpet.
+  return c*density;
 }
 `;
