@@ -582,8 +582,8 @@ try {
         return {png,pngWithoutWhitewater,pngWithoutSurfaceFoam,pngFoamFilm,pngWithoutBreaker,pngWithoutShore,pngWithoutContact,pngWithoutWetNormal,contactProbe,legacyNormalProbe,crestProbe,lightComparison,metadata:{...state,name,provenance:look?'QA bookmark position with an explicit alternate look; not a surveyed camera':profile.provenance,evidence:'visual-only after live wave update',movementVerified:false,humanAccepted:false,time:ocean.diagnostics.time,spray:ocean.diagnostics.spray,shoreSolver,shoreState,foamComparison:compareFoam?'Frozen state: all foam, whitewater pool hidden, both pool and surface-shader foam hidden':null,shoreComparison:compareShore?'Frozen FFT time, finite-volume state and existing particle history, camera and environment; solved surface on/off':null,breakerComparison:compareBreaker?'Frozen FFT time, camera and environment; supplemental shell on/off only':null,contactComparison:compareContact?'Frozen FFT/solver/particles/camera/light; pointwise contact vs historical FFT-origin clip only':null,lightComparison:compareLight?'One frozen camera/FFT/solver/time/environment; legacy256->fine512->legacy256, caustic history reset only':null}};
       }finally{try{ocean.setCausticResolution(previousLight);}finally{captureHost.restoreState(before);}}
     },
-    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number;eyeY?:number},startClock?:number,probes:readonly{x:number;y:number}[]=[],compareSand=false,compareFoam=false){
-      if(stops.length<1||stops.length>6||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
+    async captureTemporal(name:string,stops:number[]=[0,3,6,12],wind=8.5,swell=1,look?:{x?:number;z?:number;yaw?:number;pitch?:number;mode?:'walk'|'swim'|'dive';depth?:number;eyeY?:number},startClock?:number,probes:readonly{x:number;y:number}[]=[],compareSand=false,compareFoam=false,fixedStep=false){
+      if(stops.length<1||stops.length>(fixedStep?181:6)||stops[0]!==0||stops.some((t,i)=>!Number.isFinite(t)||t<0||t>20||(i>0&&t<=stops[i-1])))throw new Error('Ordered capture stops 0..20 seconds required');
       await ocean.ready;const before=captureHost.readState(),profile=CAPTURE_PROFILES.find(p=>p.name===name);if(!profile)throw new Error('Unknown temporal capture view');
       if(startClock!==undefined&&(!Number.isFinite(startClock)||startClock<0||startClock>86400))throw new Error('Finite bounded QA clock required');
       const clock=ocean.diagnostics.time,frames=[];
@@ -592,10 +592,12 @@ try {
         const p=profile.pose;captureHost.viewpoint(Number.isFinite(look?.x)?look!.x!:p.x,Number.isFinite(look?.z)?look!.z!:p.z,Number.isFinite(look?.yaw)?look!.yaw!:p.yaw,Number.isFinite(look?.pitch)?Math.max(-1.35,Math.min(1.35,look!.pitch!)):p.pitch,look?.mode??p.mode,Number.isFinite(look?.depth)?Math.max(0,Math.min(100,look!.depth!)):p.depth,look?.eyeY);captureHost.setPaused(true);await captureHost.nextFrame();
         if(startClock!==undefined){ocean.setObservationClock(startClock);await captureHost.nextFrame();}
         for(let i=0;i<stops.length;i++){
-          if(i){captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,(stops[i]-stops[i-1])*1000));captureHost.setPaused(true);}
-          await captureHost.nextFrame();const png=await capturePNG();if(!png)throw new Error('No temporal capture');
-          frames.push({png,metadata:{...captureHost.readState(),name,requestedSeconds:stops[i],time:ocean.diagnostics.time,spray:{...ocean.diagnostics.spray},shoreSolver:ocean.diagnostics.shoreSolver,sandMoisture:ocean.diagnostics.sandMoisture,provenance:'One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions',humanAccepted:false}});
+          if(i){if(fixedStep)await ocean.advanceObservation(stops[i]-stops[i-1]);else{captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,(stops[i]-stops[i-1])*1000));captureHost.setPaused(true);}}
+          if(!fixedStep)await captureHost.nextFrame();const png=fixedStep?ocean.renderStaticSnapshot():await capturePNG();if(!png)throw new Error('No temporal capture');
+          frames.push({png,metadata:{...captureHost.readState(),name,requestedSeconds:stops[i],fixedStep,realtime:!fixedStep,time:ocean.diagnostics.time,spray:{...ocean.diagnostics.spray},shoreSolver:ocean.diagnostics.shoreSolver,sandMoisture:ocean.diagnostics.sandMoisture,provenance:'One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions',humanAccepted:false}});
         }
+        const lipVisible=ocean.setBreakingLipVisible(false);let pngWithoutLip:string|null=null;
+        try{pngWithoutLip=ocean.renderStaticSnapshot();}finally{ocean.setBreakingLipVisible(lipVisible);}
         const visible=ocean.setWhitewaterVisible(false);
         try{
           await captureHost.nextFrame();await captureHost.nextFrame();const pngWithoutWhitewater=await capturePNG(),contactProbe=probes.length?ocean.probeWaterContact(probes):null;
@@ -624,7 +626,7 @@ try {
             try{await captureHost.nextFrame();await captureHost.nextFrame();pngLegacySand=await capturePNG();}
             finally{ocean.setSandMemoryEnabled(enabled);}
           }
-          return {frames,pngWithoutWhitewater,pngWithoutSurfaceFoam,foamComparison,pngLegacySand,contactProbe,whitewaterComparison:'Frozen same solver, particles, camera and light; pool first hidden, then surface foam hidden when requested',sandComparison:compareSand?'Same final camera/FFT/SWE/particles/light; only old vs new sand material response':null};
+          return {frames,pngWithoutLip,pngWithoutWhitewater,pngWithoutSurfaceFoam,foamComparison,pngLegacySand,contactProbe,whitewaterComparison:'Frozen same solver, particles, camera and light; pool first hidden, then surface foam hidden when requested',sandComparison:compareSand?'Same final camera/FFT/SWE/particles/light; only old vs new sand material response':null};
         }
         finally{ocean.setWhitewaterVisible(visible);}
       }finally{try{if(startClock!==undefined){captureHost.setPaused(true);ocean.setObservationClock(clock);}}finally{captureHost.restoreState(before);}}

@@ -164,6 +164,9 @@ export class ShoreSpray {
     const GRID=this.grid;
     this.energizedCells=new Uint16Array(GRID*GRID);
     this.lips=options.lips?(options.connected?new ConnectedShoreBreakers():new ShoreBreakingLips()):null;if(this.lips)this.group.add(this.lips.group);
+    if(this.lips instanceof ConnectedShoreBreakers)this.lips.pool.releaseWater=p=>{
+      if(this.pool.emit({...p,windX:0,windZ:0,drag:.15,life:2.5,size:.10,opacity:.32}))this.emitted++;
+    };
     this.rollers=this.lips instanceof ConnectedShoreBreakers?new ShoreWhitewaterVolume(true):null;if(this.rollers)this.group.add(this.rollers.group);
     this.flowReadback=!!options.volume||!!options.whitewater;
     this.target=new THREE.WebGLRenderTarget(GRID,GRID*(this.flowReadback?2:1),{type:THREE.UnsignedByteType,depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
@@ -367,6 +370,8 @@ export class ShoreSpray {
     for(const attribute of Object.values(this.geometry.attributes))attribute.needsUpdate=true;
     this.updateMs=performance.now()-start;
   }
+  private readbackDone:Promise<void>=Promise.resolve();
+  async settleReadback():Promise<void>{await this.readbackDone;if(this.failed)throw new Error('Wave sample readback failed');}
   private requestSample(time:number,camera:THREE.Camera,uniforms:Uniforms):void{
     const GRID=this.grid,step=this.span/GRID;
     if(this.pending||this.failed||time-this.lastRequest<INTERVAL||!uniforms.uLongWaves?.value||!uniforms.uShortWaves?.value||!uniforms.uBathymetry?.value)return;
@@ -384,7 +389,7 @@ export class ShoreSpray {
     let readback:Promise<Uint8Array>;
     try{readback=this.renderer.readRenderTargetPixelsAsync(this.target,0,0,GRID,GRID*(this.flowReadback?2:1),new Uint8Array(GRID*GRID*4*(this.flowReadback?2:1))) as Promise<Uint8Array>;}
     catch{this.pending=false;this.failReadback();return;}
-    void readback.then(pixels=>{
+    this.readbackDone=readback.then(pixels=>{
       if(this.disposed||generation!==this.generation)return;
       if(!(pixels instanceof Uint8Array)||pixels.length!==GRID*GRID*4*(this.flowReadback?2:1))throw new Error('Invalid spray readback');
       if(this.flowReadback)for(let i=GRID*GRID*4+3;i<pixels.length;i+=4)if(pixels[i]!==137)throw new Error('Uninitialized flow framebuffer');

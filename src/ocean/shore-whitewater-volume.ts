@@ -67,7 +67,7 @@ export class WhitewaterVolumePool {
       }
       if(!sampler(this.positions[i*3],this.positions[i*3+2],s)||!finite(s)||s.depth<=0||s.ground>=s.height-.015){this.births[i]=null;this.alpha[i]=0;this.active--;continue;}
       this.positions[i*3+1]=s.height;
-      const collapse=Math.exp(-age*(this.impactsOnly?2.2:1.05)),remaining=1-age/life;
+      const collapse=Math.exp(-age*1.05),remaining=1-age/life;
       this.shape[i*4]=(this.impactsOnly?Math.min(2.8,Math.max(.35,b.width??1.5)):3.2+2.8*b.seed)*(1+age*.10);
       this.shape[i*4+1]=this.impactsOnly?Math.min(s.depth*.35,(.08+.65*strength+.22*(b.drop??0))*collapse+.025*remaining):(.06+.85*strength)*collapse+.055*remaining;
       // A plunging impact first blooms upward, then loses height. Its impulse
@@ -95,7 +95,7 @@ export function createWhitewaterVolumeGeometry(detail=1):THREE.InstancedBufferGe
   const p=source.getAttribute('position');
   for(let i=0;i<p.count;i++){
     const x=p.getX(i),y=p.getY(i),z=p.getZ(i);
-    const warp=1+.14*Math.sin(x*9+z*5)+.1*Math.cos(y*11-z*8);
+    const warp=1+.055*Math.sin(x*5+z*3)+.035*Math.cos(y*6-z*4);
     p.setXYZ(i,x*warp,y*warp,z*warp);
   }
   source.computeVertexNormals();
@@ -111,7 +111,7 @@ export class ShoreWhitewaterVolume {
     this.pool=new WhitewaterVolumePool(impactsOnly?256:VOLUME_CAPACITY,impactsOnly);this.geometry=createWhitewaterVolumeGeometry(impactsOnly?5:3);
     for(const [name,array,size] of [['aCenter',this.pool.positions,3],['aShape',this.pool.shape,4],['aMotion',this.pool.motion,2],['aAlpha',this.pool.alpha,1],['aSeed',this.pool.seeds,1]] as const)this.geometry.setAttribute(name,new THREE.InstancedBufferAttribute(array,size).setUsage(THREE.DynamicDrawUsage));
     this.geometry.instanceCount=this.pool.capacity;
-    this.material=new THREE.ShaderMaterial({depthTest:true,depthWrite:true,transparent:false,side:THREE.FrontSide,
+    this.material=new THREE.ShaderMaterial({depthTest:true,depthWrite:false,transparent:true,side:THREE.FrontSide,
       uniforms:{...createShoreSolverUniforms(),uImpact:{value:impactsOnly?1:0},uFoamStructure:{value:1},uFoamAtlas:{value:null},uFoamAtlasReady:{value:0},uFoamClock:{value:0},uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},uTint:{value:new THREE.Color(.91,.96,.95)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`attribute vec3 aCenter;attribute vec4 aShape;attribute vec2 aMotion;attribute float aAlpha,aSeed;
       varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet;
@@ -171,7 +171,11 @@ export class ShoreWhitewaterVolume {
       // clean ellipsoid rim surviving after the roller has flattened.
       float edge=1.-smoothstep(.45,1.02,length(vLocal.xz));
       float erosion=mix(0.,.16,smoothstep(.18,.85,vAge));
-      if(effectivePore<threshold+erosion+(1.-edge)*.18)discard;
+      // Coverage fades as a cloud of bubbles, rather than cutting large
+      // hard-edged holes through a flattening opaque shell.
+      float coverage=smoothstep(threshold+erosion-.18,threshold+erosion+.20,effectivePore)*vAlpha;
+      coverage*=smoothstep(0.,.30,edge);
+      if(coverage<.005)discard;
       float cavityNoise=whitewaterNoise(vWorld*2.6);
       float resolved=1.-smoothstep(.035,.12,footprint);
       float fine=mix(.5,whitewaterNoise(vWorld*18.),resolved);
@@ -189,7 +193,7 @@ export class ShoreWhitewaterVolume {
       // Photo coverage and three-dimensional lighting are complementary.
       // Keep wet recesses and fine bubble shading after loading the atlas.
       if(uFoamAtlasReady>.5&&uFoamStructure>.5)color*=cavity*(.88+.12*fine);
-      gl_FragColor=vec4(color,1.);
+      gl_FragColor=vec4(color,coverage*.72);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
       }`});

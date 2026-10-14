@@ -628,6 +628,15 @@ export class Ocean {
       if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.frame);
     }
   }
+  /** Fixed-step visual verification. Not realtime FPS evidence. */
+  async advanceObservation(seconds:number):Promise<void>{
+    if(!this.paused||!this.visualCaptureLocked||!Number.isFinite(seconds)||seconds<=0||seconds>20)throw new Error('Paused bounded observation required');
+    const measured=[this.measureTime,this.measureFrames,this.fps];
+    cancelAnimationFrame(this.animationFrame);
+    let stamp=performance.now(),steps=0;this.lastStamp=stamp;this.paused=false;
+    try{for(let remaining=seconds;remaining>1e-7;){const dt=Math.min(1/60,remaining);stamp+=dt*1000;this.frame(stamp);cancelAnimationFrame(this.animationFrame);remaining-=dt;if(++steps%12===0||remaining<=1e-7){this.paused=true;await this.spray.settleReadback();cancelAnimationFrame(this.animationFrame);this.paused=false;this.lastStamp=stamp;}}}
+    finally{this.paused=true;this.lastStamp=0;this.measureTime=measured[0];this.measureFrames=measured[1];this.fps=measured[2];cancelAnimationFrame(this.animationFrame);if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.frame);}
+  }
   setQuality(quality:Quality):void{this.quality=quality;this.resize();}
   setWind(wind:number):void{this.wind=THREE.MathUtils.clamp(wind,2,18);this.simulation.setWind(this.wind);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
   setSwell(swell:number):void{this.swell=THREE.MathUtils.clamp(swell,.3,2);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
@@ -759,6 +768,10 @@ export class Ocean {
   probeMarineSurface(){return this.marineSurface?.probe()??null;}
   setSandMemoryEnabled(enabled:boolean):boolean {const u=this.uniforms.uSandMemoryEnabled;if(!u)return false;const previous=u.value>.5;u.value=enabled?1:0;return previous;}
   probeCrestDriver(expanded=false){return this.breaker?.probeDriver(this.renderer,expanded)??null;}
+  setBreakingLipVisible(visible:boolean):boolean{
+    const material=this.spray.lips?.material;if(!material)return false;
+    const before=material.visible;material.visible=visible;return before;
+  }
   setWhitewaterVisible(visible:boolean):boolean{
     const material=this.spray.whitewater?.material;
     const before=this.marineSurface?this.uniforms.uHideMarineFoam.value<.5:material?.visible??false;

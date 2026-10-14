@@ -64,7 +64,7 @@ test('geometry occupies all axes, has closed edges and fixed real normals',()=>{
   assert.ok([...edges.values()].every(v=>v===2));g.dispose();
 });
 test('volume material uses depth, has fixed attributes, hides underwater and disposes once',()=>{
-  const v=new ShoreWhitewaterVolume();assert.equal(v.geometry.instanceCount,384);assert.equal(v.material.depthWrite,true);assert.equal(v.material.transparent,false);
+  const v=new ShoreWhitewaterVolume();assert.equal(v.geometry.instanceCount,384);assert.equal(v.material.depthTest,true);assert.equal(v.material.depthWrite,false);assert.equal(v.material.transparent,true);
   const geometry=v.geometry,position=geometry.getAttribute('position');v.pool.emit(birth);v.update(.1,sample,true);assert.equal(v.group.visible,false);v.update(.1,sample,false);assert.equal(v.group.visible,true);
   assert.equal(v.geometry,geometry);assert.equal(v.geometry.getAttribute('position'),position);
   let disposed=0;v.material.addEventListener('dispose',()=>disposed++);v.dispose();v.dispose();assert.equal(disposed,1);assert.equal(v.pool.active,0);

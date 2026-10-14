@@ -42,7 +42,7 @@ test('one connected event gives one landing per node and collapses without repea
   const events:{eventId:number;x:number;z:number;impactSpeed:number}[]=[];
   for(let i=0;i<90;i++)pool.advance(1/60,flat,b=>events.push(b));
   assert.equal(events.length,BREAKER_FRONT_NODES);assert.equal(new Set(events.map(b=>b.eventId)).size,1);assert.equal(pool.active,0);
-  assert.ok(events.every(b=>b.impactSpeed>4&&b.impactSpeed<6),'impact velocity follows gravitational fall from the sampled crest');
+  assert.ok(events.every(b=>b.impactSpeed>2&&b.impactSpeed<4),'impact velocity follows gravitational fall from the sampled crest');
   assert.ok(events.every(b=>b.x> -4));pool.advance(.2,flat,b=>events.push(b));assert.equal(events.length,BREAKER_FRONT_NODES);
   assert.ok(pool.roots.every(Number.isFinite));assert.ok(pool.tips.every(Number.isFinite));
 });
@@ -66,7 +66,7 @@ test('a departed high crest cannot leave a suspended sheet, while its tip still 
 test('landing tips remain at endpoint water height while an uneven front collapses',()=>{
   const pool=new ConnectedBreakerPool();
   pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:1.2,depth:3})));
-  const uneven:WhitewaterSampler=(x,_z,s)=>{s.height=x<1.5?2:0;s.ground=-1;s.depth=s.height+1;return true;};
+  const uneven:WhitewaterSampler=(x,_z,s)=>{s.height=Math.max(0,2-x*1.4);s.ground=-1;s.depth=s.height+1;return true;};
   for(let i=0;i<240&&pool.impacts===0;i++)pool.advance(1/120,uneven,()=>{});
   assert.ok(pool.impacts>0);pool.advance(.02,uneven,()=>{});
   let collapsed=0;
