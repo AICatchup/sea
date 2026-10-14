@@ -7,6 +7,7 @@ import { relaxWhitewaterVelocity, whitewaterAerationStrength } from './whitewate
 import { whitewaterPoreGLSL } from './whitewater-pores.ts';
 import {marineSurfaceSampling} from './marine-surface-field.ts';
 import {foamAppearanceGLSL} from './foam-appearance.ts';
+import {impactFrothGLSL} from './impact-froth.ts';
 
 export const VOLUME_CAPACITY=384;
 const finite=(s:WhitewaterSample)=>Object.values(s).every(Number.isFinite);
@@ -118,8 +119,8 @@ export class ShoreWhitewaterVolume {
     for(const [name,array,size] of [['aCenter',this.pool.positions,3],['aShape',this.pool.shape,4],['aMotion',this.pool.motion,2],['aAlpha',this.pool.alpha,1],['aSeed',this.pool.seeds,1]] as const)this.geometry.setAttribute(name,new THREE.InstancedBufferAttribute(array,size).setUsage(THREE.DynamicDrawUsage));
     this.geometry.instanceCount=this.pool.capacity;
     this.material=new THREE.ShaderMaterial({depthTest:true,depthWrite:false,transparent:true,side:THREE.FrontSide,
-      uniforms:{...createShoreSolverUniforms(),uImpact:{value:impactsOnly?1:0},uFoamStructure:{value:1},uFoamAtlas:{value:null},uFoamAtlasReady:{value:0},uFoamClock:{value:0},uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},uTint:{value:new THREE.Color(.91,.96,.95)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
-      vertexShader:`attribute vec3 aCenter;attribute vec4 aShape;attribute vec2 aMotion;attribute float aAlpha,aSeed;
+      uniforms:{...createShoreSolverUniforms(),uImpact:{value:impactsOnly?1:0},uFrothVolume:{value:impactsOnly && typeof location!=='undefined' && new URLSearchParams(location.search).get('frothvolume')==='1'?1:0},uFoamStructure:{value:1},uFoamAtlas:{value:null},uFoamAtlasReady:{value:0},uFoamClock:{value:0},uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},uTint:{value:new THREE.Color(.91,.96,.95)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
+      vertexShader:`uniform float uImpact,uFrothVolume;varying vec3 vFrothCenter,vFrothRadii;varying vec2 vFrothAxis,vFrothSlope;attribute vec3 aCenter;attribute vec4 aShape;attribute vec2 aMotion;attribute float aAlpha,aSeed;
       varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet,vClearance;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
       ${shoreWaveSampling}
@@ -138,13 +139,15 @@ export class ShoreWhitewaterVolume {
       float ridge=.78+.22*sin(q.z*7.+phase),ridgeSlope=1.54*cos(q.z*7.+phase);
       n.z-=n.y*q.y*ridgeSlope/ridge;n.y/=ridge;q.y*=ridge;
       q.xy=mat2(cr,sr,-sr,cr)*q.xy;n.xy=mat2(cr,sr,-sr,cr)*n.xy;
+      // Impact geometry only bounds density; folds belong inside the volume.
+      if(uFrothVolume>.5){q=position;n=normal;}
       // Local x is the forward collapse direction, z spans the breaker front.
       q*=vec3(aShape.z,aShape.y,aShape.x)*.5;q.y+=aShape.y*.28;
       float c=cos(aShape.w),s=sin(aShape.w);vec2 offset=vec2(q.x*c-q.z*s,q.x*s+q.z*c);vec2 world=aCenter.xz+offset,p=world;vWorld=world;
       for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;
       vec2 coast=coastAt(world);float base=shoreSolvedSurface(world,displacement(p).y,0.).x+marineSurface(world).b;
       float centerBase=surfaceHeight(aCenter.xz);
-      float height=centerBase+clamp(base-centerBase,-.3,.3)+q.y;
+      float height=centerBase+(uFrothVolume>.5?0.:clamp(base-centerBase,-.3,.3))+q.y;
       vClearance=height-base;
       vWet=min(base-coast.x,height-coast.x)*step(.18,coast.y)*step(-4.6,coast.x);
       vec2 horizon=world-cameraPosition.xz;height-=dot(horizon,horizon)/(2.*6371000.);
@@ -154,13 +157,24 @@ export class ShoreWhitewaterVolume {
       const float slopeStep=.75;
       vec2 slope=vec2(surfaceHeight(world+vec2(slopeStep,0))-surfaceHeight(world-vec2(slopeStep,0)),surfaceHeight(world+vec2(0,slopeStep))-surfaceHeight(world-vec2(0,slopeStep)))/(2.*slopeStep);
       slope*=1.-step(.3,abs(base-centerBase));slope-=horizon/6371000.;vNormal.xz-=slope*vNormal.y;
+      vFrothRadii=vec3(aShape.z,aShape.y,aShape.x)*.5;
+      vFrothCenter=vec3(aCenter.x,centerBase+aShape.y*.28-dot(horizon,horizon)/(2.*6371000.),aCenter.z);
+      vFrothAxis=vec2(c,s);vFrothSlope=slope;
       vFoamWorld=vec3(world.x,height,world.y);
       gl_Position=projectionMatrix*viewMatrix*vec4(world.x,height,world.y,1);}`,
-      fragmentShader:`uniform vec3 uTint,uSunDirection,uSunColor,uHorizon;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady,uImpact,uFoamStructure;uniform vec2 uViewport;
+      fragmentShader:`uniform vec3 uTint,uSunDirection,uSunColor,uHorizon;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady,uImpact,uFrothVolume,uFoamStructure;uniform vec2 uViewport;
       varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet,vClearance;
       ${whitewaterPoreGLSL}
       ${foamAppearanceGLSL}
+      ${impactFrothGLSL}
       void main(){if(vAlpha<.001||vWet<.02)discard;if(uOccludingDepthReady>.5&&texture2D(uOccludingDepth,gl_FragCoord.xy/uViewport).r<gl_FragCoord.z-.0000002)discard;
+      if(uFrothVolume>.5){
+        gl_FragColor=impactFroth();
+        if(gl_FragColor.a<.003)discard;
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+        return;
+      }
       // Shared world-metric channels keep a hole open through ALL overlapping
       // flocs. Seed affects only macro geometry, never the pore phase.
       // This stationary Eulerian field is an authored coverage closure; the
