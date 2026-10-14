@@ -97,6 +97,7 @@ export class ConnectedBreakerPool {
   private readonly histories=Array.from({length:BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES},()=>new CrestHistory());
   readonly visible=new Float32Array(BREAKER_FRONT_CAPACITY);
   active=0;impacts=0;fronts=0;
+  readonly flightAudit:{age:number;drop:number;launchHeight:number;landingHeight:number;flightDistance:number;sourceReleased:number}[]=[];
   releaseWater?: (p:{x:number;y:number;z:number;vx:number;vy:number;vz:number})=>void;
   private trackedSpeeds=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES);
   private trackedRoots=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*2);
@@ -160,8 +161,9 @@ export class ConnectedBreakerPool {
         if(!sampler(x,z,s)||s.depth<=.02||s.depth>8||!Number.isFinite(s.height)){this.roots[i+3]=0;continue;}
         if(this.landed[index]<0&&t>.12&&tipY<=s.height+.025){
           this.landed[index]=age;this.impacts++;
+          this.flightAudit.push({age,drop:b.drop??0,launchHeight,landingHeight:s.height,flightDistance:Math.hypot(x-b.x,z-b.z),sourceReleased:this.released[index]});if(this.flightAudit.length>128)this.flightAudit.shift();
           const left=nodes[Math.max(0,j-1)],right=nodes[Math.min(BREAKER_FRONT_NODES-1,j+1)];
-          impact({...b,x,z,height:s.height,width:Math.max(.18,Math.hypot(right.x-left.x,right.z-left.z)*.5),speed:phaseSpeed,eventId:this.eventIds[slot],impactSpeed:Math.min(12,Math.max(0,9.81*flight-.4))});
+          impact({...b,x,z,height:s.height,width:Math.max(.18,Math.hypot(right.x-left.x,right.z-left.z)*.5),speed:phaseSpeed,drop:Math.max(0,launchHeight-s.height),reach:Math.max(.15,Math.hypot(x-b.x,z-b.z)-phaseSpeed*flight),eventId:this.eventIds[slot],impactSpeed:Math.min(12,Math.max(0,9.81*flight-.4))});
         }
         const landed=this.landed[index];
         // Stop feeding a falling crest, but keep its emitted water in flight.

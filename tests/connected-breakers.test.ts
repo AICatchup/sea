@@ -141,3 +141,13 @@ test('absorbed sheet water cannot reappear when receiving sea level falls',()=>{
   lower=true;pool.advance(1/120,sea,()=>{});
   for(const k of absorbed)assert.equal(pool.sheet[k],-1,'contact survives receding sea level');
 });
+
+test('impact bloom receives actual fall rather than distant crest-to-trough drop',()=>{
+  const pool=new ConnectedBreakerPool();
+  pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3,drop:3.5,reach:6.9})));
+  const impacts:{drop?:number;reach?:number}[]=[];
+  const sea:WhitewaterSampler=(_x,_z,s)=>{s.height=2;s.depth=3;s.ground=-1;return true;};
+  for(let i=0;i<60&&!impacts.length;i++)pool.advance(1/120,sea,b=>impacts.push(b));
+  assert.ok(impacts.length>0);
+  for(const impact of impacts){assert.equal(impact.drop,0);assert.ok(impact.reach!<1);}
+});
