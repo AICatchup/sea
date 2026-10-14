@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES} from '../src/ocean/connected-breakers.ts';
+import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,breakerRootSupport} from '../src/ocean/connected-breakers.ts';
 import type {WhitewaterSample,WhitewaterSampler} from '../src/ocean/shore-whitewater.ts';
 import {marineDecay,MarineSurfaceField,validMarineDeposit} from '../src/ocean/marine-surface-field.ts';
 import * as THREE from 'three';
@@ -18,16 +18,25 @@ test('wave-line tracer connects an alongshore front; no dry gap or back-face joi
   const broken=traceBreakingFront(0,-8,dryGap,.2);assert.ok(broken.every(b=>b.z<=-2));
 });
 test('old foam, thin swash, emergent strand and missing cache cannot create a front',()=>{
-  for(const changed of [(s:WhitewaterSample)=>{s.compression=0;},(s:WhitewaterSample)=>{s.depth=8;},(s:WhitewaterSample)=>{s.ground=s.height;},
+  for(const changed of [(s:WhitewaterSample)=>{s.compression=0;},(s:WhitewaterSample)=>{s.compression=.05;},(s:WhitewaterSample)=>{s.depth=8;},(s:WhitewaterSample)=>{s.ground=s.height;},
     (s:WhitewaterSample)=>{s.height=0;s.ground=-.2;s.depth=.2;},(s:WhitewaterSample)=>{s.height=1.2;s.ground=.2;s.depth=1;}])
     assert.deepEqual(traceBreakingFront(0,0,(x,z,s)=>{front(x,z,s);changed(s);return true;},.2),[]);
   assert.deepEqual(traceBreakingFront(0,0,()=>false,.2),[]);
 });
+test('a large shallow-water crest survives the temporary-depth gate and plunges toward the lower face',()=>{
+  const steep:WhitewaterSampler=(x,z,s)=>{Object.assign(s,{height:Math.max(.1,2.5-.35*Math.max(0,x)),depth:3+Math.max(.1,2.5-.35*Math.max(0,x)),ground:-3,compression:.4,gradientX:.1,gradientZ:0,waveGradientX:-.35,waveGradientZ:0,flowX:4,flowZ:0});return true;};
+  const line=traceBreakingFront(0,0,steep,.2);assert.equal(line.length,17);
+  assert.ok(line.every(b=>(b.drop??0)>1.5&&(b.reach??0)>3));
+  const pool=new ConnectedBreakerPool();pool.emitFront(line);let impacts=0;
+  for(let i=0;i<120;i++)pool.advance(1/60,steep,()=>impacts++);
+  assert.ok(impacts>0,'the high crest must land instead of remaining raised');assert.equal(pool.active,0);
+});
 test('one connected event gives one landing per node and collapses without repeat impacts',()=>{
   const pool=new ConnectedBreakerPool();assert.ok(pool.emitFront(traceBreakingFront(0,0,front,.2)));
-  const events:{eventId:number;x:number;z:number}[]=[];
+  const events:{eventId:number;x:number;z:number;impactSpeed:number}[]=[];
   for(let i=0;i<90;i++)pool.advance(1/60,flat,b=>events.push(b));
   assert.equal(events.length,BREAKER_FRONT_NODES);assert.equal(new Set(events.map(b=>b.eventId)).size,1);assert.equal(pool.active,0);
+  assert.ok(events.every(b=>b.impactSpeed>4&&b.impactSpeed<6),'impact velocity follows gravitational fall from the sampled crest');
   assert.ok(events.every(b=>b.x> -4));pool.advance(.2,flat,b=>events.push(b));assert.equal(events.length,BREAKER_FRONT_NODES);
   assert.ok(pool.roots.every(Number.isFinite));assert.ok(pool.tips.every(Number.isFinite));
 });
@@ -39,6 +48,14 @@ test('front geometry is deterministic before contact and bounded across frame pa
   const before=a.tips.slice();for(const dt of [0,-1,NaN])a.advance(dt,flat,()=>assert.fail('paused'));assert.deepEqual(a.tips,before);
   while(a.active<a.capacity)assert.ok(a.emitFront(line));assert.equal(a.emitFront(line),false);
   a.advance(.1,()=>false,()=>assert.fail('no cache'));assert.equal(a.active,0);
+});
+test('a departed high crest cannot leave a suspended sheet, while its tip still lands',()=>{
+  const pool=new ConnectedBreakerPool();pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,reach:3})));
+  pool.advance(.2,flat,()=>assert.fail('too early for water contact'));
+  for(let i=0;i<17;i++)assert.equal(breakerRootSupport(0,pool.tips[i*4+3]),0);
+  assert.ok(breakerRootSupport(1.6,2)>0&&breakerRootSupport(1.6,2)<1,'support fades continuously before retiring');
+  let impacts=0;for(let i=0;i<120;i++)pool.advance(1/60,flat,()=>impacts++);
+  assert.equal(impacts,17);assert.equal(pool.active,0);
 });
 test('landing tips remain at endpoint water height while an uneven front collapses',()=>{
   const pool=new ConnectedBreakerPool();

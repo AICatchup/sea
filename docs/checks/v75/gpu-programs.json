@@ -1,0 +1,218 @@
+{
+  "field": {
+    "bounds": [
+      5802,
+      -1020,
+      192,
+      192
+    ],
+    "bubbles": 0,
+    "bytes": 1048576,
+    "deposits": 55222,
+    "droppedSeconds": 0,
+    "elapsed": 41.500000000000206,
+    "finite": true,
+    "foam": 0,
+    "glError": 0,
+    "height": 0,
+    "passes": 1253,
+    "queued": 0,
+    "ready": true,
+    "resolution": 256,
+    "scope": "World-fixed half-float foam/bubble history plus bounded linear wake ripples; authored closures, not 3D CFD",
+    "span": 192
+  },
+  "foam": {
+    "ready": true,
+    "source": "Crest MIT foam texture; flow-aligned triplanar optical material"
+  },
+  "programs": [],
+  "samplers": [
+    [
+      {
+        "name": "uLongWaves",
+        "type": 35678,
+        "unit": 0
+      },
+      {
+        "name": "uShortWaves",
+        "type": 35678,
+        "unit": 1
+      },
+      {
+        "name": "uBathymetry",
+        "type": 35678,
+        "unit": 2
+      },
+      {
+        "name": "uShoreState",
+        "type": 35678,
+        "unit": 3
+      },
+      {
+        "name": "uMarineSurface",
+        "type": 35678,
+        "unit": 4
+      },
+      {
+        "name": "uOccludingDepth",
+        "type": 35678,
+        "unit": 5
+      },
+      {
+        "name": "uFoamAtlas",
+        "type": 35678,
+        "unit": 6
+      }
+    ],
+    [
+      {
+        "name": "uLongWaves",
+        "type": 35678,
+        "unit": 1
+      },
+      {
+        "name": "uShortWaves",
+        "type": 35678,
+        "unit": 2
+      },
+      {
+        "name": "uBathymetry",
+        "type": 35678,
+        "unit": 3
+      },
+      {
+        "name": "uShoreState",
+        "type": 35678,
+        "unit": 4
+      },
+      {
+        "name": "uMarineSurface",
+        "type": 35678,
+        "unit": 5
+      },
+      {
+        "name": "uSceneColor",
+        "type": 35678,
+        "unit": 6
+      },
+      {
+        "name": "uSceneDepth",
+        "type": 35678,
+        "unit": 7
+      },
+      {
+        "name": "uSceneOcclusion",
+        "type": 35678,
+        "unit": 8
+      },
+      {
+        "name": "uReflection",
+        "type": 35678,
+        "unit": 9
+      },
+      {
+        "name": "uSunShadow",
+        "type": 35682,
+        "unit": 0
+      },
+      {
+        "name": "uReflectionDepth",
+        "type": 35678,
+        "unit": 10
+      },
+      {
+        "name": "uSkyTexture",
+        "type": 35678,
+        "unit": 11
+      },
+      {
+        "name": "uFoamAtlas",
+        "type": 35678,
+        "unit": 12
+      }
+    ],
+    [
+      {
+        "name": "uFrontRoots",
+        "type": 35678,
+        "unit": 1
+      },
+      {
+        "name": "uFrontTips",
+        "type": 35678,
+        "unit": 2
+      },
+      {
+        "name": "uFrontShapes",
+        "type": 35678,
+        "unit": 3
+      },
+      {
+        "name": "uLongWaves",
+        "type": 35678,
+        "unit": 4
+      },
+      {
+        "name": "uShortWaves",
+        "type": 35678,
+        "unit": 5
+      },
+      {
+        "name": "uBathymetry",
+        "type": 35678,
+        "unit": 6
+      },
+      {
+        "name": "uShoreState",
+        "type": 35678,
+        "unit": 7
+      },
+      {
+        "name": "uMarineSurface",
+        "type": 35678,
+        "unit": 8
+      },
+      {
+        "name": "uSceneColor",
+        "type": 35678,
+        "unit": 9
+      },
+      {
+        "name": "uSceneDepth",
+        "type": 35678,
+        "unit": 10
+      },
+      {
+        "name": "uSceneOcclusion",
+        "type": 35678,
+        "unit": 11
+      },
+      {
+        "name": "uReflection",
+        "type": 35678,
+        "unit": 12
+      },
+      {
+        "name": "uSunShadow",
+        "type": 35682,
+        "unit": 0
+      },
+      {
+        "name": "uReflectionDepth",
+        "type": 35678,
+        "unit": 13
+      },
+      {
+        "name": "uSkyTexture",
+        "type": 35678,
+        "unit": 14
+      },
+      {
+        "name": "uFoamAtlas",
+        "type": 35678,
+        "unit": 15
+      }
+    ]
+  ]
+}

@@ -27,7 +27,8 @@ test('breaker onset is continuous, bounded and quiet in dry or deep water',()=>{
     const value=boreFoamBirth(1,.8,i/1000,1);
     assert.ok(value>=last&&value<=1&&value-last<.01);last=value;
   }
-  assert.equal(boreFoamBirth(0,1,1,0),0);assert.equal(boreFoamBirth(8,1,5,3),0);
+  assert.equal(boreFoamBirth(0,1,1,0),0);assert.equal(boreFoamBirth(8,1,1,8),0);
+  assert.ok(boreFoamBirth(6,.8,3,3)>.5,'a high crest on a shallow bed must not disable its own breaking source');
 });
 test('nonlinear incident packet evolves conservatively without negative depth',()=>{
   const bed=Array(128).fill(-1);let h=bed.map((_,i)=>1+.35*Math.exp(-(((i-40)/9)**2)));

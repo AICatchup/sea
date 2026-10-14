@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import {refreshReflection} from './reflection-cadence.ts';
+import foamAtlasURL from '../assets/foam/crest-foam.png';
 import type {SoundscapeFrame} from '../audio/soundscape-state.ts';
 import {ActivitySession} from '../activities/session.ts';
 import {ActivityWorld} from '../activities/world.ts';
@@ -137,6 +139,7 @@ export class Ocean {
   private readonly caustics:WaveCaustics;
   private readonly waterHeights:LocalWaterHeights;
   private photographicSky:Awaited<ReturnType<typeof loadPhotographicSky>>|null=null;
+  private foamAtlas:THREE.Texture=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1,THREE.RGBAFormat);
   private currentPreset:PresetName='day';
   private animationFrame=0;
   private disposed=false;
@@ -178,7 +181,7 @@ export class Ocean {
     const connected=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('connectedbreakers')!=='0';
     this.marineSurface=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('marinefield')!=='0'?new MarineSurfaceField(this.renderer):null;
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')!=='0',connected,resolution:connected?64:24,span:connected?128:144});
-    if(this.marineSurface)this.spray.setImpactSink(b=>this.marineSurface!.deposit({x:b.x,z:b.z,nx:b.nx,nz:b.nz,radius:.28+.6*Math.sqrt(b.energy),halfLength:(b.width??2)*.5,foam:.35+.5*Math.sqrt(b.energy),bubbles:.55*Math.sqrt(b.energy),pressure:.10*b.energy}));
+    if(this.marineSurface)this.spray.setImpactSink(b=>{const droplet=(b.width??2)<.25&&b.energy<=.04;return this.marineSurface!.deposit({x:b.x,z:b.z,nx:b.nx,nz:b.nz,radius:(droplet?.08:.28)+.6*Math.sqrt(b.energy),halfLength:(b.width??2)*.5,foam:(droplet?.025:.35)+(droplet?.12:.5)*Math.sqrt(b.energy),bubbles:(droplet?.08:.55)*Math.sqrt(b.energy),pressure:.10*b.energy});});
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);
@@ -246,6 +249,10 @@ export class Ocean {
     this.uniforms.uSceneColor.value=this.compositor.landTarget.texture;
     this.uniforms.uSceneDepth.value=this.compositor.landTarget.depthTexture;
     this.uniforms.uSceneOcclusion.value=this.compositor.occlusionTarget.texture;
+    // All material uniforms must exist before the first draw: Three caches
+    // the upload sequence then, even if keys are added to this object later.
+    this.foamAtlas.needsUpdate=true;
+    this.uniforms.uFoamAtlas={value:this.foamAtlas};this.uniforms.uFoamAtlasReady={value:0};this.uniforms.uFoamClock=this.uniforms.uTime;
     const skyMat=new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:skyVertex,fragmentShader:skyFragment,
       depthTest:false,depthWrite:false,toneMapped:false});
     const skyGeometry=new THREE.PlaneGeometry(2,2);
@@ -414,7 +421,14 @@ export class Ocean {
       if(!this.disposed&&new URLSearchParams(location.search).get('impostor')!=='0')this.assets.useImpostors(this.renderer);
       if(!this.disposed)prepareWorldMaterials(this.assets.group,this.uniforms.uTime,{texture:this.uniforms.uCaustics,bounds:this.uniforms.uCausticBounds,sunDirection:this.uniforms.uSunDirection});
     });
-    this.ready=Promise.allSettled([worldReady,assetReady,marineReady,coastReady,skyReady,bodyReady,motionReady]).then(results=>{
+    const foamReady=new THREE.TextureLoader().loadAsync(foamAtlasURL).then(texture=>{
+      if(this.disposed){texture.dispose();return;}
+      texture.colorSpace=THREE.NoColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;
+      texture.minFilter=THREE.LinearMipmapLinearFilter;texture.magFilter=THREE.LinearFilter;
+      texture.anisotropy=Math.min(8,this.renderer.capabilities.getMaxAnisotropy());
+      this.foamAtlas.dispose();this.foamAtlas=texture;this.uniforms.uFoamAtlas.value=texture;this.uniforms.uFoamAtlasReady.value=1;
+    }).catch(error=>console.warn('Foam texture unavailable; procedural foam retained',error));
+    this.ready=Promise.allSettled([worldReady,assetReady,marineReady,coastReady,skyReady,bodyReady,motionReady,foamReady]).then(results=>{
       for(const result of results)if(result.status==='rejected')console.warn('A photographic asset could not load',result.reason);
       if(!this.disposed)this.syncSolids();
     });
@@ -534,7 +548,7 @@ export class Ocean {
     this.fill.intensity=.17+.20*this.uniforms.uStorm.value;
     if(this.frames%4===0)this.renderer.shadowMap.needsUpdate=true;
     this.renderer.info.reset();
-    if(this.frames%3===0||this.reflectionNeedsUpdate){
+    if(refreshReflection(this.frames,this.camera,this.reflectionViewCamera,underwater>.5,this.reflection.rotation.x>0,this.reflectionNeedsUpdate)){
       // Both sides of the interface need the scene on their own side: below
       // water, total internal reflection sees the real seabed and organisms.
       this.reflection.rotation.x=underwater>.5?Math.PI/2:-Math.PI/2;this.reflection.updateMatrixWorld(true);
@@ -749,6 +763,7 @@ export class Ocean {
     const material=this.spray.whitewater?.material;
     const before=this.marineSurface?this.uniforms.uHideMarineFoam.value<.5:material?.visible??false;
     if(material)material.visible=visible;
+    if(this.spray.rollers)this.spray.rollers.material.visible=visible;
     // Hide aeration for comparisons, retaining identical wake geometry,
     // swimmer height and simulation history.
     this.uniforms.uHideMarineFoam.value=visible?0:1;return before;
@@ -814,7 +829,7 @@ export class Ocean {
       geometryReceivers:this.probeGeometryReceivers(),
       foliage:{...this.assets.group.userData.foliage,shrubGround:this.assets.group.userData.shrubGround??null,surveyCanopy:this.assets.group.userData.surveyCanopy,surveyLod:this.assets.group.userData.tomariSurveyCanopyLod,pines:this.assets.group.userData.coastalPineLod,shrubs:this.assets.group.userData.coastalShrubLod},
       expedition:{...this.expedition.snapshot,credits:this.expedition.credits,capacity:this.expedition.capacity,rank:this.expedition.rank,race:this.expedition.race?{next:this.expedition.race.next,elapsed:this.expedition.race.elapsed}:null,target:this.expedition.target(state),save:this.expedition.saveStatus},
-      photographicSky:!!this.photographicSky,waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
+      photographicSky:!!this.photographicSky,foamAppearance:{ready:this.uniforms.uFoamAtlasReady.value>0,source:'Crest MIT foam texture; flow-aligned triplanar optical material'},waterHeightCache:this.waterHeights.diagnostics,marineScans:this.marine.group.userData.scannedRocks,niijimaMaterials:{...this.world.niijimaCoast.materialDiagnostics},
       worldSolids:this.solidBinding.stats,collision:this.collision.stats,
       boatCloth:this.assets.boat.userData.boatCloth,
       cliffCover:this.assets.group.userData.cliffCover??null,
@@ -859,6 +874,7 @@ export class Ocean {
     this.solidBinding.dispose();this.collision.dispose();this.spray.dispose();this.breaker?.dispose();
     this.shoreSolver?.dispose();
     this.marineSurface?.dispose();
+    this.foamAtlas.dispose();
     this.sandMoisture?.dispose();
     this.activityWorld.dispose();this.expeditionWorld.dispose();this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());

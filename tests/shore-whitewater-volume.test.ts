@@ -82,6 +82,19 @@ test('signed flow encoding preserves rest, onshore and offshore direction within
   }
 });
 
+test('impact rollers are short-lived, submerge on shallow sand and follow reversed current',()=>{
+  const pool=new WhitewaterVolumePool(2,true);
+  assert.ok(pool.emit({...birth,width:1.6,speed:4}));
+  let flow=2;
+  const field=(_x:number,_z:number,out:WhitewaterSample)=>{Object.assign(out,{...water,depth:.6,flowX:flow,flowZ:0});return true;};
+  for(let i=0;i<12;i++)pool.advance(1/60,field);
+  const crest=pool.shape[1],peak=pool.positions[0];assert.ok(crest<=.6*.35);assert.ok(peak>0);
+  flow=-2;for(let i=0;i<60;i++)pool.advance(1/60,field);
+  assert.ok(pool.positions[0]<peak);assert.ok(pool.shape[1]<crest);assert.ok(pool.alpha[0]>0);
+  pool.advance(1,field);assert.equal(pool.active,0);
+  pool.emit({...birth,width:1.6,speed:4});pool.clear();assert.equal(pool.active,0);assert.ok(pool.alpha.every(v=>v===0));
+});
+
 test('a corrupt flow layer clears the previous valid cache instead of emitting from it',async()=>{
   const pixels=new Uint8Array(4608);
   for(let i=0;i<2304;i+=4)pixels.set([132,204,220,32],i);

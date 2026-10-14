@@ -35,7 +35,7 @@ for (const match of [...html.matchAll(/<link\b[^>]*\brel="stylesheet"[^>]*\bhref
 }
 const icon = await readFile(resolve(root, 'public/favicon.svg'), 'utf8');
 html = html.replace(/href="\.\/favicon\.svg"/, `href="data:image/svg+xml,${encodeURIComponent(icon)}"`);
-const licenseFiles = ['node_modules/three/LICENSE', 'public/fonts/NotoSansJP-OFL.txt', 'public/fonts/Outfit-OFL.txt', 'src/assets/marine/LICENSE.txt', 'src/assets/sand/README.md', 'src/assets/niijima/README.md', 'src/assets/niijima/rock-face-03/README.md', 'src/assets/coast/README.md', 'src/assets/foliage/cc0/README.md', 'src/assets/foliage/cc0/canopy/LICENSE.txt', 'src/assets/foliage/cc0/canopy/README.md', 'THIRD_PARTY_NOTICES.md'];
+const licenseFiles = ['node_modules/three/LICENSE', 'public/fonts/NotoSansJP-OFL.txt', 'public/fonts/Outfit-OFL.txt', 'src/assets/marine/LICENSE.txt', 'src/assets/sand/README.md', 'src/assets/niijima/README.md', 'src/assets/niijima/rock-face-03/README.md', 'src/assets/coast/README.md', 'src/assets/foliage/cc0/README.md', 'src/assets/foliage/cc0/canopy/LICENSE.txt', 'src/assets/foliage/cc0/canopy/README.md', 'src/assets/foam/LICENSE.txt', 'THIRD_PARTY_NOTICES.md'];
 const licenses = await Promise.all(licenseFiles.map(async file => `${file}\n${await readFile(resolve(root, file), 'utf8')}`));
 licenses.push(await readFile(resolve(root,'src/assets/boat/terlenka/README.md'),'utf8'));
 for(const variant of [1,2])licenses.push(await readFile(resolve(root,`src/assets/foliage/cc0/native-v60/canopy${variant}/README.md`),'utf8'));

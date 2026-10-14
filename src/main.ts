@@ -368,6 +368,8 @@ try {
       finally{captureHost.restoreState(before);}
     },
     shoreState:()=>ocean.probeShoreState(),
+    gpuPrograms:()=>{const gl=ocean.renderer.getContext() as WebGL2RenderingContext;return ocean.renderer.info.programs?.map(p=>{const program=(p as unknown as {program:WebGLProgram}).program;return {linked:gl.getProgramParameter(program,gl.LINK_STATUS),log:gl.getProgramInfoLog(program),shaders:gl.getAttachedShaders(program)?.map(s=>gl.getShaderInfoLog(s)).filter(Boolean)};}).filter(p=>!p.linked||p.log||p.shaders?.length);},
+    gpuSamplers:()=>{const gl=ocean.renderer.getContext() as WebGL2RenderingContext;return ocean.renderer.info.programs?.map(p=>{const program=(p as unknown as {program:WebGLProgram}).program,samplers=[];for(let i=0;i<gl.getProgramParameter(program,gl.ACTIVE_UNIFORMS);i++){const u=gl.getActiveUniform(program,i);if(u&&[gl.SAMPLER_2D,gl.SAMPLER_CUBE,gl.SAMPLER_2D_SHADOW].some(type=>type===u.type))samplers.push({name:u.name,type:u.type,unit:gl.getUniform(program,gl.getUniformLocation(program,u.name)!)});}return samplers;}).filter(s=>s.some(u=>u.name==='uFoamAtlas'));},
     marineSurface:()=>ocean.probeMarineSurface(),
     whitewaterSites:()=>ocean.probeWhitewaterSites(),
     visualLock:(locked:boolean)=>{ocean.visualCaptureLocked=locked;},

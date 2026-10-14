@@ -1,0 +1,21 @@
+{
+  "camera": {
+    "height": 3.1169102586470796,
+    "pitch": -0.035,
+    "x": -36,
+    "yaw": -0.6,
+    "z": 27
+  },
+  "foam": {
+    "ready": true,
+    "source": "Crest MIT foam texture; flow-aligned triplanar optical material"
+  },
+  "glError": 0,
+  "height": 834,
+  "qaAbsent": true,
+  "quality": "auto",
+  "ready": true,
+  "title": "SEA — 式根島、泊海水浴場。",
+  "url": "http://127.0.0.1:5199/sea.html",
+  "width": 2561
+}

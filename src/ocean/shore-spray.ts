@@ -2,6 +2,7 @@ import { ShoreBreakingLips } from './shore-breaking-lips.ts';
 import {ConnectedShoreBreakers,traceBreakingFront,type BreakerImpact} from './connected-breakers.ts';
 import {marineSurfaceSampling} from './marine-surface-field.ts';
 import * as THREE from 'three';
+import {OCEAN_PROPAGATION_DIRECTION} from './wave-direction.ts';
 /** Integer births plus a fractional Bernoulli retain the expected rate even
  * when a frame contains more than one event. The caller keeps its pool cap. */
 export function sprayEmissionCount(rate:number,dt:number,random:number):number{
@@ -119,6 +120,7 @@ export class ShoreSpray {
   private updateMs=0;
   readonly whitewater:ShoreWhitewater|ShoreWhitewaterVolume|null;
   readonly lips:ShoreBreakingLips|ConnectedShoreBreakers|null;
+  readonly rollers:ShoreWhitewaterVolume|null;
   private readonly grid:number;private readonly span:number;
   private lastFrontSample=-Infinity;
   private fronts:{x:number;z:number;nx:number;nz:number;halfWidth:number;time:number}[]=[];
@@ -162,6 +164,7 @@ export class ShoreSpray {
     const GRID=this.grid;
     this.energizedCells=new Uint16Array(GRID*GRID);
     this.lips=options.lips?(options.connected?new ConnectedShoreBreakers():new ShoreBreakingLips()):null;if(this.lips)this.group.add(this.lips.group);
+    this.rollers=this.lips instanceof ConnectedShoreBreakers?new ShoreWhitewaterVolume(true):null;if(this.rollers)this.group.add(this.rollers.group);
     this.flowReadback=!!options.volume||!!options.whitewater;
     this.target=new THREE.WebGLRenderTarget(GRID,GRID*(this.flowReadback?2:1),{type:THREE.UnsignedByteType,depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
     this.whitewater=options.patches===false?null:options.volume?new ShoreWhitewaterVolume():options.whitewater?new ShoreWhitewater():null;
@@ -233,7 +236,7 @@ export class ShoreSpray {
   }
   private random():number{let x=this.randomState;x^=x<<13;x^=x>>>17;x^=x<<5;this.randomState=x;return (x>>>0)/4294967296;}
   setImpactSink(sink:typeof this.impactSink):void{this.impactSink=sink;}
-  resetHistory():void{this.generation++;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();this.pool.clear();}
+  resetHistory():void{this.generation++;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();this.rollers?.pool.clear();this.pool.clear();}
   private emitConnectedFronts(time:number):void{
     if(!(this.lips instanceof ConnectedShoreBreakers)||!this.pixels||this.lastFrontSample===this.sampleTime)return;
     this.lastFrontSample=this.sampleTime;this.fronts=this.fronts.filter(f=>time-f.time<1.1);
@@ -242,7 +245,7 @@ export class ShoreSpray {
       const i=cell*4,depth=this.pixels[i+3]/255*8,height=(this.pixels[i]*256+this.pixels[i+1])/65535*16-8;
       // A compressed thin swash film over emergent sand is a bore, not a
       // detached curling sheet. Native SWE foam still covers that water.
-      if(this.pixels[i+2]>3&&depth>.45&&depth<4.2&&height-depth<=.15)candidates.push(cell);
+      if(this.pixels[i+2]>20&&depth>.45&&depth<8&&height-depth> -4.2&&height-depth<=.15)candidates.push(cell);
     }
     candidates.sort((a,b)=>this.pixels![b*4+2]-this.pixels![a*4+2]);
     let emitted=0;
@@ -263,7 +266,7 @@ export class ShoreSpray {
     this.group.visible=!underwater||connected;
     const points=this.group.children.find(object=>object instanceof THREE.Points);if(points)points.visible=!underwater;
     const viewport=this.renderer.getDrawingBufferSize(new THREE.Vector2());
-    for(const material of [this.material,this.whitewater?.material])if(material){
+    for(const material of [this.material,this.whitewater?.material,this.rollers?.material])if(material){
       material.uniforms.uOccludingDepth.value=uniforms.uSceneDepth?.value??null;
       material.uniforms.uOccludingDepthReady.value=uniforms.uSceneDepth?.value?1:0;
       material.uniforms.uViewport.value.copy(viewport);
@@ -271,22 +274,28 @@ export class ShoreSpray {
     if(this.whitewater)for(const key of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness','uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uSunDirection','uSunColor','uHorizon'])
       if(uniforms[key]&&this.whitewater.material.uniforms[key])this.whitewater.material.uniforms[key]=uniforms[key];
     this.lips?.bind(uniforms);
+    if(this.rollers)for(const [key,value] of Object.entries(uniforms))if(this.rollers.material.uniforms[key])this.rollers.material.uniforms[key]=value;
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
     this.foamCacheValid=!!this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime;
     this.pool.advance(dt,this.impactSink?this.sampleFoam:undefined,this.impactSink?(x,height,z)=>{this.impactSink?.({x,z,height,energy:.035,nx:1,nz:0,seed:0,width:.12,speed:.2});}:undefined);
     this.whitewater?.update(delta,this.sampleFoam,underwater);
+    this.rollers?.update(delta,this.sampleFoam,underwater);
     if(this.impactSink&&this.whitewater)this.whitewater.group.visible=false;
     if(this.lips){this.lips.update(delta,this.sampleFoam,b=>{
       if(this.impactSink?this.impactSink(b):this.whitewater?.pool.emit(b))this.whitewaterEmitted++;
+      this.rollers?.pool.emit(b);
       // Landing, rather than old residual foam, launches a short impact fan.
       const strength=whitewaterAerationStrength(b.energy);
-      const width='width' in b?Number(b.width):2.6,packets=connected?3:8;
+      const width='width' in b?Number(b.width):2.6,packets=8;
+      const downward='impactSpeed' in b?Number(b.impactSpeed):1.5*strength;
+      const contact=this.foamSample,hasFlow=this.sampleFoam(b.x,b.z,contact);
+      const flowX=hasFlow?contact.flowX??b.nx*(.5+strength):b.nx*(.5+strength),flowZ=hasFlow?contact.flowZ??b.nz*(.5+strength):b.nz*(.5+strength);
       for(let j=0;j<packets;j++){
-        const along=(j/Math.max(1,packets-1)-.5)*width,fan=(this.random()-.5)*1.8;
+        const along=(j/Math.max(1,packets-1)-.5)*width,fan=(this.random()-.5)*downward*.36;
         if(this.pool.emit({x:b.x-b.nz*along,y:b.height+.04,z:b.z+b.nx*along,
-          vx:b.nx*(.5+strength)-b.nz*fan,vy:.6+this.random()*1.8*strength,vz:b.nz*(.5+strength)+b.nx*fan,
-          windX:-b.nx*Number(uniforms.uWind?.value??0)*.10,windZ:-b.nz*Number(uniforms.uWind?.value??0)*.10,drag:1.8,life:.35+this.random()*.4,size:.025+this.random()*.07,opacity:.28}))this.emitted++;
+          vx:flowX+b.nx*downward*.10-b.nz*fan,vy:.15+downward*(.18+this.random()*.12),vz:flowZ+b.nz*downward*.10+b.nx*fan,
+          windX:OCEAN_PROPAGATION_DIRECTION.x*Number(uniforms.uWind?.value??0)*.10,windZ:OCEAN_PROPAGATION_DIRECTION.z*Number(uniforms.uWind?.value??0)*.10,drag:1.8,life:.35+this.random()*.4,size:.025+this.random()*.085,opacity:.42}))this.emitted++;
       }
     });}
     if(!underwater||connected){
@@ -321,7 +330,7 @@ export class ShoreSpray {
           const site=this.foamSample;
           if(!this.sampleFoam(bx,bz,site)||site.depth<.2||site.depth>4||site.ground>=site.height-.08||site.compression<=0)continue;
           const born=this.pool.emit({x:bx,y:site.height+(this.whitewater instanceof ShoreWhitewaterVolume ? .12+strength*.3 : .04),z:bz,vx:nx*speed+(this.random()-.5),vy:.8+this.random()*2.6*strength,vz:nz*speed+(this.random()-.5),
-            windX:-nx*wind*.12,windZ:-nz*wind*.12,drag:mist?2.4:.6,life:mist?.35+this.random()*.45:.2+this.random()*.35,
+            windX:OCEAN_PROPAGATION_DIRECTION.x*wind*.12,windZ:OCEAN_PROPAGATION_DIRECTION.z*wind*.12,drag:mist?2.4:.6,life:mist?.35+this.random()*.45:.2+this.random()*.35,
             size:mist?.10+this.random()*.18:.012+this.random()*.028,opacity:mist?.12:.24});
           if(born){births++;this.emitted++;}
           }
@@ -388,7 +397,7 @@ export class ShoreSpray {
         if(energy>0){this.sampleEnergyPositiveCount++;this.energizedCells[this.energizedCount++]=i/4;}
         if(depth>=.2&&depth<=3.8){this.sampleWetEligibleCount++;this.maxEstimatedHeightDepthRatio=Math.max(this.maxEstimatedHeightDepthRatio,Math.max(0,height)/depth);}
       }
-      if(origin.distanceTo(this.sampleOrigin)>this.span){this.lips?.pool.clear();this.fronts=[];}
+      if(origin.distanceTo(this.sampleOrigin)>this.span){this.lips?.pool.clear();this.rollers?.pool.clear();this.fronts=[];}
       this.pixels=pixels;this.sampleOrigin.copy(origin);this.sampleTime=time;
     }).catch(()=>{if(!this.disposed)this.failReadback();}).finally(()=>{this.pending=false;if(this.disposed)this.target.dispose();});
   }
@@ -407,10 +416,10 @@ export class ShoreSpray {
       sites.push({slot:i,seed:pool.seeds[i],x,y,z,alpha:pool.alpha[i],flowX:valid?sample.flowX??null:null,flowZ:valid?sample.flowZ??null:null,shorewardFlow:valid&&slope>1e-6&&sample.flowX!==undefined&&sample.flowZ!==undefined?(sample.flowX*sample.gradientX+sample.flowZ*sample.gradientZ)/slope:null});
     }return sites;
   }
-  get diagnostics(){const GRID=this.grid;return {connectedFronts:this.lips instanceof ConnectedShoreBreakers,frontEvents:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.fronts:0,lipActive:this.lips?.pool.active??0,lipImpacts:this.lips?.pool.impacts??0,active:this.pool.active,capacity:LIMIT,drawCalls:1+(this.whitewater&&!this.impactSink?1:0)+(this.lips?1:0),whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.impactSink?0:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?49152:0,whitewaterMode:this.impactSink?'world-field':this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'Current SWE compression / FFT instantaneous dissipation; residual foam never starts a front',approximation:`${this.span/GRID}m / <=0.5s cache; connected wave-line sheets, not volume-conserving CFD; ground validity rechecked in marine field shader`};}
+  get diagnostics(){const GRID=this.grid;return {connectedFronts:this.lips instanceof ConnectedShoreBreakers,frontEvents:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.fronts:0,lipActive:this.lips?.pool.active??0,lipImpacts:this.lips?.pool.impacts??0,rollerActive:this.rollers?.pool.active??0,rollerCapacity:this.rollers?.pool.capacity??0,rollerTriangles:this.rollers?this.rollers.geometry.getAttribute('position').count/3*this.rollers.pool.capacity:0,active:this.pool.active,capacity:LIMIT,drawCalls:1+(this.whitewater&&!this.impactSink?1:0)+(this.lips?1:0)+(this.rollers?1:0),whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.impactSink?0:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?49152:0,whitewaterMode:this.impactSink?'world-field':this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'Current SWE compression / FFT instantaneous dissipation; residual foam never starts a front',approximation:`${this.span/GRID}m / <=0.5s cache; connected wave-line sheets, not volume-conserving CFD; ground validity rechecked in marine field shader`};}
   dispose():void{
     if(this.disposed)return;this.disposed=true;
-    this.whitewater?.dispose();this.lips?.dispose();
+    this.whitewater?.dispose();this.lips?.dispose();this.rollers?.dispose();
     this.geometry.dispose();this.material.dispose();this.quadGeometry.dispose();this.sampleMaterial.dispose();
     if(!this.pending)this.target.dispose();this.group.clear();this.scene.clear();this.pixels=null;
   }

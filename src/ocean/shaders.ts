@@ -10,6 +10,7 @@ import {waveCausticsSampling} from './caustics.ts';
 import {skinnedReceiverTraceGLSL} from './skinned-receivers-glsl.ts';
 import {waterVolumeGLSL} from './water-volume.ts';
 import {marineSurfaceSampling} from './marine-surface-field.ts';
+import {foamAppearanceGLSL} from './foam-appearance.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -278,6 +279,8 @@ export const oceanFragment = /* glsl */ `
   ${shoreWaveSampling}
   ${shoreSolverSampling}
   ${marineSurfaceSampling}
+  #define FOAM_FLOW_SHARED 1
+  ${foamAppearanceGLSL}
 
   #ifdef GEOMETRIC_REFRACTION
   vec4 receiverGround(vec2 uv){
@@ -377,6 +380,9 @@ export const oceanFragment = /* glsl */ `
     // displacement. Clip at that same world location, not the FFT origin.
     #ifdef CURVED_SURFACE
     if(vEnvelope<.006)discard;
+    #ifdef CONNECTED_FRONT
+    if(vEnvelope<.06)discard;
+    #endif
     vec3 coast=coastAt(vWorld.xz);
     float sheetDetached=smoothstep(.015,.10,abs(vWorld.y-renderedSurface(vWorld.xz)));
     #else
@@ -395,6 +401,10 @@ export const oceanFragment = /* glsl */ `
     // A folded lip can clear a dry bed ahead of the Eulerian surface.
     // Clip its actual height, never min(lipHeight, pointwiseBaseHeight).
     if(vWorld.y<coast.x+.008)discard;
+    #ifdef CONNECTED_FRONT
+    // Emergent strand and thin runup are SWE water, not a detached curl.
+    if(coast.x>.15||renderedSurface(vWorld.xz)-coast.x<.25)discard;
+    #endif
     #endif
     float footprint = max(length(dFdx(vOcean)),length(dFdy(vOcean)));
     // Widen the slope stencil with the pixel footprint: distant waves retain
@@ -530,7 +540,11 @@ export const oceanFragment = /* glsl */ `
     vec4 reflectedPoint=uReflectionMatrix*vec4(vWorld,1.0);
     vec2 reflectedUV=reflectedPoint.xy/max(reflectedPoint.w,.0001)
       +normal.xz*(.012+.12*(1.0-nV))/max(.35,nV);
-    float reflectionValid=reflectedPoint.w>0.0&&all(greaterThan(reflectedUV,vec2(.006)))&&all(lessThan(reflectedUV,vec2(.994)))?1.0:0.0;
+    float reflectionEdge=min(min(reflectedUV.x,reflectedUV.y),min(1.-reflectedUV.x,1.-reflectedUV.y));
+    // Resolve the last two texels continuously instead of popping from the
+    // captured scene to sky when a ripple crosses a binary UV threshold.
+    float reflectionBorder=max(.001,2./min(uReflectionResolution.x,uReflectionResolution.y));
+    float reflectionValid=reflectedPoint.w>0.?smoothstep(.002,.002+reflectionBorder,reflectionEdge):0.;
     // The reflected cone gets wider with microfacet slope variance and grazing
     // incidence. HDR mip filtering integrates radiance, before tone mapping.
     float coneRadius=roughnessAlpha*(.032+.145*(1.0-nV));
@@ -649,8 +663,10 @@ export const oceanFragment = /* glsl */ `
     float solvedFoam=max(shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y,clamp(marine.r,0.,1.));
     color=mix(color,uCloudColor*.43,clamp(marine.g*.18,0.,.24)*(1.-uHideSurfaceFoam));
     float materialFoam=foamMaterialConcentration(solvedFoam,foam);
-    float pocketField=uFoamStructure>.5?foamPocketField(vOcean+foamDrift*.35):.5;
-    float solvedCoverage=uFoamStructure>.5?structuredFoamCoverage(solvedFoam,smoothstep(.25,.75,foamPattern),smoothstep(.25,.75,pocketField),footprint):surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern));
+    FoamAppearance froth=FoamAppearance(.5,1.,normal);
+    if(uFoamAtlasReady>.5)froth=foamAppearance(vWorld,normal,footprint);
+    float pocketField=uFoamAtlasReady>.5?froth.field:uFoamStructure>.5?foamPocketField(vOcean+foamDrift*.35):.5;
+    float solvedCoverage=uFoamAtlasReady>.5?foamImageCoverage(solvedFoam,froth.field,footprint):uFoamStructure>.5?structuredFoamCoverage(solvedFoam,smoothstep(.25,.75,foamPattern),smoothstep(.25,.75,pocketField),footprint):surfaceFoamCoverage(solvedFoam,foamPattern,fwidth(foamPattern));
     foam=max(foam,solvedCoverage);
     #ifdef CURVED_SURFACE
     // Foam on the underlying heightfield is not a coating of the lifted face.
@@ -660,12 +676,24 @@ export const oceanFragment = /* glsl */ `
     foam=max(foam,smoothstep(.88,1.,vLip)*vEnvelope*pores*.35);
     #ifdef CONNECTED_FRONT
     float fallingFoam=vAeration*vEnvelope*smoothstep(.14,.62,vLip);
-    foam=max(foam,fallingFoam*(.80+.20*pores));
+    // The aerated end thins into irregular holes as the falling lip breaks up.
+    // Keep the root intact; the exposed pixels show the actual water behind.
+    float tearing=smoothstep(.62,.98,vLip)*vAeration*vEnvelope;
+    if(noise(vOcean*8.3+vec2(vWorld.y*5.1))<.18*tearing)discard;
+    foam=max(foam,uFoamAtlasReady>.5?foamImageCoverage(fallingFoam,froth.field,footprint):fallingFoam*(.80+.20*pores));
     materialFoam=max(materialFoam,fallingFoam);
     #endif
     #endif
     vec3 foamColor=mix(uHorizon,uCloudColor,0.55)*0.57+vec3(0.035);
-    if(uFoamFilm>.5&&foam>.001){
+    #ifdef CONNECTED_FRONT
+    foamColor=mix(foamColor,uCloudColor*(.62+.23*nL)*(.83+.17*sunVisibility),vAeration);
+    #endif
+    if(uFoamAtlasReady>.5&&foam>.001){
+      float foamSun=max(0.,dot(froth.normal,uSunDirection));
+      vec3 irradiance=uHorizon*(.20+.22*max(0.,froth.normal.y))+uSunColor*(foamSun/PI)*sunVisibility;
+      foamColor=vec3(.94,.97,.98)*irradiance*froth.tone;
+      foam*=.84+.16*froth.field;
+    }else if(uFoamFilm>.5&&foam>.001){
       vec2 film=uFoamStructure>.5?structuredFoamFilm(vOcean+foamDrift*.35,footprint,materialFoam,pocketField):foamFilm(vOcean+foamDrift*.35,footprint,max(solvedFoam,foam));
       foam*=film.x;
       foamColor*=film.y*(.90+.18*nL)*(.80+.20*sunVisibility);

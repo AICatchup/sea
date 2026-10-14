@@ -1,5 +1,7 @@
 # Third-party notices
 
+V75 foam uses **Crest Ocean System**, copyright (c) 2019 Wave Harmonic and contributors, MIT License. The unchanged `crest/Assets/Crest/Crest/Textures/foam.png` from commit `db0658ff0b2e93e4a9e28cc2867509658b0ecc00` is stored at `src/assets/foam/crest-foam.png`. Full license: [src/assets/foam/LICENSE.txt](src/assets/foam/LICENSE.txt). Source: [Wave Harmonic / Crest](https://github.com/wave-harmonic/crest/tree/db0658ff0b2e93e4a9e28cc2867509658b0ecc00/crest/Assets/Crest/Crest/Textures). SEA adds flow-map coordinates, triplanar projection, luminance-derived optical relief and solar/sky lighting in its own shader; the texture is not a measured normal or a full fluid solver.
+
 Boat fabric candidate **Terlenka** is an unchanged Poly Haven CC0-1.0 PBR texture,
 photographed by colormass and processed by Rico Cilliers. Source, dimensions and
 download hashes are under `src/assets/boat/terlenka/`. Vessel-local UV mapping and

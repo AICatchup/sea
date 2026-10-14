@@ -10,10 +10,12 @@ const smooth=(a:number,b:number,x:number)=>{const t=Math.max(0,Math.min(1,(x-a)/
 /** H~2*positive elevation is a crest-height proxy, not measured wave height.
  * A broad authored onset window avoids declaring every small compressive
  * swell to be a breaker. Existing foam still advects and decays separately. */
+// Use mean bed depth for the offshore gate. Using the crest's temporarily
+// deeper water column suppressed breaking precisely when a big wave rose.
 export function boreFoamBirth(depth:number,compression:number,elevation:number,restDepth:number):number{
   if(![depth,compression,elevation,restDepth].every(Number.isFinite)||depth<=.01)return 0;
   const ratio=2*Math.max(0,elevation)/Math.max(.2,restDepth);
-  return Math.max(0,Math.min(1,compression*.7))*(1-smooth(3,7,depth))*smooth(.05,.3,depth)*smooth(.55,.9,ratio);
+  return Math.max(0,Math.min(1,compression*.7))*(1-smooth(3,7,restDepth))*smooth(.05,.3,depth)*smooth(.55,.9,ratio);
 }
 export const shoreBoreGLSL=/* glsl */`
 float incidentBoreVelocity(float depth,float restDepth,float maxSpeed){
@@ -22,6 +24,6 @@ float incidentBoreVelocity(float depth,float restDepth,float maxSpeed){
 }
 float boreFoamBirth(float depth,float compression,float elevation,float restDepth){
   float ratio=2.*max(0.,elevation)/max(.2,restDepth);
-  return clamp(compression*.7,0.,1.)*(1.-smoothstep(3.,7.,depth))*smoothstep(.05,.3,depth)*smoothstep(.55,.9,ratio);
+  return clamp(compression*.7,0.,1.)*(1.-smoothstep(3.,7.,restDepth))*smoothstep(.05,.3,depth)*smoothstep(.55,.9,ratio);
 }
 `;
