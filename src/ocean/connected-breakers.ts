@@ -117,9 +117,11 @@ export class ConnectedBreakerPool {
   readonly visible=new Float32Array(BREAKER_FRONT_CAPACITY);
   readonly clock=new Float32Array(BREAKER_FRONT_CAPACITY);
   active=0;impacts=0;fronts=0;
+  readonly frontAudit:{nodes:{x:number;y:number;z:number}[];maxGap:number;maxPhaseJump:number}[]=[];
   readonly sourceAudit:{height:number;surface:number;up:number;speed:number;clearance:number;drop:number}[]=[];
   readonly flightAudit:{age:number;drop:number;launchHeight:number;landingHeight:number;flightDistance:number;sourceReleased:number}[]=[];
   releaseWater?: (p:{x:number;y:number;z:number;vx:number;vy:number;vz:number})=>void;
+  private readonly rootSteps=new Float64Array(BREAKER_FRONT_NODES);
   private trackedSpeeds=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES);
   private trackedRoots=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*2);
   private released=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES).fill(-1);
@@ -152,6 +154,13 @@ export class ConnectedBreakerPool {
       const launch=breakerSheetSpeed(b.speed??2,b.height);
       b.up=breakerVerticalVelocity(this.sample,b.nx*launch,b.nz*launch);
     }
+    const audit={nodes:nodes.map(b=>({x:b.x,y:b.height,z:b.z})),maxGap:0,maxPhaseJump:0};
+    for(let j=1;j<nodes.length;j++){
+      const a=nodes[j-1],b=nodes[j],dx=b.x-a.x,dz=b.z-a.z;
+      audit.maxGap=Math.max(audit.maxGap,Math.hypot(dx,b.height-a.height,dz));
+      audit.maxPhaseJump=Math.max(audit.maxPhaseJump,Math.abs(dx*b.nx+dz*b.nz));
+    }
+    this.frontAudit.push(audit);if(this.frontAudit.length>8)this.frontAudit.shift();
     this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.births[slot]=nodes;this.ages[slot]=0;this.clock[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
     for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.tipSeparated[slot*BREAKER_FRONT_NODES+j]=0;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:b.up??.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
@@ -165,16 +174,25 @@ export class ConnectedBreakerPool {
     for(let slot=0;slot<this.capacity;slot++){
       const nodes=this.births[slot];if(!nodes)continue;
       const age=this.ages[slot]+=dt;this.clock[slot]=age;let alive=0;
+      const follow=1-Math.exp(-10*dt);
+      // Track a wave line, not 17 independent maxima. Independent projection
+      // accumulated metres of differential drift and connected different waves.
+      // A robust common phase increment preserves the traced front's shape;
+      // already emitted water still follows its own ballistic history.
+      for(let j=0;j<BREAKER_FRONT_NODES;j++){
+        const b=nodes[j],index=slot*BREAKER_FRONT_NODES+j,phase=b.speed??2;
+        const px=this.trackedRoots[index*2]+b.nx*phase*dt,pz=this.trackedRoots[index*2+1]+b.nz*phase*dt;
+        const target=trackBreakerRoot(px,pz,b.nx,b.nz,sampler);
+        this.rootSteps[j]=phase*dt+(target?((target.x-px)*b.nx+(target.z-pz)*b.nz)*follow:0);
+      }
+      this.rootSteps.sort();const sharedStep=this.rootSteps[8];
       for(let j=0;j<BREAKER_FRONT_NODES;j++){
         const b=nodes[j],index=slot*BREAKER_FRONT_NODES+j,i=index*4;
         // A connected front shares physical time. Local surface/drop creates
         // peeling naturally; delaying clocks by column detached the root.
         const delay=0;
         const t=Math.max(0,age-delay),flight=t,phaseSpeed=b.speed??2;
-        const predictedX=this.trackedRoots[index*2]+b.nx*phaseSpeed*dt,predictedZ=this.trackedRoots[index*2+1]+b.nz*phaseSpeed*dt;
-        const tracked=trackBreakerRoot(predictedX,predictedZ,b.nx,b.nz,sampler);
-        const follow=1-Math.exp(-10*dt);
-        const rootX=predictedX+((tracked?.x??predictedX)-predictedX)*follow,rootZ=predictedZ+((tracked?.z??predictedZ)-predictedZ)*follow,s=this.sample;
+        const rootX=this.trackedRoots[index*2]+b.nx*sharedStep,rootZ=this.trackedRoots[index*2+1]+b.nz*sharedStep,s=this.sample;
         const measuredSpeed=((rootX-this.trackedRoots[index*2])*b.nx+(rootZ-this.trackedRoots[index*2+1])*b.nz)/dt;
         this.trackedSpeeds[index]+=(THREE.MathUtils.clamp(measuredSpeed,0,phaseSpeed*2)-this.trackedSpeeds[index])*(1-Math.exp(-dt/.15));
         this.trackedRoots[index*2]=rootX;this.trackedRoots[index*2+1]=rootZ;
@@ -242,6 +260,24 @@ export class ConnectedBreakerPool {
       }
       if(!alive){this.births[slot]=null;this.visible[slot]=0;this.active--;for(let j=0;j<BREAKER_FRONT_NODES;j++)this.roots[(slot*BREAKER_FRONT_NODES+j)*4+3]=0;}
     }
+  }
+  get geometryAudit(){
+    let maxAcrossGap=0,maxAlongGap=0,maxRootGap=0,activeSamples=0,maxAge=0,emittingNodes=0;
+    for(let slot=0;slot<this.capacity;slot++)if(this.births[slot]){
+      maxAge=Math.max(maxAge,this.ages[slot]);
+      for(let j=0;j<BREAKER_FRONT_NODES;j++){
+        const node=slot*BREAKER_FRONT_NODES+j,r=node*4;
+        if(this.released[node]<0)emittingNodes++;
+        if(j>0)maxRootGap=Math.max(maxRootGap,Math.hypot(this.roots[r]-this.roots[r-4],this.roots[r+1]-this.roots[r-3],this.roots[r+2]-this.roots[r-2]));
+        for(let row=0;row<SHEET_ROWS;row++){
+          const k=(node*SHEET_ROWS+row)*4;if(this.sheet[k+3]<0)continue;activeSamples++;
+          const gap=(p:number)=>Math.hypot(this.sheet[k]-this.sheet[p],this.sheet[k+1]-this.sheet[p+1],this.sheet[k+2]-this.sheet[p+2]);
+          if(j>0&&this.sheet[k-SHEET_ROWS*4+3]>=0)maxAcrossGap=Math.max(maxAcrossGap,gap(k-SHEET_ROWS*4));
+          if(row>0&&this.sheet[k-1]>=0)maxAlongGap=Math.max(maxAlongGap,gap(k-4));
+        }
+      }
+    }
+    return {maxAcrossGap,maxAlongGap,maxRootGapIncludingInactive:maxRootGap,activeSamples,maxAge,emittingNodes};
   }
   clear():void{this.births.fill(null);this.visible.fill(0);this.roots.fill(0);this.active=0;}
 }

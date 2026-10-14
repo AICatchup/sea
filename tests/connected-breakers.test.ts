@@ -208,3 +208,15 @@ test('resampled crest nodes start on the curved source instead of interpolated h
   const k=j*4,z=pool.roots[k+2];assert.ok(Math.abs(pool.roots[k+1]-(2-z*z*.2))<1e-6);
  }
 });
+
+
+test('captured wave diagnostics are immutable snapshots rather than aliases of future events',()=>{
+ const renderer={getRenderTarget(){return null;},setRenderTarget(){},render(){}} as unknown as THREE.WebGLRenderer;
+ const spray=new ShoreSpray(renderer,{heightAt:()=>-2},{lips:true,connected:true,patches:false});
+ const pool=spray.lips!.pool as ConnectedBreakerPool;
+ pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3})));
+ const before=spray.diagnostics;const original=before.frontAudit[0].nodes[0].x;
+ pool.frontAudit[0].nodes[0].x=999;pool.sourceAudit.push({height:2,surface:0,up:0,speed:2,clearance:2,drop:2});
+ assert.equal(before.frontAudit[0].nodes[0].x,original);assert.equal(before.sourceAudit.length,0);
+ spray.dispose();
+});

@@ -35,3 +35,13 @@ test('compressed front emits from the higher crest even where crest compression 
  assert.ok(line.every(n=>n.height>2.8&&n.x< -3&&n.energy>.08));
  assert.ok(line.every(n=>(n.drop??0)>2));
 });
+
+
+test('one crest line cannot tear into independently tracked neighbouring maxima',()=>{
+ const pool=new ConnectedBreakerPool();
+ pool.emitFront([-2,0,2].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,speed:3,drop:2})));
+ let time=0;
+ const split:WhitewaterSampler=(x,z,s)=>{const peak=time*(z<0?1:6);s.height=2-.05*(x-peak)**2;s.depth=4;s.ground=-3;return true;};
+ for(let i=0;i<90;i++){time+=1/60;pool.advance(1/60,split,()=>{});}
+ for(let j=1;j<17;j++)assert.ok(Math.abs(pool.roots[j*4]-pool.roots[(j-1)*4])<1e-6,'source phase stays coherent across the front');
+});
