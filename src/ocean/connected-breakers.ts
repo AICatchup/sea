@@ -9,7 +9,7 @@ import type {WhitewaterBirth,WhitewaterSample,WhitewaterSampler} from './shore-w
 
 export const BREAKER_FRONT_CAPACITY=24,BREAKER_FRONT_NODES=17;
 export const SHEET_ROWS=145;
-const SHEET_INTERVAL=1/60,SHEET_OVERLAP_SECONDS=1/30;
+const SHEET_INTERVAL=1/60;
 /** Optical thickness grows with the measured local crest-to-face drop. */
 export function breakerLipThickness(drop:number,energy:number):number{
   return .06+.10*whitewaterAerationStrength(energy)+.20*Math.max(0,Math.min(3.5,drop)-.5);
@@ -125,6 +125,7 @@ export class ConnectedBreakerPool {
   readonly capacity=BREAKER_FRONT_CAPACITY;
   private births:(FrontNode[]|null)[]=Array(BREAKER_FRONT_CAPACITY).fill(null);
   private ages=new Float64Array(BREAKER_FRONT_CAPACITY);
+  private tipSeparated=new Uint8Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES);
   private landed=new Float64Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES).fill(-1);
   private eventIds=new Uint32Array(BREAKER_FRONT_CAPACITY);
   private readonly sample=sampleState();
@@ -143,7 +144,7 @@ export class ConnectedBreakerPool {
     }
     this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.births[slot]=nodes;this.ages[slot]=0;this.clock[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
-    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:b.up??.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
+    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.tipSeparated[slot*BREAKER_FRONT_NODES+j]=0;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:b.up??.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
     return true;
   }
   advance(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{
@@ -177,9 +178,16 @@ export class ConnectedBreakerPool {
         if(this.released[index]<0)history.record({time:age,x:rootX,y:rootY,z:rootZ,vx,vz,up});
         const emission=history.sample(age-flight,this.emissionScratch),launchHeight=emission.y;
         const endpoint=flyWaterParcel(emission,age,vx,vz,up,this.parcelScratch);
-        const x=endpoint.x-(emission.vx??vx)*SHEET_OVERLAP_SECONDS,z=endpoint.z-(emission.vz??vz)*SHEET_OVERLAP_SECONDS;let tipY=endpoint.y;
+        const x=endpoint.x,z=endpoint.z;let tipY=endpoint.y;
         if(!sampler(x,z,s)||s.depth<=.02||s.depth>8||!Number.isFinite(s.height)){this.roots[i+3]=0;continue;}
-        if(this.landed[index]<0&&t>.12&&tipY<=s.height+.025){
+        // Contact is a return from air, not merely a point inside the sea.
+        // The old age gate reported a splash at 0.13s even when no water had
+        // ever left the surface, and prematurely stopped feeding the crest.
+        if(this.tipSeparated[index]===0){
+          if(tipY>s.height+.025)this.tipSeparated[index]=1;
+          else if(tipY<s.height-.025)this.tipSeparated[index]=2;
+        }
+        if(this.landed[index]<0&&this.tipSeparated[index]===1&&tipY<=s.height+.025){
           this.landed[index]=age;this.impacts++;
           this.flightAudit.push({age,drop:b.drop??0,launchHeight,landingHeight:s.height,flightDistance:Math.hypot(x-b.x,z-b.z),sourceReleased:this.released[index]});if(this.flightAudit.length>128)this.flightAudit.shift();
           const left=nodes[Math.max(0,j-1)],right=nodes[Math.min(BREAKER_FRONT_NODES-1,j+1)];
@@ -192,7 +200,7 @@ export class ConnectedBreakerPool {
           this.released[index]=age;
           for(let row=4;row<SHEET_ROWS;row+=4){
             const parcel=flyWaterParcel(history.sample(age-flight*row/(SHEET_ROWS-1),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
-            const parcelVx=this.emissionScratch.vx??vx,parcelVz=this.emissionScratch.vz??vz;parcel.x-=parcelVx*SHEET_OVERLAP_SECONDS;parcel.z-=parcelVz*SHEET_OVERLAP_SECONDS;
+            const parcelVx=this.emissionScratch.vx??vx,parcelVz=this.emissionScratch.vz??vz;
             if(sampler(parcel.x,parcel.z,s)&&parcel.y>s.height+.02)this.releaseWater?.({x:parcel.x,y:parcel.y,z:parcel.z,vx:parcelVx,vy:parcel.vy,vz:parcelVz});
           }
         }
@@ -206,7 +214,7 @@ export class ConnectedBreakerPool {
           const emissionTime=row*SHEET_INTERVAL,exists=emissionTime<=emissionEnd+1e-8;
           const parcel=flyWaterParcel(history.sample(Math.min(emissionTime,emissionEnd),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
           const k=((slot*BREAKER_FRONT_NODES+j)*SHEET_ROWS+row)*4;
-          this.sheet[k]=parcel.x-(this.emissionScratch.vx??vx)*SHEET_OVERLAP_SECONDS;this.sheet[k+1]=parcel.y;this.sheet[k+2]=parcel.z-(this.emissionScratch.vz??vz)*SHEET_OVERLAP_SECONDS;this.sheet[k+3]=Math.max(0,-parcel.vy);
+          this.sheet[k]=parcel.x;this.sheet[k+1]=parcel.y;this.sheet[k+2]=parcel.z;this.sheet[k+3]=Math.max(0,-parcel.vy);
           const validSurface=exists&&sampler(this.sheet[k],this.sheet[k+2],s)&&Number.isFinite(s.height);
           // Every row is one fixed emission time shared by all columns.
           // contact is irreversible: falling sea level cannot resurrect water

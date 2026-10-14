@@ -142,14 +142,13 @@ test('absorbed sheet water cannot reappear when receiving sea level falls',()=>{
   for(const k of absorbed)assert.equal(pool.sheet[k],-1,'contact survives receding sea level');
 });
 
-test('impact bloom receives actual fall rather than distant crest-to-trough drop',()=>{
+test('a distant trough cannot cause an impact from water that never separated',()=>{
   const pool=new ConnectedBreakerPool();
   pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3,drop:3.5,reach:6.9})));
   const impacts:{drop?:number;reach?:number}[]=[];
   const sea:WhitewaterSampler=(_x,_z,s)=>{s.height=2;s.depth=3;s.ground=-1;return true;};
   for(let i=0;i<60&&!impacts.length;i++)pool.advance(1/120,sea,b=>impacts.push(b));
-  assert.ok(impacts.length>0);
-  for(const impact of impacts){assert.equal(impact.drop,0);assert.ok(impact.reach!<1);}
+  assert.equal(impacts.length,0,'water that never clears the receiving sea must not create a landing');
 });
 
 test('cached contact predicts moving water without moving the ground or requesting GPU work',()=>{
@@ -188,4 +187,13 @@ test('an emitted rising parcel retains its initial vertical velocity after sourc
   const sea:WhitewaterSampler=(_x,_z,s)=>{Object.assign(s,{height:0,depth:3,ground:-3,heightRate:-2,waveGradientX:0,waveGradientZ:0});return true;};
   pool.advance(.1,sea,()=>{});
   assert.ok(Math.abs(pool.sheet[1]-(2+2*.1-4.905*.01))<1e-5);
+});
+
+
+test('an initially submerged tip cannot become a new impact when receiving water recedes',()=>{
+ const pool=new ConnectedBreakerPool();pool.emitFront([-1,0,1].map(z=>({x:0,z,height:0,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3,drop:2,up:0})));
+ let height=0,impacts=0;const sea:WhitewaterSampler=(_x,_z,s)=>{Object.assign(s,{height,depth:4+height,ground:-4,heightRate:0,waveGradientX:0,waveGradientZ:0});return true;};
+ pool.advance(.2,sea,()=>impacts++);height=-2;
+ for(let i=0;i<60;i++)pool.advance(1/60,sea,()=>impacts++);
+ assert.equal(impacts,0);
 });

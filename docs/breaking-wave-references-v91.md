@@ -1,0 +1,9 @@
+# V91 — distinguish separation from contact; remove backwards trajectory offset
+
+Base f991647. Previously a tip below the surface at age >0.12 seconds generated a landing even if it had never entered air. This also ended source emission. Track whether each leading tip has cleared the receiving sea; report a landing only on its return. A tip already submerged before separation cannot be resurrected into an impact when the sea recedes.
+
+Testing exposed another cause: the 1/30-second backwards overlap offset translated every physical parcel and its collision sample into the higher back of the crest. Remove that offset from tip, sheet and released spray positions. A new row now begins at its measured source position. Existing gravity and amplitudes are unchanged. This is correction of contact semantics, not a solution for overturning.
+
+138 focused tests, TypeScript, build and diff checks pass. Changed the old flat-water test that accepted an unseparated splash to reject it; added receding-water non-resurrection. Existing uneven-front real landing and ballistic tests still pass after removing the offset. Chrome errors empty. Side81 frames and front8 checkpoints in work/v91-final-frames and work/v91-front-frames; candidate GIF/MP4 in outer outputs/breaking-waves-v91-candidate. Fixed 1/60 steps, not realtime performance.
+
+Visual acceptance FAILS. The side capture had 74 front events, 22 active at end and only 30 contacts; mean signed launch-minus-landing elevation -0.01443 m, mean age 0.12889 s. Most supposed breakers do not actually separate. Reduced bogus impacts is not photorealism or achievement of strong breaking waves. Large overturning and strip boundaries remain unresolved. Next work must address coupled crest separation and underlying moving surface, not add arbitrary upward impulse or increase foam. Default experimental gate and accepted standalone unchanged. Goal ACTIVE.

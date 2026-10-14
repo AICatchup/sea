@@ -53,11 +53,11 @@ test('a uniform crest uses one physical clock across the whole connected front',
  }
 });
 
-test('new sheet rows overlap the supporting crest instead of only touching an edge',()=>{
+test('new sheet rows begin at the physical crest without a backwards collision offset',()=>{
  const pool=new ConnectedBreakerPool();pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,drop:2})));
  pool.advance(.1,(_x,_z,s)=>{s.height=0;s.ground=-2;s.depth=2;return true;},()=>{});
  const newest=Math.round(.1*60)*4;
- assert.ok(pool.sheet[newest]<pool.roots[0]);assert.ok(pool.roots[0]-pool.sheet[newest]<.5);
+ assert.ok(Math.abs(pool.sheet[newest]-pool.roots[0])<1e-5);
 });
 test('after source separation younger sheet water keeps falling instead of vanishing with its tip',()=>{
  const pool=new ConnectedBreakerPool();let height=2;
