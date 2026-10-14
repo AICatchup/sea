@@ -136,6 +136,7 @@ export class ConnectedBreakerPool {
   readonly tips=new Float32Array(this.roots.length);
   readonly shapes=new Float32Array(this.roots.length);
   readonly sheet=new Float32Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*SHEET_ROWS*4);
+  private readonly separated=new Uint8Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*SHEET_ROWS);
   private readonly absorbed=new Uint8Array(BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES*SHEET_ROWS);
   private readonly emissionScratch:CrestEmission={time:0,x:0,y:0,z:0};
   private readonly parcelScratch={x:0,y:0,z:0,vy:0};
@@ -189,6 +190,7 @@ export class ConnectedBreakerPool {
     }
     this.frontAudit.push(audit);if(this.frontAudit.length>8)this.frontAudit.shift();
     this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
+    this.separated.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.births[slot]=nodes;this.ages[slot]=0;this.clock[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
     for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.tipSeparated[slot*BREAKER_FRONT_NODES+j]=0;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:b.up??.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.frontX??b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.frontZ??b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
     return true;
@@ -282,7 +284,14 @@ export class ConnectedBreakerPool {
           // Every row is one fixed emission time shared by all columns.
           // contact is irreversible: falling sea level cannot resurrect water
           // already incorporated into the receiving surface.
-          if(validSurface&&parcel.vy<0&&parcel.y<=s.height+.025)this.absorbed[k/4]=1;
+          if(validSurface){
+            const clearance=parcel.y-s.height;
+            if(clearance>.025)this.separated[k/4]=1;
+            // A newly emitted parcel starts on the surface. Being within the
+            // contact tolerance is not a return from air. Retire genuinely
+            // submerged parcels too, so a later trough cannot resurrect them.
+            if(clearance<-.025||(this.separated[k/4]&&parcel.vy<0&&clearance<=.025))this.absorbed[k/4]=1;
+          }
           if(!exists||this.absorbed[k/4])this.sheet[k+3]=-1;
           else if(validSurface&&parcel.y>s.height+.025)airborne=true;
         }

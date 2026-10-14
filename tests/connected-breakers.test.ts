@@ -220,3 +220,20 @@ test('captured wave diagnostics are immutable snapshots rather than aliases of f
  assert.equal(before.frontAudit[0].nodes[0].x,original);assert.equal(before.sourceAudit.length,0);
  spray.dispose();
 });
+
+
+test('newly emitted sheet water may clear the contact band before returning',()=>{
+ const pool=new ConnectedBreakerPool();
+ pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3,up:0})));
+ // The first step has only 1 cm clearance; subsequent motion clears 2.5 cm.
+ let level=1.988;
+ const sea:WhitewaterSampler=(_x,_z,s)=>{Object.assign(s,{height:level,depth:3,ground:-1});return true;};
+ pool.advance(1/60,sea,()=>{});
+ assert.ok(pool.sheet[3]>=0,'initial proximity must not irreversibly absorb the parcel');
+ level=1.9;pool.advance(1/60,sea,()=>{});
+ assert.ok(pool.sheet[3]>=0,'the same material row can separate');
+ level=2;pool.advance(1/60,sea,()=>{});
+ assert.equal(pool.sheet[3],-1,'return from air absorbs it');
+ level=1;pool.advance(1/60,sea,()=>{});
+ assert.equal(pool.sheet[3],-1,'absorbed water cannot reappear');
+});
