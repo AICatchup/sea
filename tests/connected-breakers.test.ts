@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,breakerRootSupport,breakerLipThickness} from '../src/ocean/connected-breakers.ts';
+import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,SHEET_ROWS,breakerRootSupport,breakerLipThickness} from '../src/ocean/connected-breakers.ts';
 import type {WhitewaterSample,WhitewaterSampler} from '../src/ocean/shore-whitewater.ts';
 import {marineDecay,MarineSurfaceField,validMarineDeposit} from '../src/ocean/marine-surface-field.ts';
 import * as THREE from 'three';
@@ -135,7 +135,7 @@ test('absorbed sheet water cannot reappear when receiving sea level falls',()=>{
   const sea:WhitewaterSampler=(x,_z,s)=>{s.height=lower?-1:Math.max(0,2-x*1.4);s.ground=-2;s.depth=s.height+2;return true;};
   for(let i=0;i<240&&pool.impacts===0;i++)pool.advance(1/120,sea,()=>{});
   const absorbed:number[]=[];
-  for(let k=3;k<17*33*4;k+=4)if(pool.sheet[k]<0)absorbed.push(k);
+  for(let k=3;k<17*SHEET_ROWS*4;k+=4)if(pool.sheet[k]<0)absorbed.push(k);
   assert.ok(absorbed.length>0,'contact marks parcels incorporated into the sea');
   assert.ok(pool.active>0,'younger water remains airborne');
   lower=true;pool.advance(1/120,sea,()=>{});
@@ -162,4 +162,14 @@ test('cached contact predicts moving water without moving the ground or requesti
   assert.ok(state.sampleFoam(0,0,sample));assert.ok(Math.abs(sample.height-2.5)<.001);assert.equal(sample.ground,-1);
   state.simulationTime=.45;state.sampleFoam(0,0,sample);assert.ok(Math.abs(sample.height-3)<.001,'prediction horizon stays bounded');
   spray.resetHistory();assert.equal(state.sampleFoam(0,0,sample),false);spray.dispose();
+});
+
+test('a sheet row keeps its emission time as the source continues feeding',()=>{
+  const pool=new ConnectedBreakerPool();
+  pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3,drop:2})));
+  const sea:WhitewaterSampler=(x,_z,s)=>{s.height=2-.2*x;s.depth=3;s.ground=-1;return true;};
+  pool.advance(.05,sea,()=>{});const row=1,k=row*4,y=pool.sheet[k+1];
+  pool.advance(.05,sea,()=>{});
+  const vy=.4-9.81*(.05-1/60),expected=y+vy*.05-4.905*.05*.05;
+  assert.ok(Math.abs(pool.sheet[k+1]-expected)<1e-5,'later emission must not reassign this material row');
 });

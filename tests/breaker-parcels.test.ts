@@ -31,7 +31,7 @@ test('each emission keeps its own velocity when the crest accelerates',()=>{
  assert.equal(later.x,6);assert.equal(later.z,2);
 });
 
-import {ConnectedBreakerPool} from '../src/ocean/connected-breakers.ts';
+import {ConnectedBreakerPool,SHEET_ROWS} from '../src/ocean/connected-breakers.ts';
 test('unsupported sheets hand off airborne parcels once instead of stretching a ribbon',()=>{
   const pool=new ConnectedBreakerPool();const released:{y:number;vy:number}[]=[];
   pool.releaseWater=p=>released.push(p);
@@ -56,7 +56,8 @@ test('a uniform crest uses one physical clock across the whole connected front',
 test('new sheet rows overlap the supporting crest instead of only touching an edge',()=>{
  const pool=new ConnectedBreakerPool();pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,depth:3,drop:2})));
  pool.advance(.1,(_x,_z,s)=>{s.height=0;s.ground=-2;s.depth=2;return true;},()=>{});
- assert.ok(pool.sheet[0]<pool.roots[0]);assert.ok(pool.roots[0]-pool.sheet[0]<.5);
+ const newest=Math.round(.1*60)*4;
+ assert.ok(pool.sheet[newest]<pool.roots[0]);assert.ok(pool.roots[0]-pool.sheet[newest]<.5);
 });
 test('after source separation younger sheet water keeps falling instead of vanishing with its tip',()=>{
  const pool=new ConnectedBreakerPool();let height=2;
@@ -64,7 +65,7 @@ test('after source separation younger sheet water keeps falling instead of vanis
  const sample=(x:number,_z:number,s:{height:number;ground:number;depth:number})=>{s.height=height?Math.max(0,2-x*1.4):0;s.ground=-2;s.depth=s.height+2;return true;};
  pool.advance(.3,sample,()=>{});height=0;
  pool.advance(.1,sample,()=>{});
- const row=(8*33+16)*4,y0=pool.sheet[row+1];
+ const row=(8*SHEET_ROWS+6)*4,y0=pool.sheet[row+1];
  assert.equal(pool.tips[8*4+3],0,'source is detached');
  assert.ok(pool.roots[8*4+3]>.9,'airborne water remains visible');
  pool.advance(.1,sample,()=>{});const y1=pool.sheet[row+1];

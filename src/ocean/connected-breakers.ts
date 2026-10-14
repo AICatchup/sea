@@ -8,7 +8,8 @@ import {whitewaterAerationStrength} from './whitewater-flow.ts';
 import type {WhitewaterBirth,WhitewaterSample,WhitewaterSampler} from './shore-whitewater.ts';
 
 export const BREAKER_FRONT_CAPACITY=24,BREAKER_FRONT_NODES=17;
-const SHEET_ROWS=33,SHEET_OVERLAP_SECONDS=1/30;
+export const SHEET_ROWS=145;
+const SHEET_INTERVAL=1/60,SHEET_OVERLAP_SECONDS=1/30;
 /** Optical thickness grows with the measured local crest-to-face drop. */
 export function breakerLipThickness(drop:number,energy:number):number{
   return .06+.10*whitewaterAerationStrength(energy)+.20*Math.max(0,Math.min(3.5,drop)-.5);
@@ -102,6 +103,7 @@ export class ConnectedBreakerPool {
   private readonly parcelScratch={x:0,y:0,z:0,vy:0};
   private readonly histories=Array.from({length:BREAKER_FRONT_CAPACITY*BREAKER_FRONT_NODES},()=>new CrestHistory());
   readonly visible=new Float32Array(BREAKER_FRONT_CAPACITY);
+  readonly clock=new Float32Array(BREAKER_FRONT_CAPACITY);
   active=0;impacts=0;fronts=0;
   readonly flightAudit:{age:number;drop:number;launchHeight:number;landingHeight:number;flightDistance:number;sourceReleased:number}[]=[];
   releaseWater?: (p:{x:number;y:number;z:number;vx:number;vy:number;vz:number})=>void;
@@ -128,7 +130,7 @@ export class ConnectedBreakerPool {
         energy:THREE.MathUtils.lerp(a.energy,b.energy,t),nx:nx/n,nz:nz/n,seed:((Math.sin((j+1)*12.9898+a.seed*78.233)*43758.5453)%1+1)%1,depth:THREE.MathUtils.lerp(a.depth??1,b.depth??1,t),speed:THREE.MathUtils.lerp(a.speed??2,b.speed??2,t),drop:THREE.MathUtils.lerp(a.drop??.2,b.drop??.2,t),reach:THREE.MathUtils.lerp(a.reach??.6,b.reach??.6,t)});
     }
     this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
-    this.births[slot]=nodes;this.ages[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
+    this.births[slot]=nodes;this.ages[slot]=0;this.clock[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
     for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
     return true;
   }
@@ -139,7 +141,7 @@ export class ConnectedBreakerPool {
   private advanceStep(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{
     for(let slot=0;slot<this.capacity;slot++){
       const nodes=this.births[slot];if(!nodes)continue;
-      const age=this.ages[slot]+=dt;let alive=0;
+      const age=this.ages[slot]+=dt;this.clock[slot]=age;let alive=0;
       for(let j=0;j<BREAKER_FRONT_NODES;j++){
         const b=nodes[j],index=slot*BREAKER_FRONT_NODES+j,i=index*4;
         // A connected front shares physical time. Local surface/drop creates
@@ -189,15 +191,16 @@ export class ConnectedBreakerPool {
         if(landed>=0)tipY=s.height;
         this.roots.set([rootX,rootY,rootZ,ramp],i);this.tips.set([x,tipY,z,this.released[index]<0?1:0],i);
         for(let row=0;row<SHEET_ROWS;row++){
-          const u=row/(SHEET_ROWS-1),parcel=flyWaterParcel(history.sample(emissionEnd*(1-u),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
+          const emissionTime=row*SHEET_INTERVAL,exists=emissionTime<=emissionEnd+1e-8;
+          const parcel=flyWaterParcel(history.sample(Math.min(emissionTime,emissionEnd),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
           const k=((slot*BREAKER_FRONT_NODES+j)*SHEET_ROWS+row)*4;
           this.sheet[k]=parcel.x-(this.emissionScratch.vx??vx)*SHEET_OVERLAP_SECONDS;this.sheet[k+1]=parcel.y;this.sheet[k+2]=parcel.z-(this.emissionScratch.vz??vz)*SHEET_OVERLAP_SECONDS;this.sheet[k+3]=Math.max(0,-parcel.vy);
-                    const validSurface=sampler(this.sheet[k],this.sheet[k+2],s)&&Number.isFinite(s.height);
-          // Row emission times stop changing after separation. From then on,
+          const validSurface=exists&&sampler(this.sheet[k],this.sheet[k+2],s)&&Number.isFinite(s.height);
+          // Every row is one fixed emission time shared by all columns.
           // contact is irreversible: falling sea level cannot resurrect water
           // already incorporated into the receiving surface.
-          if(this.released[index]>=0&&validSurface&&parcel.vy<0&&parcel.y<=s.height+.025)this.absorbed[k/4]=1;
-          if(this.absorbed[k/4])this.sheet[k+3]=-1;
+          if(validSurface&&parcel.vy<0&&parcel.y<=s.height+.025)this.absorbed[k/4]=1;
+          if(!exists||this.absorbed[k/4])this.sheet[k+3]=-1;
           else if(validSurface&&parcel.y>s.height+.025)airborne=true;
         }
         if(airborne||landed<0)alive++;else this.roots[i+3]=0;
@@ -218,12 +221,13 @@ export class ConnectedShoreBreakers {
     const base=new THREE.BoxGeometry(1,1,1,64,1,96);
     this.geometry.setIndex(base.index!.clone());this.geometry.setAttribute('position',base.getAttribute('position').clone());base.dispose();
     this.geometry.setAttribute('aSlot',new THREE.InstancedBufferAttribute(Float32Array.from({length:BREAKER_FRONT_CAPACITY},(_,i)=>i),1));
+    this.geometry.setAttribute('aAge',new THREE.InstancedBufferAttribute(this.pool.clock,1).setUsage(THREE.DynamicDrawUsage));
     this.geometry.setAttribute('aActive',new THREE.InstancedBufferAttribute(this.pool.visible,1).setUsage(THREE.DynamicDrawUsage));this.geometry.instanceCount=BREAKER_FRONT_CAPACITY;
     this.textures=[this.pool.roots,this.pool.tips,this.pool.shapes].map(data=>{const texture=new THREE.DataTexture(data,BREAKER_FRONT_NODES,BREAKER_FRONT_CAPACITY,THREE.RGBAFormat,THREE.FloatType);texture.minFilter=texture.magFilter=THREE.NearestFilter;texture.needsUpdate=true;return texture;});
     const sheetTexture=new THREE.DataTexture(this.pool.sheet,BREAKER_FRONT_NODES*SHEET_ROWS,BREAKER_FRONT_CAPACITY,THREE.RGBAFormat,THREE.FloatType);
     sheetTexture.minFilter=sheetTexture.magFilter=THREE.NearestFilter;sheetTexture.needsUpdate=true;this.textures.push(sheetTexture);
     this.material=new THREE.ShaderMaterial({defines:{CURVED_SURFACE:1,CONNECTED_FRONT:1},side:THREE.DoubleSide,depthTest:true,depthWrite:true,uniforms:{uFrontRoots:{value:this.textures[0]},uFrontTips:{value:this.textures[1]},uFrontShapes:{value:this.textures[2]},uFrontSheet:{value:this.textures[3]}},fragmentShader:oceanFragment,vertexShader:/* glsl */`
-      attribute float aSlot,aActive;uniform sampler2D uFrontRoots,uFrontTips,uFrontShapes,uFrontSheet;
+      attribute float aSlot,aActive,aAge;uniform sampler2D uFrontRoots,uFrontTips,uFrontShapes,uFrontSheet;
       varying vec3 vWorld;varying vec2 vOcean;varying float vDistance,vEnvelope,vLip,vWaterThickness;
       varying float vAeration;varying vec3 vSheetNormal;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
@@ -235,8 +239,14 @@ export class ConnectedShoreBreakers {
       float lipSurface(vec2 world){vec2 p=world;for(int i=0;i<3;i++)p=world-lipDisplacement(p).xz*uChoppiness;return shoreSolvedSurface(world,lipDisplacement(p).y,0.).x+marineSurface(world).b;}
       vec4 frontValue(sampler2D source,float node){return texture2D(source,vec2((clamp(node,0.,16.)+.5)/17.,(aSlot+.5)/24.));}
       vec4 frontState(sampler2D source,float along){float node=along*16.,a=floor(node),t=fract(node);vec4 p0=frontValue(source,a-1.),p1=frontValue(source,a),p2=frontValue(source,a+1.),p3=frontValue(source,a+2.);return .5*((2.*p1)+(-p0+p2)*t+(2.*p0-5.*p1+4.*p2-p3)*t*t+(-p0+3.*p1-3.*p2+p3)*t*t*t);}
-      vec4 sheetNode(float node,float row){return texture2D(uFrontSheet,vec2((clamp(node,0.,16.)*33.+clamp(row,0.,32.)+.5)/561.,(aSlot+.5)/24.));}
-      vec4 sheetRow(float node,float u){float r=u*32.;return mix(sheetNode(node,floor(r)),sheetNode(node,floor(r)+1.),fract(r));}
+      vec4 sheetNode(float node,float row){return texture2D(uFrontSheet,vec2((clamp(node,0.,16.)*145.+clamp(row,0.,144.)+.5)/2465.,(aSlot+.5)/24.));}
+      vec4 sheetRow(float node,float u){float r=clamp((1.-u)*aAge*60.,0.,144.);return mix(sheetNode(node,floor(r)),sheetNode(node,floor(r)+1.),fract(r));}
+      float sheetCoverage(float along,float u){
+        float r=clamp((1.-u)*aAge*60.,0.,144.),n=along*16.,a=floor(n),b=floor(r);
+        float left=mix(step(0.,sheetNode(a,b).w),step(0.,sheetNode(a,b+1.).w),fract(r));
+        float right=mix(step(0.,sheetNode(a+1.,b).w),step(0.,sheetNode(a+1.,b+1.).w),fract(r));
+        return mix(left,right,fract(n));
+      }
       vec4 parcelState(float along,float u){
         float n=along*16.,a=floor(n),t=fract(n);
         vec4 p0=sheetRow(a-1.,u),p1=sheetRow(a,u),p2=sheetRow(a+1.,u),p3=sheetRow(a+2.,u);
@@ -260,7 +270,7 @@ export class ConnectedShoreBreakers {
         // Temporal rows are emitted at the moving crest and retain their
         // own position/velocity under gravity. No arc is refitted to a tip.
         vec4 parcel=parcelState(along,u);
-        vEnvelope*=smoothstep(-.95,-.05,parcel.w);
+        vEnvelope*=sheetCoverage(along,u);
         vec4 originParcel=parcelState(along,0.);
         // Only newly emitted water remains attached to the source. Correcting
         // the entire sheet every GPU frame bent old airborne water sideways.
@@ -290,6 +300,6 @@ export class ConnectedShoreBreakers {
     const mesh=new THREE.Mesh(this.geometry,this.material);mesh.frustumCulled=false;mesh.renderOrder=1;this.group.add(mesh);
   }
   bind(uniforms:Record<string,THREE.IUniform>):void{for(const [name,value] of Object.entries(uniforms))this.material.uniforms[name]=value;}
-  update(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{this.pool.advance(dt,sampler,impact);for(const texture of this.textures)texture.needsUpdate=true;this.geometry.getAttribute('aActive').needsUpdate=true;}
+  update(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{this.pool.advance(dt,sampler,impact);for(const texture of this.textures)texture.needsUpdate=true;this.geometry.getAttribute('aActive').needsUpdate=true;this.geometry.getAttribute('aAge').needsUpdate=true;}
   dispose():void{this.pool.clear();this.textures.forEach(t=>t.dispose());this.geometry.dispose();this.material.dispose();this.group.clear();}
 }
