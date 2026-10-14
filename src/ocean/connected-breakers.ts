@@ -13,6 +13,12 @@ const SHEET_ROWS=33,SHEET_OVERLAP_SECONDS=1/30;
 export function breakerLipThickness(drop:number,energy:number):number{
   return .06+.10*whitewaterAerationStrength(energy)+.20*Math.max(0,Math.min(3.5,drop)-.5);
 }
+/** Height-dependent sheet acceleration (Thuerey 2007, equation 9).
+ * Authored gain 0.08; elevation is above mean sea level, not a remote trough.
+ * This is the paper's visual closure, not a resolved 3D pressure field. */
+export function breakerSheetSpeed(frontSpeed:number,elevation:number):number{
+  return Math.min(24,Math.max(0,frontSpeed)*(1+.08*9.81*Math.max(0,elevation)));
+}
 /** Project predicted crest back onto the live surface (Thuerey et al., 2007).
  * A bounded search prevents a root from jumping to the following wave. */
 export function trackBreakerRoot(x:number,z:number,nx:number,nz:number,sampler:WhitewaterSampler):{x:number;z:number;height:number}|null{
@@ -123,7 +129,7 @@ export class ConnectedBreakerPool {
     }
     this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.births[slot]=nodes;this.ages[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
-    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=(b.speed??2)+.8+1.5*whitewaterAerationStrength(b.energy)+(b.reach??.6)*.35;this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy),b.drop??.2],i);}
+    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
     return true;
   }
   advance(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{
@@ -139,7 +145,7 @@ export class ConnectedBreakerPool {
         // A connected front shares physical time. Local surface/drop creates
         // peeling naturally; delaying clocks by column detached the root.
         const delay=0;
-        const t=Math.max(0,age-delay),flight=t,strength=whitewaterAerationStrength(b.energy),phaseSpeed=b.speed??2;
+        const t=Math.max(0,age-delay),flight=t,phaseSpeed=b.speed??2;
         const predictedX=this.trackedRoots[index*2]+b.nx*phaseSpeed*dt,predictedZ=this.trackedRoots[index*2+1]+b.nz*phaseSpeed*dt;
         const tracked=trackBreakerRoot(predictedX,predictedZ,b.nx,b.nz,sampler);
         const follow=1-Math.exp(-10*dt);
@@ -150,8 +156,8 @@ export class ConnectedBreakerPool {
         if(age>2.4||!sampler(rootX,rootZ,s)||s.depth<=.02||s.depth>8){this.roots[i+3]=0;continue;}
         const rootY=s.height,history=this.histories[index];
 
-        const relativeSpeed=.8+1.5*strength+(b.reach??.6)*.35;
-        const vx=b.nx*(this.trackedSpeeds[index]+relativeSpeed),vz=b.nz*(this.trackedSpeeds[index]+relativeSpeed),up=.4;
+        const launchSpeed=breakerSheetSpeed(this.trackedSpeeds[index],rootY);
+        const vx=b.nx*launchSpeed,vz=b.nz*launchSpeed,up=.4;
         // Store velocity at emission. Later crest acceleration must neither
         // drag older parcels nor leave all rows using the birth phase speed.
         if(this.released[index]<0)history.record({time:age,x:rootX,y:rootY,z:rootZ,vx,vz,up});

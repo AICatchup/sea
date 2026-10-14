@@ -151,3 +151,15 @@ test('impact bloom receives actual fall rather than distant crest-to-trough drop
   assert.ok(impacts.length>0);
   for(const impact of impacts){assert.equal(impact.drop,0);assert.ok(impact.reach!<1);}
 });
+
+test('cached contact predicts moving water without moving the ground or requesting GPU work',()=>{
+  const renderer={getRenderTarget(){return null;},setRenderTarget(){},render(){}} as unknown as THREE.WebGLRenderer;
+  const spray=new ShoreSpray(renderer,{heightAt:()=>-1},{lips:true,connected:true,patches:false});
+  const state=spray as unknown as {pixels:Uint8Array;previousPixels:Uint8Array;sampleTime:number;previousTime:number;simulationTime:number;foamCacheValid:boolean;sampleFoam:WhitewaterSampler};
+  const encode=(height:number)=>{const a=new Uint8Array(24*24*4),v=Math.round((height+8)/16*65535);for(let i=0;i<a.length;i+=4){a[i]=v>>8;a[i+1]=v&255;a[i+3]=128;}return a;};
+  state.previousPixels=encode(1);state.pixels=encode(2);state.previousTime=0;state.sampleTime=.2;state.simulationTime=.3;state.foamCacheValid=true;
+  const sample:WhitewaterSample={height:0,compression:0,depth:0,shelter:0,ground:0,gradientX:0,gradientZ:0};
+  assert.ok(state.sampleFoam(0,0,sample));assert.ok(Math.abs(sample.height-2.5)<.001);assert.equal(sample.ground,-1);
+  state.simulationTime=.45;state.sampleFoam(0,0,sample);assert.ok(Math.abs(sample.height-3)<.001,'prediction horizon stays bounded');
+  spray.resetHistory();assert.equal(state.sampleFoam(0,0,sample),false);spray.dispose();
+});

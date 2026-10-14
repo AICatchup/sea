@@ -101,6 +101,7 @@ export class ShoreSpray {
   private pixels:Uint8Array|null=null;
   private sampleOrigin=new THREE.Vector2();
   private sampleTime=-Infinity;
+  private previousPixels:Uint8Array|null=null;private previousTime=-Infinity;private previousOrigin=new THREE.Vector2();private simulationTime=0;
   private lastRequest=-Infinity;
   private pending=false;
   private disposed=false;
@@ -144,6 +145,18 @@ export class ShoreSpray {
       out.ground=THREE.MathUtils.lerp(THREE.MathUtils.lerp(g(ix,iz),g(Math.min(ix+1,GRID-1),iz),fx),THREE.MathUtils.lerp(g(ix,Math.min(iz+1,GRID-1)),g(Math.min(ix+1,GRID-1),Math.min(iz+1,GRID-1)),fx),fz);
       out.gradientX=g(Math.min(ix+1,GRID-1),iz)-g(Math.max(ix-1,0),iz);out.gradientZ=g(ix,Math.min(iz+1,GRID-1))-g(ix,Math.max(iz-1,0));
     }else{out.ground=this.ground.heightAt(x,z);out.gradientX=this.ground.heightAt(x+2,z)-this.ground.heightAt(x-2,z);out.gradientZ=this.ground.heightAt(x,z+2)-this.ground.heightAt(x,z-2);}
+        // Collision follows the moving heightfield between asynchronous samples.
+    // Keep ground fixed: only water elevation may be extrapolated.
+    if(this.lips instanceof ConnectedShoreBreakers&&this.previousPixels){
+      const interval=this.sampleTime-this.previousTime,age=this.simulationTime-this.sampleTime;
+      const px=(x-this.previousOrigin.x)/step+GRID/2-.5,pz=(z-this.previousOrigin.y)/step+GRID/2-.5;
+      if(interval>.001&&interval<=.5&&age>0&&age<=.5&&px>=0&&pz>=0&&px<=GRID-1&&pz<=GRID-1){
+        const ax=Math.floor(px),az=Math.floor(pz),tx=px-ax,tz=pz-az;
+        const old=(a:number,b:number)=>{const k=(b*GRID+a)*4;return (this.previousPixels![k]*256+this.previousPixels![k+1])/65535*16-8;};
+        const before=THREE.MathUtils.lerp(THREE.MathUtils.lerp(old(ax,az),old(Math.min(ax+1,GRID-1),az),tx),THREE.MathUtils.lerp(old(ax,Math.min(az+1,GRID-1)),old(Math.min(ax+1,GRID-1),Math.min(az+1,GRID-1)),tx),tz);
+        out.height+=THREE.MathUtils.clamp((out.height-before)/interval,-8,8)*Math.min(age,.2);
+      }
+    }
     out.depth=Math.max(0,out.height-out.ground);
     delete out.flowX;delete out.flowZ;
     if(this.flowReadback){
@@ -239,7 +252,7 @@ export class ShoreSpray {
   }
   private random():number{let x=this.randomState;x^=x<<13;x^=x>>>17;x^=x<<5;this.randomState=x;return (x>>>0)/4294967296;}
   setImpactSink(sink:typeof this.impactSink):void{this.impactSink=sink;}
-  resetHistory():void{this.generation++;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();this.rollers?.pool.clear();this.pool.clear();}
+  resetHistory():void{this.generation++;this.previousPixels=null;this.previousTime=-Infinity;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();this.rollers?.pool.clear();this.pool.clear();}
   private emitConnectedFronts(time:number):void{
     if(!(this.lips instanceof ConnectedShoreBreakers)||!this.pixels||this.lastFrontSample===this.sampleTime)return;
     this.lastFrontSample=this.sampleTime;this.fronts=this.fronts.filter(f=>time-f.time<1.1);
@@ -280,7 +293,7 @@ export class ShoreSpray {
     if(this.rollers)for(const [key,value] of Object.entries(uniforms))if(this.rollers.material.uniforms[key])this.rollers.material.uniforms[key]=value;
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
-    this.foamCacheValid=!!this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime;
+    this.simulationTime=time;this.foamCacheValid=!!this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime;
     this.pool.advance(dt,this.impactSink?this.sampleFoam:undefined,this.impactSink?(x,height,z)=>{this.impactSink?.({x,z,height,energy:.035,nx:1,nz:0,seed:0,width:.12,speed:.2});}:undefined);
     this.whitewater?.update(delta,this.sampleFoam,underwater);
     this.rollers?.update(delta,this.sampleFoam,underwater);
@@ -403,11 +416,12 @@ export class ShoreSpray {
         if(depth>=.2&&depth<=3.8){this.sampleWetEligibleCount++;this.maxEstimatedHeightDepthRatio=Math.max(this.maxEstimatedHeightDepthRatio,Math.max(0,height)/depth);}
       }
       if(origin.distanceTo(this.sampleOrigin)>this.span){this.lips?.pool.clear();this.rollers?.pool.clear();this.fronts=[];}
+      this.previousPixels=this.pixels;this.previousOrigin.copy(this.sampleOrigin);this.previousTime=this.sampleTime;
       this.pixels=pixels;this.sampleOrigin.copy(origin);this.sampleTime=time;
     }).catch(()=>{if(!this.disposed)this.failReadback();}).finally(()=>{this.pending=false;if(this.disposed)this.target.dispose();});
   }
   private failReadback():void{
-    this.failed=true;this.pixels=null;this.foamCacheValid=false;
+    this.failed=true;this.previousPixels=null;this.pixels=null;this.foamCacheValid=false;
     this.energizedCount=0;
   }
   /** Developer observation of existing cached values, without a GPU request. */
@@ -426,6 +440,6 @@ export class ShoreSpray {
     if(this.disposed)return;this.disposed=true;
     this.whitewater?.dispose();this.lips?.dispose();this.rollers?.dispose();
     this.geometry.dispose();this.material.dispose();this.quadGeometry.dispose();this.sampleMaterial.dispose();
-    if(!this.pending)this.target.dispose();this.group.clear();this.scene.clear();this.pixels=null;
+    if(!this.pending)this.target.dispose();this.group.clear();this.scene.clear();this.previousPixels=null;this.pixels=null;
   }
 }
