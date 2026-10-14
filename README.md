@@ -4,6 +4,10 @@
 
 ![透明な浅瀬と水面の光](docs/gallery/open-sea.png)
 
+![新島の波と白水・8秒ループ](docs/checks/v76/breaking-waves.gif)
+
+[波の動画（MP4）](docs/checks/v76/breaking-waves.mp4) · [白水の改善と検証](docs/graphics-v76.md)
+
 [はじめる](#はじめる) · [できること](#できること) · [島をめぐる](#島をめぐる) · [操作](#操作) · [開発と検証](#開発と検証)
 
 ## 舵を握って、入り江の外へ

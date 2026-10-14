@@ -1,0 +1,12 @@
+{
+  "frames": 160,
+  "durationMs": 8000,
+  "uniqueFrames": 160,
+  "loop": 0,
+  "frozenComparisonChanged": true,
+  "baselineRepeatIdentical": true,
+  "nonFoamControlIdentical": true,
+  "testsPassed": 114,
+  "buildPassed": true,
+  "fullPhotorealGoal": "unmet"
+}

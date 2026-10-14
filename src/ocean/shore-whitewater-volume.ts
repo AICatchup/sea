@@ -102,7 +102,7 @@ export class ShoreWhitewaterVolume {
     for(const [name,array,size] of [['aCenter',this.pool.positions,3],['aShape',this.pool.shape,4],['aMotion',this.pool.motion,2],['aAlpha',this.pool.alpha,1],['aSeed',this.pool.seeds,1]] as const)this.geometry.setAttribute(name,new THREE.InstancedBufferAttribute(array,size).setUsage(THREE.DynamicDrawUsage));
     this.geometry.instanceCount=this.pool.capacity;
     this.material=new THREE.ShaderMaterial({depthTest:true,depthWrite:true,transparent:false,side:THREE.FrontSide,
-      uniforms:{...createShoreSolverUniforms(),uImpact:{value:impactsOnly?1:0},uFoamAtlas:{value:null},uFoamAtlasReady:{value:0},uFoamClock:{value:0},uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},uTint:{value:new THREE.Color(.91,.96,.95)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
+      uniforms:{...createShoreSolverUniforms(),uImpact:{value:impactsOnly?1:0},uFoamStructure:{value:1},uFoamAtlas:{value:null},uFoamAtlasReady:{value:0},uFoamClock:{value:0},uMarineSurface:{value:null},uMarineBounds:{value:new THREE.Vector4()},uMarineReady:{value:0},uMarineResolution:{value:256},uTint:{value:new THREE.Color(.91,.96,.95)},uSunDirection:{value:new THREE.Vector3(.4,.8,.3).normalize()},uSunColor:{value:new THREE.Vector3(1,1,.95)},uHorizon:{value:new THREE.Vector3(.55,.65,.75)},uOccludingDepth:{value:null},uOccludingDepthReady:{value:0},uViewport:{value:new THREE.Vector2(1,1)},uLongWaves:{value:null},uShortWaves:{value:null},uBathymetry:{value:null},uBathyTriangulated:{value:0},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uSwell:{value:1},uWind:{value:8.5},uChoppiness:{value:1.55}},
       vertexShader:`attribute vec3 aCenter;attribute vec4 aShape;attribute vec2 aMotion;attribute float aAlpha,aSeed;
       varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet;
       uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;
@@ -138,7 +138,7 @@ export class ShoreWhitewaterVolume {
       slope-=horizon/6371000.;vNormal.xz-=slope*vNormal.y;
       vFoamWorld=vec3(world.x,height,world.y);
       gl_Position=projectionMatrix*viewMatrix*vec4(world.x,height,world.y,1);}`,
-      fragmentShader:`uniform vec3 uTint,uSunDirection,uSunColor,uHorizon;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady,uImpact;uniform vec2 uViewport;
+      fragmentShader:`uniform vec3 uTint,uSunDirection,uSunColor,uHorizon;uniform sampler2D uOccludingDepth;uniform float uOccludingDepthReady,uImpact,uFoamStructure;uniform vec2 uViewport;
       varying vec3 vLocal,vNormal,vFoamWorld;varying vec2 vWorld;varying float vAlpha,vSeed,vAge,vWet;
       ${whitewaterPoreGLSL}
       ${foamAppearanceGLSL}
@@ -161,6 +161,7 @@ export class ShoreWhitewaterVolume {
       float fine=mix(.5,whitewaterNoise(vWorld*18.),resolved);
       vec2 bump=vec2(whitewaterNoise((vWorld+vec2(.025,0))*18.)-whitewaterNoise((vWorld-vec2(.025,0))*18.),whitewaterNoise((vWorld+vec2(0,.025))*18.)-whitewaterNoise((vWorld-vec2(0,.025))*18.));
       vec3 n=uFoamAtlasReady>.5?froth.normal:normalize(vNormal+vec3(bump.x,0,bump.y)*.32*resolved);
+      if(uFoamAtlasReady>.5&&uFoamStructure>.5)n=normalize(n+vec3(bump.x,0,bump.y)*.24*resolved);
       float sun=max(0.,dot(n,normalize(uSunDirection)));
       // Lambert's albedo/pi applies to incident sunlight. The previous .22
       // constant direct term lit cavities even when sun incidence was zero.
@@ -169,6 +170,9 @@ export class ShoreWhitewaterVolume {
       float bubbles=.65+.35*fine;
       vec3 color=uTint*irradiance*cavity*bubbles;
       if(uFoamAtlasReady>.5)color=uTint*irradiance*froth.tone;
+      // Photo coverage and three-dimensional lighting are complementary.
+      // Keep wet recesses and fine bubble shading after loading the atlas.
+      if(uFoamAtlasReady>.5&&uFoamStructure>.5)color*=cavity*(.88+.12*fine);
       gl_FragColor=vec4(color,1.);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>

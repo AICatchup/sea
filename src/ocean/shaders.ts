@@ -693,6 +693,12 @@ export const oceanFragment = /* glsl */ `
       vec3 irradiance=uHorizon*(.20+.22*max(0.,froth.normal.y))+uSunColor*(foamSun/PI)*sunVisibility;
       foamColor=vec3(.94,.97,.98)*irradiance*froth.tone;
       foam*=.84+.16*froth.field;
+      // The atlas supplies macro coverage; it must not bypass the resolved
+      // bubble caps and translucent channels of the optical foam film.
+      if(uFoamFilm>.5&&uFoamStructure>.5){
+        vec2 film=structuredFoamFilm(vOcean+foamDrift*.35,footprint,materialFoam,pocketField);
+        foam*=film.x;foamColor*=film.y;
+      }
     }else if(uFoamFilm>.5&&foam>.001){
       vec2 film=uFoamStructure>.5?structuredFoamFilm(vOcean+foamDrift*.35,footprint,materialFoam,pocketField):foamFilm(vOcean+foamDrift*.35,footprint,max(solvedFoam,foam));
       foam*=film.x;
@@ -705,7 +711,10 @@ export const oceanFragment = /* glsl */ `
     // A shallow positive crest alone is not evidence of breaking. The solved
     // residual foam is already represented above; calm contact has no white rail.
     float shoreFoam=shallowBreaking*crestArrival*coast.y*pores*.48*breaking;
-    color=mix(color,uCloudColor*.55,shoreFoam*(1.-uHideSurfaceFoam));
+    if(uFoamAtlasReady>.5&&uFoamStructure>.5){
+      shoreFoam=foamImageCoverage(shoreFoam,froth.field,footprint);
+      color=mix(color,foamColor,shoreFoam*(1.-uHideSurfaceFoam));
+    }else color=mix(color,uCloudColor*.55,shoreFoam*(1.-uHideSurfaceFoam));
 
     // Air scattering uses the same atmosphere as the visible sky.
     float fog=1.0-exp(-vDistance*mix(0.000045,0.00042,uStorm));
