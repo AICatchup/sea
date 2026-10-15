@@ -1,3 +1,4 @@
+import {shoreGridGLSL} from './shore-grid.ts';
 import { photographicSkySampling } from './photographic-sky.ts';
 import { capillarySampling, shoreWaveSampling } from './surface-detail.ts';
 import { shoreSolverSampling } from './shore-solver.ts';
@@ -218,6 +219,7 @@ export const oceanVertex = /* glsl */ `
     return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rgb;
     #endif
   }
+  ${shoreGridGLSL}
   void main() {
     vec2 origin = position.xz + cameraPosition.xz;
     float distanceToEye = length(position.xz);
@@ -228,7 +230,9 @@ export const oceanVertex = /* glsl */ `
     float shoal=shoreWaveScale(coast.rg,uSwell,uWind);
     displacement*=shoal;
     vec3 world=vec3(origin.x,0.0,origin.y);
-    world.xz += displacement.xz*uChoppiness*uSwell;
+    // Horizontal FFT folding must not overlap a separately solved heightfield.
+    // No height, current, foam state or incident energy is attenuated here.
+    world.xz += displacement.xz*uChoppiness*uSwell*shoreGridChop(origin,coast.rg);
     world.y = displacement.y*uSwell;
     world.y = shoreSolvedSurface(world.xz,world.y,0.).x+marineSurface(world.xz).b;
     // Earth's curvature keeps the far mesh below a true, softly hazed horizon.
@@ -703,8 +707,8 @@ export const oceanFragment = /* glsl */ `
     // The lower transparent face is not coated in a broad white mask.
     if(uShoreReady>.5&&coast.x> -7.&&coast.x<.8&&all(greaterThan(shoreUV,vec2(.03)))&&all(lessThan(shoreUV,vec2(.97)))){
       vec2 e=vec2(1./uShoreResolution,0.);
-      vec4 l=texture2D(uShoreState,shoreUV-e),r=texture2D(uShoreState,shoreUV+e);
-      vec4 b=texture2D(uShoreState,shoreUV-e.yx),t=texture2D(uShoreState,shoreUV+e.yx);
+      vec3 l=foamFlowState(shoreUV-e),r=foamFlowState(shoreUV+e);
+      vec3 b=foamFlowState(shoreUV-e.yx),t=foamFlowState(shoreUV+e.yx);
       float cell=uShoreBounds.z/uShoreResolution;
       float compression=max(0.,-((r.y/max(r.x,.01)-l.y/max(l.x,.01))+(t.z/max(t.x,.01)-b.z/max(b.x,.01)))/(2.*cell));
       vec2 travel=vec2(${OCEAN_PROPAGATION_DIRECTION.x},${OCEAN_PROPAGATION_DIRECTION.z})*max(2.,cell*2.);

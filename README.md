@@ -106,6 +106,8 @@ pnpm dev
 
 [約24秒の波のMP4を再生・ダウンロード](docs/checks/v75/breaking-waves.mp4)。正面と斜めの2方向から撮った実際のゲーム画面で、無音です。
 
+**V110:** 泡が四角く分断される継ぎ目を修正し、浅瀬のメッシュを流体計算と整合させました。[18秒の音付きMP4](docs/checks/v110/wave-lifecycle.mp4) / [GIF](docs/checks/v110/wave-lifecycle.gif) / [外部実装からの学び・検証範囲](docs/breaking-wave-status-v110.md)。固定刻みでの検証映像で、実時間性能や実写同等の達成報告ではありません。
+
 **V74:** 沿岸方向につながる波頭が倒れ、白水と飛沫へ変わる処理を追加。泡と水中気泡は水の流れに従って残り、船体・推進器の航跡も同じ水面へ重なります。外部の砕波研究とGitHubの設計を反映しています。[実装・参考資料・検証範囲](docs/graphics-v74.md)
 
 ![実際の連続描画で撮影した、崩れる波と白水](docs/gallery/breaking-v74.gif)

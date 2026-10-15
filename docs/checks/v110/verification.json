@@ -1,0 +1,17 @@
+{
+  "frames": 181,
+  "fps": 10,
+  "simulationStep": 0.016666666666666666,
+  "seconds": 18.1,
+  "waveAudioReadyFrames": 180,
+  "audio": {
+    "seconds": 18.100020833333332,
+    "rmsDb": -29.70482198974858,
+    "peak": 0.236419677734375
+  },
+  "testsPassed": 160,
+  "browserShaderErrors": 0,
+  "experimentalBreakingLips": true,
+  "fullPhysicalVisualAcceptance": false,
+  "realtimePerformanceMeasured": false
+}

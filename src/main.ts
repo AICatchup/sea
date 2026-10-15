@@ -628,7 +628,10 @@ try {
             try{await captureHost.nextFrame();await captureHost.nextFrame();pngLegacySand=await capturePNG();}
             finally{ocean.setSandMemoryEnabled(enabled);}
           }
-          return {frames,pngWithoutLip,pngWithoutWhitewater,pngWithoutSurfaceFoam,foamComparison,pngLegacySand,contactProbe,whitewaterComparison:'Frozen same solver, particles, camera and light; pool first hidden, then surface foam hidden when requested',sandComparison:compareSand?'Same final camera/FFT/SWE/particles/light; only old vs new sand material response':null};
+          const combinedLip=ocean.setBreakingLipVisible(false);
+          let pngWithoutSecondary:string|null=null;
+          try{pngWithoutSecondary=ocean.renderStaticSnapshot();}finally{ocean.setBreakingLipVisible(combinedLip);}
+          return {frames,pngWithoutSecondary,pngWithoutLip,pngWithoutWhitewater,pngWithoutSurfaceFoam,foamComparison,pngLegacySand,contactProbe,whitewaterComparison:'Frozen same solver, particles, camera and light; pool first hidden, then surface foam hidden when requested',sandComparison:compareSand?'Same final camera/FFT/SWE/particles/light; only old vs new sand material response':null};
         }
         finally{ocean.setWhitewaterVisible(visible);}
       }finally{try{if(startClock!==undefined){captureHost.setPaused(true);ocean.setObservationClock(clock);}}finally{captureHost.restoreState(before);}}

@@ -1,3 +1,4 @@
+import {foamFlowGLSL} from './foam-flow.ts';
 /** Crest's licensed foam image is a material, never a camera-facing picture.
  * Two phase-shifted material coordinates follow current SWE velocity. Triplanar
  * projection also covers an overturning vertical face without stretched UVs.
@@ -9,8 +10,9 @@ uniform float uFoamAtlasReady,uFoamClock;
 #ifndef FOAM_FLOW_SHARED
 uniform sampler2D uShoreState;
 uniform vec4 uShoreBounds;
-uniform float uShoreReady;
+uniform float uShoreReady,uShoreResolution;
 #endif
+${foamFlowGLSL}
 struct FoamAppearance {float field;float tone;vec3 normal;};
 float foamImage(vec3 p,vec3 n){
   vec3 w=pow(abs(n),vec3(4));w/=max(.0001,w.x+w.y+w.z);
@@ -27,7 +29,7 @@ float foamImage(vec3 p,vec3 n){
 FoamAppearance foamAppearance(vec3 world,vec3 n,float footprint){
   vec2 flow=vec2(0),uv=(world.xz-uShoreBounds.xy)/uShoreBounds.zw;
   if(uShoreReady>.5&&all(greaterThan(uv,vec2(.025)))&&all(lessThan(uv,vec2(.975)))){
-    vec3 s=texture2D(uShoreState,uv).rgb;if(s.r>.05)flow=clamp(s.yz/s.r,vec2(-6),vec2(6));
+    vec3 s=foamFlowState(uv);if(s.r>.05)flow=clamp(s.yz/s.r,vec2(-6),vec2(6));
   }
   float phase=fract(uFoamClock*.25),other=fract(phase+.5),blend=abs(phase*2.-1.);
   float a=foamImage(world-vec3(flow.x,0,flow.y)*phase*4.,n);
