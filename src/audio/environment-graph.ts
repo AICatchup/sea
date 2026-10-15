@@ -26,7 +26,9 @@ export class EnvironmentGraph{
  setPlaying(playing:boolean):void{if(this.disposed)return;const now=this.context.currentTime;this.output.gain.cancelScheduledValues(now);this.output.gain.setTargetAtTime(playing?.72:0,now,.06);if(!playing){for(const source of this.shots)try{source.stop();}catch{}this.creakCooldown=0;}}
  update(t:SoundscapeTargets,f:SoundscapeFrame,audible:boolean):void{
   if(this.disposed)return;this.frames++;const now=this.context.currentTime;
-  const gains:Record<string,number>={wind:t.wind*.48,hullwash:(t.hullwash+(f.mode==='boat'?.08:0))*t.airTransmission*.62,engine:t.engine*.45,surf:t.surf*.6,swim:t.swim*.55,breath:t.breath*.65,bubbles:t.bubbles*.48};
+  // Surf asset is 4.5 dB quieter than wind before mixing. Compensate its
+  // level so the incoming wash is audible without globally boosting output.
+  const gains:Record<string,number>={wind:t.wind*.48,hullwash:(t.hullwash+(f.mode==='boat'?.08:0))*t.airTransmission*.62,engine:t.engine*.45,surf:t.surf*1.01,swim:t.swim*.55,breath:t.breath*.65,bubbles:t.bubbles*.48};
   for(const[name,l]of this.layers){l.gain.gain.setTargetAtTime(gains[name]??0,now,.12);l.filter.frequency.setTargetAtTime(name==='wind'?t.windCutoffHz:name==='engine'?Math.min(2400,t.cutoffHz):name==='breath'?1100:name==='bubbles'?650:t.cutoffHz,now,.12);l.pan.pan.setTargetAtTime(name==='wind'?t.pan*.42:0,now,.15);if(name==='engine')l.source.playbackRate.setTargetAtTime(t.enginePitch,now,.25);}
   if(!audible)return;this.creakCooldown=Math.max(0,this.creakCooldown-Math.min(.05,f.dt));
   if(t.creak>.08&&this.creakCooldown===0){this.oneShot('creak',Math.min(.25,t.creak*.45),.1,1);this.creakCooldown=2.1;}

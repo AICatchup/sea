@@ -71,3 +71,15 @@ test('invalid inputs remain finite and amplitudes bounded; invalid dt produces n
   for (const value of Object.values(out)) if (typeof value === 'number') assert.ok(Number.isFinite(value));
   assert.equal(out.bird, null); assert.deepEqual(out.footsteps, []);
 });
+
+test('incoming wave produces audible wash attack then release without false reacquisition impact',()=>{
+  const s=new SoundscapeState(),f=frame();const baseline=s.update(f).surf;
+  f.wave={...f.wave,level:.2};const arrival=s.update(f).surf;
+  assert.ok(arrival>baseline+.25,'rising local water must produce a distinct arrival');
+  f.wave={...f.wave,level:.2};const tail=s.update(f).surf;
+  assert.ok(tail<arrival&&tail>baseline,'wash releases gradually');
+  for(let i=0;i<100;i++)s.update(f);
+  assert.ok(s.update(f).surf<baseline+.001);
+  f.wave={...f.wave,ready:false};s.update(f);
+  f.wave={...f.wave,ready:true,level:2};assert.ok(s.update(f).surf<baseline+.001,'readback recovery is not an impact');
+});

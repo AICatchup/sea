@@ -103,3 +103,20 @@ test('valid decoded wave samples remain available inside their own patch only',a
   f.cache.dispose();f.previous.dispose();
 });
 
+test('fixed-step capture waits for wave heights and paused simulation does not expire them',async()=>{
+  const f=fixture();
+  try{
+    f.update(0);let finished=false;
+    const settled=f.cache.settleReadback().then(()=>{finished=true;});
+    await Promise.resolve();assert.equal(finished,false);
+    f.resolve(encodedHeight(1.25));await settled;
+    assert.equal(f.cache.diagnostics.ready,true);
+    // Slow rendering may consume wall time but cannot age a paused wave.
+    for(let i=0;i<100;i++)f.update(0);
+    assert.equal(f.cache.diagnostics.ready,true);
+    assert.ok(Math.abs(f.cache.sample(0,0)-1.25)<.00013);
+    f.update(.25);f.resolve(encodedHeight(.7));await f.cache.settleReadback();
+    assert.ok(Math.abs(f.cache.sample(0,0)-.7)<.00013);
+  }finally{f.cache.dispose();f.previous.dispose();}
+});
+

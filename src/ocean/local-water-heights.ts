@@ -58,6 +58,7 @@ export class LocalWaterHeights {
   private pixels:Uint8Array|null=null;
   private readonly origins=[new THREE.Vector2(),new THREE.Vector2()];
   private pending=false;
+  private readbackDone:Promise<void>=Promise.resolve();
   private lastUpdate=-Infinity;
   private sampleTime=-Infinity;
   private latestClock=-Infinity;
@@ -92,7 +93,8 @@ export class LocalWaterHeights {
     if(clock<this.latestClock){this.pixels=null;this.pointHeights.clear();this.lastUpdate=-Infinity;}
     this.latestClock=clock;
     if(clock-this.sampleTime>.5){this.pixels=null;this.pointHeights.clear();}
-    if(this.pending||this.failed||clock-this.lastUpdate<.2)return;
+    const moved=Math.hypot(player.x-this.origins[0].x,player.z-this.origins[0].y)>1||Math.hypot(boat.x-this.origins[1].x,boat.z-this.origins[1].y)>1;
+    if(this.pending||this.failed||(!moved&&clock-this.lastUpdate<.2))return;
     this.lastUpdate=clock;this.pending=true;
     const u=this.material.uniforms,origins=[new THREE.Vector2(player.x,player.z),new THREE.Vector2(boat.x,boat.z)];
     const requested=[...this.requested.entries()];this.requested.clear();this.requestedData.fill(0);
@@ -109,7 +111,7 @@ export class LocalWaterHeights {
       finally{this.renderer.setRenderTarget(previous);}
       readback=this.renderer.readRenderTargetPixelsAsync(this.target,0,0,8,32,new Uint8Array(1024)) as Promise<Uint8Array>;
     }catch(error){this.pending=false;this.fail(error);return;}
-    void readback.then(pixels=>{
+    this.readbackDone=readback.then(pixels=>{
       if(this.disposed||this.latestClock-clock>.5||this.latestClock<clock)return;
       if(!(pixels instanceof Uint8Array)||pixels.length!==1024||pixels.some((value,i)=>i%4===2&&value!==137)){
         throw new Error('Uninitialized FFT height framebuffer');
@@ -123,6 +125,7 @@ export class LocalWaterHeights {
     this.failed=true;this.pixels=null;this.pointHeights.clear();
     console.warn('FFT surface-height cache unavailable; mean sea level retained',error);
   }
+  async settleReadback():Promise<void>{await this.readbackDone;if(this.failed)throw new Error('Local wave-height readback failed');}
   get diagnostics(){return {ready:!!this.pixels,failed:this.failed,samples:256,requestedPoints:this.pointHeights.size,requestCapacity:128,interval:.2,readbackBytes:1024};}
   bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uMarineSurface','uMarineBounds','uMarineReady','uMarineResolution'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
   dispose():void{

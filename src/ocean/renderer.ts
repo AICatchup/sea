@@ -533,7 +533,9 @@ export class Ocean {
       this.marineSurface.wake(state.boatPosition.x,state.boatPosition.z,state.boatYaw,v?.x??0,v?.z??0,state.mode==='boat'?state.boatThrottle??0:0,dt);
       this.marineSurface.update(dt,this.camera.position.x,this.camera.position.z);
     }
-    this.waterHeights.update(stamp*.001,textures,waterMap,state.position,state.boatPosition,this.swell,this.uniforms.uChoppiness.value,this.wind);
+    // Heights and waves share simulation time, including fixed-step capture.
+    // Wall-clock jumps used to expire valid samples between recorded frames.
+    this.waterHeights.update(this.time,textures,waterMap,state.position,state.boatPosition,this.swell,this.uniforms.uChoppiness.value,this.wind);
     if(this.breaker){
       this.breaker.bindUniforms(this.uniforms);
       this.breaker.update(this.camera.position.x,this.camera.position.z,underwater>.5,this.paused?0:delta,this.time);
@@ -634,7 +636,7 @@ export class Ocean {
     const measured=[this.measureTime,this.measureFrames,this.fps];
     cancelAnimationFrame(this.animationFrame);
     let stamp=performance.now(),steps=0;this.lastStamp=stamp;this.paused=false;
-    try{for(let remaining=seconds;remaining>1e-7;){const dt=Math.min(1/60,remaining);stamp+=dt*1000;this.frame(stamp);cancelAnimationFrame(this.animationFrame);remaining-=dt;if(++steps%12===0||remaining<=1e-7){this.paused=true;await this.spray.settleReadback();cancelAnimationFrame(this.animationFrame);this.paused=false;this.lastStamp=stamp;}}}
+    try{for(let remaining=seconds;remaining>1e-7;){const dt=Math.min(1/60,remaining);stamp+=dt*1000;this.frame(stamp);cancelAnimationFrame(this.animationFrame);remaining-=dt;if(++steps%12===0||remaining<=1e-7){this.paused=true;await Promise.all([this.spray.settleReadback(),this.waterHeights.settleReadback()]);cancelAnimationFrame(this.animationFrame);this.paused=false;this.lastStamp=stamp;}}}
     finally{this.paused=true;this.lastStamp=0;this.measureTime=measured[0];this.measureFrames=measured[1];this.fps=measured[2];cancelAnimationFrame(this.animationFrame);if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.frame);}
   }
   setQuality(quality:Quality):void{this.quality=quality;this.resize();}

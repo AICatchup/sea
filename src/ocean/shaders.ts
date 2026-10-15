@@ -11,6 +11,8 @@ import {skinnedReceiverTraceGLSL} from './skinned-receivers-glsl.ts';
 import {waterVolumeGLSL} from './water-volume.ts';
 import {marineSurfaceSampling} from './marine-surface-field.ts';
 import {foamAppearanceGLSL} from './foam-appearance.ts';
+import {crestAerationGLSL} from './crest-aeration.ts';
+import {OCEAN_PROPAGATION_DIRECTION} from './wave-direction.ts';
 
 export const atmosphere = /* glsl */ `
   ${photographicSkySampling}
@@ -282,6 +284,7 @@ export const oceanFragment = /* glsl */ `
   ${marineSurfaceSampling}
   #define FOAM_FLOW_SHARED 1
   ${foamAppearanceGLSL}
+  ${crestAerationGLSL}
 
   #ifdef GEOMETRIC_REFRACTION
   vec4 receiverGround(vec2 uv){
@@ -695,6 +698,20 @@ export const oceanFragment = /* glsl */ `
     vec4 marine=marineSurface(vWorld.xz);
     marine.rg*=1.-uHideMarineFoam;
     float solvedFoam=max(shoreSolvedSurface(vWorld.xz,vWorld.y,0.).y,clamp(marine.r,0.,1.));
+    #ifndef CURVED_SURFACE
+    // Aeration starts at an actively compressing, depth-limited crest.
+    // The lower transparent face is not coated in a broad white mask.
+    if(uShoreReady>.5&&coast.x> -7.&&coast.x<.8&&all(greaterThan(shoreUV,vec2(.03)))&&all(lessThan(shoreUV,vec2(.97)))){
+      vec2 e=vec2(1./uShoreResolution,0.);
+      vec4 l=texture2D(uShoreState,shoreUV-e),r=texture2D(uShoreState,shoreUV+e);
+      vec4 b=texture2D(uShoreState,shoreUV-e.yx),t=texture2D(uShoreState,shoreUV+e.yx);
+      float cell=uShoreBounds.z/uShoreResolution;
+      float compression=max(0.,-((r.y/max(r.x,.01)-l.y/max(l.x,.01))+(t.z/max(t.x,.01)-b.z/max(b.x,.01)))/(2.*cell));
+      vec2 travel=vec2(${OCEAN_PROPAGATION_DIRECTION.x},${OCEAN_PROPAGATION_DIRECTION.z})*max(2.,cell*2.);
+      float center=renderedSurface(vWorld.xz),back=renderedSurface(vWorld.xz-travel),front=renderedSurface(vWorld.xz+travel);
+      solvedFoam=max(solvedFoam,.86*crestAeration(center,back,front,coast.x,compression));
+    }
+    #endif
     color=mix(color,uCloudColor*.43,clamp(marine.g*marine.g*.10,0.,.10)*(1.-uHideSurfaceFoam));
     float materialFoam=foamMaterialConcentration(solvedFoam,foam);
     FoamAppearance froth=FoamAppearance(.5,1.,normal);

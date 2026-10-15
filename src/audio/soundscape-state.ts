@@ -33,9 +33,10 @@ export class SoundscapeState {
   private birdRemaining = 12;
   private breathTime=0;
   private engineDemand=0;
+  private surfSurge=0;
   constructor(seed = 0x534541) {this.seed = finite(seed, 1) >>> 0;}
   /** Explicit lifecycle reset; does not alter the deterministic random sequence. */
-  reset(): void {this.previous = null; this.birdRemaining = 12;this.engineDemand=0;}
+  reset(): void {this.previous = null; this.birdRemaining = 12;this.engineDemand=0;this.surfSurge=0;}
   private random(): number {
     this.seed = (Math.imul(this.seed, 1664525) + 1013904223) >>> 0;
     return this.seed / 4294967296;
@@ -65,13 +66,21 @@ export class SoundscapeState {
     const jump = p !== null && Math.hypot(finite(f.position.x) - p.position.x,
       finite(f.position.y) - p.position.y, finite(f.position.z) - p.position.z) > 12;
     const transition = !p || p.mode !== f.mode || jump;
+    // Local incoming water drives a fast wash attack and a slower release.
+    // Reacquisition/teleport is not a wave impact; never differentiate it.
+    if(transition)this.surfSurge=0;
+    if(active){
+      const rise=!transition&&f.wave.ready&&p?.wave.ready?clamp((finite(f.wave.level)-finite(p.wave.level))/dt/1.4):0;
+      const demand=f.wave.ready?Math.max(rise,roughness*.65):0;
+      this.surfSurge+=(demand-this.surfSurge)*(1-Math.exp(-dt/(demand>this.surfSurge?.08:1.25)));
+    }
     const pan = relativeWindSpeed > .001 ? clamp((rx * Math.cos(yaw) + rz * Math.sin(yaw)) / relativeWindSpeed, -1, 1) : 0;
     let rocking = 0;
     if (active && !transition && p) rocking = clamp((Math.abs(finite(f.boat.pitch) - p.boat.pitch)
       + Math.abs(finite(f.boat.roll) - p.boat.roll)) / dt / 1.8);
     const out: SoundscapeTargets = {
       wind: clamp(Math.pow(relativeWindSpeed / 20, 1.4) * airTransmission * clamp(f.environment.exposure??1,.1,1)),
-      surf: clamp(shore * (.12 + .4 * windSpeed / 20 + .25 * roughness) * airTransmission),
+      surf: clamp(shore * (.12 + .24 * windSpeed / 20 + .58 * this.surfSurge) * airTransmission),
       hullwash: aboard ? clamp((boatSpeed / 10 * .6 + roughness * .18) * airTransmission) : 0,
       creak: aboard ? clamp(rocking * .55 * airTransmission) : 0,
       engine: aboard ? clamp((.08 + .62 * smooth(this.engineDemand)) * airTransmission) : 0,
