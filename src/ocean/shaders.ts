@@ -779,6 +779,15 @@ export const oceanFragment = /* glsl */ `
       else gl_FragColor=vec4(texture2D(uSceneColor,refractionUV).rgb,1.);
       return;
     }
+    #ifdef CONNECTED_FRONT
+    // The resolved sheet merges into the already shaded receiving water.
+    // Coverage is continuous at contact; a binary cut exposed dark cut edges.
+    if(uBehindWaterReady>.5){
+      float contactCoverage=smoothstep(.025,.18,sheetClearance);
+      float edgeCoverage=smoothstep(.06,.30,vEnvelope);
+      color=mix(texture2D(uBehindWater,screenUV).rgb,color,contactCoverage*edgeCoverage);
+    }
+    #endif
     gl_FragColor=vec4(color,1.0);
   }
 `;

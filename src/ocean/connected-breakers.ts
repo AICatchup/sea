@@ -54,14 +54,28 @@ export function trackBreakerFace(x:number,z:number,nx:number,nz:number,sampler:W
   }
   return best;
 }
-function emissionCrest(x:number,z:number,nx:number,nz:number,sampler:WhitewaterSampler):{x:number;z:number;height:number}|null{
+export function emissionCrest(x:number,z:number,nx:number,nz:number,sampler:WhitewaterSampler):{x:number;z:number;height:number}|null{
   const s=sampleState();if(!sampler(x,z,s)||!wet(s,false))return null;
   const peak={x,z,height:s.height};let foundRise=false;
   for(let back=.5;back<=8;back+=.5){
     const px=x-nx*back,pz=z-nz*back;
     if(!sampler(px,pz,s)||!wet(s,false))break;
-    if(s.height>peak.height+.01){peak.x=px;peak.z=pz;peak.height=s.height;foundRise=true;}
+    if(s.height>peak.height){peak.x=px;peak.z=pz;peak.height=s.height;foundRise=true;}
     else if(foundRise&&s.height<peak.height-.08)break;
+  }
+  // Refine the sampled maximum within its half-metre bracket. Snapping the
+  // emission origin to whole samples makes successive material rows jump.
+  const step=.5;
+  if(sampler(peak.x-nx*step,peak.z-nz*step,s)&&wet(s,false)){
+    const left=s.height;
+    if(sampler(peak.x+nx*step,peak.z+nz*step,s)&&wet(s,false)){
+      const right=s.height,curvature=left-2*peak.height+right;
+      if(curvature<-.00001){
+        const offset=THREE.MathUtils.clamp(.5*(left-right)/curvature,-.5,.5)*step;
+        const px=peak.x+nx*offset,pz=peak.z+nz*offset;
+        if(sampler(px,pz,s)&&wet(s,false)){peak.x=px;peak.z=pz;peak.height=s.height;}
+      }
+    }
   }
   return peak;
 }

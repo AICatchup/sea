@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,SHEET_ROWS,breakerRootSupport,breakerLipThickness,breakerVerticalVelocity} from '../src/ocean/connected-breakers.ts';
+import {emissionCrest,traceBreakingFront,ConnectedBreakerPool,BREAKER_FRONT_NODES,SHEET_ROWS,breakerRootSupport,breakerLipThickness,breakerVerticalVelocity} from '../src/ocean/connected-breakers.ts';
 import type {WhitewaterSample,WhitewaterSampler} from '../src/ocean/shore-whitewater.ts';
 import {marineDecay,MarineSurfaceField,validMarineDeposit} from '../src/ocean/marine-surface-field.ts';
 import * as THREE from 'three';
@@ -236,4 +236,17 @@ test('newly emitted sheet water may clear the contact band before returning',()=
  assert.equal(pool.sheet[3],-1,'return from air absorbs it');
  level=1;pool.advance(1/60,sea,()=>{});
  assert.equal(pool.sheet[3],-1,'absorbed water cannot reappear');
+});
+
+
+test('moving emission crest stays continuous across half-metre sample boundaries',()=>{
+  let previous:number|undefined;
+  for(let i=0;i<=100;i++){
+    const peak=.7+i*.01;
+    const sampler:WhitewaterSampler=(x,z,s)=>{Object.assign(s,{height:2-.3*(x-peak)**2,depth:3,ground:-2,compression:.3});return true;};
+    const crest=emissionCrest(3,0,1,0,sampler)!;
+    assert.ok(Math.abs(crest.x-peak)<1e-8);
+    if(previous!==undefined)assert.ok(Math.abs(crest.x-previous)<.011);
+    previous=crest.x;
+  }
 });

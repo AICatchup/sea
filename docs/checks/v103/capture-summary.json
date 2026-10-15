@@ -1,0 +1,18 @@
+[
+  {
+    "angle": "side",
+    "frames": 81,
+    "first": 0,
+    "last": 7.9999999999991305,
+    "notReady": 1,
+    "failed": 0
+  },
+  {
+    "angle": "front",
+    "frames": 8,
+    "first": 0,
+    "last": 15.999999999990585,
+    "notReady": 1,
+    "failed": 0
+  }
+]
