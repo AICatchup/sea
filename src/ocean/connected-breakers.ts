@@ -362,6 +362,12 @@ export class ConnectedShoreBreakers {
         vec4 p0=sheetRow(a-1.,u),p1=sheetRow(a,u),p2=sheetRow(a+1.,u),p3=sheetRow(a+2.,u);
         return .5*((2.*p1)+(-p0+p2)*t+(2.*p0-5.*p1+4.*p2-p3)*t*t+(-p0+3.*p1-3.*p2+p3)*t*t*t);
       }
+      vec4 attachedParcel(float along,float u){
+        vec4 parcel=parcelState(along,u),origin=parcelState(along,0.);
+        float feeding=clamp(frontState(uFrontTips,along).w,0.,1.);
+        parcel.y+=(lipSurface(origin.xz)-origin.y)*(1.-smoothstep(0.,.10,u))*feeding;
+        return parcel;
+      }
       void main(){
         if(aActive<.5){gl_Position=vec4(2,2,2,1);return;}
         float u=position.x+.5,along=position.z+.5;
@@ -379,15 +385,13 @@ export class ConnectedShoreBreakers {
         vEnvelope*=smoothstep(.35,.85,shape.w);
         // Temporal rows are emitted at the moving crest and retain their
         // own position/velocity under gravity. No arc is refitted to a tip.
-        vec4 parcel=parcelState(along,u);
+        vec4 parcel=attachedParcel(along,u);
         vEnvelope*=sheetCoverage(along,u);
-        vec4 originParcel=parcelState(along,0.);
-        // Only newly emitted water remains attached to the source. Correcting
-        // the entire sheet every GPU frame bent old airborne water sideways.
-        parcel.y+=(rootHeight-originParcel.y)*(1.-smoothstep(0.,.10,u))*clamp(tip.w,0.,1.);
-        vec4 previous=parcelState(along,max(0.,u-.03125)),next=parcelState(along,min(1.,u+.03125));
+        // Differentiate the same attached surface that is actually rendered.
+        // Uncorrected trajectories gave the join an unrelated reflection normal.
+        vec4 previous=attachedParcel(along,max(0.,u-.03125)),next=attachedParcel(along,min(1.,u+.03125));
         vec2 tangent=vec2(dot(next.xz-previous.xz,shape.xy),next.y-previous.y);
-        vec3 across=parcelState(min(1.,along+.0078125),u).xyz-parcelState(max(0.,along-.0078125),u).xyz;
+        vec3 across=attachedParcel(min(1.,along+.0078125),u).xyz-attachedParcel(max(0.,along-.0078125),u).xyz;
         vec3 flightTangent=next.xyz-previous.xyz;
         vec3 smoothNormal=cross(across,flightTangent);
         vSheetNormal=length(smoothNormal)>.000001?normalize(smoothNormal):vec3(0.,1.,0.);
@@ -405,8 +409,8 @@ export class ConnectedShoreBreakers {
         // column onto base joined airborne neighbours with rectangular walls.
         // Preserve its trajectory and let the fragment pass clip submerged water.
         float height=parcel.y;
-        // Centimetre folds break up a smooth sheet without detaching its base.
-        height+=(.018*sin(along*79.+aSlot*17.)+.012*sin(along*137.+u*23.))*sin(u*3.14159265)*vEnvelope;
+        // Fine water detail is shaded by the shared capillary model. Do not
+        // add untracked geometric ripples after computing the surface normal.
         vec2 horizon=world-cameraPosition.xz;height-=dot(horizon,horizon)/(2.*6371000.);
         vWorld=vec3(world.x,height,world.y);vOcean=world;vDistance=length(cameraPosition-vWorld);
         gl_Position=projectionMatrix*viewMatrix*vec4(vWorld,1);
