@@ -16,6 +16,7 @@ import {ExpeditionUI} from './ui/expedition-ui';
 import {ActivityUI} from './ui/activity-ui.ts';
 import { presets, type PresetName } from './ocean/presets';
 import { SurfAudio } from './audio';
+import {captureSoundtrack} from './audio/capture-soundtrack';
 import { AdventureUI } from './ui/adventure-ui';
 import { captureNamed, captureMatrix, CAPTURE_PROFILES, type CaptureState, type SceneCaptureHost } from './qa/scene-capture';
 import { experienceOptions } from './qa/experience-options';
@@ -266,6 +267,7 @@ try {
       }finally{ocean.setShoreCandidateEnabled(savedShore);for(const entry of savedWater)entry.object.visible=entry.visible;for(const entry of savedReceivers)entry.object.receiveShadow=entry.receive;try{ocean.setObservationClock(clock);}finally{captureHost.restoreState(before);}}
     },
     audioDiagnostics:()=>sound.diagnostics,
+    captureSoundtrack,
     activities:()=>ocean.activities.diagnostics,
     async recordAudio(milliseconds:number){const blob=await sound.record(milliseconds);return await new Promise<string>((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});},
     async captureSandComparison(name:string){
@@ -594,7 +596,7 @@ try {
         for(let i=0;i<stops.length;i++){
           if(i){if(fixedStep)await ocean.advanceObservation(stops[i]-stops[i-1]);else{captureHost.setPaused(false);await new Promise(resolve=>setTimeout(resolve,(stops[i]-stops[i-1])*1000));captureHost.setPaused(true);}}
           if(!fixedStep)await captureHost.nextFrame();const png=fixedStep?ocean.renderStaticSnapshot():await capturePNG();if(!png)throw new Error('No temporal capture');
-          frames.push({png,metadata:{...captureHost.readState(),name,requestedSeconds:stops[i],fixedStep,realtime:!fixedStep,time:ocean.diagnostics.time,spray:{...ocean.diagnostics.spray},shoreSolver:ocean.diagnostics.shoreSolver,sandMoisture:ocean.diagnostics.sandMoisture,provenance:'One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions',humanAccepted:false}});
+          frames.push({png,metadata:{...captureHost.readState(),name,requestedSeconds:stops[i],soundFrame:ocean.soundFrame(i?stops[i]-stops[i-1]:1/60),fixedStep,realtime:!fixedStep,time:ocean.diagnostics.time,spray:{...ocean.diagnostics.spray},shoreSolver:ocean.diagnostics.shoreSolver,sandMoisture:ocean.diagnostics.sandMoisture,provenance:'One QA camera, preset and spectrum initialization; continuous solver/particle history, no inter-frame restore; not travel or surveyed conditions',humanAccepted:false}});
         }
         const lipVisible=ocean.setBreakingLipVisible(false);let pngWithoutLip:string|null=null;
         try{pngWithoutLip=ocean.renderStaticSnapshot();}finally{ocean.setBreakingLipVisible(lipVisible);}

@@ -8,7 +8,7 @@ export class EnvironmentGraph{
  private layers=new Map<string,Layer>();private samples=new Map<string,AudioBuffer>();private nodes:AudioNode[]=[];
  private shots=new Set<AudioBufferSourceNode>();private disposed=false;private creakCooldown=0;private noise:AudioBuffer;
  private frames=0;private shotCount=0;private failures:string[]=[];
- constructor(private readonly context:AudioContext){
+ constructor(private readonly context:BaseAudioContext){
   this.output=context.createGain();this.output.gain.value=0;this.limiter=context.createDynamicsCompressor();
   this.limiter.threshold.value=-12;this.limiter.knee.value=12;this.limiter.ratio.value=8;this.limiter.attack.value=.006;this.limiter.release.value=.25;
   this.output.connect(this.limiter).connect(context.destination);this.nodes.push(this.output,this.limiter);

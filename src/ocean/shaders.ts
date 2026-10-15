@@ -439,7 +439,11 @@ export const oceanFragment = /* glsl */ `
     // already uses SWE there; reverting only the optical normal to a flat
     // FFT face produced a black reflection seam at that arbitrary elevation.
     if(uShoreReady>.5&&coast.x> -11.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))){
-      float step=max(1.5,footprint*.65);
+      // A narrow stencil differentiates the linear
+      // reconstruction into flat cell faces. Match its actual metric support
+      // so reflected sky cannot reveal the square simulation lattice.
+      float solverCell=max(uShoreBounds.z,uShoreBounds.w)/uShoreResolution;
+      float step=max(max(1.5,2.*solverCell),footprint*.65);
       vec2 nx=vWorld.xz-vec2(step,0),px=vWorld.xz+vec2(step,0);
       vec2 nz=vWorld.xz-vec2(0,step),pz=vWorld.xz+vec2(0,step);
       // Dry neighbours return the FFT fallback, often mean sea level below
