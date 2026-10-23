@@ -1,3 +1,4 @@
+import {parseFrameLimit} from './ocean/frame-budget.ts';
 import './style.css';
 import {Raycaster,Vector2} from 'three';
 import { inspectBodyHands } from './qa/body-inspection';
@@ -148,15 +149,23 @@ try {
   };
   const unsubscribeHints=controls.subscribe(syncControlHints);syncControlHints();
   let previousSoundStamp=performance.now();
-  const updateUI = () => {
-    if (disposed) return;
+  let previousUIStamp=0;
+  const updateUI = (stamp:number) => {
+    if (disposed || document.hidden) return;
+    uiFrame = requestAnimationFrame(updateUI);
+    if(stamp-previousUIStamp<1000/30-.25)return;
+    previousUIStamp=stamp;
     adventureUI.update(ocean.adventure.state, ocean.assets.placedCount);
     expeditionUI.update(ocean.adventure.state);
     activityUI.update(ocean.adventure.state,ocean.adventure.inputBlocked);
     const soundStamp=performance.now();sound.setFrame(ocean.soundFrame((soundStamp-previousSoundStamp)/1000));previousSoundStamp=soundStamp;
-    uiFrame = requestAnimationFrame(updateUI);
   };
   uiFrame = requestAnimationFrame(updateUI);
+  document.addEventListener('visibilitychange',()=>{
+    cancelAnimationFrame(uiFrame);
+    previousUIStamp=0;previousSoundStamp=performance.now();
+    if(!document.hidden&&!disposed)uiFrame=requestAnimationFrame(updateUI);
+  },events);
   sound.setWind(ocean.wind);
   Object.defineProperty(window, '__sea', { get: () => ocean.diagnostics, configurable: true });
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaOptics',{value:()=>ocean.probeOptics(),configurable:true});
@@ -743,6 +752,13 @@ try {
     element('swell-value').innerHTML = `${ocean.swell.toFixed(2)} <small>×</small>`;
     input.style.setProperty('--fill', `${(ocean.swell - 0.3) / 1.7 * 100}%`);
   }, events);
+  const frameLimitInput=element<HTMLSelectElement>('frame-limit');
+  try{frameLimitInput.value=String(parseFrameLimit(localStorage.getItem('sea.frameLimit')));}catch{}
+  ocean.setFrameLimit(parseFrameLimit(frameLimitInput.value));
+  frameLimitInput.addEventListener('change',()=>{
+    const limit=parseFrameLimit(frameLimitInput.value);ocean.setFrameLimit(limit);
+    try{localStorage.setItem('sea.frameLimit',String(limit));}catch{}
+  },events);
   element<HTMLSelectElement>('quality').addEventListener('change', event => {
     ocean.setQuality((event.target as HTMLSelectElement).value as Quality);
   }, events);

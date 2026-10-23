@@ -1,3 +1,4 @@
+import {FrameBudget, frameRateTargets, type FrameLimit} from './frame-budget.ts';
 import * as THREE from 'three';
 import {refreshReflection} from './reflection-cadence.ts';
 import foamAtlasURL from '../assets/foam/crest-foam.png';
@@ -142,6 +143,7 @@ export class Ocean {
   private foamAtlas:THREE.Texture=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1,THREE.RGBAFormat);
   private currentPreset:PresetName='day';
   private animationFrame=0;
+  private readonly frameBudget=new FrameBudget();
   private disposed=false;
   private contextLost=false;
   private reflectionSamplingEnabled=true;
@@ -457,8 +459,9 @@ export class Ocean {
     const options={signal:this.abort.signal};
     window.addEventListener('resize',()=>this.resize(),options);
     document.addEventListener('visibilitychange',()=>{
+      this.frameBudget.reset();
       if(document.hidden){cancelAnimationFrame(this.animationFrame);this.lastStamp=0;this.captureNextFrame?.(null);this.captureNextFrame=null;}
-      else if(!this.disposed&&!this.contextLost){this.lastStamp=0;this.animationFrame=requestAnimationFrame(this.frame);}
+      else if(!this.disposed&&!this.contextLost){this.lastStamp=0;this.animationFrame=requestAnimationFrame(this.scheduledFrame);}
     },options);
     this.canvas.addEventListener('webglcontextlost',event=>{
       event.preventDefault();this.contextLost=true;cancelAnimationFrame(this.animationFrame);
@@ -466,6 +469,14 @@ export class Ocean {
       window.dispatchEvent(new CustomEvent('ocean-error',{detail:'GPUとの接続が中断されました。ページを再読み込みしてください。'}));
     },options);
   }
+
+  private scheduledFrame=(stamp:number):void=>{
+    if(this.disposed||this.contextLost||document.hidden)return;
+    if(!this.frameBudget.due(stamp)){
+      this.animationFrame=requestAnimationFrame(this.scheduledFrame);return;
+    }
+    this.frame(stamp);
+  };
 
   private frame=(stamp:number):void=>{
     if(this.disposed||this.contextLost)return;
@@ -576,12 +587,13 @@ export class Ocean {
     if(this.measureTime>=2.5){
       this.fps=this.measureFrames/this.measureTime;
       if(this.quality==='auto'&&this.frames>80){
-        if(this.fps<28&&this.automaticScale>.5){this.automaticScale=Math.max(.5,this.automaticScale*.82);this.resize();}
-        else if(this.fps>56&&this.automaticScale<1){this.automaticScale=Math.min(1,this.automaticScale+.07);this.resize();}
+        const targets=frameRateTargets(this.frameBudget.limit);
+        if(this.fps<targets.lower&&this.automaticScale>.5){this.automaticScale=Math.max(.5,this.automaticScale*.82);this.resize();}
+        else if(this.fps>targets.upper&&this.automaticScale<1){this.automaticScale=Math.min(1,this.automaticScale+.07);this.resize();}
       }
       this.measureTime=0;this.measureFrames=0;
     }
-    this.animationFrame=requestAnimationFrame(this.frame);
+    this.animationFrame=requestAnimationFrame(this.scheduledFrame);
   };
 
   private boatBounds:THREE.Box3|null=null;
@@ -627,7 +639,7 @@ export class Ocean {
       // frame() may fail before scheduling its successor. Restore exactly one
       // live loop in either path; observation errors must not stop normal play.
       cancelAnimationFrame(this.animationFrame);
-      if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.frame);
+      if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.scheduledFrame);
     }
   }
   /** Fixed-step visual verification. Not realtime FPS evidence. */
@@ -637,7 +649,11 @@ export class Ocean {
     cancelAnimationFrame(this.animationFrame);
     let stamp=performance.now(),steps=0;this.lastStamp=stamp;this.paused=false;
     try{for(let remaining=seconds;remaining>1e-7;){const dt=Math.min(1/60,remaining);stamp+=dt*1000;this.frame(stamp);cancelAnimationFrame(this.animationFrame);remaining-=dt;if(++steps%12===0||remaining<=1e-7){this.paused=true;await Promise.all([this.spray.settleReadback(),this.waterHeights.settleReadback()]);cancelAnimationFrame(this.animationFrame);this.paused=false;this.lastStamp=stamp;}}}
-    finally{this.paused=true;this.lastStamp=0;this.measureTime=measured[0];this.measureFrames=measured[1];this.fps=measured[2];cancelAnimationFrame(this.animationFrame);if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.frame);}
+    finally{this.paused=true;this.lastStamp=0;this.measureTime=measured[0];this.measureFrames=measured[1];this.fps=measured[2];cancelAnimationFrame(this.animationFrame);if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.scheduledFrame);}
+  }
+  setFrameLimit(limit:FrameLimit):void{
+    this.frameBudget.limit=limit;this.frameBudget.reset();
+    this.measureTime=0;this.measureFrames=0;
   }
   setQuality(quality:Quality):void{this.quality=quality;this.resize();}
   setWind(wind:number):void{this.wind=THREE.MathUtils.clamp(wind,2,18);this.simulation.setWind(this.wind);if(this.paused)this.simulation.advance(this.time,0,this.swell,1.55);}
@@ -832,7 +848,7 @@ export class Ocean {
   }
   get diagnostics(){
     const state=this.adventure.state;
-    return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,preset:this.currentPreset,
+    return {time:this.time,frames:this.frames,fps:Number(this.fps.toFixed(1)),paused:this.paused,wind:this.wind,swell:this.swell,quality:this.quality,frameLimit:this.frameBudget.limit,preset:this.currentPreset,
       visualCaptureLocked:this.visualCaptureLocked,sandAppearance:this.world.sandAppearance.value,fieldOfView:this.camera.fov,
       breaker:this.breaker?.diagnostics??null,
       resolution:[this.canvas.width,this.canvas.height],camera:{yaw:state.yaw,pitch:state.pitch,height:state.position.y,x:state.position.x,z:state.position.z},
