@@ -8,6 +8,8 @@
 
 [波音入り動画（MP4）](docs/checks/v110/wave-lifecycle.mp4) · [映像の検証条件と未達事項](docs/breaking-wave-status-v110.md)
 
+**砕波の改善記録 V111:** [新しい音付きMP4](docs/checks/v111/wave-lifecycle.mp4) · [修正・比較・未達事項](docs/breaking-wave-status-v111.md) · [参考にしたGitHub実装](docs/wave-methods-github.md)。波頭の接続と後続の水の着水を修正しました。大きな巻き込みは改善中です。
+
 [はじめる](#はじめる) · [できること](#できること) · [島をめぐる](#島をめぐる) · [操作](#操作) · [開発と検証](#開発と検証)
 
 ## 舵を握って、入り江の外へ

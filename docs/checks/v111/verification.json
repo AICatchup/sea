@@ -1,0 +1,60 @@
+{
+  "frames": 181,
+  "fps": 10,
+  "realtime": false,
+  "audio": {
+    "channels": 2,
+    "sampleRate": 48000,
+    "seconds": 18.100020833333332,
+    "peak": 0.2423095703125,
+    "rms": 0.03264863846476915,
+    "rmsDbfs": -29.722698504970822
+  },
+  "maxAcrossGap": 4.52915954892947,
+  "maxAlongGap": 0.6532716891959502,
+  "lastSpray": {
+    "frontEvents": 166,
+    "lipActive": 20,
+    "lipImpacts": 189,
+    "whitewaterEmitted": 42583,
+    "geometryAudit": {
+      "maxAcrossGap": 1.7370232742936929,
+      "maxAlongGap": 0.467773388510671,
+      "maxRootGapIncludingInactive": 2.0005310200780113,
+      "activeSamples": 1372,
+      "maxAge": 2.28333333333333,
+      "emittingNodes": 205
+    }
+  },
+  "date": "2026-10-24",
+  "video": {
+    "codec": "h264",
+    "width": 2286,
+    "height": 744,
+    "seconds": 18.1,
+    "frames": 181,
+    "fullDecodePassed": true
+  },
+  "audioCodec": "aac",
+  "audioWaveSamplesReady": 180,
+  "audioWaveSamplesTotal": 181,
+  "tests": 57,
+  "typescript": "pass",
+  "viteBuild": "pass",
+  "humanAccepted": false,
+  "photorealismAchieved": false,
+  "breakingLipsDefaultEnabled": false,
+  "limitations": [
+    "kinematic sheet; not 3D pressure/air simulation",
+    "broad reflection bands remain without breaking lips",
+    "large natural plunge not yet demonstrated",
+    "10fps fixed-step capture, not real-time performance"
+  ],
+  "browserPlayback": {
+    "ended": true,
+    "currentTime": 18.1,
+    "duration": 18.1,
+    "muted": false,
+    "mediaError": null
+  }
+}

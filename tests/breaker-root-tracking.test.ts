@@ -69,3 +69,30 @@ test('a tracked wave line emits horizontally before gravity rather than inheriti
  pool.emitFront([-1,0,1].map(z=>({x:0,z,frontX:1,frontZ:z,height:3,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:5})),sea);
  pool.advance(.05,sea,()=>{});assert.ok(Math.abs(pool.sheet[1]-(3-4.905*.05*.05))<1e-5);
 });
+
+
+test('a higher rear peak cannot teleport the emission crest or connect different waves',()=>{
+ const pool=new ConnectedBreakerPool();let time=0;
+ const sea:WhitewaterSampler=(x,z,s)=>{
+  const h=2*Math.exp(-(((x-time*2)/2)**2))+3*Math.exp(-(((x-time*2+6)/1.5)**2))*(z>0?1:0);
+  Object.assign(s,{height:h,depth:2+h,ground:-2,compression:.5,waveGradientX:-.3,waveGradientZ:0});return true;
+ };
+ pool.emitFront([-2,0,2].map(z=>({x:0,z,frontX:1.5,frontZ:z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:4})),sea);
+ let previous=pool.roots[8*4];
+ for(let i=0;i<40;i++){
+  time+=1/60;pool.advance(1/60,sea,()=>{});
+  assert.ok(Math.abs(pool.roots[8*4]-previous)<.2,'one-frame crest displacement stays local');previous=pool.roots[8*4];
+  for(let j=1;j<17;j++)assert.ok(Math.abs(pool.roots[j*4]-pool.roots[(j-1)*4])<.001,'the rear peak cannot pull a neighbouring source six metres backwards');
+ }
+});
+
+
+test('lost water samples retire every row instead of exposing stale geometry',()=>{
+ const pool=new ConnectedBreakerPool();
+ pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:2,depth:3})));
+ const sea:WhitewaterSampler=(_x,_z,s)=>{Object.assign(s,{height:0,depth:2,ground:-2});return true;};
+ pool.advance(.05,sea,()=>{});assert.ok(pool.geometryAudit.activeSamples>0);
+ pool.advance(1/60,()=>false,()=>assert.fail('missing data cannot create impacts'));
+ assert.equal(pool.geometryAudit.activeSamples,0);
+ for(let i=3;i<17*145*4;i+=4)assert.equal(pool.sheet[i],-1);
+});

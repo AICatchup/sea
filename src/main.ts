@@ -12,6 +12,7 @@ import {inspectFoamStructure} from './qa/foam-structure-inspection.ts';
 import {inspectGpuSkinOnDevice} from './qa/gpu-skinned-browser-check.ts';
 import {inspectGpuSkinLifecycle} from './qa/gpu-skinned-lifecycle.ts';
 import {createCaptureGate} from './qa/capture-exclusivity.ts';
+import {mountWaveRecording} from './qa/wave-recording.ts';
 import { Ocean, type Quality } from './ocean/renderer';
 import {ExpeditionUI} from './ui/expedition-ui';
 import {ActivityUI} from './ui/activity-ui.ts';
@@ -214,6 +215,7 @@ try {
   // Development-only observation/replay seam. It uses the same controller input
   // as the touch controls; bookmarks are QA starts, never normal travel actions.
   let crestSeriesBusy=false;
+  let disposeWaveRecording=()=>{};
   if(import.meta.env.DEV)Object.defineProperty(window,'__seaQA',{configurable:true,value:{
     async captureMirrorComparison(pose:{x:number;z:number;yaw:number;pitch:number;eyeY:number;mode:'walk'|'dive'},name='reflection'){
       if(!captureOnly||![pose.x,pose.z,pose.yaw,pose.pitch,pose.eyeY].every(Number.isFinite)||Math.abs(pose.x)>7000||Math.abs(pose.z)>4000||!['walk','dive'].includes(pose.mode))throw new Error('Dedicated bounded reflection observation required');
@@ -701,6 +703,7 @@ try {
   if(import.meta.env.DEV){
     const api=(window as unknown as {__seaQA:Record<string,(...args:unknown[])=>Promise<unknown>>}).__seaQA;
     const gate=createCaptureGate();
+    if(captureOnly&&new URLSearchParams(location.search).get('waverecord')==='1')disposeWaveRecording=mountWaveRecording(ocean,captureHost,gate);
     for(const name of ['captureMirrorComparison','captureStaticCoast','captureCoastPose','captureSandComparison','captureNamed','captureAligned','captureAt','captureLive','captureTemporal','captureCrestSeries','captureMatrix','capturePixels','captureLeafComparison','observeFishMotion','captureOpticalComparison','captureTerrainPose','captureFrozenFrames','captureWaterDiagnostic','captureGeometryComparison','observeGeometryMotion','captureGateFinish','inspectBodyComparison','inspectShoreTransport','inspectGpuSkin','inspectGpuSkinLifecycle','inspectSandMoisture','inspectFoamStructure']){
       const original=api[name];api[name]=(...args)=>gate.run(()=>original(...args));
     }
@@ -841,7 +844,7 @@ try {
       disposed = true;
       clearTimeout(windTimer); clearTimeout(toastTimer);
       cancelAnimationFrame(uiFrame); controlSettingsUI.dispose();unsubscribeHints();adventureUI.dispose();expeditionUI.dispose();
-      activityUI.dispose();
+      activityUI.dispose();disposeWaveRecording();
       abort.abort(); ocean.dispose(); sound.dispose();
       photoUrls.forEach((timer, url) => { clearTimeout(timer); URL.revokeObjectURL(url); });
       photoUrls.clear();

@@ -183,7 +183,13 @@ export class Ocean {
     const connected=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('connectedbreakers')!=='0';
     this.marineSurface=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('marinefield')!=='0'?new MarineSurfaceField(this.renderer):null;
     this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')==='1',connected,resolution:connected?64:24,span:connected?128:144});
-    if(this.marineSurface)this.spray.setImpactSink(b=>{const droplet=(b.width??2)<.25&&b.energy<=.04;return this.marineSurface!.deposit({x:b.x,z:b.z,nx:b.nx,nz:b.nz,radius:(droplet?.08:.28)+.6*Math.sqrt(b.energy),halfLength:(b.width??2)*.5,foam:(droplet?.025:.35)+(droplet?.12:.5)*Math.sqrt(b.energy),bubbles:(droplet?.08:.55)*Math.sqrt(b.energy),pressure:.10*b.energy});});
+    if(this.marineSurface)this.spray.setImpactSink(b=>{
+      const droplet=(b.width??2)<.25&&b.energy<=.04;
+      // A material row contributes by landed water volume, not one full splash
+      // per render frame. Its foam then advects and decays in the existing field.
+      const amount=b.volume===undefined?1:1-Math.exp(-Math.max(0,b.volume)/.16);
+      return this.marineSurface!.deposit({x:b.x,z:b.z,nx:b.nx,nz:b.nz,radius:(droplet?.08:.28)+.6*Math.sqrt(b.energy),halfLength:(b.width??2)*.5,foam:amount*((droplet?.025:.35)+(droplet?.12:.5)*Math.sqrt(b.energy)),bubbles:amount*(droplet?.08:.55)*Math.sqrt(b.energy),pressure:amount*.10*b.energy});
+    });
     // Surface spray/foam must blend AFTER the water inside the water target.
     // Land-target transparency writes no depth, so the later water merge hides it.
     this.waterScene.add(this.spray.group);
@@ -629,11 +635,11 @@ export class Ocean {
     this.camera.aspect=width/height;this.camera.updateProjectionMatrix();
   }
   /** Explicit paused observation, separate from realtime animation evidence. */
-  renderStaticSnapshot():string{
+  renderStaticSnapshot(format:'image/png'|'image/jpeg'='image/png'):string{
     if(this.disposed||this.contextLost||!this.paused||!this.visualCaptureLocked||this.captureNextFrame)throw new Error('Idle paused locked observation required');
     const measured=[this.measureTime,this.measureFrames,this.fps];
     cancelAnimationFrame(this.animationFrame);this.lastStamp=0;
-    try{this.frame(performance.now());return this.canvas.toDataURL('image/png');}
+    try{this.frame(performance.now());return this.canvas.toDataURL(format,.92);}
     finally{
       this.measureTime=measured[0];this.measureFrames=measured[1];this.fps=measured[2];this.lastStamp=0;
       // frame() may fail before scheduling its successor. Restore exactly one

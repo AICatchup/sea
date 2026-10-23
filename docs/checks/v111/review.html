@@ -1,0 +1,8 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>SEA — 砕波の検証映像 V111</title>
+<style>body{margin:0;background:#102630;color:#e3eff4;font:16px system-ui}main{max-width:1500px;margin:auto;padding:28px}h1{font-size:24px}video{display:block;width:100%;height:auto;background:#102630}button,a{color:inherit}button{padding:10px 18px;margin:8px 6px 0 0;background:#254954;border:1px solid #60838a;border-radius:8px}p{line-height:1.7;color:#b8cfd7}small{display:block;margin-top:14px;color:#b8cfd7}</style>
+<main><h1>SEA — 新島の砕波・改善中の実画面</h1><video controls preload="metadata" poster="wave-lifecycle.jpg" src="wave-lifecycle.mp4" aria-label="新島の波・18秒のゲーム映像、音声あり"></video>
+<button id="play">音付きで再生</button><button id="pause">一時停止</button><span id="times"></span>
+<p>Chromeで描画したゲーム映像です。1/60秒ずつ計算し、10fpsで保存しています。音声は同じゲームの環境音を映像の時刻に合わせて合成しています。</p>
+<small>波頭を別の波へつなぐ処理、補間の飛び出し、後続の水の着水処理を修正。大きな巻き込みと水面の帯状の反射は改善中です。実時間性能・実写同等の達成を示す映像ではありません。</small>
+<p><a href="wave-lifecycle.mp4" download>音付きMP4を保存</a> · <a href="../../wave-methods-github.md">参照したGitHub実装</a></p></main>
+<script>const v=document.querySelector('video');document.querySelector('#play').onclick=()=>{v.muted=false;v.play()};document.querySelector('#pause').onclick=()=>v.pause();for(const t of [0,3,6,9,12,15,18]){const b=document.createElement('button');b.textContent=t+'秒';b.onclick=()=>{v.pause();v.currentTime=t};document.querySelector('#times').append(b)}</script></html>

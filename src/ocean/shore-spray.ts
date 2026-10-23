@@ -253,7 +253,10 @@ export class ShoreSpray {
     const points=new THREE.Points(this.geometry,this.material);points.frustumCulled=false;this.group.add(points);
   }
   private random():number{let x=this.randomState;x^=x<<13;x^=x>>>17;x^=x<<5;this.randomState=x;return (x>>>0)/4294967296;}
-  setImpactSink(sink:typeof this.impactSink):void{this.impactSink=sink;}
+  setImpactSink(sink:typeof this.impactSink):void{
+    this.impactSink=sink;
+    if(this.lips instanceof ConnectedShoreBreakers)this.lips.pool.depositWater=sink?b=>{if(sink(b))this.whitewaterEmitted++;}:undefined;
+  }
   resetHistory():void{this.generation++;this.previousPixels=null;this.previousTime=-Infinity;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();this.rollers?.pool.clear();this.pool.clear();}
   private emitConnectedFronts(time:number):void{
     if(!(this.lips instanceof ConnectedShoreBreakers)||!this.pixels||this.lastFrontSample===this.sampleTime)return;
