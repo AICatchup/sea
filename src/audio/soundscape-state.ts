@@ -12,7 +12,7 @@ export interface SoundscapeFrame {
   gaitPhase: number;
   boat: {pitch: number; roll: number; speed: number; throttle?:number};
   environment: {windSpeed: number; windDirection: number; exposure?:number};
-  wave: {ready: boolean; level: number; slope: number; shoreDistance?: number; shoreStrength?: number};
+  wave: {ready: boolean; sampledAt?: number; level: number; slope: number; shoreDistance?: number; shoreStrength?: number};
 }
 export interface SoundEvent {amplitude: number; variation: number; pan: number}
 export interface SoundscapeTargets {
@@ -34,9 +34,11 @@ export class SoundscapeState {
   private breathTime=0;
   private engineDemand=0;
   private surfSurge=0;
+  private waveSample:{time:number;level:number}|null=null;
+  private incomingRise=0;
   constructor(seed = 0x534541) {this.seed = finite(seed, 1) >>> 0;}
   /** Explicit lifecycle reset; does not alter the deterministic random sequence. */
-  reset(): void {this.previous = null; this.birdRemaining = 12;this.engineDemand=0;this.surfSurge=0;}
+  reset(): void {this.previous = null; this.birdRemaining = 12;this.engineDemand=0;this.surfSurge=0;this.waveSample=null;this.incomingRise=0;}
   private random(): number {
     this.seed = (Math.imul(this.seed, 1664525) + 1013904223) >>> 0;
     return this.seed / 4294967296;
@@ -69,8 +71,25 @@ export class SoundscapeState {
     // Local incoming water drives a fast wash attack and a slower release.
     // Reacquisition/teleport is not a wave impact; never differentiate it.
     if(transition)this.surfSurge=0;
+    let rise=0;
+    const sampleTime=f.wave.sampledAt;
+    if(sampleTime!==undefined&&Number.isFinite(sampleTime)&&f.wave.ready){
+      const level=finite(f.wave.level),last=this.waveSample;
+      if(transition||!active||!p?.wave.ready||!last||sampleTime<last.time){
+        this.waveSample={time:sampleTime,level};this.incomingRise=0;
+      }else if(sampleTime>last.time){
+        const elapsed=sampleTime-last.time;
+        // GPU heights arrive at 5 Hz. Dividing their change by UI dt creates
+        // a false impulse whose strength depends on the display refresh rate.
+        this.incomingRise=elapsed<=.5?clamp((level-last.level)/elapsed/1.4):0;
+        this.waveSample={time:sampleTime,level};
+      }
+      rise=this.incomingRise;
+    }else{
+      this.waveSample=null;this.incomingRise=0;
+      rise=active&&!transition&&f.wave.ready&&p?.wave.ready?clamp((finite(f.wave.level)-finite(p.wave.level))/dt/1.4):0;
+    }
     if(active){
-      const rise=!transition&&f.wave.ready&&p?.wave.ready?clamp((finite(f.wave.level)-finite(p.wave.level))/dt/1.4):0;
       const demand=f.wave.ready?Math.max(rise,roughness*.65):0;
       this.surfSurge+=(demand-this.surfSurge)*(1-Math.exp(-dt/(demand>this.surfSurge?.08:1.25)));
     }
@@ -112,7 +131,7 @@ export class SoundscapeState {
       if (transition) this.birdRemaining = Math.max(12, this.birdRemaining);
     }
     // Snapshot pose on every call, including paused frames, to avoid resume derivatives.
-    this.previous = {...f, position: {x: finite(f.position.x), y: finite(f.position.y), z: finite(f.position.z)},
+    this.previous = {...f, wave:{...f.wave}, position: {x: finite(f.position.x), y: finite(f.position.y), z: finite(f.position.z)},
       boat: {pitch: finite(f.boat.pitch), roll: finite(f.boat.roll), speed: boatSpeed}, gaitPhase: finite(f.gaitPhase)};
     return out;
   }

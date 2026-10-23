@@ -12,8 +12,14 @@
     <canvas id="ocean" aria-label="式根島の泊海水浴場。クリックして見回し、WASDで歩く・泳ぐ、Spaceでジャンプ・浮上、Cで潜降。船のそばでEで乗船します。"></canvas>
     <div id="loading" class="loading" role="status"><span class="loading-mark">∿</span><span>海が、目を覚ます。</span></div>
     <div id="unsupported" class="unsupported" hidden>
-      <span class="wordmark">SEA</span><h1>この海には、GPUが必要です。</h1>
+      <span class="wordmark">SEA</span><h1>海を開けませんでした。</h1>
       <p id="error-detail">WebGL 2に対応したブラウザで、ハードウェアアクセラレーションを有効にして開いてください。</p>
+      <ol id="gpu-help" class="gpu-help">
+        <li>Chromeの「設定 → システム」を開きます。</li>
+        <li>「グラフィック アクセラレーションが使用可能な場合は使用する」をオンにします。</li>
+        <li>Chromeを再起動し、このページを開き直します。</li>
+      </ol>
+      <p class="recovery-note">再読み込みしても、このブラウザに保存された冒険の記録は残ります。</p>
       <button onclick="location.reload()">もう一度開く</button>
     </div>
     <div id="interface" class="interface">

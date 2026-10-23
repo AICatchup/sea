@@ -1,4 +1,4 @@
-import {parseFrameLimit} from './ocean/frame-budget.ts';
+import {FrameBudget, parseFrameLimit} from './ocean/frame-budget.ts';
 import './style.css';
 import {Raycaster,Vector2} from 'three';
 import { inspectBodyHands } from './qa/body-inspection';
@@ -53,6 +53,7 @@ function showError(message: string): void {
   element('interface').inert = true;
   element('unsupported').hidden = false;
   element('error-detail').textContent = message;
+  element('gpu-help').hidden = !/GPU|WebGL|浮動小数点/.test(message);
   element('loading').classList.add('done');
   element('interface').style.visibility = 'hidden';
 }
@@ -149,12 +150,11 @@ try {
   };
   const unsubscribeHints=controls.subscribe(syncControlHints);syncControlHints();
   let previousSoundStamp=performance.now();
-  let previousUIStamp=0;
+  const uiBudget=new FrameBudget(30);
   const updateUI = (stamp:number) => {
     if (disposed || document.hidden) return;
     uiFrame = requestAnimationFrame(updateUI);
-    if(stamp-previousUIStamp<1000/30-.25)return;
-    previousUIStamp=stamp;
+    if(!uiBudget.due(stamp))return;
     adventureUI.update(ocean.adventure.state, ocean.assets.placedCount);
     expeditionUI.update(ocean.adventure.state);
     activityUI.update(ocean.adventure.state,ocean.adventure.inputBlocked);
@@ -163,7 +163,7 @@ try {
   uiFrame = requestAnimationFrame(updateUI);
   document.addEventListener('visibilitychange',()=>{
     cancelAnimationFrame(uiFrame);
-    previousUIStamp=0;previousSoundStamp=performance.now();
+    uiBudget.reset();previousSoundStamp=performance.now();
     if(!document.hidden&&!disposed)uiFrame=requestAnimationFrame(updateUI);
   },events);
   sound.setWind(ocean.wind);

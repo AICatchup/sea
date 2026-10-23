@@ -126,7 +126,7 @@ export class LocalWaterHeights {
     console.warn('FFT surface-height cache unavailable; mean sea level retained',error);
   }
   async settleReadback():Promise<void>{await this.readbackDone;if(this.failed)throw new Error('Local wave-height readback failed');}
-  get diagnostics(){return {ready:!!this.pixels,failed:this.failed,samples:256,requestedPoints:this.pointHeights.size,requestCapacity:128,interval:.2,readbackBytes:1024};}
+  get diagnostics(){return {ready:!!this.pixels,sampledAt:this.pixels?this.sampleTime:undefined,failed:this.failed,samples:256,requestedPoints:this.pointHeights.size,requestCapacity:128,interval:.2,readbackBytes:1024};}
   bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uMarineSurface','uMarineBounds','uMarineReady','uMarineResolution'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
   dispose():void{
     if(this.disposed)return;

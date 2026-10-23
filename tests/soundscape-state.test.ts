@@ -83,3 +83,51 @@ test('incoming wave produces audible wash attack then release without false reac
   f.wave={...f.wave,ready:false};s.update(f);
   f.wave={...f.wave,ready:true,level:2};assert.ok(s.update(f).surf<baseline+.001,'readback recovery is not an impact');
 });
+
+
+test('five-Hz height samples produce the same surf envelope at 30/60/120 UI fps',()=>{
+ const run=(fps:number)=>{
+  const model=new SoundscapeState(),f=frame();let out=0;
+  for(let i=0;i<=fps*2;i++){
+   const t=i/fps,sample=Math.floor((t+1e-8)*5)/5;
+   f.dt=1/fps;f.time=t;f.wave.sampledAt=sample;f.wave.level=sample*.35;
+   out=model.update(f).surf;
+  }
+  return out;
+ };
+ const reference=run(120);
+ assert.ok(reference>.3&&reference<.4,`bounded rise, received ${reference}`);
+ for(const fps of [30,60])assert.ok(Math.abs(run(fps)-reference)<.002);
+});
+
+test('cache gaps, rewind and reacquisition do not create surf impact',()=>{
+ const model=new SoundscapeState(),f=frame();f.wave.sampledAt=0;
+ const quiet=model.update(f).surf;
+ f.wave.sampledAt=.2;f.wave.level=.2;assert.ok(model.update(f).surf>quiet);
+ model.reset();f.wave.sampledAt=1;f.wave.level=5;assert.equal(model.update(f).surf,quiet);
+ f.wave.sampledAt=2;f.wave.level=8;assert.equal(model.update(f).surf,quiet);
+ f.wave.sampledAt=0;f.wave.level=15;assert.equal(model.update(f).surf,quiet);
+ f.wave.ready=false;assert.equal(model.update(f).surf,0);
+ f.wave.ready=true;f.wave.sampledAt=.2;f.wave.level=20;assert.equal(model.update(f).surf,quiet);
+});
+
+test('reused caller wave objects cannot mutate the previous audio sample',()=>{
+ const model=new SoundscapeState(),f=frame();const quiet=model.update(f).surf;
+ f.wave.level=.1;
+ assert.ok(model.update(f).surf>quiet);
+});
+
+
+test('after the incoming front stops, held sampled wash releases back to baseline',()=>{
+ const model=new SoundscapeState(),f=frame();f.dt=1/30;f.wave.sampledAt=0;
+ const quiet=model.update(f).surf;
+ f.wave.sampledAt=.2;f.wave.level=.28;
+ for(let i=0;i<6;i++)model.update(f);
+ const peak=model.update(f).surf;assert.ok(peak>quiet+.3);
+ let tail=peak;
+ for(let i=1;i<=180;i++){
+  f.wave.sampledAt=.2+Math.ceil(i/6)*.2;
+  tail=model.update(f).surf;
+ }
+ assert.ok(tail-quiet<(peak-quiet)*.01,`wash must dissipate: ${tail} vs ${quiet}`);
+});

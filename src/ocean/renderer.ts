@@ -894,7 +894,7 @@ export class Ocean {
       boat:{pitch:s.boatPitch??0,roll:s.boatRoll??0,speed:s.mode==='boat'?s.speed:0,
         throttle:this.adventure.inputBlocked?0:s.boatThrottle??0},
       environment:{windSpeed:this.wind,windDirection:Math.atan2(OCEAN_PROPAGATION_DIRECTION.x,-OCEAN_PROPAGATION_DIRECTION.z),exposure:THREE.MathUtils.lerp(.35,.85,THREE.MathUtils.smoothstep(Math.hypot(p.x,p.z),180,300))},
-      wave:{ready,level:w,slope:Math.hypot(gx,gz),shoreDistance:this.soundShoreDistance}};
+      wave:{ready,sampledAt:this.waterHeights.diagnostics.sampledAt,level:w,slope:Math.hypot(gx,gz),shoreDistance:this.soundShoreDistance}};
   }
   dispose():void{
     if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.animationFrame);this.abort.abort();
