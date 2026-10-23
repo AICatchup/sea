@@ -1,4 +1,5 @@
 import { ELEVATION_RASTERS, GEODATA_PROVENANCE } from './geodata.generated.ts';
+import { decodeElevation } from './decode-elevation.ts';
 import { structuralCoastHeight } from './coast-structure.ts';
 import { refineTomariStrand } from './tomari-strand.ts';
 export { GEODATA_PROVENANCE };
@@ -20,15 +21,6 @@ export function shelterAt(x: number, z: number): number {
   const cove = Math.hypot((x + 57) / 168, (z + 32) / 170);
   const mouth = smoothstep(-138, -290, z);
   return 0.13 + 0.87 * Math.max(smoothstep(0.62, 1.5, cove), mouth);
-}
-
-function decode(base64: string): Int16Array {
-  const binary = atob(base64), view = new DataView(new ArrayBuffer(binary.length));
-  const bytes = new Uint8Array(view.buffer);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  const result = new Int16Array(binary.length / 2);
-  for (let i = 0; i < result.length; i++) result[i] = view.getInt16(i * 2, true);
-  return result;
 }
 
 /** Eight-neighbour distance transform, in world metres. Positive signed distance is on land. */
@@ -67,7 +59,7 @@ export class ElevationField {
 
   constructor(raster: ElevationRaster) {
     this.raster = raster;
-    this.values = decode(raster.elevations);
+    this.values = decodeElevation(raster.elevations, raster.width * raster.height);
     this.land = Uint8Array.from(this.values, value => value === NODATA ? 0 : 1);
     this.dx = (raster.maxX - raster.minX) / (raster.width - 1);
     this.dz = (raster.maxZ - raster.minZ) / (raster.height - 1);

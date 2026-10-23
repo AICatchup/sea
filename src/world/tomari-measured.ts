@@ -4,6 +4,7 @@ import {createMeasuredGridPatch,type MeasuredGridPatch} from './measured-grid-pa
 import type {IslandElevation} from './geodata.ts';
 import {makeMeasuredCoastMaterial,measuredRockExposure,eastHeadlandExposure} from './measured-rock-exposure.ts';
 import {surveyLandConfidence} from './survey-land-confidence.ts';
+import {decodeElevation} from './decode-elevation.ts';
 
 export interface TomariSurveyData {
  id:string;width:number;height:number;origin:{x:number;z:number};column:{x:number;z:number};row:{x:number;z:number};
@@ -32,13 +33,12 @@ export class TomariMeasuredCoast {
    const u=(x-px)/g.dx,v=(z-pz)/g.dz,a=elevation.heightAt(px,pz),b=elevation.heightAt(px+g.dx,pz),c=elevation.heightAt(px,pz+g.dz),d=elevation.heightAt(px+g.dx,pz+g.dz);
    return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v);
   };
-  const bytes=Uint8Array.from(atob(data.heightsCentimetres),c=>c.charCodeAt(0)),view=new DataView(bytes.buffer);
-  if(bytes.length!==data.width*data.height*2)throw new Error('Incomplete Tomari survey');
+  const values=decodeElevation(data.heightsCentimetres,data.width*data.height);
   const heights=new Float32Array(data.width*data.height),valid=new Uint8Array(heights.length);
-  for(let k=0;k<heights.length;k++){const value=view.getInt16(k*2,true);if(value!==-32768){heights[k]=value*.01;valid[k]=1;}}
+  for(let k=0;k<heights.length;k++){const value=values[k];if(value!==-32768){heights[k]=value*.01;valid[k]=1;}}
   const confidence=eastHeadland?surveyLandConfidence(heights,valid,data.width,data.height,data.column.x,data.row.z):null;
   for(let j=0;j<data.height;j++)for(let i=0;i<data.width;i++){
-   const k=j*data.width+i,value=view.getInt16(k*2,true),x=data.origin.x+i*data.column.x,z=data.origin.z+j*data.row.z;
+   const k=j*data.width+i,value=values[k],x=data.origin.x+i*data.column.x,z=data.origin.z+j*data.row.z;
    if(value===-32768)continue;
    const y=value*.01,old=fallback(x,z);
    // Retain the inferred bed only where the new survey is low/wet. The older
