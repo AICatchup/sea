@@ -1,0 +1,24 @@
+{
+  "particlesShape": [
+    37,
+    8580,
+    3
+  ],
+  "finite": true,
+  "hashMatches": true,
+  "video": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1000,
+        "height": 560,
+        "r_frame_rate": "12/1",
+        "nb_read_frames": "37"
+      }
+    ]
+  },
+  "maxSpeed": 2.948500871658325,
+  "visualReview": "0/1.5/3s: shoreward run-up visible; no confirmed overturning jet or resolved foam; not accepted as breaking-wave calibration"
+}

@@ -138,6 +138,8 @@ GPUが利用できないという表示が出る場合は、Chromeの「設定 �
 
 ## 開発と検証
 
+[Colab GPUの波水槽実験](docs/colab-wave-lab.md)を追加しました。T4で3D粒子流体を計算し、粒子データと診断MP4を保存できます。自然な砕波・泡の再現には未達で、通常のゲーム描画には組み込んでいません。
+
 ```sh
 pnpm exec node --experimental-strip-types --test --test-concurrency=1 tests/*.test.ts
 pnpm build

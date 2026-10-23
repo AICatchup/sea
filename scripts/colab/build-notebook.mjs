@@ -1,0 +1,14 @@
+import {readFile,writeFile} from 'node:fs/promises';
+const source = name => readFile(new URL(name,import.meta.url),'utf8');
+const cells=[];
+const markdown=text=>cells.push({cell_type:'markdown',metadata:{},source:text.split(/(?<=\n)/)});
+const code=text=>cells.push({cell_type:'code',metadata:{},execution_count:null,outputs:[],source:text.split(/(?<=\n)/)});
+markdown(`# SEA: クラウドGPUの3D波水槽\n\nT4 GPUで動かす、小さく時間制限を設けた3D SPH実験です。手元のPCでは計算しません。\n\n**SEAの完成映像ではありません。** 理想化した孤立波と1:4の斜面であり、新島の実測波・気泡・空気の巻き込み・泡の寿命の校正はまだありません。粒子を追跡して水の移動を調べるための診断です。\n\nランタイムのタイプをT4 GPUに設定してください。Google Driveのマウントや追加購入は不要です。既存のColab利用枠を消費する場合があります。計算は初期値で実時間240秒以内、物理時間3秒、粒子間隔10cmです。終了後は成果をダウンロードして、この実験のランタイムを解放してください。\n\n方式の参照: [NVIDIA Warp SPH](https://github.com/NVIDIA/warp/blob/v1.9.1/warp/examples/core/example_sph.py)。独立した実装で、ライブラリはApache-2.0です。\n`);
+code(`import subprocess, sys\nsubprocess.run(["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"], check=True)\nsubprocess.run([sys.executable, "-m", "pip", "install", "-q", "warp-lang==1.9.1", "imageio", "imageio-ffmpeg"], check=True)\n`);
+code('%%writefile /content/sea_wave_flume.py\n'+await source('wave_flume.py'));
+code('%run /content/sea_wave_flume.py --seconds 3 --wall-seconds 240\n');
+code('%%writefile /content/sea_render_flume.py\n'+await source('render_flume.py'));
+code(`%run /content/sea_render_flume.py /content/sea-wave-output\nfrom IPython.display import Video, Image, display\ndisplay(Video("/content/sea-wave-output/wave-flume-diagnostic.mp4", embed=True))\ndisplay(Image("/content/sea-wave-output/flume-036.png"))\n`);
+code(`import shutil\nfrom google.colab import files\nshutil.make_archive("/content/sea-wave-evidence", "zip", "/content/sea-wave-output")\nfiles.download("/content/sea-wave-evidence.zip")\n`);
+markdown('## 終了\n\nダウンロードしたZIPのMP4・粒子NPZ・検証JSONを確認してから、この実験のランタイムを解放します。ノートブックだけの切断は計算資源の解放と同じではありません。\n');
+await writeFile(new URL('sea-wave-physics.ipynb',import.meta.url),JSON.stringify({cells,metadata:{accelerator:'GPU',colab:{name:'sea-wave-physics.ipynb',gpuType:'T4'},kernelspec:{name:'python3',display_name:'Python 3'},language_info:{name:'python'}},nbformat:4,nbformat_minor:0},null,2)+'\n','utf8');
