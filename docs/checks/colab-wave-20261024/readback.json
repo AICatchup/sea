@@ -1,0 +1,10 @@
+{
+  "frames": 97,
+  "particles": 39960,
+  "allCoordinatesFinite": true,
+  "positionSha256Verified": "41c113964f0a1c66d96e562077a6f1906d6a8800be6bee7e90af2494cb1178d8",
+  "archiveSha256": "e78d9c2aae79ddc09e1f192cd868235241293390ebeb439088eec7e8f905fc59",
+  "gpuReleased": true,
+  "runtimeUnassignReadback": "Reconnect T4; disconnect/delete disabled",
+  "productionIntegrated": false
+}

@@ -13,8 +13,31 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
   const status=document.createElement('p');status.setAttribute('role','status');status.textContent='ゲームを1/60秒ずつ進め、10fpsで保存。実時間性能の測定ではありません。';
   panel.append(button,cancel,status);document.body.append(panel);
   let stopped=false,busy=false,disposed=false;cancel.onclick=()=>{stopped=true;};
+  const inspect=document.createElement('button');inspect.textContent='14秒地点を比較撮影';panel.append(inspect);
+  inspect.onclick=()=>{void gate.run(async()=>{
+    if(busy||disposed)return;busy=true;stopped=false;button.disabled=true;inspect.disabled=true;cancel.disabled=false;
+    let before:ReturnType<typeof host.readState>|undefined;
+    try{
+      await ocean.ready;before=host.readState();host.visualLock(true);host.setPaused(true);host.setQuality('high');host.setPreset('typhoon');
+      host.viewpoint(5922,-923.918,2.2142974,-.12,'walk',0,2.4);ocean.setObservationClock(0);
+      const started=performance.now();
+      for(let i=0;i<140;i++){
+        if(stopped||disposed)throw new Error('比較撮影を中止しました。');
+        if(document.hidden)throw new Error('非表示になったため比較撮影を中止しました。');
+        if(performance.now()-started>12*60*1000)throw new Error('比較撮影時間の上限に達しました。');
+        await ocean.advanceObservation(.1);status.textContent=`比較準備 ${((i+1)/10).toFixed(1)} / 14秒`;await new Promise(resolve=>setTimeout(resolve,0));
+      }
+      const jpeg=ocean.renderStaticSnapshot('image/jpeg');
+      const points=[.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85].map(y=>({x:.5,y}));
+      const data={jpeg,diagnostics:ocean.diagnostics,optics:ocean.probeWaterContact(points)};
+      const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));
+      const link=document.createElement('a');link.href=url;link.download='sea-wave-comparison.json';link.textContent='比較画像と診断を保存';panel.append(link);link.click();setTimeout(()=>URL.revokeObjectURL(url),120000);
+      status.textContent='14秒地点の画像と光学診断を保存しました。';
+    }catch(error){status.textContent=error instanceof Error?error.message:String(error);}
+    finally{if(before&&!disposed)host.restoreState(before);busy=false;button.disabled=false;inspect.disabled=false;cancel.disabled=true;}
+  }).catch(error=>{status.textContent=String(error);});};
   const record=async()=>{
-    if(busy)return;busy=true;stopped=false;button.disabled=true;cancel.disabled=false;
+    if(busy||disposed)return;busy=true;stopped=false;button.disabled=true;inspect.disabled=true;cancel.disabled=false;
     let before:ReturnType<typeof host.readState>|undefined;
     const frames:{jpeg:string;time:number;spray:unknown;shore:unknown}[]=[],audio:SoundscapeFrame[]=[];
     try {
@@ -23,7 +46,7 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
       host.viewpoint(5922,-923.918,2.2142974,-.12,'walk',0,2.4);ocean.setObservationClock(0);
       const started=performance.now();let bytes=0;
       for(let i=0;i<=180;i++){
-        if(stopped)throw new Error('収録を中止しました。');
+        if(stopped||disposed)throw new Error('収録を中止しました。');
         if(document.hidden)throw new Error('非表示になったため収録を中止しました。');
         if(performance.now()-started>15*60*1000)throw new Error('収録時間の上限に達しました。');
         if(i)await ocean.advanceObservation(.1);
@@ -42,7 +65,7 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
       panel.append(link);link.click();setTimeout(()=>URL.revokeObjectURL(url),120000);
       status.textContent='181フレームと音声を保存しました。実画面と動画で見た目を確認してください。';
     }catch(error){status.textContent=error instanceof Error?error.message:String(error);}
-    finally{if(before&&!disposed)host.restoreState(before);frames.length=0;audio.length=0;busy=false;button.disabled=false;cancel.disabled=true;}
+    finally{if(before&&!disposed)host.restoreState(before);frames.length=0;audio.length=0;busy=false;button.disabled=false;inspect.disabled=false;cancel.disabled=true;}
   };
   button.onclick=()=>{void gate.run(record).catch(error=>{status.textContent=error instanceof Error?error.message:String(error);});};
   return()=>{disposed=true;stopped=true;panel.remove();};

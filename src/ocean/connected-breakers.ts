@@ -14,11 +14,14 @@ const SHEET_INTERVAL=1/60;
 export function breakerLipThickness(drop:number,energy:number):number{
   return .06+.10*whitewaterAerationStrength(energy)+.20*Math.max(0,Math.min(3.5,drop)-.5);
 }
-/** Height-dependent sheet acceleration (Thuerey 2007, equation 9).
- * Authored gain 0.08; elevation is above mean sea level, not a remote trough.
- * This is the paper's visual closure, not a resolved 3D pressure field. */
+/** Thuerey-style visual closure, capped by the available elevation head.
+ * The linear gain alone launched a 2.5m crest at ~16m/s and stretched its
+ * sheet over 15m. Limit kinetic gain to g*h (Bernoulli head), so launch speed
+ * cannot manufacture arbitrarily large energy. Still not a 3D pressure solve. */
 export function breakerSheetSpeed(frontSpeed:number,elevation:number):number{
-  return Math.min(24,Math.max(0,frontSpeed)*(1+.08*9.81*Math.max(0,elevation)));
+  if(![frontSpeed,elevation].every(Number.isFinite))return 0;
+  const phase=Math.max(0,frontSpeed),head=9.81*Math.max(0,elevation);
+  return Math.min(24,phase*(1+.08*head),Math.sqrt(phase*phase+2*head));
 }
 /** Kinematic free-surface condition: w = dh/dt + u dot grad(h).
  * The measured Eulerian rate is optional while the cache warms up. A known

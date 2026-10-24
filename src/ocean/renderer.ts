@@ -47,6 +47,7 @@ import {groundScannedShelf} from '../world/grounded-reef.ts';
 import {seatCoastalRock} from '../world/rock-support.ts';
 import {seatShelfBoundary} from '../world/shelf-support.ts';
 import {ReflectionCull} from './mirror-cull.ts';
+import {OCEAN_RINGS,OCEAN_SECTORS,oceanRingRadius} from './ocean-grid.ts';
 import {InstancedScanLod,simplifiedScanLevels} from '../world/scan-lod.ts';
 
 export type Quality = 'auto' | 'high' | 'medium' | 'low';
@@ -54,12 +55,12 @@ type Uniforms = Record<string, THREE.IUniform>;
 
 
 function makeOceanGrid(): THREE.BufferGeometry {
-  const rings=230,sectors=384;
+  const rings=OCEAN_RINGS,sectors=OCEAN_SECTORS;
   const positions=new Float32Array((rings+1)*(sectors+1)*3);
   const indices=new Uint32Array(rings*sectors*6);
   let v=0,t=0;
   for(let r=0;r<=rings;r++){
-    const radius=r===0?0:.12*Math.exp((r/rings)*Math.log(28000/.12));
+    const radius=oceanRingRadius(r);
     for(let s=0;s<=sectors;s++){
       const a=s/sectors*Math.PI*2;
       positions[v++]=Math.cos(a)*radius;positions[v++]=0;positions[v++]=Math.sin(a)*radius;

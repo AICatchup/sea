@@ -312,9 +312,22 @@ export const oceanFragment = /* glsl */ `
   float shoalAt(vec2 p){return shoreWaveScale(coastAt(p).rg,uSwell,uWind);}
   vec3 longDisplacement(vec2 p) { return texture2D(uLongWaves,p/384.0).xyz*shoalAt(p); }
   vec3 shortDisplacement(vec2 p) { return texture2D(uShortWaves,p/24.0).xyz*shoalAt(p); }
+  ${shoreGridGLSL}
+  vec3 gridDisplacement(vec2 p,out float chop){
+    vec2 coast=coastAt(p).rg;
+    float shortFade=1.-smoothstep(110.,500.,length(p-cameraPosition.xz));
+    chop=uChoppiness*shoreGridChop(p,coast);
+    return (texture2D(uLongWaves,p/384.).xyz+texture2D(uShortWaves,p/24.).xyz*shortFade)
+      *shoreWaveScale(coast,uSwell,uWind)*uSwell;
+  }
   float renderedSurface(vec2 world){
-    vec2 p=world;for(int i=0;i<3;i++)p=world-(longDisplacement(p)+shortDisplacement(p)).xz*uSwell*uChoppiness;
-    return shoreSolvedSurface(world,(longDisplacement(p).y+shortDisplacement(p).y)*uSwell,0.).x+marineSurface(world).b;
+    // Invert the same parameter grid as oceanVertex, including the SWE
+    // collar and distance-filtered short band. Full-chop inversion queries
+    // a different FFT phase where the mesh itself has reduced displacement.
+    vec2 p=world;float chop;
+    for(int i=0;i<3;i++){vec3 d=gridDisplacement(p,chop);p=world-d.xz*chop;}
+    vec3 d=gridDisplacement(p,chop);
+    return shoreSolvedSurface(world,d.y,0.).x+marineSurface(world).b;
   }
   float linearDepth(float d){float n=uNearFar.x,f=uNearFar.y;return 2.0*n*f/(f+n-(d*2.0-1.0)*(f-n));}
   ${refractedSceneGLSL}
@@ -446,20 +459,19 @@ export const oceanFragment = /* glsl */ `
     // already uses SWE there; reverting only the optical normal to a flat
     // FFT face produced a black reflection seam at that arbitrary elevation.
     if(uShoreReady>.5&&coast.x> -11.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))){
-      // A narrow stencil differentiates the linear
-      // reconstruction into flat cell faces. Match its actual metric support
-      // so reflected sky cannot reveal the square simulation lattice.
       float solverCell=max(uShoreBounds.z,uShoreBounds.w)/uShoreResolution;
-      float step=max(max(1.5,2.*solverCell),footprint*.65);
-      vec2 nx=vWorld.xz-vec2(step,0),px=vWorld.xz+vec2(step,0);
-      vec2 nz=vWorld.xz-vec2(0,step),pz=vWorld.xz+vec2(0,step);
-      // Dry neighbours return the FFT fallback, often mean sea level below
-      // emergent sand. Differentiating across that gap creates a fictitious
-      // inward face on a valid thin film and near-total dark reflection.
-      float sx=shoreWetSurfaceSlope(contactHeight,renderedSurface(nx),coastAt(nx).x,renderedSurface(px),coastAt(px).x,step);
-      float sz=shoreWetSurfaceSlope(contactHeight,renderedSurface(nz),coastAt(nz).x,renderedSurface(pz),coastAt(pz).x,step);
-      if(uWetStencil<.5){sx=(renderedSurface(px)-renderedSurface(nx))/(2.*step);sz=(renderedSurface(pz)-renderedSurface(nz))/(2.*step);}
-      normal=normalize(vec3(-sx,1.,-sz));
+      // A one-cell symmetric difference of a bilinear height field equals
+      // bilinear interpolation of its shared nodal central gradients. Thus
+      // reflections stay continuous across cell edges without blurring a
+      // crest across the previous four-cell-wide (6m) support. Keep the
+      // pixel-footprint filter at distance. No extra texture or render pass.
+      float step=max(solverCell,footprint*.65);
+      vec2 nx=vWorld.xz-vec2(step,0),px=vWorld.xz+vec2(step,0),nz=vWorld.xz-vec2(0,step),pz=vWorld.xz+vec2(0,step);
+      float hn=renderedSurface(nx),hp=renderedSurface(px),hb=renderedSurface(nz),ht=renderedSurface(pz);
+      vec2 slope=vec2(shoreWetSurfaceSlope(contactHeight,hn,coastAt(nx).x,hp,coastAt(px).x,step),
+                      shoreWetSurfaceSlope(contactHeight,hb,coastAt(nz).x,ht,coastAt(pz).x,step));
+      if(uWetStencil<.5)slope=vec2(hp-hn,ht-hb)/(2.*step);
+      normal=normalize(vec3(-slope.x,1.,-slope.y));
       solvedNormal=true;
     }
     normal.y=max(abs(normal.y),0.14);

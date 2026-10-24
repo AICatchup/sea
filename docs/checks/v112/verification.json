@@ -1,0 +1,108 @@
+{
+  "version": "V112",
+  "date": "2026-10-24",
+  "baselineCommit": "1b3f65089605128f9ac6fe15c8bf25a1c5b929c1",
+  "capture": {
+    "frames": 181,
+    "fps": 10,
+    "realtime": false,
+    "simulationStep": 0.016666666666666666,
+    "seconds": 18.1,
+    "width": 1118,
+    "height": 778,
+    "preset": "typhoon",
+    "experimentalBreakingLips": true,
+    "pose": {
+      "pose": {
+        "x": 5922,
+        "z": -923.918,
+        "yaw": 2.2142974,
+        "pitch": -0.12,
+        "mode": "walk",
+        "depth": 0
+      },
+      "camera": [
+        5922,
+        2.4,
+        -923.918,
+        0.026816719892612282,
+        0.8928176970454293,
+        0.05363343739933653,
+        -0.4464088683812504
+      ],
+      "fov": 62,
+      "width": 1119,
+      "height": 779,
+      "quality": "high",
+      "preset": "typhoon",
+      "paused": true,
+      "locked": true,
+      "hidden": false,
+      "disposed": false,
+      "wind": 16,
+      "swell": 1.8,
+      "eyeY": 2.4,
+      "oxygen": 1,
+      "stamina": 1,
+      "action": "idle"
+    }
+  },
+  "audio": {
+    "channels": 2,
+    "sampleRate": 48000,
+    "seconds": 18.100020833333332,
+    "peak": 0.242156982421875,
+    "rms": 0.03256152721931099,
+    "rmsDbFS": -29.745904675555494,
+    "codec": "AAC",
+    "source": "game audio graph rendered at captured simulation time"
+  },
+  "geometry": {
+    "maxAcrossGap": 4.765084582388174,
+    "maxAlongGap": 0.8579467935448921
+  },
+  "events": {
+    "frontEvents": 168,
+    "lipActive": 22,
+    "lipImpacts": 11,
+    "whitewaterEmitted": 32499
+  },
+  "checks": {
+    "relatedTestsPassed": 63,
+    "relatedTestsFailed": 0,
+    "typescript": true,
+    "viteBuild": true,
+    "standaloneBuild": true,
+    "mp4FullDecode": true,
+    "chromeShaderErrorsObserved": 0,
+    "chromePlayback": {
+      "currentTime": 18.1,
+      "duration": 18.1,
+      "ended": true,
+      "muted": false,
+      "readyState": 4,
+      "error": null,
+      "proof": "chrome-playback.png"
+    }
+  },
+  "sourceSha256": {
+    "src/ocean/ocean-grid.ts": "456832e99c16b93e8246fa0290d8164552541daa740489535f2ce1c051146889",
+    "src/ocean/renderer.ts": "4c449744260cba2d64345bc7665d389de5ce705b776f39255ad496dfacd5a3c8",
+    "src/ocean/shaders.ts": "59e1811f1f8d03ecc4234e1655ee63f468e3bfa31ddcb95f72deb85bc87f0c82",
+    "src/ocean/connected-breakers.ts": "4acfa8849bcd0116271e4e4123bb7dd56d52a8d85f54138ee1fd7f7876009a82",
+    "src/qa/wave-recording.ts": "87c50f15c7bf7186cf89bf4b8914168895f13299f0fff2b5fba7900c904a2ba3"
+  },
+  "mediaSha256": "baa46fdc92746f2d175439f191ec8f0582a1bc5842d8b68f7731b592e9689167",
+  "fullPhysicalVisualAcceptance": false,
+  "remaining": [
+    "long reflective bands",
+    "thin surface connections",
+    "volumetric turbulence and large plunging breakers",
+    "real-time performance not established"
+  ],
+  "colab": {
+    "readback": "../colab-wave-20261024/readback.json",
+    "gameCalibration": false,
+    "gpuReleased": true
+  }
+}

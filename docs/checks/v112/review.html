@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>SEA — 波の改善記録 V112</title>
+<style>body{margin:0;background:#102630;color:#e3eff4;font:16px system-ui}main{max-width:1200px;margin:auto;padding:24px}h1{font-size:24px}video{display:block;width:100%;height:auto;background:#102630}button,a{color:inherit}button{padding:10px 18px;margin:8px 6px 0 0;background:#254954;border:1px solid #60838a;border-radius:8px}p{line-height:1.7;color:#b8cfd7}.note{font-size:14px}</style>
+<main><h1>SEA — 新島の波・改善中の実画面 V112</h1>
+<video controls preload="metadata" poster="wave-lifecycle.jpg" src="wave-lifecycle.mp4" aria-label="新島の波・18秒のゲーム映像、音声あり"></video>
+<button id="play">音付きで再生</button><button id="pause">一時停止</button><span id="times"></span><p id="status" role="status"></p>
+<p>Chromeで描画した18.1秒のゲーム映像。波頭を拾うメッシュ、反射の傾き、飛び出す水の速度を修正しています。音声は同じゲームの波・風の状態に合わせて合成しました。</p>
+<p class="note">物理を1/60秒ずつ進め、10fpsで保存。実時間FPSの測定ではありません。長い波面の帯状反射と水の接合には不自然さが残り、実写同等には達していません。</p>
+<p><a href="wave-lifecycle.mp4" download>音付きMP4を保存</a> · <a href="../../breaking-wave-status-v112.md">変更と検証条件</a> · <a href="../../colab-wave-lab.md">Colabの記録</a></p></main>
+<script>
+const v=document.querySelector('video'),status=document.querySelector('#status');
+document.querySelector('#play').onclick=async()=>{v.muted=false;v.volume=1;try{await v.play();status.textContent='音声ありで再生中';}catch(e){status.textContent='再生できませんでした: '+e.message;}};
+document.querySelector('#pause').onclick=()=>v.pause();
+v.onended=()=>{status.textContent='18.1秒の再生が完了しました';};
+for(const t of [0,4,9,14,18]){const b=document.createElement('button');b.textContent=t+'秒';b.onclick=()=>{v.pause();v.currentTime=t;};document.querySelector('#times').append(b);}
+</script></html>
