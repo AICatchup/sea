@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {CrestHistory,flyWaterParcel,type CrestEmission} from './breaker-parcels.ts';
+import {CREST_ATTACHMENT_SECONDS,crestAttachmentGLSL} from './breaker-attachment.ts';
 import {oceanFragment} from './shaders.ts';
 import {shoreWaveSampling} from './surface-detail.ts';
 import {shoreSolverSampling} from './shore-solver.ts';
@@ -14,14 +15,14 @@ const SHEET_INTERVAL=1/60;
 export function breakerLipThickness(drop:number,energy:number):number{
   return .06+.10*whitewaterAerationStrength(energy)+.20*Math.max(0,Math.min(3.5,drop)-.5);
 }
-/** Thuerey-style visual closure, capped by the available elevation head.
- * The linear gain alone launched a 2.5m crest at ~16m/s and stretched its
- * sheet over 15m. Limit kinetic gain to g*h (Bernoulli head), so launch speed
- * cannot manufacture arbitrarily large energy. Still not a 3D pressure solve. */
-export function breakerSheetSpeed(frontSpeed:number,elevation:number):number{
-  if(![frontSpeed,elevation].every(Number.isFinite))return 0;
-  const phase=Math.max(0,frontSpeed),head=9.81*Math.max(0,elevation);
-  return Math.min(24,phase*(1+.08*head),Math.sqrt(phase*phase+2*head));
+/** Empirical wave-line closure (not a pressure solve). Bound excess speed
+ * in the moving front frame, using the measured crest-to-face drop. The old
+ * world-frame kinetic cap prevented even a 3m translating wave from lifting
+ * water off its crest. Absolute height above sea level is not available head. */
+export function breakerSheetSpeed(frontSpeed:number,drop:number):number{
+  if(![frontSpeed,drop].every(Number.isFinite))return 0;
+  const phase=Math.max(0,frontSpeed),head=9.81*Math.max(0,Math.min(3.5,drop));
+  return Math.min(24,phase+Math.min(phase*.05*head,Math.sqrt(2*head)));
 }
 /** Kinematic free-surface condition: w = dh/dt + u dot grad(h).
  * The measured Eulerian rate is optional while the cache warms up. A known
@@ -208,7 +209,7 @@ export class ConnectedBreakerPool {
     if(sampler)for(const b of nodes){
       if(!sampler(b.x,b.z,this.sample)||!wet(this.sample,false))return false;
       b.height=this.sample.height;b.depth=this.sample.depth;
-      const launch=breakerSheetSpeed(b.speed??2,b.height);
+      const launch=breakerSheetSpeed(b.speed??2,b.drop??.2);
       b.up=b.frontX===undefined?breakerVerticalVelocity(this.sample,b.nx*launch,b.nz*launch):0;
     }
     const audit={nodes:nodes.map(b=>({x:b.x,y:b.height,z:b.z})),maxGap:0,maxPhaseJump:0};
@@ -221,7 +222,7 @@ export class ConnectedBreakerPool {
     this.absorbed.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.separated.fill(0,slot*BREAKER_FRONT_NODES*SHEET_ROWS,(slot+1)*BREAKER_FRONT_NODES*SHEET_ROWS);
     this.births[slot]=nodes;this.ages[slot]=0;this.clock[slot]=0;this.visible[slot]=1;this.active++;this.eventIds[slot]=++this.fronts;
-    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.tipSeparated[slot*BREAKER_FRONT_NODES+j]=0;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.height);this.launchSpeeds[slot*BREAKER_FRONT_NODES+j]=launch;this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:b.up??.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.frontX??b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.frontZ??b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
+    for(let j=0;j<BREAKER_FRONT_NODES;j++){this.landed[slot*BREAKER_FRONT_NODES+j]=-1;this.tipSeparated[slot*BREAKER_FRONT_NODES+j]=0;this.released[slot*BREAKER_FRONT_NODES+j]=-1;const b=nodes[j],i=(slot*BREAKER_FRONT_NODES+j)*4;this.trackedSpeeds[slot*BREAKER_FRONT_NODES+j]=b.speed??2;const launch=breakerSheetSpeed(b.speed??2,b.drop??.2);this.launchSpeeds[slot*BREAKER_FRONT_NODES+j]=launch;this.histories[slot*BREAKER_FRONT_NODES+j].reset({time:0,x:b.x,y:b.height,z:b.z,vx:b.nx*launch,vz:b.nz*launch,up:b.up??.4});this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2]=b.frontX??b.x;this.trackedRoots[(slot*BREAKER_FRONT_NODES+j)*2+1]=b.frontZ??b.z;this.roots.set([b.x,b.height,b.z,0],i);this.tips.set([b.x,b.height,b.z,1],i);this.shapes.set([b.nx,b.nz,breakerLipThickness(b.drop??.2,b.energy)/Math.max(1,launch/(b.speed??2)),b.drop??.2],i);}
     return true;
   }
   advance(dt:number,sampler:WhitewaterSampler,impact:(b:BreakerImpact)=>void):void{
@@ -272,7 +273,7 @@ export class ConnectedBreakerPool {
         if(age>2.4||!sampler(rootX,rootZ,s)||s.depth<=.02||s.depth>8){this.hideNode(index);continue;}
         const rootY=s.height,history=this.histories[index];
 
-        const desiredSpeed=breakerSheetSpeed(this.trackedSpeeds[index],rootY);
+        const desiredSpeed=breakerSheetSpeed(this.trackedSpeeds[index],b.drop??.2);
         // Cache arrivals must not give adjacent emission times unrelated jet
         // velocities. Resolve the source response over 180 ms; old parcels
         // keep their own immutable velocity. This is an authored closure.
@@ -428,10 +429,21 @@ export class ConnectedShoreBreakers {
         vec4 p0=sheetRow(a-1.,u),p1=sheetRow(a,u),p2=sheetRow(a+1.,u),p3=sheetRow(a+2.,u);
         return boundedCubic(p0,p1,p2,p3,t);
       }
+      ${crestAttachmentGLSL}
       vec4 attachedParcel(float along,float u){
-        vec4 parcel=parcelState(along,u),origin=parcelState(along,0.);
+        vec4 parcel=parcelState(along,u);
         float feeding=clamp(frontState(uFrontTips,along).w,0.,1.);
-        parcel.y+=(lipSurface(origin.xz)-origin.y)*(1.-smoothstep(0.,.10,u))*feeding;
+        float parcelAge=u*aAge;
+        if(feeding<.001||parcelAge>=${CREST_ATTACHMENT_SECONDS})return parcel;
+        vec4 origin=parcelState(along,0.);
+        float probeAge=min(aAge,1./60.);
+        vec4 probe=parcelState(along,probeAge/max(aAge,.00001));
+        float heightError=lipSurface(origin.xz)-origin.y;
+        float rateError=(lipSurface(probe.xz)-probe.y-heightError)/max(probeAge,.00001);
+        // Hermite boundary matching removes the sharp join slope. Its support
+        // is a fixed 120ms of material age, never 10% of an ageing whole sheet.
+        // Expensive surface queries are skipped for all older airborne water.
+        parcel.y+=crestAttachmentOffset(heightError,rateError,parcelAge)*feeding;
         return parcel;
       }
       void main(){

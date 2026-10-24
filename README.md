@@ -4,11 +4,11 @@
 
 ![透明な浅瀬と水面の光](docs/gallery/open-sea.png)
 
-![新島の波と泡・巻き込み形状は改善中](docs/checks/v112/wave-lifecycle.jpg)
+![新島の波と泡・巻き込み形状は改善中](docs/checks/v113/wave-lifecycle.jpg)
 
-[波音入り動画（MP4・V112）](docs/checks/v112/wave-lifecycle.mp4) · [再生ページ](docs/checks/v112/review.html) · [映像の検証条件と未達事項](docs/breaking-wave-status-v112.md)
+[波音入り動画（MP4・V113）](docs/checks/v113/wave-lifecycle.mp4) · [再生ページ](docs/checks/v113/review.html) · [映像の検証条件と未達事項](docs/breaking-wave-status-v113.md)
 
-**砕波の改善記録 V112:** 波頭を拾う水面メッシュ、反射の傾き、飛び出す水の速度を修正。[参考にしたGitHub実装](docs/wave-methods-github.md) · [Colabの粒子計算と限界](docs/colab-wave-lab.md) · [前版V111](docs/breaking-wave-status-v111.md)。大きな巻き込みや水面接合は引き続き改善中です。
+**砕波の改善記録 V113:** 空の反射、波頭から出る水の接合、移動する波からの落下を修正。波と同じ時刻の環境音を入れ、Chromeの実画面を保存しました。[参考にしたGitHub実装](docs/wave-methods-github.md) · [Colabの粒子計算と限界](docs/colab-wave-lab.md) · [前版V112](docs/breaking-wave-status-v112.md)。大きな巻き込みや白水の立体感は引き続き改善中です。
 
 [はじめる](#はじめる) · [できること](#できること) · [島をめぐる](#島をめぐる) · [操作](#操作) · [開発と検証](#開発と検証)
 

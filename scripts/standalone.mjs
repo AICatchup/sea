@@ -3,19 +3,20 @@ import { resolve, dirname } from 'node:path';
 
 // A single-file build, including local photogrammetry, PBR maps, HDR sky and fonts.
 const root = resolve(import.meta.dirname, '..');
-let html = await readFile(resolve(root, 'dist/index.html'), 'utf8');
+const dist = resolve(process.env.SEA_DIST_DIR ?? resolve(root, 'dist'));
+let html = await readFile(resolve(dist, 'index.html'), 'utf8');
 for (const match of [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)]) {
-  let source = await readFile(resolve(root, 'dist', match[1]), 'utf8');
+  let source = await readFile(resolve(dist, match[1]), 'utf8');
   const assetURLs=new Set([...source.matchAll(/["']((?:\.\/)?assets\/[a-zA-Z0-9_.-]+\.(?:png|jpe?g|webp|svg))["']/g)].map(found=>found[1]));
   for(const assetURL of assetURLs){
-    const bytes=await readFile(resolve(root,'dist',assetURL));
+    const bytes=await readFile(resolve(dist,assetURL));
     const ext=assetURL.split('.').at(-1);
     const mime=ext==='svg'?'image/svg+xml':ext==='jpg'?'image/jpeg':`image/${ext}`;
     source=source.split(assetURL).join(`data:${mime};base64,${bytes.toString('base64')}`);
   }
-  for(const filename of await readdir(resolve(root,'dist/assets'))){
+  for(const filename of await readdir(resolve(dist,'assets'))){
     if(!/\.(?:png|jpe?g|webp|svg|hdr|exr|glb|bin|ogg|json)$/.test(filename)||!source.includes(filename))continue;
-    const bytes=await readFile(resolve(root,'dist/assets',filename));
+    const bytes=await readFile(resolve(dist,'assets',filename));
     const ext=filename.split('.').at(-1);
     const mime=ext==='json'?'application/json':ext==='ogg'?'audio/ogg':ext==='svg'?'image/svg+xml':ext==='jpg'?'image/jpeg':ext==='glb'?'model/gltf-binary':ext==='hdr'||ext==='exr'||ext==='bin'?'application/octet-stream':`image/${ext}`;
     const dataURL=`data:${mime};base64,${bytes.toString('base64')}`;
@@ -24,7 +25,7 @@ for (const match of [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/scr
   html = html.replace(match[0], () => `<script type="module">${source.replace(/<\/script/gi, '<\\/script')}</script>`);
 }
 for (const match of [...html.matchAll(/<link\b[^>]*\brel="stylesheet"[^>]*\bhref="([^"]+)"[^>]*>/g)]) {
-  const cssPath = resolve(root, 'dist', match[1]);
+  const cssPath = resolve(dist, match[1]);
   let source = await readFile(cssPath, 'utf8');
   for (const asset of [...source.matchAll(/url\((?:["']?)([^)"']+)(?:["']?)\)/g)]) {
     if (/^(data:|https?:)/.test(asset[1])) continue;
@@ -45,5 +46,5 @@ licenses.push(await readFile(resolve(root,'src/assets/player/makehuman-v65/READM
 licenses.push(await readFile(resolve(root,'src/assets/player/cmu-mocap-v65/README.md'),'utf8'));
 licenses.push('HDR sky: CC0-1.0, Poly Haven / Greg Zaal and Jarod Guest. https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky https://polyhaven.com/license');
 html = html.replace('</body>', () => `<script type="text/plain" id="third-party-licenses">${licenses.join('\n\n').replace(/<\/script/gi, '<\\/script')}</script></body>`);
-await writeFile(resolve(root, 'dist/sea.html'), html, 'utf8');
-console.log('Standalone ocean: dist/sea.html');
+await writeFile(resolve(dist, 'sea.html'), html, 'utf8');
+console.log(`Standalone ocean: ${resolve(dist, 'sea.html')}`);

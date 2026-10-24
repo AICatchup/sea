@@ -183,7 +183,7 @@ export class Ocean {
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
     const connected=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('connectedbreakers')!=='0';
     this.marineSurface=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('marinefield')!=='0'?new MarineSurfaceField(this.renderer):null;
-    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')==='1',connected,resolution:connected?64:24,span:connected?128:144});
+    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')==='1',connected,resolution:connected?96:24,span:144});
     if(this.marineSurface)this.spray.setImpactSink(b=>{
       const droplet=(b.width??2)<.25&&b.energy<=.04;
       // A material row contributes by landed water volume, not one full splash
@@ -241,7 +241,7 @@ export class Ocean {
       uReflection:{value:this.reflection.getRenderTarget().texture},uReflectionMatrix:{value:this.reflectionMatrix},uHasReflection:{value:0},
       uReflectionResolution:{value:new THREE.Vector2(512,320)},
       uCaustics:{value:null},uCausticBounds:{value:new THREE.Vector4()},
-      uSkyTexture:{value:null},uSkyRotation:{value:0},uSkyExposure:{value:1},uUseSky:{value:0},
+      uSkyTexture:{value:null},uSkyReflectionTexture:{value:null},uSkyRotation:{value:0},uSkyExposure:{value:1},uUseSky:{value:0},
     };
     this.caustics=new WaveCaustics(this.renderer,{span:32,photonResolution:new URLSearchParams(location.search).get('light')==='legacy'?256:512});
     if(this.shoreSolver){this.shoreSolver.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.shoreSolver.uniforms);}
@@ -403,9 +403,9 @@ export class Ocean {
     const requestedSkyRotation=new URLSearchParams(location.search).get('skyrotation');
     const skyRotation=import.meta.env.DEV&&requestedSkyRotation!==null&&Number.isFinite(Number(requestedSkyRotation))?THREE.MathUtils.clamp(Number(requestedSkyRotation),-Math.PI,Math.PI):1.70;
     const skyReady=loadPhotographicSky(skyRotation).then(sky=>{
-      if(this.disposed){sky.texture.dispose();return;}
+      if(this.disposed){sky.texture.dispose();sky.reflection.dispose();return;}
       this.photographicSky=sky;
-      this.uniforms.uSkyTexture.value=sky.texture;this.uniforms.uSkyRotation.value=sky.rotation;this.uniforms.uSkyExposure.value=sky.exposure;
+      this.uniforms.uSkyTexture.value=sky.texture;this.uniforms.uSkyReflectionTexture.value=sky.reflection;this.uniforms.uSkyRotation.value=sky.rotation;this.uniforms.uSkyExposure.value=sky.exposure;
       if(this.currentPreset==='day'||this.currentPreset==='typhoon'){
         this.uniforms.uUseSky.value=1;this.uniforms.uSunDirection.value.copy(sky.sun);
         this.environmentTargets.get(this.currentPreset)?.dispose();this.environmentTargets.delete(this.currentPreset);this.refreshEnvironment(this.currentPreset);
@@ -917,6 +917,6 @@ export class Ocean {
     this.activityWorld.dispose();this.expeditionWorld.dispose();this.adventure.dispose();this.body.dispose();this.waterHeights.dispose();this.assets.dispose();this.marine.dispose();this.world.dispose();this.simulation.dispose();
     this.materials.forEach(m=>m.dispose());this.meshGeometries.forEach(g=>g.dispose());
     this.environmentTargets.forEach(t=>t.dispose());this.pmrem.dispose();this.sun.shadow.dispose();this.compositor.dispose();
-    this.caustics.dispose();this.reflection.dispose();this.reflection.geometry.dispose();this.photographicSky?.texture.dispose();this.renderer.dispose();
+    this.caustics.dispose();this.reflection.dispose();this.reflection.geometry.dispose();this.photographicSky?.texture.dispose();this.photographicSky?.reflection.dispose();this.renderer.dispose();
   }
 }

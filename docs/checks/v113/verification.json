@@ -1,0 +1,253 @@
+{
+  "version": 113,
+  "date": "2026-10-25",
+  "baseCommit": "0a110e461ec43d4977f8a19ea7400ec7de02aebb",
+  "sourceSHA256": {
+    "src/qa/wave-recording.ts": "FBE6FBCC3A9F68715784E8859FDB14207980FED3DEE5446579015A669150C389",
+    "src/ocean/breaker-attachment.ts": "C4C53242344F21802BAC5CE467EED28322CD7AB566585C9A7832202C00578D59",
+    "src/ocean/shore-spray.ts": "6F341440187F59979BF5EB5D3F64C847FB4A0F7F2CB500077C3E6A3E18CC0FFC",
+    "src/ocean/photographic-sky.ts": "4CAAEF23FCFDFC4325B6C1922EF172BC6C7090BB3378E656AF2A66A0A0F9089C",
+    "src/ocean/renderer.ts": "9F7DC4D258C08E3B50F9F48C1D83A2F32CD1D0A37D2AE1EFAE3CD59D036B3E19",
+    "src/ocean/connected-breakers.ts": "44C2B743406E5DFD04762BB134E3BA9A8F491A3554446960012BF77473CE6D66",
+    "src/ocean/shaders.ts": "FF0FFB5A198D0D319DF9FB27644A15F077C60D8A622280A4CD5AC1C20BEEB80A"
+  },
+  "typecheckExitCode": 0,
+  "relatedTests": {
+    "passed": 64,
+    "failed": 0,
+    "runs": [
+      "63 related wave/cache/reflection tests",
+      "1 solar separation regression"
+    ]
+  },
+  "buildExitCode": 0,
+  "standaloneExitCode": 0,
+  "recordings": [
+    {
+      "view": "publish-front",
+      "pose": {
+        "pose": {
+          "x": 5922,
+          "z": -923.918,
+          "yaw": 2.2142974,
+          "pitch": -0.12,
+          "mode": "walk",
+          "depth": 0
+        },
+        "camera": [
+          5922,
+          2.4,
+          -923.918,
+          0.026816719892612282,
+          0.8928176970454293,
+          0.05363343739933653,
+          -0.4464088683812504
+        ],
+        "fov": 62,
+        "width": 1119,
+        "height": 779,
+        "quality": "high",
+        "preset": "typhoon",
+        "paused": true,
+        "locked": true,
+        "hidden": false,
+        "disposed": false,
+        "wind": 16,
+        "swell": 1.8,
+        "eyeY": 2.4,
+        "oxygen": 1,
+        "stamina": 1,
+        "action": "idle"
+      },
+      "frames": 181,
+      "physicsSeconds": 18.000000000005265,
+      "firstCounters": {
+        "frontEvents": 0,
+        "lipActive": 0,
+        "lipImpacts": 0,
+        "whitewaterEmitted": 0,
+        "geometryAudit": {
+          "maxAcrossGap": 0,
+          "maxAlongGap": 0,
+          "maxRootGapIncludingInactive": 0,
+          "activeSamples": 0,
+          "maxAge": 0,
+          "emittingNodes": 0
+        }
+      },
+      "lastCounters": {
+        "frontEvents": 166,
+        "lipActive": 21,
+        "lipImpacts": 64,
+        "whitewaterEmitted": 34549,
+        "geometryAudit": {
+          "maxAcrossGap": 3.1417197175260574,
+          "maxAlongGap": 0.4535740964972912,
+          "maxRootGapIncludingInactive": 3.502741444965404,
+          "activeSamples": 732,
+          "maxAge": 2.28333333333333,
+          "emittingNodes": 146
+        }
+      },
+      "newTipImpacts": 64,
+      "newFoamDeposits": 34549,
+      "summary": {
+        "frames": 181,
+        "fps": 10,
+        "realtime": false,
+        "audio": {
+          "channels": 2,
+          "sampleRate": 48000,
+          "seconds": 18.100020833333332,
+          "peak": 0.242156982421875,
+          "rms": 0.032619445683785164
+        },
+        "maxAcrossGap": 3.500363967586134,
+        "maxAlongGap": 0.4535740964972912,
+        "lastSpray": {
+          "frontEvents": 166,
+          "lipActive": 21,
+          "lipImpacts": 64,
+          "whitewaterEmitted": 34549,
+          "geometryAudit": {
+            "maxAcrossGap": 3.1417197175260574,
+            "maxAlongGap": 0.4535740964972912,
+            "maxRootGapIncludingInactive": 3.502741444965404,
+            "activeSamples": 732,
+            "maxAge": 2.28333333333333,
+            "emittingNodes": 146
+          }
+        }
+      }
+    },
+    {
+      "view": "publish-near",
+      "pose": {
+        "pose": {
+          "x": 5898,
+          "z": -898,
+          "yaw": 1.5707963267948966,
+          "pitch": -0.06,
+          "mode": "walk",
+          "depth": 0
+        },
+        "camera": [
+          5898,
+          2.4,
+          -898,
+          -0.021210021598267827,
+          -0.7067886069991515,
+          -0.021210021598267827,
+          0.7067886069991516
+        ],
+        "fov": 62,
+        "width": 1119,
+        "height": 779,
+        "quality": "high",
+        "preset": "typhoon",
+        "paused": true,
+        "locked": true,
+        "hidden": false,
+        "disposed": false,
+        "wind": 16,
+        "swell": 1.8,
+        "eyeY": 2.4,
+        "oxygen": 1,
+        "stamina": 1,
+        "action": "idle"
+      },
+      "frames": 181,
+      "physicsSeconds": 17.99999999998962,
+      "firstCounters": {
+        "frontEvents": 166,
+        "lipActive": 0,
+        "lipImpacts": 64,
+        "whitewaterEmitted": 34549,
+        "geometryAudit": {
+          "maxAcrossGap": 0,
+          "maxAlongGap": 0,
+          "maxRootGapIncludingInactive": 0,
+          "activeSamples": 0,
+          "maxAge": 0,
+          "emittingNodes": 0
+        }
+      },
+      "lastCounters": {
+        "frontEvents": 331,
+        "lipActive": 21,
+        "lipImpacts": 99,
+        "whitewaterEmitted": 67083,
+        "geometryAudit": {
+          "maxAcrossGap": 2.130606629989753,
+          "maxAlongGap": 0.2922363402968684,
+          "maxRootGapIncludingInactive": 2.128934445028572,
+          "activeSamples": 1376,
+          "maxAge": 2.283333333332007,
+          "emittingNodes": 261
+        }
+      },
+      "newTipImpacts": 35,
+      "newFoamDeposits": 32534,
+      "summary": {
+        "frames": 181,
+        "fps": 10,
+        "realtime": false,
+        "audio": {
+          "channels": 2,
+          "sampleRate": 48000,
+          "seconds": 18.100020833333332,
+          "peak": 0.267822265625,
+          "rms": 0.041297957021740356
+        },
+        "maxAcrossGap": 7.628109926147245,
+        "maxAlongGap": 0.636960347190643,
+        "lastSpray": {
+          "frontEvents": 331,
+          "lipActive": 21,
+          "lipImpacts": 99,
+          "whitewaterEmitted": 67083,
+          "geometryAudit": {
+            "maxAcrossGap": 2.130606629989753,
+            "maxAlongGap": 0.2922363402968684,
+            "maxRootGapIncludingInactive": 2.128934445028572,
+            "activeSamples": 1376,
+            "maxAge": 2.283333333332007,
+            "emittingNodes": 261
+          }
+        }
+      }
+    }
+  ],
+  "media": {
+    "wave-lifecycle.mp4": {
+      "bytes": 14593031,
+      "fullDecodeExitCode": 0,
+      "sha256": "03C0A621180C92676689A5C47B0E7D05F3E3AC9F625E58B010182F7526221E51"
+    },
+    "shore-lifecycle.mp4": {
+      "bytes": 11717140,
+      "fullDecodeExitCode": 0,
+      "sha256": "B4FED93EA84F008D47E51AB0B0923C9E7CA81B9053996B90F20149D301D7DA4D"
+    }
+  },
+  "chromeGameErrors": [],
+  "browserPlayback": {
+    "front": {
+      "ended": true,
+      "duration": 18.1,
+      "muted": false,
+      "error": null
+    },
+    "shore": {
+      "ended": true,
+      "duration": 18.1,
+      "muted": false,
+      "error": null
+    }
+  },
+  "limits": [
+    "10fps capture on 1/60s simulation time, not realtime FPS",
+    "kinematic sheets with SWE and persistent foam, not a full 3D pressure solve",
+    "large curling and whitewater volume still have visible limitations"
+  ]
+}

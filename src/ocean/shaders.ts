@@ -446,8 +446,9 @@ export const oceanFragment = /* glsl */ `
     float shortFade = (1.0-smoothstep(90.0,480.0,vDistance))*exp(-footprint*0.85);
     vec3 dx=(longDisplacement(vOcean+vec2(longStep,0))-longDisplacement(vOcean-vec2(longStep,0)))/(2.0*longStep);
     vec3 dz=(longDisplacement(vOcean+vec2(0,longStep))-longDisplacement(vOcean-vec2(0,longStep)))/(2.0*longStep);
-    dx+=(shortDisplacement(vOcean+vec2(shortStep,0))-shortDisplacement(vOcean-vec2(shortStep,0)))/(2.0*shortStep)*shortFade;
-    dz+=(shortDisplacement(vOcean+vec2(0,shortStep))-shortDisplacement(vOcean-vec2(0,shortStep)))/(2.0*shortStep)*shortFade;
+    vec3 shortDx=(shortDisplacement(vOcean+vec2(shortStep,0))-shortDisplacement(vOcean-vec2(shortStep,0)))/(2.0*shortStep)*shortFade;
+    vec3 shortDz=(shortDisplacement(vOcean+vec2(0,shortStep))-shortDisplacement(vOcean-vec2(0,shortStep)))/(2.0*shortStep)*shortFade;
+    dx+=shortDx;dz+=shortDz;
     float chop = uChoppiness*uSwell;
     vec3 tangentX=vec3(1.0+dx.x*chop,dx.y*uSwell,dx.z*chop);
     vec3 tangentZ=vec3(dz.x*chop,dz.y*uSwell,1.0+dz.z*chop);
@@ -471,6 +472,16 @@ export const oceanFragment = /* glsl */ `
       vec2 slope=vec2(shoreWetSurfaceSlope(contactHeight,hn,coastAt(nx).x,hp,coastAt(px).x,step),
                       shoreWetSurfaceSlope(contactHeight,hb,coastAt(nz).x,ht,coastAt(pz).x,step));
       if(uWetStencil<.5)slope=vec2(hp-hn,ht-hb)/(2.*step);
+      // SWE transports the resolved wave. Its 1.5m cells cannot carry the
+      // short gravity waves in the wind spectrum: replacing their entire
+      // normal made troughs perfectly polished, screen-wide mirror ribbons.
+      // Retain only the spectral slope missing at the solver's support;
+      // subtracting the coarse slope avoids adding a second long swell.
+      vec2 coarseShort=vec2(
+        shortDisplacement(vOcean+vec2(step,0)).y-shortDisplacement(vOcean-vec2(step,0)).y,
+        shortDisplacement(vOcean+vec2(0,step)).y-shortDisplacement(vOcean-vec2(0,step)).y)/(2.*step)*shortFade;
+      float wetDetail=smoothstep(.05,.45,max(0.,contactHeight-coast.x));
+      slope+=(vec2(shortDx.y,shortDz.y)-coarseShort)*uSwell*wetDetail;
       normal=normalize(vec3(-slope.x,1.,-slope.y));
       solvedNormal=true;
     }
@@ -572,7 +583,8 @@ export const oceanFragment = /* glsl */ `
     reflected.y=max(reflected.y,0.012);
     reflected=normalize(reflected);
     float fresnel=waterFresnel(nV,1.0/1.333);
-    vec3 reflection=mix(interreflection,skyRadiance(reflected,false),skyVisibility);
+    vec3 reflectedSky=uUseSky>.5?photographicSkyReflection(reflected,roughnessAlpha*(1.+.8*(1.-nV))):skyRadiance(reflected,false);
+    vec3 reflection=mix(interreflection,reflectedSky,skyVisibility);
     vec4 reflectedPoint=uReflectionMatrix*vec4(vWorld,1.0);
     vec2 reflectedUV=reflectedPoint.xy/max(reflectedPoint.w,.0001)
       +normal.xz*(.012+.12*(1.0-nV))/max(.35,nV);
@@ -587,7 +599,13 @@ export const oceanFragment = /* glsl */ `
     float pixelCone=max(length(dFdx(reflectedUV)*uReflectionResolution),length(dFdy(reflectedUV)*uReflectionResolution));
     float reflectionLod=clamp(log2(max(pixelCone,coneRadius*max(uReflectionResolution.x,uReflectionResolution.y))),0.0,8.0);
     vec3 reflectedScene=textureLod(uReflection,clamp(reflectedUV,.002,.998),reflectionLod).rgb;
-    reflection=mix(reflection,reflectedScene,reflectionValid*uHasReflection*skyVisibility);
+    // Planar capture is useful for local geometry, but its sky projection
+    // assumes a horizontal mirror. Reusing that sky on a curling face pins
+    // the horizon to a broad screen-space ribbon. Infinite sky must follow
+    // the actual reflected direction above; only finite receivers use this map.
+    float reflectedDepth=texture2D(uReflectionDepth,clamp(reflectedUV,.002,.998)).r;
+    float reflectionReceiver=1.-step(.999999,reflectedDepth);
+    reflection=mix(reflection,reflectedScene,reflectionValid*uHasReflection*skyVisibility*reflectionReceiver);
     float crest=clamp(vWorld.y/(0.35+uWind*uWind*0.010)+0.38,0.0,1.0);
     float sunFacing=max(dot(normal,uSunDirection),0.0);
     float backlight=pow(max(dot(view,-uSunDirection),0.0),4.0);

@@ -51,3 +51,30 @@ test('dispose defers render target destruction until async readback settles',asy
   spray.dispose();assert.equal(disposals,0);resolve(new Uint8Array(2304));
   await new Promise(r=>setImmediate(r));assert.equal(disposals,1);assert.equal(spray.diagnostics.ready,false);
 });
+
+test('SWE-aligned cache preserves a narrow nodal crest when the camera moves',async()=>{
+  // Independent triangular surface: 3m-high peaks at alternate SWE nodes.
+  // Resampling it on the previous 2m grid loses crest height before launch.
+  const height=(x:number)=>{const phase=((x-.75)%3+3)%3;return 3-2*Math.min(phase,3-phase);};
+  let material:THREE.ShaderMaterial;
+  const renderer={getRenderTarget(){return null;},setRenderTarget(){},
+    render(scene:THREE.Scene){material=(scene.children[0] as THREE.Mesh).material as THREE.ShaderMaterial;},
+    async readRenderTargetPixelsAsync(_target:unknown,_x:number,_y:number,width:number,rows:number,pixels:Uint8Array){
+      const u=material.uniforms,centre=u.uCenter.value as THREE.Vector2,step=u.uSampleStep.value;
+      for(let z=0;z<rows;z++)for(let x=0;x<width;x++){
+        const h=height(centre.x+(x+.5-width/2)*step),code=Math.round((h/16+.5)*65535),i=(z*width+x)*4;
+        pixels[i]=Math.floor(code/256);pixels[i+1]=code%256;pixels[i+3]=Math.round((h+2)/8*255);
+      }return pixels;
+    },getDrawingBufferSize(v:THREE.Vector2){return v.set(1000,600);}} as unknown as THREE.WebGLRenderer;
+  const camera=new THREE.PerspectiveCamera(),u={uLongWaves:{value:new THREE.Texture()},uShortWaves:{value:new THREE.Texture()},uBathymetry:{value:new THREE.Texture()}};
+  const aligned=new ShoreSpray(renderer,{heightAt:()=>-2},{resolution:96,span:144});
+  let time=0;
+  for(const x of [-7.9,-.01,.01,1.49,1.51,8.2]){
+    camera.position.set(x,2,-4.2);aligned.update(++time,.016,camera,u);await aligned.settleReadback();
+    assert.ok(Math.abs(aligned.diagnostics.maxSampleCrest-3)<.00025,'camera motion must not attenuate a shared crest');
+  }
+  assert.equal(aligned.diagnostics.readbackBytes,96*96*4);assert.equal(aligned.diagnostics.interval,.2);aligned.dispose();
+  const resampled=new ShoreSpray(renderer,{heightAt:()=>-2},{resolution:64,span:128});
+  resampled.update(++time,.016,camera,u);await resampled.settleReadback();
+  assert.ok(resampled.diagnostics.maxSampleCrest<2.51,'the old grid reproduces the half-metre crest loss');resampled.dispose();
+});

@@ -24,6 +24,8 @@
 
 ## ライセンス
 
+2026-10-25の補足: [Three.js Reflector](https://github.com/mrdoob/three.js/blob/master/examples/jsm/objects/Reflector.js)の投影と、ローカルに導入済みのThree.jsの環境反射シェーダーを確認。V113では空を波面の反射方向から読み、微小な傾きに応じてHDRをフィルターする。太陽円盤を反射用HDRから分離し、GGXの太陽反射との重複も防ぐ。またThüreyの波の前線から水を出す考え方を再確認し、移動波で落下が起きない旧速度制限を修正した。式はSEAの経験的近似であり、論文の完全な再実装や物理的厳密性を主張するものではない。
+
 2026-10-24の補足: [Crestの泡の公式解説](https://docs.crest.waveharmonic.com/Manual/Appearance/Foam.html)も再確認。砕波や浅瀬からの発生と、更新ごとの減衰を分けている。SEAでも着水による入力と永続場の移流・減衰を保持し、白いテクスチャだけで波の崩壊を代用しない。V112では別途、実測したゲーム内のメッシュ補間誤差、反射の差分幅、放出速度の過剰な増幅に対処した。これらの修正をCrestやColabが検証したとは扱わない。
 
 Crest、GodotOceanWaves、SPlisHSPlasH、splashsurfは各リポジトリのMIT表記を確認。WarpはApache-2.0。参照したFLIP FluidsのengineソースのヘッダーはMIT表記だが、アドオンや配布物全体へ一般化しない。今後コード・アセットを取り込む際は、そのファイルのライセンスと著作権表示を保持する。

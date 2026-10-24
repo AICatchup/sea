@@ -175,7 +175,7 @@ export class ShoreSpray {
   constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number},options:{whitewater?:boolean;patches?:boolean;volume?:boolean;lips?:boolean;connected?:boolean;resolution?:number;span?:number}={}){
     this.renderer=renderer;this.ground=ground;
     this.grid=options.resolution??24;this.span=options.span??SPAN;
-    if(!Number.isInteger(this.grid)||this.grid<24||this.grid>64||this.span<=0)throw Error('Bounded spray cache required');
+    if(!Number.isInteger(this.grid)||this.grid<24||this.grid>96||this.span<=0)throw Error('Bounded spray cache required');
     const GRID=this.grid;
     this.energizedCells=new Uint16Array(GRID*GRID);
     this.lips=options.lips?(options.connected?new ConnectedShoreBreakers():new ShoreBreakingLips()):null;if(this.lips)this.group.add(this.lips.group);
@@ -395,7 +395,10 @@ export class ShoreSpray {
     if(this.pending||this.failed||time-this.lastRequest<INTERVAL||!uniforms.uLongWaves?.value||!uniforms.uShortWaves?.value||!uniforms.uBathymetry?.value)return;
     this.lastRequest=time;this.pending=true;
     const generation=this.generation;
-    const origin=new THREE.Vector2(Math.round(camera.position.x/step)*step,Math.round(camera.position.z/step)*step);
+    // Match the SWE cell centres. A second, offset 2m grid resampled its
+    // 1.5m crests before emission, leaving the attached sheet below the
+    // rendered crest and requiring a sharp correction at the join.
+    const origin=new THREE.Vector2(Math.floor(camera.position.x/step)*step,Math.floor(camera.position.z/step)*step);
     for(const name of ['uLongWaves','uShortWaves','uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uSwell','uWind','uChoppiness','uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uMarineSurface','uMarineBounds','uMarineReady','uMarineResolution']){
       if(uniforms[name])this.sampleMaterial.uniforms[name].value=uniforms[name].value;
     }
