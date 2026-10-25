@@ -8,6 +8,14 @@ export function coastalWaveScale(ground:number,exposure:number,swell:number,wind
   return transport*cap*f*f*(3-2*f)*Math.max(.08,Math.min(1,exposure));
 }
 
+/** Optical wind-wave residual, independent of the long-swell multiplier.
+ * Limit the short cascade by its own significant height, not the storm swell. */
+export function coastalWindDetailScale(depth:number,exposure:number,wind:number):number{
+  if(![depth,exposure,wind].every(Number.isFinite)||depth<=0||wind<=0)return 0;
+  const rms=.009*Math.pow(wind,.92),wet=Math.max(0,Math.min(1,(depth-.015)/.205));
+  return Math.min(1,.38*depth/Math.max(.035,2*rms))*wet*wet*(3-2*wet)*Math.max(.08,Math.min(1,exposure));
+}
+
 /** Stochastic metric height derivatives shared by water and photon refraction.
  * Unresolved bands contribute slope variance to the reflection BRDF. */
 export const capillarySampling=/* glsl */`
@@ -66,6 +74,10 @@ export const shoreWaveSampling=/* glsl */`
     float nominalAmplitude=max(.08,swell*(.10+wind*wind*.013));
     float breakingCap=min(1.0,depth*.38/nominalAmplitude);
     return transport*breakingCap*smoothstep(.015,.22,depth)*clamp(coast.y,.08,1.0);
+  }
+  float shoreWindDetailScale(float depth,float exposure,float wind){
+    float rms=.009*pow(max(0.,wind),.92);
+    return min(1.,.38*max(0.,depth)/max(.035,2.*rms))*smoothstep(.015,.22,depth)*clamp(exposure,.08,1.);
   }
 `;
 

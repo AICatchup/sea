@@ -5,7 +5,7 @@ import {SoundscapeState,type SoundscapeFrame} from './soundscape-state.ts';
  * Offline scheduling keeps slow diagnostic frame rendering from desynchronizing audio.
  */
 export async function captureSoundtrack(frames:SoundscapeFrame[],duration:number):Promise<string>{
-  if(!frames.length||frames.length>181||!Number.isFinite(duration)||duration<=0||duration>21)throw new Error('Bounded capture required');
+  if(!frames.length||frames.length>433||!Number.isFinite(duration)||duration<=0||duration>21)throw new Error('Bounded capture required');
   const origin=frames[0].time;
   for(let i=0;i<frames.length;i++)if(!Number.isFinite(frames[i].time)||frames[i].time<origin||(i>0&&frames[i].time<=frames[i-1].time))throw new Error('Ordered sound frames required');
   const context=new OfflineAudioContext(2,Math.ceil(duration*48000),48000);

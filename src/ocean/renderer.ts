@@ -183,7 +183,7 @@ export class Ocean {
     this.world.sandAppearance.value=new URLSearchParams(location.search).get('whitesand')!=='0'?1:0;
     const connected=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('connectedbreakers')!=='0';
     this.marineSurface=experience.whitewater&&!experience.volume&&new URLSearchParams(location.search).get('marinefield')!=='0'?new MarineSurfaceField(this.renderer):null;
-    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')==='1',connected,resolution:connected?96:24,span:144});
+    this.spray=new ShoreSpray(this.renderer,this.world,{whitewater:experience.whitewater,patches:!this.marineSurface,volume:experience.volume,lips:experience.whitewater&&new URLSearchParams(location.search).get('breakinglips')!=='0',connected,resolution:connected?96:24,span:144});
     if(this.marineSurface)this.spray.setImpactSink(b=>{
       const droplet=(b.width??2)<.25&&b.energy<=.04;
       // A material row contributes by landed water volume, not one full splash
@@ -247,6 +247,7 @@ export class Ocean {
     if(this.shoreSolver){this.shoreSolver.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.shoreSolver.uniforms);}
     if(this.sandMoisture){this.sandMoisture.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.sandMoisture.uniforms);}
     if(this.marineSurface){Object.assign(this.uniforms,this.marineSurface.uniforms);this.marineSurface.bindUniforms(this.uniforms);}
+    this.uniforms.uShoreSpectrum={value:1};this.uniforms.uSheetDetail={value:1};
     this.waterHeights.bindShore(this.uniforms);this.caustics.bindShore(this.uniforms);
     this.world.niijimaCoast.bindWaterSurface(this.uniforms);
     this.uniforms.uCaustics.value=this.caustics.texture;this.uniforms.uCausticBounds.value=this.caustics.bounds;
@@ -648,6 +649,18 @@ export class Ocean {
       cancelAnimationFrame(this.animationFrame);
       if(!this.disposed&&!this.contextLost)this.animationFrame=requestAnimationFrame(this.scheduledFrame);
     }
+  }
+  /** Explicit comparison of the same paused physical state. */
+  compareBreakingSurface(){
+    const feed=this.spray.rollers?.material.uniforms.uVolumeTransfer;
+    if(!feed)throw new Error('Connected impact rollers required');
+    const settings=[feed,this.uniforms.uShoreSpectrum,this.uniforms.uSheetDetail];
+    const saved=settings.map(s=>s.value);
+    try{
+      settings.forEach(s=>s.value=0);const beforeJpeg=this.renderStaticSnapshot('image/jpeg');
+      settings.forEach(s=>s.value=1);const afterJpeg=this.renderStaticSnapshot('image/jpeg');
+      return {beforeJpeg,afterJpeg,time:this.time,rollerActive:this.spray.rollers!.pool.active,transferredVolume:this.spray.rollers!.pool.transferredVolume};
+    }finally{settings.forEach((s,i)=>s.value=saved[i]);}
   }
   /** Fixed-step visual verification. Not realtime FPS evidence. */
   async advanceObservation(seconds:number):Promise<void>{

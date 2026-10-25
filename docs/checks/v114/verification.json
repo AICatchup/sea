@@ -1,0 +1,201 @@
+{
+  "version": "v114",
+  "baseCommit": "80dd785e6e8fb04cc5ad3b1929ddb75ac4200d2c",
+  "clips": [
+    {
+      "view": "front",
+      "video": "wave-lifecycle.mp4",
+      "sha256": "6bbbf8c57a68c92a8e41318dce6af1145ef152c3567908001be39cf2cfd671fd",
+      "captureSource": "capture-20261025-041718-a5a9eb94.json",
+      "captureSHA256": "4e75d4ac0202fb8e370187960590aed0daee557b09c5cfc153ed6f778e361282",
+      "verification": {
+        "frames": 433,
+        "fps": 24,
+        "realtime": false,
+        "audio": {
+          "channels": 2,
+          "sampleRate": 48000,
+          "seconds": 18.041666666666668,
+          "peak": 0.243072509765625,
+          "rms": 0.0326503427486999
+        },
+        "maxAcrossGap": 2.9504653789677127,
+        "maxAlongGap": 1.6528450314916243,
+        "lastSpray": {
+          "rollerActive": 256,
+          "frontEvents": 295,
+          "lipActive": 9,
+          "lipImpacts": 338,
+          "whitewaterEmitted": 75726,
+          "geometryAudit": {
+            "maxAcrossGap": 2.266864367444969,
+            "maxAlongGap": 1.1154634253415987,
+            "maxRootGapIncludingInactive": 2.235979071568876,
+            "activeSamples": 821,
+            "maxAge": 1.4833333333329963,
+            "emittingNodes": 120
+          }
+        }
+      },
+      "container": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1114,
+            "height": 720,
+            "r_frame_rate": "24/1",
+            "side_data_list": [
+              {}
+            ]
+          },
+          {
+            "codec_name": "aac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "18.041667",
+          "size": "25264798"
+        }
+      },
+      "chromePlayback": {
+        "ended": true,
+        "currentTime": 18.041667,
+        "muted": false,
+        "readyState": 4,
+        "error": null
+      }
+    },
+    {
+      "view": "side",
+      "video": "side-lifecycle.mp4",
+      "sha256": "2a09546c82525f4a9b1d8774f39e74fd6526f6b2f08fd9e7c7b7a6415968364a",
+      "captureSource": "capture-20261025-041845-e7313185.json",
+      "captureSHA256": "653c2e5ed07dd64bfb188c4156d0573be7a1a0ea6a91c11469b0b0439582e29e",
+      "verification": {
+        "frames": 433,
+        "fps": 24,
+        "realtime": false,
+        "audio": {
+          "channels": 2,
+          "sampleRate": 48000,
+          "seconds": 18.041666666666668,
+          "peak": 0.245025634765625,
+          "rms": 0.03740223570303626
+        },
+        "maxAcrossGap": 5.00811221811333,
+        "maxAlongGap": 1.5674125181069367,
+        "lastSpray": {
+          "rollerActive": 256,
+          "frontEvents": 464,
+          "lipActive": 11,
+          "lipImpacts": 455,
+          "whitewaterEmitted": 113320,
+          "geometryAudit": {
+            "maxAcrossGap": 1.9387661839515336,
+            "maxAlongGap": 1.4345018598090975,
+            "maxRootGapIncludingInactive": 1.9338024286318864,
+            "activeSamples": 1322,
+            "maxAge": 1.4833333333329963,
+            "emittingNodes": 156
+          }
+        }
+      },
+      "container": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1114,
+            "height": 720,
+            "r_frame_rate": "24/1",
+            "side_data_list": [
+              {}
+            ]
+          },
+          {
+            "codec_name": "aac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "18.041667",
+          "size": "22281359"
+        }
+      },
+      "chromePlayback": {
+        "ended": true,
+        "currentTime": 18.041667,
+        "muted": false,
+        "readyState": 4,
+        "error": null
+      }
+    }
+  ],
+  "sourceSHA256": {
+    "scripts/render-wave-recording.py": "d749998055487791ab1a9bbe46eb367f4d20b16262ee78eda21fd810c355efca",
+    "src/audio/capture-soundtrack.ts": "5668aad74d72a701220967c42fd0158ca76d9f76a78c243503a845e8473a86c9",
+    "src/ocean/breaker-parcels.ts": "20efaff77ef6ce3c3320997163619de55ca9343218cc38b4a5259ef2e40eb484",
+    "src/ocean/connected-breakers.ts": "a986777f30ff4285f36a51c977d6fce08527c6142365bb61d7ba70ea81821fea",
+    "src/ocean/renderer.ts": "22890bc5e926ad85b3bda100af0aadc8e6a9c5363d45c600821266e393c7afef",
+    "src/ocean/shaders.ts": "b4b63a8dca229149cac044878721da8777e95975bf2b9dc8e224e02ac8168746",
+    "src/ocean/shore-spray.ts": "42c4c25fb29468ba31783d23233cb2e5fc84e990a5723c849234f3a9295ca49c",
+    "src/ocean/shore-whitewater-volume.ts": "3dda3b1e4893e102fd7b1f7494cdc4c08a4180fd29ae4cb0a43afb0e946dcddc",
+    "src/ocean/surface-detail.ts": "4535ca8f8e075ca9e22629b82dee4531bfd8bea1479407a2d03496e96a56290a",
+    "src/qa/wave-recording.ts": "3227a432d2a0070252782fde54d9b034cb135f79ee0f04a864b8ee2372c8d8db",
+    "tests/breaker-overturning.test.ts": "1c255ec4356dc7f35d662f42c725f964542e1f7fc2ce9807e9051a4a6f4f4d71",
+    "tests/connected-breakers.test.ts": "b91d673fff67f14a146a34ad742a054778983c88424aa95959b9f5e7cfeea055",
+    "tests/shore-surface-transition.test.ts": "fb15f9c69f84d2f34ae8b3c2e59a199ae58300c8442198ce4b94ba9838be7b8f",
+    "scripts/qa-recording-server.py": "7631520a93bad296cbc508de8a0dafc6a2f98a82583660c62ff4e9f9df84e10a",
+    "tests/shore-wind-detail.test.ts": "43f4cc96813a8fa5fd8d85848b233b9d19b450e72158bf727ace09cd1571c3fe",
+    "tests/whitewater-transfer.test.ts": "5dd5905ae0a70061e103428c212af48ebfef9cce1f1562f3559136993fed095c"
+  },
+  "tests": {
+    "passed": 94,
+    "failed": 0,
+    "files": [
+      "tests/breaker-attachment.test.ts",
+      "tests/breaker-launch-energy.test.ts",
+      "tests/breaker-material-transfer.test.ts",
+      "tests/breaker-overturning.test.ts",
+      "tests/breaker-parcels.test.ts",
+      "tests/breaker-root-tracking.test.ts",
+      "tests/connected-breakers.test.ts",
+      "tests/shore-whitewater-volume.test.ts",
+      "tests/whitewater-transfer.test.ts",
+      "tests/shore-incident-envelope.test.ts",
+      "tests/shore-normal-support.test.ts",
+      "tests/shore-surface-transition.test.ts",
+      "tests/shore-wind-detail.test.ts",
+      "tests/soundscape-state.test.ts"
+    ]
+  },
+  "typescript": "passed",
+  "productionBuild": "passed",
+  "standaloneHTMLSHA256": "cf8f6523939e4d17f5971994fe505a7b118a7abe2f6e20c80f6523efe2434f58",
+  "shaderErrorsObserved": [],
+  "visualReview": {
+    "views": [
+      "front",
+      "close side"
+    ],
+    "sampleSeconds": [
+      0,
+      5,
+      6,
+      7,
+      10,
+      14,
+      18
+    ],
+    "method": "Actual Chrome WebGL canvas frames and native MP4 playback. No interpolated or generated frames.",
+    "remaining": "Large-scale curl thickness, fine spray, and a fully pressure-resolved 3D fluid remain unverified. This is not a photoreal acceptance claim."
+  }
+}

@@ -22,13 +22,14 @@ export class CrestHistory {
   sample(time:number,out:CrestEmission={time:0,x:0,y:0,z:0}):CrestEmission {
     const first=this.points[0];
     if(!first)throw new Error('Crest history has not been initialized');
-    if(time<=first.time)return Object.assign(out,first,{time,vx:first.vx,vz:first.vz,up:first.up});
-    for(let i=this.points.length-1;i>0;i--){
-      const a=this.points[i-1],b=this.points[i];
-      if(time>=a.time){const f=Math.min(1,(time-a.time)/(b.time-a.time));out.time=time;out.x=a.x+(b.x-a.x)*f;out.y=a.y+(b.y-a.y)*f;out.z=a.z+(b.z-a.z)*f;
-        for(const key of ['vx','vz','up'] as const)out[key]=a[key]===undefined||b[key]===undefined?undefined:a[key]!+(b[key]!-a[key]!)*f;
-        return out;}
-    }
-    return Object.assign(out,first,{time,vx:first.vx,vz:first.vz,up:first.up});
+    if(time<=first.time||this.points.length===1)return Object.assign(out,first,{time,vx:first.vx,vz:first.vz,up:first.up});
+    // Thousands of sheet rows query the same ordered history every frame.
+    // Binary search preserves the same interpolant without scanning it again.
+    let low=1,high=this.points.length-1;
+    while(low<high){const mid=(low+high)>>>1;if(this.points[mid].time<=time)low=mid+1;else high=mid;}
+    const a=this.points[low-1],b=this.points[low],f=Math.min(1,(time-a.time)/(b.time-a.time));
+    out.time=time;out.x=a.x+(b.x-a.x)*f;out.y=a.y+(b.y-a.y)*f;out.z=a.z+(b.z-a.z)*f;
+    for(const key of ['vx','vz','up'] as const)out[key]=a[key]===undefined||b[key]===undefined?undefined:a[key]!+(b[key]!-a[key]!)*f;
+    return out;
   }
 }

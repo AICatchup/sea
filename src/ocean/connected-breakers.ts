@@ -296,18 +296,22 @@ export class ConnectedBreakerPool {
         // ever left the surface, and prematurely stopped feeding the crest.
         if(this.tipSeparated[index]===0){
           if(tipY>s.height+.025)this.tipSeparated[index]=1;
-          else if(tipY<s.height-.025)this.tipSeparated[index]=2;
+          else if(tipY<s.height-.025&&(b.frontX===undefined||age>=CREST_ATTACHMENT_SECONDS))this.tipSeparated[index]=2;
         }
         if(this.landed[index]<0&&this.tipSeparated[index]===1&&tipY<=s.height+.025){
           this.landed[index]=age;this.impacts++;
           this.flightAudit.push({age,drop:b.drop??0,launchHeight,landingHeight:s.height,flightDistance:Math.hypot(x-b.x,z-b.z),sourceReleased:this.released[index]});if(this.flightAudit.length>128)this.flightAudit.shift();
           const left=nodes[Math.max(0,j-1)],right=nodes[Math.min(BREAKER_FRONT_NODES-1,j+1)];
-          impact({...b,x,z,height:s.height,width:Math.max(.18,Math.hypot(right.x-left.x,right.z-left.z)*.5),speed:phaseSpeed,drop:Math.max(0,launchHeight-s.height),reach:Math.max(.15,Math.hypot(x-b.x,z-b.z)-phaseSpeed*flight),eventId:this.eventIds[slot],impactSpeed:Math.min(12,Math.max(0,-endpoint.vy))});
+          const width=Math.max(.18,Math.hypot(right.x-left.x,right.z-left.z)*.5);
+          // The leading row is one emission interval of water, not a separate
+          // full-size splash volume in addition to the younger material rows.
+          const volume=width*this.shapes[i+2]*Math.hypot(emission.vx??vx,emission.vz??vz)*SHEET_INTERVAL;
+          impact({...b,x,z,height:s.height,width,volume,speed:phaseSpeed,drop:Math.max(0,launchHeight-s.height),reach:Math.max(.15,Math.hypot(x-b.x,z-b.z)-phaseSpeed*flight),eventId:this.eventIds[slot],impactSpeed:Math.min(12,Math.max(0,-endpoint.vy))});
         }
         const landed=this.landed[index];
         // Stop feeding a falling crest, but keep its emitted water in flight.
         // Spray carries a small breakup detail; it does not replace the sheet.
-        if(this.released[index]<0&&landed<0&&t>.18&&rootY<launchHeight-.45){
+        if(this.released[index]<0&&t>.18&&rootY<launchHeight-.45){
           this.released[index]=age;
           for(let row=4;row<SHEET_ROWS;row+=4){
             const parcel=flyWaterParcel(history.sample(age-flight*row/(SHEET_ROWS-1),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
@@ -315,8 +319,11 @@ export class ConnectedBreakerPool {
             if(sampler(parcel.x,parcel.z,s)&&parcel.y>s.height+.02)this.releaseWater?.({x:parcel.x,y:parcel.y,z:parcel.z,vx:parcelVx,vy:parcel.vy,vz:parcelVz});
           }
         }
-        // First contact ends emission, not the flight of younger water.
-        if(landed>=0&&this.released[index]<0)this.released[index]=age;
+        // Contact belongs to a parcel, not to the whole wave. A supported
+        // crest keeps feeding the jet while its leading water is already foam.
+        // Bound the emission window independently of the 2.4s flight budget.
+        // Loss of face support or crest head above already stops it earlier.
+        if(age>=1.2&&this.released[index]<0)this.released[index]=age;
         const emissionEnd=this.released[index]<0?age:this.released[index];
         const ramp=Math.min(1,t/.12);let airborne=false;
         if(landed>=0)tipY=s.height;
@@ -326,8 +333,9 @@ export class ConnectedBreakerPool {
         const width=Math.max(.18,Math.hypot(right.x-left.x,right.z-left.z)*.5);
         for(let row=0;row<SHEET_ROWS;row++){
           const emissionTime=row*SHEET_INTERVAL,exists=emissionTime<=emissionEnd+1e-8;
-          const parcel=flyWaterParcel(history.sample(Math.min(emissionTime,emissionEnd),this.emissionScratch),age,vx,vz,up,this.parcelScratch);
           const k=((slot*BREAKER_FRONT_NODES+j)*SHEET_ROWS+row)*4;
+          if(!exists){this.sheet[k]=rootX;this.sheet[k+1]=rootY;this.sheet[k+2]=rootZ;this.sheet[k+3]=-1;continue;}
+          const parcel=flyWaterParcel(history.sample(emissionTime,this.emissionScratch),age,vx,vz,up,this.parcelScratch);
           this.sheet[k]=parcel.x;this.sheet[k+1]=parcel.y;this.sheet[k+2]=parcel.z;this.sheet[k+3]=Math.max(0,-parcel.vy);
           const validSurface=exists&&sampler(this.sheet[k],this.sheet[k+2],s)&&Number.isFinite(s.height);
           // Every row is one fixed emission time shared by all columns.
@@ -336,10 +344,15 @@ export class ConnectedBreakerPool {
           if(validSurface){
             const clearance=parcel.y-s.height;
             if(clearance>.025)this.separated[k/4]=1;
+            // The rendered source is attached to the live crest for 120ms.
+            // A raw ballistic sample can sit below that surface during this
+            // boundary match. Do not irrevocably delete newly fed water before
+            // the matching interval ends; a genuine return from air still lands.
+            const attaching=b.frontX!==undefined&&this.released[index]<0&&age-emissionTime<CREST_ATTACHMENT_SECONDS&&!this.separated[k/4];
             // A newly emitted parcel starts on the surface. Being within the
             // contact tolerance is not a return from air. Retire genuinely
             // submerged parcels too, so a later trough cannot resurrect them.
-            if(clearance<-.025||(this.separated[k/4]&&parcel.vy<0&&clearance<=.025)){
+            if((clearance<-.025&&!attaching)||(this.separated[k/4]&&parcel.vy<0&&clearance<=.025)){
               if(row>0&&!this.absorbed[k/4]&&this.separated[k/4]&&parcel.vy<0&&s.depth>.02){
                 const speed=Math.hypot(this.emissionScratch.vx??vx,this.emissionScratch.vz??vz);
                 const volume=width*this.shapes[i+2]*speed*SHEET_INTERVAL;
@@ -354,11 +367,26 @@ export class ConnectedBreakerPool {
         }
         if(contactVolume>0)this.depositWater?.({...b,x:contactX/contactVolume,z:contactZ/contactVolume,height:contactY/contactVolume,
           width,speed:phaseSpeed,eventId:this.eventIds[slot],impactSpeed:contactSpeed/contactVolume,volume:contactVolume});
-        if(airborne||landed<0)alive++;else this.roots[i+3]=0;
+        if(airborne||this.released[index]<0)alive++;else this.roots[i+3]=0;
 
       }
       if(!alive){this.births[slot]=null;this.visible[slot]=0;this.active--;for(let j=0;j<BREAKER_FRONT_NODES;j++)this.roots[(slot*BREAKER_FRONT_NODES+j)*4+3]=0;}
     }
+  }
+  /** A living wave front owns its moving face until its emitted water lands.
+   * The old 1.1s detector timeout could emit another sheet through a 2.4s
+   * front that was still airborne, creating intersecting rectangular slabs. */
+  coversActiveFace(x:number,z:number):boolean{
+    for(let slot=0;slot<this.capacity;slot++){
+      const nodes=this.births[slot];if(!nodes)continue;
+      for(let j=0;j<BREAKER_FRONT_NODES;j++){
+        const b=nodes[j],index=slot*BREAKER_FRONT_NODES+j;
+        if(this.roots[index*4+3]<=0)continue;
+        const dx=x-this.trackedRoots[index*2],dz=z-this.trackedRoots[index*2+1];
+        if(Math.abs(dx*b.nx+dz*b.nz)<5&&Math.abs(-dx*b.nz+dz*b.nx)<2.5)return true;
+      }
+    }
+    return false;
   }
   get geometryAudit(){
     let maxAcrossGap=0,maxAlongGap=0,maxRootGap=0,activeSamples=0,maxAge=0,emittingNodes=0;

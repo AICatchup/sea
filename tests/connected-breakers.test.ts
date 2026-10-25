@@ -67,12 +67,13 @@ test('landing tips remain at endpoint water height while an uneven front collaps
   const pool=new ConnectedBreakerPool();
   pool.emitFront([-1,0,1].map(z=>({x:0,z,height:2,energy:.6,nx:1,nz:0,seed:.3,speed:1.2,depth:3,drop:2})));
   const uneven:WhitewaterSampler=(x,_z,s)=>{s.height=Math.max(0,2-x*1.4);s.ground=-1;s.depth=s.height+1;return true;};
-  for(let i=0;i<240&&pool.impacts===0;i++)pool.advance(1/120,uneven,()=>{});
-  assert.ok(pool.impacts>0);pool.advance(.02,uneven,()=>{});
+  const landedZ=new Set<number>();
+  for(let i=0;i<240&&pool.impacts===0;i++)pool.advance(1/120,uneven,b=>landedZ.add(b.z));
+  assert.ok(pool.impacts>0);pool.advance(.02,uneven,b=>landedZ.add(b.z));
   let collapsed=0;
   for(let i=0;i<BREAKER_FRONT_NODES;i++){
     const k=i*4;
-    if(pool.roots[k+3]>.02&&pool.tips[k+3]===0&&pool.tips[k]>1.5){
+    if(pool.roots[k+3]>.02&&landedZ.has(pool.tips[k+2])&&pool.tips[k]>1.5){
       assert.equal(pool.tips[k+1],0);collapsed++;
     }
   }

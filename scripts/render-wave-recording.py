@@ -19,10 +19,11 @@ if a.recording.stat().st_size > 200 * 1024 * 1024:
     raise SystemExit("Recording exceeds the bounded capture limit")
 d = json.loads(a.recording.read_text(encoding="utf-8"))
 frames = d["frames"]
-if not (2 <= len(frames) <= 181 and d["fps"] == 10):
-    raise SystemExit("Expected a bounded 10fps game recording")
+fps = d["fps"]
+if fps not in (10, 24) or not (2 <= len(frames) <= 18 * fps + 1):
+    raise SystemExit("Expected a bounded 10fps or 24fps game recording")
 for i, f in enumerate(frames):
-    if not math.isfinite(f["time"]) or abs(f["time"] - frames[0]["time"] - i / 10) > 1e-5:
+    if not math.isfinite(f["time"]) or abs(f["time"] - frames[0]["time"] - i / fps) > 1e-5:
         raise SystemExit("Non-uniform simulation clock")
 a.output.mkdir(parents=True)
 for i, f in enumerate(frames):
@@ -30,6 +31,13 @@ for i, f in enumerate(frames):
     if prefix != "data:image/jpeg;base64":
         raise SystemExit("Unexpected frame encoding")
     (a.output / f"{i:04d}.jpg").write_bytes(base64.b64decode(data, validate=True))
+    if "beforeJpeg" in f:
+        prefix, data = f.pop("beforeJpeg").split(",", 1)
+        if prefix != "data:image/jpeg;base64":
+            raise SystemExit("Unexpected comparison encoding")
+        before = a.output / "comparison"
+        before.mkdir(exist_ok=True)
+        (before / f"{i:04d}.jpg").write_bytes(base64.b64decode(data, validate=True))
 prefix, data = d.pop("wav").split(",", 1)
 if prefix != "data:audio/wav;base64":
     raise SystemExit("Unexpected audio encoding")
@@ -47,7 +55,7 @@ summary = {"frames": len(frames), "fps": d["fps"], "realtime": False, "audio": a
            "maxAlongGap": max((f["spray"]["geometryAudit"]["maxAlongGap"] for f in frames if f["spray"]["geometryAudit"]), default=0),
            "lastSpray": frames[-1]["spray"]}
 (a.output / "verification.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
-subprocess.run(["ffmpeg", "-nostdin", "-v", "warning", "-framerate", "10", "-i", str(a.output / "%04d.jpg"),
+subprocess.run(["ffmpeg", "-nostdin", "-v", "warning", "-framerate", str(fps), "-i", str(a.output / "%04d.jpg"),
                "-i", str(a.output / "sound.wav"), "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
                "-c:v", "libx264", "-threads", "2", "-preset", "fast", "-crf", "18", "-pix_fmt", "yuv420p",
                "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", "-shortest", str(a.output / "wave-lifecycle.mp4")], check=True)

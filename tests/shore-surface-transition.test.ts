@@ -79,5 +79,8 @@ test('wet-domain stencil preserves steep valid bores and ocean waves',()=>{
   // There is no minimum depth cutoff: a positive millimetre film is wet.
   assert.ok(Math.abs(shoreWetSurfaceSlope(1.001,.901,.900,1.101,1.100,1)-.1)<1e-12);
   const shader=readFileSync(new URL('../src/ocean/shaders.ts',import.meta.url),'utf8');
-  assert.match(shader,/shoreWetSurfaceSlope\(contactHeight,hn,coastAt\(nx\)\.x,hp,coastAt\(px\)\.x,step\)/);
+  // A curling sheet can lie above the receiver. Its boundary normal must
+  // differentiate the receiving surface, never the airborne sheet height.
+  assert.match(shader,/normalSurfaceHeight=renderedSurface\(vWorld\.xz\)/);
+  assert.match(shader,/shoreWetSurfaceSlope\(normalSurfaceHeight,hn,coastAt\(nx\)\.x,hp,coastAt\(px\)\.x,step\)/);
 });

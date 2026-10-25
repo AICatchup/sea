@@ -309,6 +309,7 @@ export const oceanFragment = /* glsl */ `
     return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rgb;
     #endif
   }
+  uniform float uShoreSpectrum,uSheetDetail;
   float shoalAt(vec2 p){return shoreWaveScale(coastAt(p).rg,uSwell,uWind);}
   vec3 longDisplacement(vec2 p) { return texture2D(uLongWaves,p/384.0).xyz*shoalAt(p); }
   vec3 shortDisplacement(vec2 p) { return texture2D(uShortWaves,p/24.0).xyz*shoalAt(p); }
@@ -453,13 +454,20 @@ export const oceanFragment = /* glsl */ `
     vec3 tangentX=vec3(1.0+dx.x*chop,dx.y*uSwell,dx.z*chop);
     vec3 tangentZ=vec3(dz.x*chop,dz.y*uSwell,1.0+dz.z*chop);
     vec3 normal=normalize(cross(tangentZ,tangentX));
-    #ifndef CURVED_SURFACE
     bool solvedNormal=false;
     vec2 shoreUV=(vWorld.xz-uShoreBounds.xy)/uShoreBounds.zw;
+    float surfaceConnection=0.;
+    #ifdef CONNECTED_FRONT
+    surfaceConnection=1.-smoothstep(.025,.24,sheetClearance);
+    #endif
     // The solved surface can run above 2m on a sloping beach. Its geometry
     // already uses SWE there; reverting only the optical normal to a flat
     // FFT face produced a black reflection seam at that arbitrary elevation.
-    if(uShoreReady>.5&&coast.x> -11.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))){
+    if(uShoreReady>.5&&coast.x> -11.&&coast.y>=.18&&all(greaterThan(shoreUV,vec2(.025)))&&all(lessThan(shoreUV,vec2(.975)))
+    #ifdef CURVED_SURFACE
+      &&surfaceConnection>0.
+    #endif
+    ){
       float solverCell=max(uShoreBounds.z,uShoreBounds.w)/uShoreResolution;
       // A one-cell symmetric difference of a bilinear height field equals
       // bilinear interpolation of its shared nodal central gradients. Thus
@@ -469,22 +477,42 @@ export const oceanFragment = /* glsl */ `
       float step=max(solverCell,footprint*.65);
       vec2 nx=vWorld.xz-vec2(step,0),px=vWorld.xz+vec2(step,0),nz=vWorld.xz-vec2(0,step),pz=vWorld.xz+vec2(0,step);
       float hn=renderedSurface(nx),hp=renderedSurface(px),hb=renderedSurface(nz),ht=renderedSurface(pz);
-      vec2 slope=vec2(shoreWetSurfaceSlope(contactHeight,hn,coastAt(nx).x,hp,coastAt(px).x,step),
-                      shoreWetSurfaceSlope(contactHeight,hb,coastAt(nz).x,ht,coastAt(pz).x,step));
+      float normalSurfaceHeight=renderedSurface(vWorld.xz);
+      vec2 slope=vec2(shoreWetSurfaceSlope(normalSurfaceHeight,hn,coastAt(nx).x,hp,coastAt(px).x,step),
+                      shoreWetSurfaceSlope(normalSurfaceHeight,hb,coastAt(nz).x,ht,coastAt(pz).x,step));
       if(uWetStencil<.5)slope=vec2(hp-hn,ht-hb)/(2.*step);
       // SWE transports the resolved wave. Its 1.5m cells cannot carry the
       // short gravity waves in the wind spectrum: replacing their entire
       // normal made troughs perfectly polished, screen-wide mirror ribbons.
       // Retain only the spectral slope missing at the solver's support;
       // subtracting the coarse slope avoids adding a second long swell.
-      vec2 coarseShort=vec2(
-        shortDisplacement(vOcean+vec2(step,0)).y-shortDisplacement(vOcean-vec2(step,0)).y,
-        shortDisplacement(vOcean+vec2(0,step)).y-shortDisplacement(vOcean-vec2(0,step)).y)/(2.*step)*shortFade;
       float wetDetail=smoothstep(.05,.45,max(0.,contactHeight-coast.x));
-      slope+=(vec2(shortDx.y,shortDz.y)-coarseShort)*uSwell*wetDetail;
+      // The swell depth limiter is NOT a wind-ripple limiter. Applying the
+      // metre-scale storm-wave cap to 10cm waves erased their slopes in the
+      // surf zone. Retain raw band-limited wind detail, limited by its own
+      // height and local wet depth; SWE still owns the long wave elevation.
+      float rippleScale=shoreWindDetailScale(max(0.,contactHeight-coast.x),coast.y,uWind);
+      vec2 fineShort=vec2(
+        texture2D(uShortWaves,(vOcean+vec2(shortStep,0))/24.).y-texture2D(uShortWaves,(vOcean-vec2(shortStep,0))/24.).y,
+        texture2D(uShortWaves,(vOcean+vec2(0,shortStep))/24.).y-texture2D(uShortWaves,(vOcean-vec2(0,shortStep))/24.).y)/(2.*shortStep)*shortFade;
+      vec2 coarseShort=vec2(
+        texture2D(uShortWaves,(vOcean+vec2(step,0))/24.).y-texture2D(uShortWaves,(vOcean-vec2(step,0))/24.).y,
+        texture2D(uShortWaves,(vOcean+vec2(0,step))/24.).y-texture2D(uShortWaves,(vOcean-vec2(0,step))/24.).y)/(2.*step)*shortFade;
+      slope+=(fineShort-coarseShort)*rippleScale;
+      // The 384m FFT also contains short gravity waves. Restoring only the
+      // 24m cascade left the solved trough a polished, beach-wide mirror.
+      // Remove the wide-support slope before adding the unresolved band;
+      // a constant slope cancels exactly and the long swell stays in SWE.
+      float fineStep=max(.375,footprint*.65),coarseStep=max(3.,step);
+      vec2 fineLong=vec2(texture2D(uLongWaves,(vOcean+vec2(fineStep,0))/384.).y-texture2D(uLongWaves,(vOcean-vec2(fineStep,0))/384.).y,
+                         texture2D(uLongWaves,(vOcean+vec2(0,fineStep))/384.).y-texture2D(uLongWaves,(vOcean-vec2(0,fineStep))/384.).y)/(2.*fineStep);
+      vec2 coarseLong=vec2(texture2D(uLongWaves,(vOcean+vec2(coarseStep,0))/384.).y-texture2D(uLongWaves,(vOcean-vec2(coarseStep,0))/384.).y,
+                           texture2D(uLongWaves,(vOcean+vec2(0,coarseStep))/384.).y-texture2D(uLongWaves,(vOcean-vec2(0,coarseStep))/384.).y)/(2.*coarseStep);
+      slope+=(fineLong-coarseLong)*rippleScale*wetDetail*uShoreSpectrum;
       normal=normalize(vec3(-slope.x,1.,-slope.y));
       solvedNormal=true;
     }
+    #ifndef CURVED_SURFACE
     normal.y=max(abs(normal.y),0.14);
     if(uMarineReady>.5&&!solvedNormal){
       float marineStep=max(uMarineBounds.z/uMarineResolution,footprint*.65);
@@ -492,6 +520,7 @@ export const oceanFragment = /* glsl */ `
       normal.z-=(marineSurface(vWorld.xz+vec2(0,marineStep)).b-marineSurface(vWorld.xz-vec2(0,marineStep)).b)/(2.*marineStep)*normal.y;
     }
     #else
+    vec3 receivingNormal=normal;
     // The curl is multivalued: FFT/SWE height stencils cannot describe it.
     normal=normalize(cross(dFdx(vWorld),dFdy(vWorld)));
     #ifdef CONNECTED_FRONT
@@ -503,6 +532,12 @@ export const oceanFragment = /* glsl */ `
     // the shared belowNormal=-normal branch sees its incident medium.
     vec3 incidentView=normalize(cameraPosition-vWorld);
     if(dot(normal,incidentView)*(uUnderwater>.5?-1.:1.)<0.)normal=-normal;
+    #ifdef CONNECTED_FRONT
+    // Position continuity alone is insufficient: the base uses filtered SWE
+    // slopes while the jet uses parcel tangents. Match their optical boundary
+    // as water leaves/returns, then retain the full normal of the airborne curl.
+    if(solvedNormal&&dot(normal,receivingNormal)>0.)normal=normalize(mix(normal,receivingNormal,surfaceConnection));
+    #endif
     #endif
     // Metric stochastic detail is shared with the photon caustics. Pixel
     // filtering removes unresolved slopes, while retaining their variance.
@@ -510,7 +545,20 @@ export const oceanFragment = /* glsl */ `
     float microScale=.45+uWind*.035;
     // A height gradient modifies -normal.xz/normal.y, not the unit
     // normal directly: preserve metric slope on tilted FFT wave faces.
-    normal.xz-=capillarySurfaceSlopeFiltered(vOcean,uTime,footprint,missingVariance)*microScale*normal.y;
+    vec2 capillary=capillarySurfaceSlopeFiltered(vOcean,uTime,footprint,missingVariance);
+    #ifdef CONNECTED_FRONT
+    // A falling face cannot use XZ-only detail: that mapping becomes constant
+    // vertically and produces polished sheet-like bands. Use metric 3D
+    // projections and tangent gradients on the actual folded surface.
+    float verticalVariance;vec2 yz=capillarySurfaceSlopeFiltered(vWorld.zy,uTime,footprint,verticalVariance);
+    vec2 xy=capillarySurfaceSlopeFiltered(vWorld.xy,uTime,footprint,verticalVariance);
+    vec3 weights=pow(abs(normal),vec3(4));weights/=max(.0001,weights.x+weights.y+weights.z);
+    vec3 detail=weights.x*vec3(0,yz.y,yz.x)+weights.y*vec3(capillary.x,0,capillary.y)+weights.z*vec3(xy.x,xy.y,0);
+    vec3 legacyNormal=normal-vec3(capillary.x,0,capillary.y)*microScale*normal.y;
+    normal=mix(legacyNormal,normal-(detail-normal*dot(detail,normal))*microScale,uSheetDetail);
+    #else
+    normal.xz-=capillary*microScale*normal.y;
+    #endif
     // The vertex surface includes Earth curvature. Its analytic slope must
     // also participate in the optical normal, in the same camera-relative XZ.
     #ifndef CURVED_SURFACE

@@ -183,6 +183,7 @@ export class ShoreSpray {
       if(this.pool.emit({...p,windX:0,windZ:0,drag:.15,life:2.5,size:.10,opacity:.32}))this.emitted++;
     };
     this.rollers=this.lips instanceof ConnectedShoreBreakers?new ShoreWhitewaterVolume(true):null;if(this.rollers)this.group.add(this.rollers.group);
+    this.setImpactSink(null);
     this.flowReadback=!!options.volume||!!options.whitewater;
     this.target=new THREE.WebGLRenderTarget(GRID,GRID*(this.flowReadback?2:1),{type:THREE.UnsignedByteType,depthBuffer:false,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
     this.whitewater=options.patches===false?null:options.volume?new ShoreWhitewaterVolume():options.whitewater?new ShoreWhitewater():null;
@@ -255,7 +256,10 @@ export class ShoreSpray {
   private random():number{let x=this.randomState;x^=x<<13;x^=x>>>17;x^=x<<5;this.randomState=x;return (x>>>0)/4294967296;}
   setImpactSink(sink:typeof this.impactSink):void{
     this.impactSink=sink;
-    if(this.lips instanceof ConnectedShoreBreakers)this.lips.pool.depositWater=sink?b=>{if(sink(b))this.whitewaterEmitted++;}:undefined;
+    if(this.lips instanceof ConnectedShoreBreakers)this.lips.pool.depositWater=b=>{
+      if(sink?.(b))this.whitewaterEmitted++;
+      this.rollers?.pool.deposit(b);
+    };
   }
   resetHistory():void{this.generation++;this.previousPixels=null;this.previousTime=-Infinity;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();this.rollers?.pool.clear();this.pool.clear();}
   private emitConnectedFronts(time:number):void{
@@ -272,6 +276,7 @@ export class ShoreSpray {
     let emitted=0;
     for(const cell of candidates.slice(0,128)){
       const x=this.sampleOrigin.x+(cell%grid+.5-grid/2)*step,z=this.sampleOrigin.y+(Math.floor(cell/grid)+.5-grid/2)*step;
+      if(this.lips.pool.coversActiveFace(x,z))continue;
       if(this.fronts.some(f=>Math.abs((x-f.x)*f.nx+(z-f.z)*f.nz)<4+(time-f.time)*5&&Math.abs(-(x-f.x)*f.nz+(z-f.z)*f.nx)<f.halfWidth+3))continue;
       const nodes=traceBreakingFront(x,z,this.sampleFoam,this.random());if(nodes.length<3)continue;
       if(!this.lips.pool.emitFront(nodes,this.sampleFoam))break;
@@ -305,7 +310,7 @@ export class ShoreSpray {
     if(this.impactSink&&this.whitewater)this.whitewater.group.visible=false;
     if(this.lips){this.lips.update(delta,this.sampleFoam,b=>{
       if(this.impactSink?this.impactSink(b):this.whitewater?.pool.emit(b))this.whitewaterEmitted++;
-      this.rollers?.pool.emit(b);
+      if('volume' in b&&typeof b.volume==='number')this.rollers?.pool.deposit({...b,volume:b.volume});else this.rollers?.pool.emit(b);
       // Landing, rather than old residual foam, launches a short impact fan.
       const strength=whitewaterAerationStrength(b.energy);
       const width='width' in b?Number(b.width):2.6,packets=8;
