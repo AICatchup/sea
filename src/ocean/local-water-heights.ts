@@ -127,7 +127,7 @@ export class LocalWaterHeights {
   }
   async settleReadback():Promise<void>{await this.readbackDone;if(this.failed)throw new Error('Local wave-height readback failed');}
   get diagnostics(){return {ready:!!this.pixels,sampledAt:this.pixels?this.sampleTime:undefined,failed:this.failed,samples:256,requestedPoints:this.pointHeights.size,requestCapacity:128,interval:.2,readbackBytes:1024};}
-  bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uMarineSurface','uMarineBounds','uMarineReady','uMarineResolution'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
+  bindShore(uniforms:Uniforms):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uMarineSurface','uMarineBounds','uMarineReady','uMarineResolution','uBreakerProfileCount','uBreakerProfileCrests','uBreakerProfileAxes'])if(uniforms[key])this.material.uniforms[key]=uniforms[key];}
   dispose():void{
     if(this.disposed)return;
     this.disposed=true;this.pixels=null;this.pointHeights.clear();this.requested.clear();this.requestedTexture.dispose();

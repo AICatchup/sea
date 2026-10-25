@@ -122,6 +122,7 @@ export class ShoreSpray {
   readonly whitewater:ShoreWhitewater|ShoreWhitewaterVolume|null;
   readonly lips:ShoreBreakingLips|ConnectedShoreBreakers|null;
   readonly rollers:ShoreWhitewaterVolume|null;
+  get breakerProfileUniforms():Record<string,THREE.IUniform>{return this.lips instanceof ConnectedShoreBreakers?this.lips.profileUniforms:{};}
   private readonly grid:number;private readonly span:number;
   private lastFrontSample=-Infinity;
   private fronts:{x:number;z:number;nx:number;nz:number;halfWidth:number;time:number}[]=[];
@@ -170,6 +171,11 @@ export class ShoreSpray {
       }
       if(weight>.5){out.flowX=vx/weight;out.flowZ=vz/weight;}
     }
+    return true;
+  };
+  private readonly sampleReceivingWater=(x:number,z:number,out:WhitewaterSample):boolean=>{
+    if(!this.sampleFoam(x,z,out))return false;
+    if(this.lips instanceof ConnectedShoreBreakers){out.height=Math.max(out.ground+.015,this.lips.pool.profiles.height(x,z,out.height));out.depth=out.height-out.ground;}
     return true;
   };
   constructor(renderer:THREE.WebGLRenderer,ground:{heightAt(x:number,z:number):number},options:{whitewater?:boolean;patches?:boolean;volume?:boolean;lips?:boolean;connected?:boolean;resolution?:number;span?:number}={}){
@@ -261,7 +267,7 @@ export class ShoreSpray {
       this.rollers?.pool.deposit(b);
     };
   }
-  resetHistory():void{this.generation++;this.previousPixels=null;this.previousTime=-Infinity;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();this.rollers?.pool.clear();this.pool.clear();}
+  resetHistory():void{this.generation++;this.previousPixels=null;this.previousTime=-Infinity;this.pixels=null;this.sampleTime=-Infinity;this.lastRequest=-Infinity;this.lastFrontSample=-Infinity;this.foamCacheValid=false;this.fronts=[];this.energizedCount=0;this.lips?.pool.clear();if(this.lips instanceof ConnectedShoreBreakers)this.lips.profileUniforms.uBreakerProfileCount.value=0;this.rollers?.pool.clear();this.pool.clear();}
   private emitConnectedFronts(time:number):void{
     if(!(this.lips instanceof ConnectedShoreBreakers)||!this.pixels||this.lastFrontSample===this.sampleTime)return;
     this.lastFrontSample=this.sampleTime;this.fronts=this.fronts.filter(f=>time-f.time<1.1);
@@ -279,6 +285,9 @@ export class ShoreSpray {
       if(this.lips.pool.coversActiveFace(x,z))continue;
       if(this.fronts.some(f=>Math.abs((x-f.x)*f.nx+(z-f.z)*f.nz)<4+(time-f.time)*5&&Math.abs(-(x-f.x)*f.nz+(z-f.z)*f.nx)<f.halfWidth+3))continue;
       const nodes=traceBreakingFront(x,z,this.sampleFoam,this.random());if(nodes.length<3)continue;
+      // Two distinct steep-face samples can project back onto the same crest.
+      // Ownership is checked again after that projection, before making a mesh.
+      if(this.lips.pool.overlapsActiveCrest(nodes))continue;
       if(!this.lips.pool.emitFront(nodes,this.sampleFoam))break;
       const first=nodes[0],last=nodes[nodes.length-1];
       this.fronts.push({x:(first.x+last.x)*.5,z:(first.z+last.z)*.5,nx:first.nx,nz:first.nz,halfWidth:Math.hypot(last.x-first.x,last.z-first.z)*.5,time});
@@ -304,9 +313,9 @@ export class ShoreSpray {
     if(!Number.isFinite(time)||!Number.isFinite(delta)||delta<=0)return;
     const start=performance.now(),dt=Math.min(delta,.05);
     this.simulationTime=time;this.foamCacheValid=!!this.pixels&&time-this.sampleTime<=.5&&time>=this.sampleTime;
-    this.pool.advance(dt,this.impactSink?this.sampleFoam:undefined,this.impactSink?(x,height,z)=>{this.impactSink?.({x,z,height,energy:.035,nx:1,nz:0,seed:0,width:.12,speed:.2});}:undefined);
+    this.pool.advance(dt,this.impactSink?this.sampleReceivingWater:undefined,this.impactSink?(x,height,z)=>{this.impactSink?.({x,z,height,energy:.035,nx:1,nz:0,seed:0,width:.12,speed:.2});}:undefined);
     this.whitewater?.update(delta,this.sampleFoam,underwater);
-    this.rollers?.update(delta,this.sampleFoam,underwater);
+    this.rollers?.update(delta,this.sampleReceivingWater,underwater);
     if(this.impactSink&&this.whitewater)this.whitewater.group.visible=false;
     if(this.lips){this.lips.update(delta,this.sampleFoam,b=>{
       if(this.impactSink?this.impactSink(b):this.whitewater?.pool.emit(b))this.whitewaterEmitted++;
@@ -448,7 +457,7 @@ export class ShoreSpray {
       sites.push({slot:i,seed:pool.seeds[i],x,y,z,alpha:pool.alpha[i],flowX:valid?sample.flowX??null:null,flowZ:valid?sample.flowZ??null:null,shorewardFlow:valid&&slope>1e-6&&sample.flowX!==undefined&&sample.flowZ!==undefined?(sample.flowX*sample.gradientX+sample.flowZ*sample.gradientZ)/slope:null});
     }return sites;
   }
-  get diagnostics(){const GRID=this.grid;return {geometryAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.geometryAudit:null,frontAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.frontAudit.map(a=>({...a,nodes:a.nodes.map(n=>({...n}))})):[],sourceAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.sourceAudit.map(a=>({...a})):[],flightAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.flightAudit.map(a=>({...a})):[],connectedFronts:this.lips instanceof ConnectedShoreBreakers,frontEvents:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.fronts:0,lipActive:this.lips?.pool.active??0,lipImpacts:this.lips?.pool.impacts??0,rollerActive:this.rollers?.pool.active??0,rollerCapacity:this.rollers?.pool.capacity??0,rollerTriangles:this.rollers?this.rollers.geometry.getAttribute('position').count/3*this.rollers.pool.capacity:0,active:this.pool.active,capacity:LIMIT,drawCalls:1+(this.whitewater&&!this.impactSink?1:0)+(this.lips?1:0)+(this.rollers?1:0),whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.impactSink?0:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?49152:0,whitewaterMode:this.impactSink?'world-field':this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'Current SWE compression / FFT instantaneous dissipation; residual foam never starts a front',approximation:`${this.span/GRID}m / <=0.5s cache; connected wave-line sheets, not volume-conserving CFD; ground validity rechecked in marine field shader`};}
+  get diagnostics(){const GRID=this.grid;return {sectionAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.sectionAudit:[],geometryAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.geometryAudit:null,frontAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.frontAudit.map(a=>({...a,nodes:a.nodes.map(n=>({...n}))})):[],sourceAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.sourceAudit.map(a=>({...a})):[],flightAudit:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.flightAudit.map(a=>({...a})):[],connectedFronts:this.lips instanceof ConnectedShoreBreakers,frontEvents:this.lips instanceof ConnectedShoreBreakers?this.lips.pool.fronts:0,lipActive:this.lips?.pool.active??0,lipImpacts:this.lips?.pool.impacts??0,rollerActive:this.rollers?.pool.active??0,rollerCapacity:this.rollers?.pool.capacity??0,rollerTriangles:this.rollers?this.rollers.geometry.getAttribute('position').count/3*this.rollers.pool.capacity:0,active:this.pool.active,capacity:LIMIT,drawCalls:1+(this.whitewater&&!this.impactSink?1:0)+(this.lips?1:0)+(this.rollers?1:0),whitewaterActive:this.whitewater?.pool.active??0,whitewaterCapacity:this.whitewater?.pool.capacity??0,whitewaterTriangles:this.impactSink?0:this.whitewater instanceof ShoreWhitewaterVolume?this.whitewater.geometry.getAttribute('position').count/3*this.whitewater.pool.capacity:this.whitewater?49152:0,whitewaterMode:this.impactSink?'world-field':this.whitewater instanceof ShoreWhitewaterVolume?'volume':this.whitewater?'legacy':'off',whitewaterEmitted:this.whitewaterEmitted,maxSampleEnergy:this.maxSampleEnergy,maxSampleCrest:this.maxSampleCrest,maxEstimatedHeightDepthRatio:this.maxEstimatedHeightDepthRatio,sampleEnergyPositiveCount:this.sampleEnergyPositiveCount,sampleWetEligibleCount:this.sampleWetEligibleCount,samples:GRID*GRID,readbackBytes:GRID*GRID*4*(this.flowReadback?2:1),flowSamples:this.flowReadback?GRID*GRID:0,interval:INTERVAL,pending:this.pending,ready:!!this.pixels,failed:this.failed,emitted:this.emitted,updateMs:this.updateMs,birthProxyUnits:'Current SWE compression / FFT instantaneous dissipation; residual foam never starts a front',approximation:`${this.span/GRID}m / <=0.5s cache; connected wave-line sheets, not volume-conserving CFD; ground validity rechecked in marine field shader`};}
   dispose():void{
     if(this.disposed)return;this.disposed=true;
     this.whitewater?.dispose();this.lips?.dispose();this.rollers?.dispose();

@@ -1,0 +1,52 @@
+✔ crest reconstruction splits a bounded head budget and leaves gentle waves unlifted (2.3577ms)
+✔ a broad translating crest forms a sustained air cavity before impact and absorption (134.0316ms)
+ℹ {"maximumClearance":2.382619495707006,"cavitySeconds":1.9333333333333313,"maximumReach":5.0329508781433105,"impacts":17,"deposited":22.357167871802915}
+✔ front reconstruction preserves the crest, outer ocean and zero-strength state (0.3608ms)
+✔ retired material cannot stretch a glass triangle between the falling jet and its old root (535.074ms)
+✔ a second detected face cannot create another sheet on the same physical emission crest (5.568ms)
+✔ a tall plunging crest retains greater optical thickness than a small spilling lip (0.926ms)
+✔ wave-line tracer connects an alongshore front; no dry gap or back-face join (1.5403ms)
+✔ old foam, thin swash, emergent strand and missing cache cannot create a front (0.2471ms)
+✔ a large shallow-water crest survives the temporary-depth gate and plunges toward the lower face (132.3556ms)
+✔ one connected event gives one landing per node and collapses without repeat impacts (18.3325ms)
+✔ front geometry is deterministic before contact and bounded across frame partitions (8.4088ms)
+✔ a departed high crest cannot leave a suspended sheet, while its tip still lands (16.8468ms)
+✔ landing tips remain at endpoint water height while an uneven front collapses (28.839ms)
+✔ foam and entrained bubbles have separate stable physical-time lifetimes (0.3442ms)
+✔ marine deposits are bounded and stationary boats emit no wake; disposal is idempotent (3.0873ms)
+✔ GPU transport consumes the same elapsed time at 20/30/60/120 fps and stamps each source once (2.5855ms)
+✔ production field path still detects connected fronts and impacts without legacy foam geometry (657.5087ms)
+✔ absorbed sheet water cannot reappear when receiving sea level falls (22.7259ms)
+✔ a distant trough cannot cause an impact from water that never separated (38.3548ms)
+✔ cached contact predicts moving water without moving the ground or requesting GPU work (4.8454ms)
+✔ a sheet row keeps its emission time as the source continues feeding (5.3516ms)
+✔ surface kinematics preserves rising and descending velocity and cancels a travelling profile (0.7162ms)
+✔ an emitted rising parcel retains its initial vertical velocity after source reversal (4.0053ms)
+✔ an initially submerged tip cannot become a new impact when receiving water recedes (20.4785ms)
+✔ resampled crest nodes start on the curved source instead of interpolated heights below it (0.6639ms)
+✔ captured wave diagnostics are immutable snapshots rather than aliases of future events (5.8357ms)
+✔ newly emitted sheet water may clear the contact band before returning (8.6354ms)
+✔ moving emission crest stays continuous across half-metre sample boundaries (1.2503ms)
+✔ dense aerated crest closes optical holes without strengthening diluted remnants (0.9069ms)
+✔ dilution exposes pores continuously and coverage stays below transported area (4.2708ms)
+✔ microstructure cannot reopen clear holes in thick froth but preserves thin rafts (0.9487ms)
+✔ expanded probe preserves legacy output and named metric profile lane decoding (21.394ms)
+✔ expanded draw failure restores all renderer state and disposes owned materials (8.7983ms)
+✔ default probe performs only its original 30 by 3 readback (5.4638ms)
+✔ float capability absence skips all GPU work (4.614ms)
+✔ zero readback from failed shader is rejected and renderer state is restored (9.2586ms)
+✔ a shallow advancing bore keeps its elevation until the actual sand contact (1.2586ms)
+✔ runup and retreat traverse the contact without forcing every front back to mean sea level (0.2845ms)
+✔ missing wet support, solver edges and deep-water handoff stay bounded and continuous (0.5684ms)
+✔ coarse wet vertices cannot paint a locally dry displaced sand contact (0.1358ms)
+✔ pointwise contact preserves a shallow positive bore and respects mesh depth (0.556ms)
+✔ an emergent wet film does not differentiate through dry mean-sea-level fallback (0.1414ms)
+✔ wet-domain stencil preserves steep valid bores and ocean waves (0.2361ms)
+ℹ tests 43
+ℹ suites 0
+ℹ pass 43
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1331.5926

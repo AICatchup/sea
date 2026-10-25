@@ -4,6 +4,7 @@ import { shoreSurfaceTransitionGLSL } from './shore-surface-transition.ts';
 import {shoreBoreGLSL} from './shore-bore.ts';
 import {shoreIncidentDirectionGLSL} from './wave-direction.ts';
 import {dispersivePressureMain} from './shore-dispersion.ts';
+import {breakerProfileSampling} from './breaker-profile.ts';
 
 /** Include after shoreWaveSampling, so terrain interpolation agrees with geometry. */
 export const shoreSolverSampling = /* glsl */`
@@ -11,6 +12,7 @@ uniform sampler2D uShoreState;
 uniform vec4 uShoreBounds;
 uniform float uShoreReady,uShoreResolution;
 ${shoreSurfaceTransitionGLSL}
+${breakerProfileSampling}
 vec3 shoreNode(vec2 uv){
   vec2 p=uShoreBounds.xy+uv*uShoreBounds.zw;
   vec2 buv=clamp((p-uBathyBounds.xy)/uBathyBounds.zw,vec2(0),vec2(1));
@@ -36,7 +38,9 @@ vec2 shoreSolvedSurface(vec2 world,float fallbackHeight,float fallbackFoam){
   // Keep a valid bore elevation through the wet contact. Using local depth
   // here previously pulled the advancing crest into the sand before contact.
   float blend=shoreSurfaceBlend(edge,bed,1.);
-  return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);
+  vec2 solved=mix(vec2(fallbackHeight,fallbackFoam),surface,blend);
+  if(uBreakerProfileCount>0&&solved.x>bed+.25)solved.x=max(bed+.015,reconstructedBreakerSurface(world,solved.x));
+  return solved;
 }
 `;
 

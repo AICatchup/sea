@@ -18,6 +18,8 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
     {label:'水際から砕波を見る',x:5898,z:-923.918,yaw:2.2142974,pitch:-.10,eye:2.4},
     {label:'横から巻き込みを見る',x:5900,z:-957,yaw:Math.PI,pitch:-.10,eye:3.2},
     {label:'波頭と着水を近くで見る',x:5922,z:-940,yaw:Math.PI,pitch:-.10,eye:2.4},
+    {label:'巻き込みの空洞と着水を見る',x:5936,z:-956,yaw:1.65,pitch:-.06,eye:2.3},
+    {label:'空洞を斜め横から確認する',x:5942,z:-977,yaw:2.75,pitch:0,eye:2.0},
   ];
   const view=document.createElement('select');view.setAttribute('aria-label','波の検証視点');
   views.forEach((pose,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=pose.label;view.append(option);});
@@ -25,11 +27,13 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
   for(const [value,label] of [['typhoon','台風うねり（比較条件）'],['day','青い海（通常の海況）']]){
     const option=document.createElement('option');option.value=value;option.textContent=label;sea.append(option);
   }
-  const setView=()=>{const p=views[view.selectedIndex]??views[0];host.viewpoint(p.x,p.z,p.yaw,p.pitch,'walk',0,p.eye);};
+  const eye=document.createElement('input');eye.type='number';eye.min='.5';eye.max='8';eye.step='.05';eye.value=String(views[0].eye);eye.setAttribute('aria-label','撮影の目線高（m）');eye.style.width='58px';
+  view.onchange=()=>{eye.value=String((views[view.selectedIndex]??views[0]).eye);};
+  const setView=()=>{const p=views[view.selectedIndex]??views[0];host.viewpoint(p.x,p.z,p.yaw,p.pitch,'walk',0,Math.max(.5,Math.min(8,Number(eye.value)||p.eye)));};
   const paired=document.createElement('input');paired.type='checkbox';
   const pairedLabel=document.createElement('label');pairedLabel.append(paired,' 同時刻の材質比較も保存');
   const status=document.createElement('p');status.setAttribute('role','status');status.textContent='ゲームを最大1/60秒ずつ進め、24fpsで保存。実時間性能の測定ではありません。';
-  panel.append(view,sea,pairedLabel,button,cancel,status);document.body.append(panel);
+  panel.append(view,eye,sea,pairedLabel,button,cancel,status);document.body.append(panel);
   const save=async(data:unknown,name:string,label:string)=>{
     const body=JSON.stringify(data);
     // Opt-in local QA sink avoids putting large recordings on a full system
@@ -43,26 +47,27 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
     const link=document.createElement('a');link.href=url;link.download=name;link.textContent=label;panel.append(link);link.click();setTimeout(()=>URL.revokeObjectURL(url),120000);
   };
   let stopped=false,busy=false,disposed=false;cancel.onclick=()=>{stopped=true;};
-  const inspect=document.createElement('button');inspect.textContent='14秒地点を比較撮影';panel.append(inspect);
+  const inspectTime=document.createElement('input');inspectTime.type='number';inspectTime.min='0';inspectTime.max='18';inspectTime.step='.25';inspectTime.value='4';inspectTime.setAttribute('aria-label','比較時刻（秒）');inspectTime.style.width='56px';
+  const inspect=document.createElement('button');inspect.textContent='指定時刻を比較撮影';panel.append(inspectTime,inspect);
   inspect.onclick=()=>{void gate.run(async()=>{
     if(busy||disposed)return;busy=true;stopped=false;button.disabled=true;inspect.disabled=true;view.disabled=true;sea.disabled=true;cancel.disabled=false;
     let before:ReturnType<typeof host.readState>|undefined;
     try{
       await ocean.ready;before=host.readState();host.visualLock(true);host.setPaused(true);host.setQuality('high');host.setPreset(sea.value);
       setView();ocean.setObservationClock(0);
-      const started=performance.now();
-      for(let i=0;i<140;i++){
+      const started=performance.now(),seconds=Math.max(0,Math.min(18,Number(inspectTime.value)||0)),steps=Math.ceil(seconds*24);
+      for(let i=0;i<steps;i++){
         if(stopped||disposed)throw new Error('比較撮影を中止しました。');
         if(document.hidden)throw new Error('非表示になったため比較撮影を中止しました。');
         if(performance.now()-started>12*60*1000)throw new Error('比較撮影時間の上限に達しました。');
-        await ocean.advanceObservation(.1);status.textContent=`比較準備 ${((i+1)/10).toFixed(1)} / 14秒`;await new Promise(resolve=>setTimeout(resolve,0));
+        await ocean.advanceObservation(seconds/steps);status.textContent=`比較準備 ${((i+1)*seconds/steps).toFixed(1)} / ${seconds}秒`;await new Promise(resolve=>setTimeout(resolve,0));
       }
       const jpeg=ocean.renderStaticSnapshot('image/jpeg');
       const points=[.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85].map(y=>({x:.5,y}));
       const impactComparison=ocean.compareBreakingSurface();
       const data={jpeg,impactComparison,diagnostics:ocean.diagnostics,optics:ocean.probeWaterContact(points)};
       await save(data,'sea-wave-comparison.json','比較画像と診断を保存');
-      status.textContent='14秒地点の画像と光学診断を保存しました。';
+      status.textContent=`${seconds}秒地点の画像と光学診断を保存しました。`;
     }catch(error){status.textContent=error instanceof Error?error.message:String(error);}
     finally{if(before&&!disposed)host.restoreState(before);busy=false;button.disabled=false;inspect.disabled=false;view.disabled=false;sea.disabled=false;cancel.disabled=true;}
   }).catch(error=>{status.textContent=String(error);});};

@@ -248,6 +248,7 @@ export class Ocean {
     if(this.sandMoisture){this.sandMoisture.bindUniforms(this.uniforms);Object.assign(this.uniforms,this.sandMoisture.uniforms);}
     if(this.marineSurface){Object.assign(this.uniforms,this.marineSurface.uniforms);this.marineSurface.bindUniforms(this.uniforms);}
     this.uniforms.uShoreSpectrum={value:1};this.uniforms.uSheetDetail={value:1};
+    Object.assign(this.uniforms,this.spray.breakerProfileUniforms);
     this.waterHeights.bindShore(this.uniforms);this.caustics.bindShore(this.uniforms);
     this.world.niijimaCoast.bindWaterSurface(this.uniforms);
     this.uniforms.uCaustics.value=this.caustics.texture;this.uniforms.uCausticBounds.value=this.caustics.bounds;

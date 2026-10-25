@@ -1,0 +1,98 @@
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 190 modules transformed.
+
+(!) outDir F:\CodexArchive\2026-09-30\https-github-com-dj-thank-sea\v113\barrel-v116\closeout-dist is not inside project root and will not be emptied.
+Use --emptyOutDir to override.
+
+rendering chunks...
+computing gzip size...
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/makehuman-body--E0MQdE1.json                               4.99 kB │ gzip:      1.59 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/index.html                                                        7.50 kB │ gzip:      2.95 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sea-step-water-C0_vtLXq.ogg                               19.81 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sea-step-sand-DnZgvNBb.ogg                                22.24 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sea-hull-creak-CRNgrL2n.ogg                               28.31 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sea-bird-call-cAIpmFM7.ogg                                45.08 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sea-scuba-breath-DyB7KrBB.ogg                             49.35 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/gait-clips-CJLkjYTZ.json                                  57.19 kB │ gzip:     20.18 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/canopy0-leaf-alpha-1k-ChBvg7q5.png                        57.43 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sea-engine-idle-CVtosfA6.ogg                              79.75 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sea-wind-soft-Cxt0zRXj.ogg                                83.20 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/hull-water-calm-BaamPcog.ogg                              84.33 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/makehuman-eyebrows-CAObckBg.png                           89.61 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/makehuman-eyelashes-26J8tN8Q.png                          91.60 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sea-surf-wash-BTRSL0JP.ogg                                94.09 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/albedo-D9cJMnBE.png                                      273.12 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/namaqualand-boulder-03-seams-v34-Bb900p3I.glb            521.23 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/coast-rocks-03-seams-v34-I-nNCyDf.glb                    548.94 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/coast-rocks-01-seams-v34-CAn2e3y6.glb                    555.02 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/namaqualand-boulder-02-seams-v34-D25PNkW7.glb            576.86 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/makehuman-eyes-DsUMil5J.png                              610.81 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/crest-foam-UIg0367T.png                                  751.94 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/rock_face_03_arm_1k-C27lpcRN.jpg                         793.24 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/rock_face_03_disp_2k-e5dySjb5.jpg                        798.14 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/white_plaster_02_arm_2k-B6m9MGSE.jpg                     894.38 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/makehuman-body-C04U7V9_.bin                            1,182.55 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/shrub-lod-1k-g1X7JTdH.glb                              1,557.27 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/arm-EtazgstC.png                                       1,576.39 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/tomari-west-volume-v32-BR9umsqL.glb                    2,246.89 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/boulder-01-seams-v34-C7KQqx9r.glb                      2,504.54 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sand_02_arm_2k-Ctga7VmT.jpg                            2,525.39 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/white_plaster_02_diff_2k-05MZ8Uo3.jpg                  2,568.31 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/tomari-black-pine-v1-C_w4nxkv.png                      2,778.52 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/rock_face_03_arm_2k-C5jTxzNS.jpg                       3,215.09 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/clean_asphalt_diff_2k-DV8AlPQC.jpg                     3,314.99 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/tomari-west-volume-v69-jointplanes-DoaOgw5D.glb        3,362.41 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/white_plaster_02_nor_gl_2k-DFt3Fcj6.jpg                3,379.81 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/terlenka_diff_2k-p297F32e.jpg                          3,431.36 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/clean_asphalt_arm_2k-CSpGCf_L.jpg                      3,461.11 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/makehuman-skin-CWnOsWsU.png                            3,593.09 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/normal-C_XwvaHU.png                                    3,718.47 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/pumice-albedo-generated-v9-llZJG2Ed.png                3,802.07 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/rock_face_03_diff_2k-BWX8O4N9.jpg                      3,814.36 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/tomari-atlas-v1-CgmV0Yf8.png                           3,831.29 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/clean_asphalt_nor_gl_2k-CAKnOH60.jpg                   3,923.72 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/forest_floor_arm_2k-CUjc10f6.jpg                       3,926.63 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/terlenka_rough_2k-C4tiol0Q.jpg                         4,073.32 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/terlenka_nor_gl_2k-DzGfdFCo.jpg                        4,113.35 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sand_02_diff_2k-Y8bG7JzV.jpg                           4,368.94 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/rock_face_03_nor_gl_2k-Coghta4t.jpg                    4,473.24 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/sand_02_nor_gl_2k-CoR_8Onz.jpg                         5,297.79 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/forest_floor_nor_gl_2k-D7JnyIzI.jpg                    5,367.75 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/kloofendal_48d_partly_cloudy_puresky_2k-YzxP7-LP.hdr   5,451.49 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/forest_floor_diff_2k-BfZT4Iqv.jpg                      5,452.93 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/canopy2-lod-1k-Ban3ksw9.glb                            7,741.31 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/canopy1-lod-1k-D69f3e7s.glb                            7,851.73 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/canopy0-lod-1k-9ZcN2FjK.glb                            7,995.06 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/namaqualand-boulder-03-2k-DAYjTenf.glb                 9,221.72 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/coast-rocks-01-2k-LbXUludo.glb                         9,832.11 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/coast-rocks-03-2k-CqAWqozz.glb                        10,389.26 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/namaqualand-boulder-02-2k-CkLajSto.glb                11,271.55 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/boulder-01-2k-DPiaQdMR.glb                            11,345.09 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/original-canopy-lod-1k-DNKlgiLn.glb                   13,770.12 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/rock_face_03_diff_4k-Dx9gMpex.jpg                     15,319.50 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/rock_face_03_nor_gl_4k-C-dLIVXE.jpg                   16,283.88 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/original-canopy-lod-1k-wJ4FKjXf.glb                   17,439.10 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/original-canopy-lod-1k-DK8dRebf.glb                   20,548.36 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/index-BKcX3vrS.css                                        34.26 kB │ gzip:      7.75 kB
+F:/CodexArchive/2026-09-30/https-github-com-dj-thank-sea/v113/barrel-v116/closeout-dist/assets/index-BDQUN7Xp.js                                     21,140.55 kB │ gzip: 10,372.24 kB
+
+[INEFFECTIVE_DYNAMIC_IMPORT] src/world/makehuman-body.ts is dynamically imported by src/ocean/renderer.ts but also statically imported by src/world/player-body.ts, dynamic import will not move module into another chunk.
+
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[INEFFECTIVE_DYNAMIC_IMPORT] src/world/mocap-gait.ts is dynamically imported by src/ocean/renderer.ts but also statically imported by src/world/player-body.ts, dynamic import will not move module into another chunk.
+
+✓ built in 3.64s
+[PLUGIN_TIMINGS] JavaScript callbacks ran for 2.4s of this 3.6s build (66%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin vite:css transform (34%, 1.2s, 5 calls)
+Additional callback time came from the callbacks below and from callbacks under 1s.
+1 callback is listed without a time. Its calls overlapped, so the time inside one call includes work from other calls. To find its cost, profile the build with `node --cpu-prof`:
+  - plugin vite:asset-import-meta-url transform (16 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+Standalone ocean: F:\CodexArchive\2026-09-30\https-github-com-dj-thank-sea\v113\barrel-v116\closeout-dist\sea.html

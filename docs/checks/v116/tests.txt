@@ -1,0 +1,992 @@
+✔ stored fishing rod remains rigidly attached as the vessel turns, pitches and rolls (340.2455ms)
+✔ integrated reel actions count one catch and preserve existing expedition storage (9.3911ms)
+✔ physical board pickup, carrying and launch preserve east-positive movement and local stow (3.8373ms)
+✔ map pause keeps current water references without queuing a stale stand action (0.5275ms)
+✔ candidate mapping preserves rounded cushions, normals and sewn welt geometry (71.6883ms)
+✔ all six original box faces measure metres per physical repeat on every edge (3.8592ms)
+✔ maps owned immediately, activate together with identical transforms and correct color spaces (1.9729ms)
+✔ dispose before callbacks settles ready and never resurrects material or ownership (6.3954ms)
+✔ missing map leaves fallback material intact and never claims loaded (0.6839ms)
+✔ hull smoothing preserves every position, UV, vertex count and bound from the shipped boat (52.8687ms)
+✔ hull curves share unit normals along their surface, retaining separate chines and end caps (3.8175ms)
+✔ the existing boat material batch preserves corrected normals without touching other parts (3.7808ms)
+✔ R136 closed anatomy has finite surface, nonzero triangles, normalized weights and stable action sweep (2363.9394ms)
+✔ R136 procedural skin owns distinct colour, relief and roughness maps with bounded wet highlights (381.9991ms)
+✔ with the relaxed stance off every bone equals V64 for all actions, transitions and fishing (1822.3037ms)
+✔ the relaxed stance changes only idle, keeps the eye anchor and the weighted foot height (997.8233ms)
+✔ all three native crowns retain their trunks, source detail and bounded branch volumes across distance bands (300.7488ms)
+✔ branch patches have multiple fixed surface directions and different detail levels do not move their centres (19.0662ms)
+✔ emission boundary matches both height and tangent, then leaves the flight unchanged (1.6619ms)
+✔ attachment support follows material time, not a fraction of the entire front age (0.3417ms)
+✔ crest reconstruction splits a bounded head budget and leaves gentle waves unlifted (2.7887ms)
+✔ a broad translating crest forms a sustained air cavity before impact and absorption (485.377ms)
+ℹ {"maximumClearance":1.9012403272743243,"cavitySeconds":1.7666666666666653,"maximumReach":4.330873012542725,"impacts":17,"deposited":22.357167691848172}
+✔ front reconstruction preserves the crest, outer ocean and zero-strength state (0.4781ms)
+✔ retired material cannot stretch a glass triangle between the falling jet and its old root (1499.4197ms)
+✔ a second detected face cannot create another sheet on the same physical emission crest (78.2568ms)
+✔ empirical launch excess is bounded in the moving-front frame by crest-to-face head (1.4874ms)
+✔ younger jet water continues feeding foam after the first tip lands (151.6081ms)
+✔ landed volume is consistent when display frames group fixed simulation steps (204.4352ms)
+✔ a sheet below a flat sea creates no airborne-water transfer (112.846ms)
+✔ a translating steep crest emits airborne water which returns to the moving sea (311.6111ms)
+ℹ {"maximumClearance":1.209746602007737,"deposited":17.458147920884624,"impacts":17}
+✔ a moving active face still owns its area after the old detector timeout (162.8101ms)
+✔ first impact does not cut off a still-supported crest feeding the falling jet (224.2685ms)
+✔ tracked crest attachment does not prematurely absorb a newly emitted row (38.733ms)
+✔ a released parcel falls under gravity and is independent of later crest movement (2.4894ms)
+✔ intermediate emissions follow the same linear moving crest across frame partitions (0.6714ms)
+✔ each emission keeps its own velocity when the crest accelerates (0.3203ms)
+✔ unsupported sheets hand off airborne parcels once instead of stretching a ribbon (40.3172ms)
+✔ a uniform crest uses one physical clock across the whole connected front (43.8758ms)
+✔ new sheet rows begin at the physical crest without a backwards collision offset (8.2494ms)
+✔ after source separation younger sheet water keeps falling instead of vanishing with its tip (57.0027ms)
+✔ live crest projection follows a displaced peak without jumping to another wave (1.694ms)
+✔ crest projection rejects invalid and emergent support (0.2989ms)
+✔ root corrections accumulate along the live crest rather than restarting at the birth prediction (70.5648ms)
+✔ compressed front emits from the higher crest even where crest compression is zero (1.9951ms)
+✔ one crest line cannot tear into independently tracked neighbouring maxima (178.6771ms)
+✔ wave-line projection selects steep front rather than the height maximum (0.5359ms)
+✔ tracked front and emitted crest remain separate and an unsteepened front stops feeding (22.593ms)
+✔ a tracked wave line emits horizontally before gravity rather than inheriting a noisy vertical cache launch (5.5786ms)
+✔ a higher rear peak cannot teleport the emission crest or connect different waves (109.8495ms)
+✔ lost water samples retire every row instead of exposing stale geometry (2.9817ms)
+✔ boat lens expands with seating and returns through the same continuous boarding pose (2.3494ms)
+✔ wheel pixel/line/page deltas have bounded consistent zoom; old preferences gain the wider boat default (5.7568ms)
+WebSocket server error: Port 24678 is already in use
+{"counts":{"trees":564,"shrubs":1771,"groundCover":776,"strata":"low wide nonuniform coastal crowns / overlapping shrubs / low true-3D leaf cover; lower steep rock faces exposed","canopyScale":{"horizontal":[1.35,1.65],"vertical":[0.9,1.08]},"groundCoverScale":{"horizontal":[2.2,2.4],"vertical":[0.6075,0.8775]}},"restored":776,"pine":{"status":"ready","placements":564,"originalPlacements":564,"rendered":287,"culled":277,"viewAware":true,"instances":{"near":2,"mid":180,"far":105,"distant":0},"byVariant":[{"near":1,"mid":63,"far":38,"distant":0},{"near":1,"mid":61,"far":28,"distant":0},{"near":0,"mid":56,"far":39,"distant":0}],"oversized":{"mid":0,"far":0,"distant":0},"levelTriangles":{"near":[192,192,192],"mid":[192,192,192],"far":[192,192,192]},"thresholds":{"nearDistance":35,"midDistance":210,"nearCapacity":24,"midCapacity":180,"triangleBudget":3600000,"viewAware":true},"draws":16,"triangles":55104,"nearTriangles":384,"exclusiveLod":true,"selection":"actual transformed crown angular span within distance / triangle caps","source":"CC0 all-angle branch/needle/leaf models in every ready band"},"shrub":{"status":"ready","placements":1771,"originalPlacements":1771,"rendered":968,"culled":803,"viewAware":true,"instances":{"near":0,"mid":968,"far":0,"distant":0},"byVariant":[{"near":0,"mid":324,"far":0,"distant":0},{"near":0,"mid":329,"far":0,"distant":0},{"near":0,"mid":315,"far":0,"distant":0}],"oversized":{"mid":0,"far":0,"distant":0},"levelTriangles":{"near":[60,60,60],"mid":[60,60,60],"far":[60,60,60]},"thresholds":{"nearDistance":26,"midDistance":210,"nearCapacity":48,"midCapacity":1200,"triangleBudget":1350000,"viewAware":true,"nearPixels":40,"midPixels":8},"draws":6,"triangles":58080,"nearTriangles":0,"exclusiveLod":true,"selection":"actual transformed crown angular span within distance / triangle caps","source":"CC0 all-angle branch/needle/leaf models in every ready band"}}
+✔ canopy continuity is opt-in, preserves roots, and restores low understory volume (28995.8885ms)
+✔ different capture methods cannot overlap across an already-resolved readiness await (2.8131ms)
+✔ synchronous and asynchronous failures always release the shared capture lease (4.9602ms)
+✔ lazy density switching couples metric normals, clears only caustic history and reuses geometry (10.8661ms)
+✔ budgets reject unbounded parameters before allocating resources (3.3128ms)
+✔ fine derivative spacing follows the actual FFT image width without adding frequencies (3.039ms)
+✔ every density conserves integrated photon flux and flat water has no strong lattice grid (41.1388ms)
+✔ sub-cell footprint negative control cannot reconstruct uniform flat-water light (0.3095ms)
+✔ R144 flag is opt-in and exact anchor negatives survive (1993.1202ms)
+✔ connected shell has finite noncollapsed wound closed edges within budget (22.546ms)
+✔ sea, strand, gentle and high crown emit no candidate collision volumes (4.2876ms)
+✔ actual source shell retains dry strand and vessel-height negative sweeps (2104.1043ms)
+{"v22Cliff":{"vertices":5852,"triangleCount":11364,"connectedCells":1065,"boundaryEdges":1422,"minVerticalReliefM":-0.045,"maxVerticalReliefM":0.9799997365145102,"minExposedVertexHeightM":3.4679657974794753}}
+✔ V22 fractures have bounded supported geometry and normals in both tangent directions (39.8956ms)
+✔ V22 actual Tomari shell records measured bounds without claiming normal relief (5276.9444ms)
+✔ rock skin cannot turn into painted grass or sand on a fracture shoulder; texture ownership is shared (6.0116ms)
+✔ integrated coherent coast keeps source data, raster joins and low sea vertices while changing dry rock (3955.1806ms)
+{"connectedRaster":{"changed":123668,"max":7.22619366645813,"protectedSamples":566960}}
+✔ actual connected-form raster changes dry cliffs and preserves V19 wet triangle samples and joins (8997.6286ms)
+✔ connected indexed cliff volume leaves real strand and vessel approaches open (29953.1124ms)
+✔ sediment preserves measured land, contact contour, offshore depth and unrelated shores (1.2161ms)
+✔ inferred bars are bounded, deterministic, smooth and interrupted alongshore (229.148ms)
+✔ wet-sand material borrows the live ocean uniforms without mutating or disposing them (6630.045ms)
+✔ a tall plunging crest retains greater optical thickness than a small spilling lip (1.6309ms)
+✔ wave-line tracer connects an alongshore front; no dry gap or back-face join (3.0886ms)
+✔ old foam, thin swash, emergent strand and missing cache cannot create a front (0.4949ms)
+✔ a large shallow-water crest survives the temporary-depth gate and plunges toward the lower face (415.7904ms)
+✔ one connected event gives one landing per node and collapses without repeat impacts (58.849ms)
+✔ front geometry is deterministic before contact and bounded across frame partitions (87.2592ms)
+✔ a departed high crest cannot leave a suspended sheet, while its tip still lands (61.6553ms)
+✔ landing tips remain at endpoint water height while an uneven front collapses (68.3201ms)
+✔ foam and entrained bubbles have separate stable physical-time lifetimes (0.5798ms)
+✔ marine deposits are bounded and stationary boats emit no wake; disposal is idempotent (5.4826ms)
+✔ GPU transport consumes the same elapsed time at 20/30/60/120 fps and stamps each source once (4.4559ms)
+✔ production field path still detects connected fronts and impacts without legacy foam geometry (2061.7436ms)
+✔ absorbed sheet water cannot reappear when receiving sea level falls (52.3198ms)
+✔ a distant trough cannot cause an impact from water that never separated (148.0698ms)
+✔ cached contact predicts moving water without moving the ground or requesting GPU work (10.6323ms)
+✔ a sheet row keeps its emission time as the source continues feeding (1.886ms)
+✔ surface kinematics preserves rising and descending velocity and cancels a travelling profile (0.2243ms)
+✔ an emitted rising parcel retains its initial vertical velocity after source reversal (5.4708ms)
+✔ an initially submerged tip cannot become a new impact when receiving water recedes (54.6079ms)
+✔ resampled crest nodes start on the curved source instead of interpolated heights below it (1.2154ms)
+✔ captured wave diagnostics are immutable snapshots rather than aliases of future events (23.6313ms)
+✔ newly emitted sheet water may clear the contact band before returning (7.3224ms)
+✔ moving emission crest stays continuous across half-metre sample boundaries (1.4462ms)
+✔ legacy custom F interaction survives the added activity binding (8.0645ms)
+✔ preferences survive reload and reset without touching adventure progress (1.5369ms)
+✔ duplicate, reserved and last-key removal attempts leave bindings intact (0.496ms)
+✔ corrupt or conflicting persisted keys recover to complete defaults, invalid sensitivity remains finite (0.9965ms)
+✔ storage denial does not break live settings and subscriptions can be disposed (0.4809ms)
+✔ spilling crest aeration requires compression, a crest and depth-limited height (1.3324ms)
+{"tested":10101,"accepted":7465,"rejectedSupport":2636,"leafClearanceMin":0.035,"crownArea":79152.73160276414,"sourceBounds":[[{"min":[-2.9051804542541504,0.003796573029831052,-2.9250357151031494],"max":[2.98000431060791,4.879278659820557,2.547956943511963],"foot":[0.014519732564010403,0.003796573029831052,-0.06620118107477373],"supportSamples":197,"sourceLeafVertices":47920},{"min":[-2.6609139442443848,0,-1.448569416999817],"max":[2.8402953147888184,3.799854278564453,3.8915977478027344],"foot":[-0.015512795188572324,0,-0.017313378655152128],"supportSamples":200,"sourceLeafVertices":48180},{"min":[-1.272386908531189,0.003594940295442939,-1.7705847024917603],"max":[3.359107732772827,3.199934244155884,2.397000789642334],"foot":[0.0375507256396327,0.003594940295442939,0.2666579611316512],"supportSamples":87,"sourceLeafVertices":49803}],[{"min":[-0.569281280040741,0.0013615392381325364,-0.4708881676197052],"max":[0.569281280040741,1.25,0.4708881676197052],"foot":[0,0.0013615392381325364,0],"supportSamples":13,"sourceLeafVertices":1987},{"min":[-0.605437695980072,0,-0.6130920052528381],"max":[0.605437695980072,1.0499999523162842,0.6124688982963562],"foot":[0,0,0],"supportSamples":13,"sourceLeafVertices":1914},{"min":[-0.7937515377998352,0,-0.5347265601158142],"max":[0.7937515377998352,0.8500000238418579,0.5347265601158142],"foot":[0,0,0],"supportSamples":15,"sourceLeafVertices":2097}]],"soilSamples":8699,"crownFootprintSamples":5655,"nativeBoundsFootprintCoverage":0.6500747212323256}
+✔ native crown support uses baked bounds and conservative leaf envelope on terrain (31294.057ms)
+✔ false crown support freezes V20 placements (30903.0033ms)
+✔ fallback preserves signed endpoints, missing-data sentinel and independent ownership (3.3849ms)
+✔ native decoder reuses its byte buffer and respects a nonzero aligned offset (0.4304ms)
+✔ all shipped elevation samples match independent little-endian decoding exactly (544.0908ms)
+{"changedVertices":3395,"maxToeDelta":1.1000003814697266}
+✔ dry toe preserves low, sandy, crown and gentle source anchors (2.7766ms)
+✔ dry toe erosion is finite, bounded and continuous with meaningful low-face relief (17.5716ms)
+✔ actual shared raster field changes dry foot while retaining source raster joins (5053.508ms)
+✔ actual triangle interpolation retains every sampled wet and low coastal point (4625.4185ms)
+✔ steep photographic rock foot is not flattened as sand, while legacy rock disables the whole candidate (8096.0053ms)
+✔ candidate ground and generated rock volumes keep the strand and island voyage corridors open (27675.9029ms)
+✔ reaching another beach naturally reveals its local record before the Tomari chapter is complete (4.4911ms)
+✔ explicit tracking and a full return load take priority over nearby discoveries (1.0682ms)
+✔ one island record is enough to guide the return and actual delivery (1.7847ms)
+✔ field equipment rests on the floor and recovered objects disappear from the rendered world (74.3104ms)
+✔ first task has real proximity, view direction, depth and terrain visibility requirements (0.864ms)
+✔ finite backpack, physical delivery, once-only credits, equipment and reload form one progression loop (2.3351ms)
+✔ a landing stamp needs an actual on-foot dwell and cannot be repeatedly farmed (1.0994ms)
+✔ save validation removes unknown/duplicate entries, bounds rewards, and tolerates denied storage (1.6666ms)
+✔ manual boat course requires ordered gates, rejects warps/autopilot, persists a best and pays once (22.204ms)
+✔ the actual Tomari targets sit on valid ground and all course legs have hull clearance (3337.919ms)
+✔ a sub-ten-second accepted finish preserves its reward and purchased gear after reload (1.8445ms)
+✔ invalid race times cannot create completion rewards (1.7295ms)
+✔ Habushi assembled candidate connects coast, solver and volume without separating traveller from vessel (2.3181ms)
+✔ individual feature switches override the assembled candidate for isolation (0.3967ms)
+✔ normal travel includes coastal solving while retaining explicit opt-outs and geometry variants (0.4625ms)
+✔ legacy paired full motion and ordered samples: deep (122.5993ms)
+✔ legacy paired full motion and ordered samples: shore (69.5382ms)
+✔ legacy paired full motion and ordered samples: ridge (46.58ms)
+✔ legacy paired full motion and ordered samples: unavailable (46.3759ms)
+✔ legacy paired invalid targets, current ground, reversal, zero delta and jumps (1.2468ms)
+WebSocket server error: Port 24678 is already in use
+20:27:32 [vite] (client) [optimizer] scanning dependencies...
+✔ actual MarineLife legacy/current full fish state, matrices, clocks and ordered ground calls (13415.9114ms)
+20:27:45 [vite] (client) [optimizer] bundling dependencies...
+WebSocket server error: Port 24678 is already in use
+20:27:32 [vite] (client) [optimizer] scanning dependencies...
+✔ actual MarineLife matrices retain continuous valid poses, and disposal is inert (5058.7607ms)
+20:27:36 [vite] (client) [optimizer] bundling dependencies...
+✔ analytical ellipse control follows continuously in deep water (36.2387ms)
+✔ ellipse reaches synthetic shoreline at 12 seconds and swims continuously around it (19.9484ms)
+✔ nonfinite patch is an obstruction, not a centre reset (24.29ms)
+✔ swept clearance catches a narrow ridge between valid endpoints (0.4263ms)
+✔ clock jumps, reversal, invalid targets and unavailable current ground retain finite last pose (0.3746ms)
+✔ physical cast, deterministic waiting and achievable catch with release timing (12.5062ms)
+✔ missed bite and sustained over-tension escape (4.4977ms)
+✔ dry land, behind player, driving, voyage, boarding and corrupt samples refuse cast (0.8003ms)
+✔ pause and nonfinite/stale time neither cast nor advance simulation (3.3014ms)
+✔ moving away, boarding, switching modes or driving cancels an active line (3.6376ms)
+✔ boat fishing and seeded variation are reproducible; snapshots are detached (1.7466ms)
+WebSocket server error: Port 24678 is already in use
+✔ existing markers and placed buoys follow the same local rendered-water sampler (25982.9208ms)
+✔ dense aerated crest closes optical holes without strengthening diluted remnants (1.7023ms)
+✔ dilution exposes pores continuously and coverage stays below transported area (11.0269ms)
+✔ microstructure cannot reopen clear holes in thick froth but preserves thin rafts (2.0104ms)
+✔ advected material does not jump at a nearest-filtered solver texel boundary (1.2794ms)
+✔ depth and momentum are reconstructed before division; dry flow remains zero (1.1449ms)
+✔ a fully covered foam fragment retains its actual unsaturated concentration (1.4027ms)
+✔ two occupancy bands preserve concentration in expectation and converge to a stable distant mean (116.3265ms)
+✔ both physical foam sources stay bounded without creating a white baseline (0.4731ms)
+{"canopy":0,"budget":720,"sourceTriangles":18000,"geometricOriginal":[2719,2773,2850],"geometricSelected":[616,635,619],"photoOriginal":[2638,2706,2770],"photoGeometricSelection":[600,623,605],"photoAwareSelection":[606,628,612],"ratio":[0.22971948445792267,0.2320768662232077,0.22093862815884477]}
+{"canopy":0,"budget":1440,"sourceTriangles":18000,"geometricOriginal":[2719,2773,2850],"geometricSelected":[1064,1123,1081],"photoOriginal":[2638,2706,2770],"photoGeometricSelection":[1029,1098,1057],"photoAwareSelection":[1048,1106,1064],"ratio":[0.39727065959059893,0.4087213599408721,0.384115523465704]}
+{"canopy":0,"budget":2880,"sourceTriangles":18000,"geometricOriginal":[2719,2773,2850],"geometricSelected":[1587,1629,1619],"photoOriginal":[2638,2706,2770],"photoGeometricSelection":[1530,1590,1569],"photoAwareSelection":[1545,1610,1599],"ratio":[0.5856709628506445,0.5949741315594974,0.5772563176895307]}
+{"canopy":1,"budget":720,"sourceTriangles":18000,"geometricOriginal":[3697,2826,4113],"geometricSelected":[814,679,822],"photoOriginal":[3608,2741,4012],"photoGeometricSelection":[786,663,795],"photoAwareSelection":[798,664,808],"ratio":[0.2211751662971175,0.24224735497993433,0.20139581256231306]}
+{"canopy":1,"budget":1440,"sourceTriangles":18000,"geometricOriginal":[3697,2826,4113],"geometricSelected":[1326,1057,1383],"photoOriginal":[3608,2741,4012],"photoGeometricSelection":[1280,1028,1338],"photoAwareSelection":[1301,1051,1358],"ratio":[0.36058758314855877,0.38343670193360085,0.33848454636091724]}
+{"canopy":1,"budget":2880,"sourceTriangles":18000,"geometricOriginal":[3697,2826,4113],"geometricSelected":[2132,1642,2328],"photoOriginal":[3608,2741,4012],"photoGeometricSelection":[2060,1597,2246],"photoAwareSelection":[2074,1613,2266],"ratio":[0.5748337028824834,0.58847136081722,0.5648055832502492]}
+{"canopy":2,"budget":720,"sourceTriangles":18000,"geometricOriginal":[1906,1767,2376],"geometricSelected":[533,530,599],"photoOriginal":[1863,1710,2316],"photoGeometricSelection":[506,506,585],"photoAwareSelection":[527,524,596],"ratio":[0.28287707997852923,0.3064327485380117,0.25734024179620035]}
+{"canopy":2,"budget":1440,"sourceTriangles":18000,"geometricOriginal":[1906,1767,2376],"geometricSelected":[824,834,966],"photoOriginal":[1863,1710,2316],"photoGeometricSelection":[789,801,935],"photoAwareSelection":[798,804,960],"ratio":[0.428341384863124,0.47017543859649125,0.41450777202072536]}
+{"canopy":2,"budget":2880,"sourceTriangles":18000,"geometricOriginal":[1906,1767,2376],"geometricSelected":[1251,1229,1584],"photoOriginal":[1863,1710,2316],"photoGeometricSelection":[1205,1177,1531],"photoAwareSelection":[1232,1204,1566],"ratio":[0.6612989801395599,0.704093567251462,0.6761658031088082]}
+✔ alpha sampling respects RGB green, diffuse alpha, matrix, flip, wrap and product cutoff (10.3903ms)
+✔ packaged near GLB photo alpha coverage compared against geometric selection, same axes (37321.5744ms)
+✔ alpha-aware selection rejects invisible components while default is identical (2.0634ms)
+✔ coverage priority avoids sacrificing the whole canopy to a few near trees under the same budget (26.2976ms)
+✔ angular LOD honours visible crown size and total budget on resize without moving trunks (1.8506ms)
+✔ distant baseline keeps a dense field within its actual indexed triangle budget without dropping trunks or crowns (3.0658ms)
+{"node":"canopy0_near_0","budget":720,"sourceTriangles":18000,"candidateTriangles":720,"components":14960,"originalPixels":[2719,2773,2850],"candidatePixels":[616,635,619],"ratios":[0.227,0.229,0.217]}
+{"node":"canopy0_near_0","budget":1440,"sourceTriangles":18000,"candidateTriangles":1440,"components":14960,"originalPixels":[2719,2773,2850],"candidatePixels":[1064,1123,1081],"ratios":[0.391,0.405,0.379]}
+{"node":"canopy0_near_0","budget":2880,"sourceTriangles":18000,"candidateTriangles":2880,"components":14960,"originalPixels":[2719,2773,2850],"candidatePixels":[1587,1629,1619],"ratios":[0.584,0.587,0.568]}
+{"node":"canopy1_near_0","budget":720,"sourceTriangles":18000,"candidateTriangles":720,"components":15090,"originalPixels":[3697,2826,4113],"candidatePixels":[814,679,822],"ratios":[0.22,0.24,0.2]}
+{"node":"canopy1_near_0","budget":1440,"sourceTriangles":18000,"candidateTriangles":1440,"components":15090,"originalPixels":[3697,2826,4113],"candidatePixels":[1326,1057,1383],"ratios":[0.359,0.374,0.336]}
+{"node":"canopy1_near_0","budget":2880,"sourceTriangles":18000,"candidateTriangles":2880,"components":15090,"originalPixels":[3697,2826,4113],"candidatePixels":[2132,1642,2328],"ratios":[0.577,0.581,0.566]}
+{"node":"canopy2_near_0","budget":720,"sourceTriangles":18000,"candidateTriangles":720,"components":15906,"originalPixels":[1906,1767,2376],"candidatePixels":[533,530,599],"ratios":[0.28,0.3,0.252]}
+{"node":"canopy2_near_0","budget":1440,"sourceTriangles":18000,"candidateTriangles":1440,"components":15906,"originalPixels":[1906,1767,2376],"candidatePixels":[824,834,966],"ratios":[0.432,0.472,0.407]}
+{"node":"canopy2_near_0","budget":2880,"sourceTriangles":18000,"candidateTriangles":2880,"components":15906,"originalPixels":[1906,1767,2376],"candidatePixels":[1251,1229,1584],"ratios":[0.656,0.696,0.667]}
+{"node":"shrub_near_0","budget":160,"sourceTriangles":2299,"candidateTriangles":157,"components":110,"originalPixels":[1622,2239,1301],"candidatePixels":[268,401,242],"ratios":[0.165,0.179,0.186]}
+{"node":"shrub_near_0","budget":320,"sourceTriangles":2299,"candidateTriangles":320,"components":110,"originalPixels":[1622,2239,1301],"candidatePixels":[492,699,385],"ratios":[0.303,0.312,0.296]}
+{"node":"shrub_near_0","budget":640,"sourceTriangles":2299,"candidateTriangles":638,"components":110,"originalPixels":[1622,2239,1301],"candidatePixels":[787,1218,603],"ratios":[0.485,0.544,0.463]}
+{"node":"shrub_near_1","budget":160,"sourceTriangles":2297,"candidateTriangles":158,"components":82,"originalPixels":[1672,1701,1817],"candidatePixels":[294,313,302],"ratios":[0.176,0.184,0.166]}
+{"node":"shrub_near_1","budget":320,"sourceTriangles":2297,"candidateTriangles":316,"components":82,"originalPixels":[1672,1701,1817],"candidatePixels":[543,516,536],"ratios":[0.325,0.303,0.295]}
+{"node":"shrub_near_1","budget":640,"sourceTriangles":2297,"candidateTriangles":640,"components":82,"originalPixels":[1672,1701,1817],"candidatePixels":[898,862,972],"ratios":[0.537,0.507,0.535]}
+{"node":"shrub_near_2","budget":160,"sourceTriangles":2293,"candidateTriangles":156,"components":146,"originalPixels":[2144,1185,1377],"candidatePixels":[334,147,204],"ratios":[0.156,0.124,0.148]}
+{"node":"shrub_near_2","budget":320,"sourceTriangles":2293,"candidateTriangles":315,"components":146,"originalPixels":[2144,1185,1377],"candidatePixels":[644,272,361],"ratios":[0.3,0.23,0.262]}
+{"node":"shrub_near_2","budget":640,"sourceTriangles":2293,"candidateTriangles":635,"components":146,"originalPixels":[2144,1185,1377],"candidatePixels":[1084,532,642],"ratios":[0.506,0.449,0.466]}
+✔ native source component selection is bounded, deterministic and reports three-axis geometric coverage (26368.4706ms)
+✔ unsupported large connected topology is explicit (2.3321ms)
+✔ refinement retains attributes, material ownership and a whole curved component within the budget (219.6923ms)
+✔ wide native crowns receive detail by projected span and refresh after source replacement (9.1978ms)
+✔ hemi-octahedral grid and direction mappings invert each other over the upper hemisphere (3.2377ms)
+✔ impostor card bounds cover the whole crown sphere for instance culling (1.6304ms)
+✔ only crowns below the card size leave far/distant meshes; near/mid choices are unchanged (36.6151ms)
+WebSocket server error: Port 24678 is already in use
+✔ a later atlas bake failure rolls back all targets and restores the renderer (1601.6314ms)
+✔ loading a far LOD slot does not overwrite the independently retained near and mid sources (38.6126ms)
+✔ invisible black padding cannot darken the sampled leaf colour (2.977ms)
+✔ mixed opaque photo colours average in linear light, with complete mip dimensions (0.6851ms)
+✔ a transparent branch atlas keeps linear opacity as well as undarkened colour in every mip (0.4128ms)
+✔ v62 sparse variants and empty visibility buckets retain exact legacy updates (93.3763ms)
+✔ v62 exact legacy equivalence across selection, lifecycle and view changes (1316.4857ms)
+✔ view-aware allocation refreshes on rotation while retaining nearby shadows and physical trunks (7.8057ms)
+(node:41644) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ default terrain remains the explicit false shader path; ground replaces only the original green domain (466.3968ms)
+✔ unchanged official forest scan hashes and millimetre-to-metre scale (51.629ms)
+✔ 30 and 60 fps caps hold across 60/120/144/240 Hz displays (24.003ms)
+✔ stalls and visibility resets never replay a backlog (0.5139ms)
+✔ display mode and invalid saved preferences have safe behavior (0.3131ms)
+✔ dynamic height and zero-count pool eligibility change only the instance table (12.2284ms)
+✔ nearest opaque receiver, inside double-sided hit, miss and UV (5.3785ms)
+✔ instancing refits count and moving negative nonuniform transforms without triangle upload (2.2032ms)
+✔ LOD visibility, new meshes and edited topology trigger appropriate rebuild (4.4449ms)
+✔ group materials, drawRange and nonindexed UV/color layout (1.837ms)
+✔ alpha surfaces excluded explicitly and unsupported deformations unavailable (3.8315ms)
+✔ overflow is whole-system unavailable without partial false hits (2.1084ms)
+✔ dispose owns only packed textures, and is idempotent (1.5233ms)
+✔ GLSL residual contract independent of screen depth, fixed double-sided nearest traversal (17.2718ms)
+✔ packed TLAS/BLAS GLSL interpretation matches independent CPU nearest oracle (38.918ms)
+✔ GPU export retains unique vertices, unnormalized weights and leaf triangle layout (9.496ms)
+✔ renderer-created padded bone textures retain the same used palette (2.8621ms)
+✔ pose export preserves normal matrix, visibility and rejects source/singular mutations (3.3237ms)
+✔ GPU fast path accepts ordinary island coordinates and mirrored nonuniform affine transforms (2.1857ms)
+✔ invertible projective world with a zero vertex w selects CPU before a GPU draw (0.8143ms)
+✔ finite inputs whose intermediate products overflow Float32 are rejected (0.3648ms)
+✔ immutable source values cannot silently overflow or underflow during GPU conversion (0.3218ms)
+grounded reef scan evidence [{"file":"coast-rocks-01-2k.glb","x":-138,"z":-119,"boundaryEdges":147,"maxBoundaryExposure":-0.07695224897741149,"minRelief":-0.08,"maxRelief":0.0785740134241573,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[-0.005836898422993543,0.01733130079514403,0.13463534297292895],"triangles":17999},{"file":"coast-rocks-01-2k.glb","x":-147,"z":-125,"boundaryEdges":147,"maxBoundaryExposure":-0.0674440888752521,"minRelief":-0.08,"maxRelief":0.10541423252154129,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[-0.005836898422993543,0.01733130079514403,0.13463534297292895],"triangles":17999},{"file":"coast-rocks-01-2k.glb","x":-155,"z":-150,"boundaryEdges":147,"maxBoundaryExposure":-0.07999976676483644,"minRelief":-0.08,"maxRelief":0.17179204875886395,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[-0.005836898422993543,0.01733130079514403,0.13463534297292895],"triangles":17999},{"file":"coast-rocks-03-2k.glb","x":-138,"z":-119,"boundaryEdges":110,"maxBoundaryExposure":-0.06574712736408728,"minRelief":-0.08912972069752935,"maxRelief":0.30921922374195376,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[0.013675306331010715,-0.03985832565629495,0.36748258384015947],"triangles":18000},{"file":"coast-rocks-03-2k.glb","x":-147,"z":-125,"boundaryEdges":110,"maxBoundaryExposure":-0.05074009120378342,"minRelief":-0.10400501344305607,"maxRelief":0.42042471623965477,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[0.013675306331010715,-0.03985832565629495,0.36748258384015947],"triangles":18000},{"file":"coast-rocks-03-2k.glb","x":-155,"z":-150,"boundaryEdges":110,"maxBoundaryExposure":-0.07999976419716148,"minRelief":-0.124469427258185,"maxRelief":0.5038288356129307,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[0.013675306331010715,-0.03985832565629495,0.36748258384015947],"triangles":18000},{"file":"coast-rocks-01-seams-v34.glb","x":-138,"z":-119,"boundaryEdges":143,"maxBoundaryExposure":-0.07695224897741149,"minRelief":-0.08,"maxRelief":0.07943188836585667,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[-0.005836672246811194,0.01710946861911881,0.13333496892203262],"triangles":17999},{"file":"coast-rocks-01-seams-v34.glb","x":-147,"z":-125,"boundaryEdges":143,"maxBoundaryExposure":-0.0674440888752521,"minRelief":-0.08,"maxRelief":0.1066591444238839,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[-0.005836672246811194,0.01710946861911881,0.13333496892203262],"triangles":17999},{"file":"coast-rocks-01-seams-v34.glb","x":-155,"z":-150,"boundaryEdges":143,"maxBoundaryExposure":-0.07999976676483644,"minRelief":-0.08,"maxRelief":0.17308752067159677,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[-0.005836672246811194,0.01710946861911881,0.13333496892203262],"triangles":17999},{"file":"coast-rocks-03-seams-v34.glb","x":-138,"z":-119,"boundaryEdges":108,"maxBoundaryExposure":-0.06574712736408728,"minRelief":-0.08901154917560067,"maxRelief":0.30970093925771924,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[0.013627169439269579,-0.04003627902586919,0.36684230463188083],"triangles":17998},{"file":"coast-rocks-03-seams-v34.glb","x":-147,"z":-125,"boundaryEdges":108,"maxBoundaryExposure":-0.05758117082818259,"minRelief":-0.10369430196934667,"maxRelief":0.4218659845115342,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[0.013627169439269579,-0.04003627902586919,0.36684230463188083],"triangles":17998},{"file":"coast-rocks-03-seams-v34.glb","x":-155,"z":-150,"boundaryEdges":108,"maxBoundaryExposure":-0.07999976419716148,"minRelief":-0.12430290033589851,"maxRelief":0.5055103152634566,"apron":0.55,"embed":0.08,"reliefScale":2,"sourceGroundPlane":[0.013627169439269579,-0.04003627902586919,0.36684230463188083],"triangles":17998}]
+✔ actual shelf scans retain relief, maps and topology with all open edges buried on the sloping reef (11048.4524ms)
+✔ welded position seams share one perimeter and invalid ground releases only the owned clone (2.0494ms)
+✔ source ground grade is removed without flattening the stone on top of it (1.4096ms)
+✔ the actual graded Habushi terrain and gate support all stairs and a dry open passage (7027.9905ms)
+✔ landmark grading invalidates pre-existing water tiles and the next tile contains the new foundation (8794.5078ms)
+✔ Habushi right 20 stairs actual DEM controller round-trip at 30 fps (8618.6429ms)
+✔ Habushi left 20 stairs actual DEM controller round-trip at 30 fps (8720.8073ms)
+✔ Habushi central portal actual DEM controller round-trip at 30 fps (7934.7876ms)
+✔ Habushi north road end actual DEM controller round-trip at 30 fps (7132.0604ms)
+✔ Habushi south road end actual DEM controller round-trip at 30 fps (7383.7304ms)
+✔ Habushi central portal from sidewalk actual DEM controller round-trip at 30 fps (7372.2749ms)
+✔ Habushi right stairs from sidewalk actual DEM controller round-trip at 30 fps (6821.0384ms)
+✔ Habushi left stairs from sidewalk actual DEM controller round-trip at 30 fps (6550.5377ms)
+✔ Habushi right 20 stairs actual DEM controller round-trip at 60 fps (5939.6148ms)
+✔ Habushi left 20 stairs actual DEM controller round-trip at 60 fps (4657.5485ms)
+✔ Habushi central portal actual DEM controller round-trip at 60 fps (3410.913ms)
+✔ Habushi north road end actual DEM controller round-trip at 60 fps (5655.2328ms)
+✔ Habushi south road end actual DEM controller round-trip at 60 fps (5421.4712ms)
+✔ Habushi central portal from sidewalk actual DEM controller round-trip at 60 fps (4241.0752ms)
+✔ Habushi right stairs from sidewalk actual DEM controller round-trip at 60 fps (3968.6847ms)
+✔ Habushi left stairs from sidewalk actual DEM controller round-trip at 60 fps (3683.176ms)
+✔ photo-informed roadfront stays bounded, finite, owns resources and leaves gate axis unpainted (230.0899ms)
+✔ asphalt wear is bounded and metre-scaled while markings remain separate (93.9611ms)
+✔ photographic pavement changes material channels without moving the road, markings or support (109.3649ms)
+✔ disposing pavement before texture readiness never reattaches a late finish (68.8991ms)
+✔ gate has an official-linked anchor, four physical apertures, finite stair scale and bounded resources (141.9647ms)
+✔ solid registration supports stairs and leaves the central passage open (151.8464ms)
+✔ DEM relief is exposed for bounded grading rather than silently buried (163.0456ms)
+✔ both rendered palms and every digit reach the tilted wheel without deep penetration across boat and head poses (2796.884ms)
+✔ seated boots and pelvis stay in the same vessel frame through its full roll and pitch (585.631ms)
+✔ authored cliff bodies are closed, nondegenerate and outward wound (579.989ms)
+✔ metre scale faces emerge from their actual support surface within a fixed geometry budget (0.4581ms)
+✔ coherent candidate is opt-in, deterministic, thinner and collision bounds include every solid vertex (139.7046ms)
+✔ coherent toe relief has signed bounded detail while dry/shore and gentle domain negatives stay exact (167.5291ms)
+✔ candidate adds no detached body walls on gentle sand, low strand or sea (1.4526ms)
+✔ the authored scarp refinement keeps low strand and source boundaries, with bounded signed relief (20.1961ms)
+✔ camera medium follows local crests and troughs rather than mean sea level (2.2815ms)
+✔ current solver uniforms retain identity and solved triangular surface sampling through extraction (43.2261ms)
+✔ remote floating points use bounded exact requests and expire with the local cache (10.1211ms)
+✔ invalid coordinates cannot leak NaN into swimming or camera medium selection (1.5691ms)
+FFT surface-height cache unavailable; mean sea level retained Error: sample render failed
+    at Object.render (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/tests/local-water-heights.test.ts:22:145)
+    at LocalWaterHeights.update (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/src/ocean/local-water-heights.ts:110:68)
+    at update (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/tests/local-water-heights.test.ts:26:33)
+    at getActual (node:assert:611:5)
+    at strict.doesNotThrow (node:assert:779:32)
+    at TestContext.<anonymous> (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/tests/local-water-heights.test.ts:81:12)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+FFT surface-height cache unavailable; mean sea level retained Error: readback creation failed
+    at Object.readRenderTargetPixelsAsync (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/tests/local-water-heights.test.ts:23:64)
+    at LocalWaterHeights.update (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/src/ocean/local-water-heights.ts:112:30)
+    at update (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/tests/local-water-heights.test.ts:26:33)
+    at getActual (node:assert:611:5)
+    at strict.doesNotThrow (node:assert:779:32)
+    at TestContext.<anonymous> (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/tests/local-water-heights.test.ts:81:12)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+✔ stalled readback expires old elevations and late completion cannot revive stale waves (2.5506ms)
+✔ FFT cache render failure is contained and restores the active scene target (1.7341ms)
+✔ FFT cache read failure is contained and restores the active scene target (0.7384ms)
+✔ FFT cache disposal waits for outstanding GPU readback and is idempotent (9.761ms)
+✔ valid decoded wave samples remain available inside their own patch only (2.752ms)
+✔ fixed-step capture waits for wave heights and paused simulation does not expire them (3.6814ms)
+✔ CC0 MakeHuman body data is intact and every joint key maps onto the game skeleton (633.4107ms)
+✔ swapping to MakeHuman changes no bone, keeps the gear and skins finitely across actions (1226.4638ms)
+✔ wear fields open the hood on the face only and bare the hands (0.4013ms)
+✔ refraction retains the actual continuous garment fields and wet material values (1224.0185ms)
+✔ a failed texture load collects successful peers; unadopted sources release once (3.1385ms)
+✔ branched algae families have closed finite surfaces and deterministic structural diversity (514.4409ms)
+✔ final jittered root samples slope and rejects dry or invalid support (0.9184ms)
+✔ thin algae write real depth and share the same deformation with their shadow surface (7.4985ms)
+WebSocket server error: Port 24678 is already in use
+20:27:40 [vite] (client) [optimizer] scanning dependencies...
+✔ actual habitat keeps fish seeds and grounds every opaque plant at its final position (2883.0216ms)
+20:27:42 [vite] (client) [optimizer] bundling dependencies...
+✔ coarse 128x128 levels keep every native border step, cover the chunk area and keep winding (det>0) (108.8418ms)
+✔ coarse 128x128 levels keep every native border step, cover the chunk area and keep winding (det<0) (49.3482ms)
+✔ coarse 37x64 levels keep every native border step, cover the chunk area and keep winding (det>0) (11.8074ms)
+✔ coarse 37x64 levels keep every native border step, cover the chunk area and keep winding (det<0) (8.4597ms)
+✔ coarse 33x33 levels keep every native border step, cover the chunk area and keep winding (det>0) (3.186ms)
+✔ coarse 33x33 levels keep every native border step, cover the chunk area and keep winding (det<0) (4.2746ms)
+✔ drawing camera selects coarser ranges with distance; height queries stay native (348.2136ms)
+✔ a steep cliff keeps native triangles at distances where flat ground coarsens (62.0284ms)
+✔ lodPixels 0 keeps the previous full-resolution-only contract (140.252ms)
+✔ replaced chunks lock to native triangles and leave unreplaced chunks free (244.286ms)
+✔ native tilted affine samples retain interior heights and inverse query matches (17.643ms)
+✔ height query matches actual rendered triangle ray intersections independently (19.7028ms)
+✔ unknown and boundary use fallback; blending uses world metres and outside returns null (7.9648ms)
+✔ full-only chunk seams share bit-identical positions and global native normals (4.9859ms)
+✔ 1600x1200 native grid keeps every sample and full-resolution triangle budget (2241.7343ms)
+✔ triangle removal requires every vertex within affine inset, independent of camera (1.2561ms)
+✔ owned geometry disposal preserves borrowed arrays, material and texture (1.3703ms)
+✔ finite geometry budgets and invalid data are rejected (31.8211ms)
+✔ interior replacement preserves native halves, diagonal ties and chunk seams with affine sign 1 (35.4168ms)
+✔ interior replacement preserves native halves, diagonal ties and chunk seams with affine sign -1 (7.2529ms)
+✔ false coverage leaves source intact and invalid finite-floor contract is rejected atomically (4.0647ms)
+✔ preparing a replacement exposes actual local native footprint and commits only a valid final surface (4.9148ms)
+✔ disposed or stale plans cannot mutate native topology (7.6973ms)
+✔ source-verified raised dry rock loses the inherited strand material, unchanged beaches and inland ground retain it (5.1929ms)
+✔ rendered attribute is continuous across chunks and absent at the patch perimeter; actual ledges receive it (5763.3526ms)
+✔ one mask precedes PBR selection and controls albedo, normal, roughness and occlusion without owning textures (4.362ms)
+✔ installed Reflector clipBias retains far-side vertices that a fixed y margin wrongly removes (16.9879ms)
+✔ pending shadow updates retain every caster, and hidden visibility and original hook survive exceptions (6.875ms)
+✔ world transforms and instance/geometry mutations are current before classification (3.682ms)
+✔ curved world bounds conservatively include far land in underwater reflection (1.4594ms)
+✔ unproven vertex shaders, morphs, skins and mesh parents remain in the pass (2.1115ms)
+✔ clip predicate retains uncertainty and exact boundary contact (0.254ms)
+✔ baked CMU clips carry provenance, steady cycles and seamless loops (6.5004ms)
+✔ mocap leaves idle, helm and climb untouched and keeps the first-person eye on the camera (5845.8033ms)
+✔ captured walk and run plant the stance sole on the floor; running keeps its flight (2165.7533ms)
+✔ running stride rate is a human cadence and walking is unchanged (0.5026ms)
+✔ fishing and physical tool transitions retain the procedural contact pose (6156.7865ms)
+✔ exact native contact, higher/lower layers, C2 midpoint and unchanged interior; owned snapshot (5.9396ms)
+✔ translated sheared footprint uses world XZ boundary and world native height (1.0362ms)
+✔ tiny outside clipping residual snaps to finite native floor (0.5461ms)
+✔ quintic transitions have vanishing endpoint first and second derivatives (0.6379ms)
+✔ invalid, missing floor, nonmanifold and budgets fail without source mutation (3.2725ms)
+✔ native-backed inferred cliff retains source, shares visible floor and water contact, and stays bounded (21254.5139ms)
+✔ higher and lower replacement close only outer boundary with native winding (4.6325ms)
+✔ native slope, signed sheared coordinates and translated query retain local native Y (1.5888ms)
+✔ bit-identical duplicate chunk vertices cancel common boundary (0.7759ms)
+✔ mixed signed heights split at zero and avoid folded bowtie quads (0.6982ms)
+✔ zero height produces declared zero-area rejection (0.4085ms)
+✔ invalid data, missing heights, nonmanifold and bounded work fail atomically (1.855ms)
+✔ earned tank and fins improve the actual oxygen and swim controller without changing walking speed (73.2061ms)
+✔ context interaction shares E and leaves vessel interaction available when no field action consumes it (3.4528ms)
+✔ real swimming and diving controller phases drive both body wrists without synthetic phase updates (596.5152ms)
+✔ held touch jump takes off once, lands, and requires release before the next jump (5.8907ms)
+✔ water route detours around land and every resulting segment clears the hull (15.0516ms)
+✔ fine cove exits connect to a kilometre voyage without cutting through the coast (14.0635ms)
+✔ shallow departures and enclosed lagoons fail with a bounded descriptive result (2.9311ms)
+✔ cliffs block swept walking while gentle slopes remain walkable (3.9527ms)
+✔ solid stairs step up and down, tall walls block and a jump lands on a rock (98.8414ms)
+✔ vertical diving and rising stop against submerged rock faces without changing horizontal location (56.7055ms)
+✔ legacy non-heightfield terrain vertical hooks still stop dives with an empty solid registry (5.9624ms)
+✔ shore walking accelerates, wades, swims, dives and surfaces without relocation (51.5126ms)
+✔ walk, jump, running stamina, gentle gait and stopping have physical inertia (4.2094ms)
+✔ camera direction drives submerged swimming, seabed/depth and air recovery remain bounded (199.0501ms)
+✔ paused ambient motion holds dive air while intentional swimming remains available (2.4363ms)
+✔ one world connects beach approach, smooth boarding, voyage and nearby water disembark (313.9775ms)
+✔ boat demand follows propulsion input while hull retains coasting speed (1.554ms)
+✔ the actually drawn stern ladder boards continuously from the observed failing approach (4.3011ms)
+✔ stern boarding and exit avoid the rear bench as an actual swept solid (70.5753ms)
+✔ seated camera uses the same yaw-pitch-roll frame as the drawn vessel and helm body (1.0187ms)
+✔ the placed hull blocks swimming through the vessel while its ladder remains reachable (4.6362ms)
+✔ solid furniture blocks the boarding arc and removal restores the same physical ladder (8.4299ms)
+✔ manual boat accelerates, coasts, reads water attitude and stops before grounding (17.8242ms)
+✔ planned clearance survives different frame offsets and manual input cancels a voyage (202.0565ms)
+✔ hidden tabs, blur, editable fields, Escape and disposal reset held movement (5.9873ms)
+✔ pointer lock is requested only by canvas gesture, locked relative look and Escape release work (49.5189ms)
+✔ denied pointer lock retains drag fallback and touch never requests lock (1.837ms)
+✔ world bounds and invalid requests stay finite (20.5626ms)
+✔ real ladder animations keep the lens monotonic through walking and helm poses in both directions (13.2488ms)
+✔ boat wheel changes the lens without releasing held propulsion and ignores menus/browser zoom/walking (13.9066ms)
+✔ paddling uses a valid embodied capsule and crosses empty water without false collision (3.7709ms)
+✔ rightward drag turns the actual FPS forward vector right; sensitivity and both inversion axes apply (37.1395ms)
+✔ remapped movement, jump and interaction use new keys; menus freeze inputs and release held movement (98.6749ms)
+✔ integrated GSI terrain supports the actual coves and neighbour-island voyages (22359.3801ms)
+✔ actual Niijima replacement, shoreline and water texels share the visible terrain (12833.8787ms)
+✔ finite continuous volume stays in geometry and relief budgets (255.765ms)
+✔ closed manifold has exactly two opposing uses of every edge (145.0617ms)
+✔ front winds east and back winds west, with nonzero actual thickness (84.2892ms)
+✔ DEM source bounds remain intact, back and end/bottom caps are buried (45.6758ms)
+✔ borrowed material, texture, shader are unchanged; dispose is owned and idempotent (48.9879ms)
+✔ flat, invalid or absent cliff returns empty group without fallback (7.0862ms)
+✔ full default coastline fits the budget and short steep cliffs keep positive winding (1192.6757ms)
+✔ meso carving is bounded, solid and buried with no borrowed-resource changes (233.4428ms)
+✔ meso default coastline stays bounded and legacy default has no replacement mask (2258.3345ms)
+✔ meso query matches actual front triangles independently via downward ray hits (312.5547ms)
+✔ barycentric query chooses the highest overhang and excludes vertical degenerate faces (36.6091ms)
+✔ patch borders and low strand return null; mask only accepts wholly interior original triangles (276.3578ms)
+✔ meso vanishes before lower and chunk cutout guards; talus is strongly attenuated (788.3448ms)
+✔ coast correction is bound to immutable source bytes and touches only enumerated coarse extensions (324.6125ms)
+✔ the observed coarse ridge becomes continuous inferred water while the real inland scarp stays (1016.7482ms)
+✔ Niijima macroshape is bound to high-resolution GSI sources and distinct official surf markers (2.935ms)
+✔ every close ground query agrees with its visible indexed triangle and mesh normals are unit length (3.6464ms)
+✔ all nested surfaces and legacy field join continuously (12.0745ms)
+✔ cell-centre water UVs match ground nodes and triangulated wet strand stays within 2.5cm (2746.1003ms)
+✔ new east coast arrivals are open water and seamless boat routes preserve existing Maehama destination (3649.6278ms)
+✔ pumice cliffs block walking and detailed coast stays within memory/draw budgets (0.4947ms)
+✔ full Habushi coverage retains the immutable southern source and verified Main Gate bookmark (25.6151ms)
+✔ northern dry strand has a continuous walkable 400m segment and matched wet shoreline (3658.6526ms)
+✔ water tiles stay bounded, match their shared samples and replace owned cached textures (1147.9386ms)
+✔ bounded landmark grading changes rendered and sampled ground together and preserves distant coast (279.4933ms)
+✔ disposing Niijima releases only owned geometry, material and texture (916.0182ms)
+{"scope":"CPU native/render floor rays and static surface sweeps; no browser movement or photoreal acceptance","rayChecks":40,"maxRayErrorM":7.327471962526033e-14,"wallChecks":5,"cliff":{"state":"ready","reason":"","inputTriangles":580589,"renderTriangles":574909,"removedNativeTriangles":210973,"numericalCoverageAreaToleranceM2":1e-12,"finalCoverageAreaToleranceM2":0.000002,"footprintSha256":"b0a47c3ecfb78972b469715f8e908339a1eec05e9cbc3f7f659fd15884e3f12f","version":55,"variant":"continuous","querySnapDistanceM":0.00001,"stitch":null,"kind":"inferred-poisson-surface","watertight":false,"centimetreAccuracyEstablished":false}}
+✔ actual continuous feathered LiDAR study shares native floor, water map and static mesh collision with source intact (81764.4507ms)
+✔ detail fallback preserves every original valid elevation and fills only missing coverage from recorded sources (162.7003ms)
+{"scope":"CPU native/render floor rays and static surface sweeps; no browser movement or photoreal acceptance","rayChecks":40,"maxRayErrorM":7.327471962526033e-14,"wallChecks":5,"cliff":{"state":"ready","reason":"","inputTriangles":640452,"renderTriangles":606336,"removedNativeTriangles":414399,"numericalCoverageAreaToleranceM2":1e-12,"finalCoverageAreaToleranceM2":0.000002,"footprintSha256":"71139261d3a047350a0b152003d390a58a7acd772c325129dfec57470382e417","version":55,"variant":"expanded","querySnapDistanceM":0.00001,"stitch":null,"kind":"inferred-poisson-surface","watertight":false,"centimetreAccuracyEstablished":false}}
+✔ actual expanded continuous LiDAR study shares native floor, water map and static mesh collision with source intact (82715.9546ms)
+✔ resistant beds create metre-scale relief interrupted along coast rather than a repeated stripe (408.8574ms)
+✔ native provider samples are pinned and remain on their unresampled coordinate lattice (4322.9768ms)
+✔ measured coast cutout and map handoff keep the visible floor and whole shore-solver domain (14081.7618ms)
+{"scope":"CPU native/render floor rays and static surface sweeps; no browser movement or photoreal acceptance","rayChecks":40,"maxRayErrorM":8.661021411171532e-7,"wallChecks":3,"cliff":{"state":"ready","reason":"","inputTriangles":580589,"renderTriangles":799066,"removedNativeTriangles":102818,"numericalCoverageAreaToleranceM2":1e-12,"finalCoverageAreaToleranceM2":1e-12,"footprintSha256":"f55b2375218d869b2d71cfbbd9bffdf8bb00796b46d703e33f1f0d2a16cd1449","version":54,"variant":"legacy","querySnapDistanceM":0,"stitch":{"inputTriangles":102818,"boundaryEdges":51676,"subdivisions":103352,"outputTriangles":206685,"zeroAreaTriangles":19,"queries":155028,"missingQueries":0,"maximumHeightDeltaM":30.896174611375358,"signCrossings":23248},"kind":"inferred-poisson-surface","watertight":false,"centimetreAccuracyEstablished":false}}
+✔ actual clipped LiDAR study shares native floor, water map and static mesh collision with source intact (71274.1063ms)
+Inferred cliff unavailable; native surface retained Error: Cliff asset hash differs from the clipped study
+    at file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/src/world/niijima-point-cliff.ts:85:134
+    at async TestContext.<anonymous> (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/tests/niijima-point-cliff.test.ts:56:6)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ failed load and disposed pending load leave native topology unchanged (6.6471ms)
+✔ replacement selection keeps beach, flat plateau and ROI guards intact (0.6095ms)
+{
+  triangles: 132090,
+  vertices: 66047,
+  sections: 595,
+  minimumToeShore: 33.61926209016359,
+  maximumHeight: 122.65770467195794
+} {
+  signedVolume: 2238057.695591466,
+  minDoubleArea: 0.008350995954377546,
+  bounds: Box3 {
+    isBox3: true,
+    min: Vector3 { x: 5527.75390625, y: -4.275870323181152, z: -1080 },
+    max: Vector3 { x: 5866.791015625, y: 122.65770721435547, z: -500 }
+  }
+}
+✔ indexed scarp is finite, closed, connected, nondegenerate and bounded (1413.1565ms)
+✔ source is unchanged and dry beach corridor has no volume intersection (1896.2974ms)
+✔ transported rings have no local inversions or nonadjacent station folds (7246.5219ms)
+✔ both terminal rings embed under support and source shoreline corridor is invariant (854.7804ms)
+✔ scarp defaults off and leaves source elevations and low strand invariant (157.8752ms)
+✔ one continuous face steepens inland slope and stays within bounded displacement (200.4917ms)
+✔ Secret walking and seaward boat corridor remain unchanged; face shares indexed ground surface (9.2926ms)
+✔ HTTP-successful high-resolution NA pixels use valid coarse land instead of inventing sea (482.6832ms)
+✔ ocean grid covers the horizon and allocates metre-scale edges to the surf (1.8468ms)
+✔ a displaced crest 80m away has lower interpolation error than the old radial grid (5.1897ms)
+photo coast actual scan CPU diagnostics {"instances":83,"triangles":1493923,"draws":5,"roles":{"scarp":50,"shelf":23,"talus":10},"eligible":532,"rejectedSupport":4,"rejectedStrand":61,"rejectedOverlap":15,"rejectedBudget":369,"bounds":{"min":[-205.22605958774852,2.7806530316083826,-180.6996712721119],"max":[166.32263808739793,35.45522297428248,34.298041987245576]},"priorityInstances":65,"families":{"broad-shelf":28,"raised-shelf":11,"joint-body":34,"talus":10},"facingSupportArea":657.4108595611287,"facingPatchArea":263.4090008752699,"facingCoverageEstimate":0.4006763761875112,"sourceSpans":[{"id":"coast-rocks-01-2k.glb","size":{"x":8,"y":0.4421350359916687,"z":5.713078498840332}},{"id":"coast-rocks-03-2k.glb","size":{"x":5.9772562980651855,"y":0.9051411151885986,"z":8}},{"id":"boulder-01-2k.glb","size":{"x":1.3893554210662842,"y":1.0964250564575195,"z":2}},{"id":"namaqualand-boulder-02-2k.glb","size":{"x":2,"y":0.6953679919242859,"z":0.9738326072692871}},{"id":"namaqualand-boulder-03-2k.glb","size":{"x":1.5715317726135254,"y":0.9618098735809326,"z":2}}],"prioritySpanRange":[1.786165164454413,9.982534512407737]}
+three-view exposed scan surface estimates [ 427.5970971653992, 506.2939164641989, 438.78192628031655 ]
+✔ actual bundled scans form bounded terrain-fixed patches without mutating borrowed resources (2716.0256ms)
+✔ empty, flat, nonfinite, malformed and zero-budget cases remain empty (7089.263ms)
+✔ rigid all-angle instances have independently read-back support and clear strand (3272.0272ms)
+✔ highest projected floor matches independent downward raycasting across overhang layers and both windings (105.1308ms)
+✔ union coverage includes adjacent mesh faces and quarter metre triangles at grid boundaries (1.182ms)
+✔ covered corners do not prove coverage across a hole or a diagonal slit (0.8897ms)
+✔ repeated overlapping faces cannot fill a missing union region (1.0651ms)
+✔ snapshot and dispose preserve borrowed geometry while invalid inputs fail conservatively (1.2256ms)
+✔ explicit resource budgets conservatively reject build and coverage work (0.8449ms)
+✔ explicit square metre budget keeps small representable holes above the budget and reports approximation below it (1.7889ms)
+✔ a thin diagonal slit with covered corners exceeds the total-area budget even at native world offsets (0.5485ms)
+✔ nearest radius bridges only a requested micrometre edge gap and leaves strict queries unchanged (3.2125ms)
+✔ thin steep triangles return convex original heights without plane extrapolation (0.3933ms)
+✔ translated bucket boundary searches adjacent buckets and snapshots geometry and origin (0.3133ms)
+✔ nearest chooses minimum distance before height and highest layer only for identical projected points (0.4413ms)
+✔ nearest invalid radius, cell or operation exhaustion and disposed surfaces fail conservatively (0.3208ms)
+✔ coverage exposes owned world residual polygons including holes accepted by the explicit area budget (1.6324ms)
+✔ incomplete coverage query budgets and invalid input provide no fabricated residual proof (0.4454ms)
+✔ clips partial coverage and retains interpolated local Y and float attributes (6.0138ms)
+✔ crosses native diagonal without overlap and keeps elevated and lowered layers (1.2962ms)
+✔ footprint holes remain uncovered (0.6754ms)
+✔ vertical wall clipping preserves 3D area including native shared diagonal (1.3104ms)
+✔ large translation keeps original cloud local coordinates and overhang Y (0.6567ms)
+✔ rejects invalid data and fails on every bounded budget (1.8713ms)
+✔ different origin translations align geometry without changing source coordinates (0.7885ms)
+✔ vertical wall partially clips on an exterior grid border (1.6882ms)
+✔ minimum 3D triangle area is explicit and quantified; strict default retains tiny faces (34.3539ms)
+✔ whole union passthrough avoids native diagonal fragmentation (23.8519ms)
+✔ union passthrough leaves real holes clipped; tiny gaps require explicit allowance (1.7643ms)
+✔ combined receiver tables preserve texel addresses and input bytes (7.2138ms)
+✔ packed shader retains geometry traversal with two data samplers (0.4071ms)
+✔ GPU dynamic texture is borrowed across CPU fallback and bridge disposal (14.1386ms)
+✔ map gamma metadata preserves raw normals and independent native UV/wrap/flip (2.8844ms)
+✔ unsupported UV and object normal encodings fail explicitly (1.1302ms)
+✔ scalar wetness and mixed extra material updates preserve static geometry and atlas epochs (97.0342ms)
+✔ triangle basis handles nonuniform reflected transforms without derivatives (0.6628ms)
+✔ texture epoch refresh is independent of geometry; GPU budget fails without dropping maps (11.515ms)
+✔ native measured chunks stay on the height-field path without exhausting opaque geometry capacity (249.1172ms)
+✔ an opaque plant remains excluded by role after renaming; ordinary opaque meshes remain eligible (0.8596ms)
+✔ little-endian indexed relative mesh has exact coordinates, bounds, normals and a world-space ray hit (6.1075ms)
+✔ returned arrays and origin are independent snapshots of borrowed inputs (0.4914ms)
+✔ rejects malformed counts, byte layout, length, alignment and allocation limits before decoding (1.239ms)
+✔ rejects nonfinite coordinates, invalid origins and out-of-range uint32 indices without repairing bytes (0.6866ms)
+✔ finite wire coordinates producing overflowing derived normals are rejected (0.4872ms)
+✔ stationary reflection retains the existing cadence, moving view refreshes immediately (2.9163ms)
+✔ interface, FOV, aspect and resized target invalidate reflection without waiting three frames (0.4695ms)
+✔ reflection removes the solar disk before downsampling without changing the photographed sky (85.9046ms)
+✔ resize publishes matching colour and depth dimensions before the next reflection render (2.6785ms)
+✔ an unchanged size does not invalidate attachments or upload their depth again (0.5749ms)
+✔ a previously stale depth allocation is invalidated even when colour size already matches (0.6408ms)
+✔ Snell path retains normal incidence and limits grazing underwater absorption distance (1.7328ms)
+✔ flat ray path scales with depth and rejects unphysical arguments (0.498ms)
+✔ tilted floating rock embeds actual vertices without altering scan geometry (5.2507ms)
+✔ already seated and invalid support preserve transforms (0.5862ms)
+✔ insufficient inset is bounded and reported, not a false success (0.4158ms)
+✔ dry solver cells do not wet sand even with high offshore fallback (2.5847ms)
+✔ film drains before damp sand dries, independent of frame partition (2.0989ms)
+✔ invalid time rejected; optical state bounded during long intervals (0.5983ms)
+✔ pale sand retains ordered grain contrast with bounded diffuse reflectance and darker wet response (2.5628ms)
+✔ direct strand and refracted bed share the same reflectance function while normals/UV and cliff classification stay intact (4.5436ms)
+✔ actual shelf LODs preserve every seated crop edge without new exposed chords (983.1757ms)
+✔ meshoptimizer levels share source attributes and approach their triangle ratios (125.4644ms)
+✔ per-instance selection follows projected size with hysteresis; source stays the collider (91.4941ms)
+✔ two frames precede capture; metadata contains actual dimensions and original state restores (3.6763ms)
+✔ render diagnostics are sampled at the photographed pose before the player state is restored (2.2069ms)
+✔ reference eye height reaches the host while exact previous capture state restores (0.826ms)
+✔ a host that ignores requested eye height is rejected instead of producing false aligned evidence (1.2501ms)
+✔ restores after null (2.4594ms)
+✔ restores after error (0.844ms)
+✔ restores after hidden (0.4842ms)
+✔ restores after dispose (0.3274ms)
+✔ restores after resize (0.5701ms)
+✔ restores after timeout (32.2169ms)
+✔ one operation per host; bounded matrix and callback failure restore (43.6962ms)
+✔ restore failure still releases owned lock (0.5367ms)
+✔ timed out PNG stays exclusive until its pending work settles (100.2019ms)
+✔ actual open shelf cut rims are buried; impossible cliff sites retain their transform and fail (3900.8903ms)
+✔ invalid supports and closed geometry never produce a false supported result (6.2191ms)
+✔ stored water depth is reinitialized when its bathymetry contract changes (5.8914ms)
+✔ incident closure preserves rest, zero dry momentum and the small-amplitude limit (1.5696ms)
+✔ nonlinear crest and trough have unequal velocities and crest characteristics travel faster (0.2687ms)
+✔ weak swell compression stays unbroken, while shallower sections of the same crest can break (0.284ms)
+✔ breaker onset is continuous, bounded and quiet in dry or deep water (2.6738ms)
+✔ nonlinear incident packet evolves conservatively without negative depth (9.2483ms)
+✔ breaking dissipates only compressing depth-limited fronts and respects the diffusion CFL bound (0.5688ms)
+✔ symmetric breaking stress lowers kinetic energy while retaining water and net momentum (0.6902ms)
+✔ actual low/negative crest and protected/land/deep controls never infer loss (1.6706ms)
+✔ energy is bounded by both actually discarded energy and physical envelope excess (0.4843ms)
+✔ depth-envelope onset is continuous and increasing crest cannot decrease loss (2.3376ms)
+✔ uncapped crest includes swell exactly once and exposure before the physical criterion (0.3632ms)
+✖ expanded probe preserves legacy output and named metric profile lane decoding (93.5109ms)
+✔ expanded draw failure restores all renderer state and disposes owned materials (128.9468ms)
+✔ default probe performs only its original 30 by 3 readback (11.3871ms)
+✔ float capability absence skips all GPU work (9.9932ms)
+✔ zero readback from failed shader is rejected and renderer state is restored (32.4504ms)
+✔ positive FFT shoulder gate requires shallow dissipating crest and convex incident front (1.7488ms)
+✔ phase envelope is finite bounded and continuous at shore and energy thresholds (1.5249ms)
+✔ depth-limited broad crests are not rejected for having a small slope at their maximum (0.2509ms)
+✔ one mesh bounded triangle budget shared uniforms invalid camera and idempotent disposal (50.2664ms)
+✔ metric curl turns beyond 180 degrees with a descending overhanging lip (19.7175ms)
+✔ base join, bounds and finite rejection; bilayer is thin along the section normal (1.3478ms)
+✔ shared optics, true curved normals, actual-height contact and complete borrowed bindings (55.8522ms)
+✔ crest anchor tracks instantaneous input phase, excludes the far search boundary (1.9828ms)
+✔ tracked sheet has a closed, consistently wound index boundary and renders outward faces (152.9881ms)
+✔ lip projects forward, falls under gravity and emits one impact at its landing site (1.8586ms)
+✔ dry, stale and invalid births cannot leave hovering sheets or generate impact foam (0.3895ms)
+✔ pool is bounded and reuses slots without repeated impact events (0.4324ms)
+✔ paused and negative time preserve a lip, finite frame partitions agree before contact (1.2047ms)
+✔ live source produces lips first, then landing foam with no extra GPU readback (364.0678ms)
+✔ foam has interior surface samples rather than a card bridging curved water (1.0654ms)
+✔ unbroken waves have wavelength-dependent speed close to finite-depth Airy theory (1.5614ms)
+✔ pressure solve retains mean water level and resolves axial and diagonal Fourier waves (70.9461ms)
+✔ pressure correction vanishes at dry contacts and steep exposed terrain (0.8703ms)
+✔ pressure stages never read the active attachment and dispose both extra targets (4.5222ms)
+✔ a drained shallow cell cannot resurrect its higher FFT wave as an isolated spike (1.4506ms)
+✔ wet runup, offshore waves and the domain edge retain their own free surface (0.6175ms)
+✔ a folded FFT parameter grid cannot overlap the interior SWE heightfield (2.5248ms)
+✔ grid transition only changes coordinates where SWE entirely owns height (11.3356ms)
+✔ incident forcing cannot create water directly above dry sand or cliffs (1.4653ms)
+✔ open deep water retains its input while shallow and sheltered boundaries match the wave envelope (0.3023ms)
+✔ shore envelope stays finite and continuous to the dry shoreline (2.6224ms)
+✔ RK2 retains its original state without sampling the active draw attachment (7.4211ms)
+✔ higher-order candidate keeps float-target fallback and resets its domain on exit (1.4075ms)
+✔ MUSCL preserves a small 24m wave through 96m propagation on the actual 1.5m grid (236.0874ms)
+✔ dry-bank lake stays exactly at rest with higher-order free-surface reconstruction (11.8843ms)
+✔ higher-order wet-dry dam break stays positive and conservative without post-step clipping (131.8704ms)
+✔ resolved shading slope shares the same limit on both sides of a wet grid edge (1.5758ms)
+✔ the one-cell support interpolates nodal gradients and retains a steep crest face (0.3288ms)
+✔ lake at rest over nonflat bed including dry emergent bank (1.9901ms)
+✔ periodic nonlinear transport conserves water and flat-bed momentum (1.5089ms)
+✔ wet dry dam break stays positive under CFL without positivity clamp (25.1922ms)
+✔ wet-only world elevation never promotes dry bank into phantom lake water (0.5152ms)
+✔ lake-at-rest rendering stays level through sloping wet dry cells (0.487ms)
+✔ persistent compression accumulates foam with the same coverage across CFL timesteps (1.4261ms)
+✔ without breaking the foam decays in wall time and remains bounded (1.3958ms)
+✔ ballistic birth stays fixed and follows gravity plus wind drag independently of timestep (4.1974ms)
+✔ strict pool budget, expiry and reuse do not overwrite active births (0.783ms)
+✔ zero, negative and nonfinite dt preserve pool exactly; invalid births are rejected (0.647ms)
+✔ land, deep water, sheltered bays, low energy and distant cells have no birth rate (0.3607ms)
+✔ paused updates do not sample; underwater hides the group even while paused (13.6649ms)
+✔ dispose defers render target destruction until async readback settles (43.3936ms)
+✔ SWE-aligned cache preserves a narrow nodal crest when the camera moves (12.7446ms)
+✔ a shallow advancing bore keeps its elevation until the actual sand contact (2.3085ms)
+✔ runup and retreat traverse the contact without forcing every front back to mean sea level (1.8718ms)
+✔ missing wet support, solver edges and deep-water handoff stay bounded and continuous (1.3418ms)
+✔ coarse wet vertices cannot paint a locally dry displaced sand contact (0.3003ms)
+✔ pointwise contact preserves a shallow positive bore and respects mesh depth (1.0024ms)
+✔ an emergent wet film does not differentiate through dry mean-sea-level fallback (0.2865ms)
+✔ wet-domain stencil preserves steep valid bores and ocean waves (1.0901ms)
+✔ deep plunging impacts bloom upward before collapsing and expire (2.8879ms)
+✔ spreading remnants lose aeration per unit area and expire without a new source (0.4379ms)
+✔ fixed volume pool fills, rejects invalid input, pauses and recycles (1.8385ms)
+✔ energy controls real thickness, collapse spreads and sampled wave slope changes flow (0.4615ms)
+✔ dry land, deep, sheltered, missing and invalid cache cull volume (0.4547ms)
+✔ geometry occupies all axes, has closed edges and fixed real normals (9.723ms)
+✔ shared whitewater vertices have continuous normals instead of faceted rock lighting (20.5464ms)
+✔ volume material uses depth, has fixed attributes, hides underwater and disposes once (5.1935ms)
+✔ volume opt-in adds one flow layer to the same readback; legacy/off remain selectable (761.7998ms)
+✔ signed flow encoding preserves rest, onshore and offshore direction within quantization (0.7413ms)
+✔ impact rollers are short-lived, submerge on shallow sand and follow reversed current (1.0636ms)
+✔ a corrupt flow layer clears the previous valid cache instead of emitting from it (8.8585ms)
+✔ solved swash reverses into backwash, retains a thin wake and expires (1.1854ms)
+✔ flow and FFT fallback travel agree across frame partitions and cull at the new dry position (0.7904ms)
+✔ birth gates require current compression, wet shallow water, exposed gradient and finite samples (1.7628ms)
+✔ fixed pool preserves births, rejects invalid values and expires for full elapsed dt (2.0854ms)
+✔ analytic advection and spreading are independent of timestep and input mutation (51.5164ms)
+✔ fragments follow cached surface, thin at wet strand, and cull land/deep/missing/invalid samples (1.6779ms)
+✔ underwater visibility and idempotent disposal retain fixed budget and forbid rebirth (84.002ms)
+✔ ordinary foam follows offshore and alongshore flow, and cache loss does not teleport it (0.64ms)
+✔ signed-flow transport agrees across frame partitions (0.7046ms)
+✔ optional integration shares one FFT sample request and produces persistent foam (419.433ms)
+✔ short wind waves survive where the metre-scale storm swell is depth-limited (1.4076ms)
+✔ wind detail has continuous bounded wet-contact and shelter attenuation (3.8882ms)
+{"variant":0,"tested":1,"changed":1,"shrunk":0,"lifted":1,"invalid":0,"unresolved":0,"maxLift":0.0854015053051107,"maxBurialBefore":0.06915612658952774,"maxBurialAfter":0,"minWidthFactor":1,"maxRootGap":0.0704015053051107,"samples":[43],"exampleSites":[]}
+{"variant":1,"tested":1,"changed":0,"shrunk":0,"lifted":0,"invalid":0,"unresolved":0,"maxLift":0,"maxBurialBefore":0,"maxBurialAfter":0,"minWidthFactor":1,"maxRootGap":0,"samples":[48],"exampleSites":[]}
+{"variant":2,"tested":1,"changed":1,"shrunk":0,"lifted":1,"invalid":0,"unresolved":0,"maxLift":0.058887590654501665,"maxBurialBefore":0.043887590654501096,"maxBurialAfter":0,"minWidthFactor":1,"maxRootGap":0.043887590654501665,"samples":[48],"exampleSites":[]}
+✔ wide native low shrub improves uphill burial within root/shrink bounds without population changes (44.6844ms)
+✔ invalid terrain leaves existing matrix intact and returns finite diagnostics (0.7941ms)
+✔ all three real shrub GLB near variants support without geometry mutation (36.8693ms)
+{"skinnedBody":{"available":true,"reason":"","triangles":36700,"vertices":19372,"nodes":16055,"bytes":10457648,"rebuilds":1,"refits":22,"skipped":0,"timeMs":61.17150000000038,"excludedSurfaces":0,"maxDepth":14},"maxRefitMs":295.8186999999998,"oracleHits":42}
+✔ unchanged posed buffers skip refit while changed pose and replaced attributes remain authoritative (21.8219ms)
+✔ posed refit preserves allocations, nearest double-sided hits, bind modes and negative/nonuniform transforms (9.6778ms)
+✔ unsupported morph, alpha, budgets, visibility and borrowed ownership (2.4212ms)
+✔ actual FirstPersonBody seven actions, three poses each agree with independent source oracle and packed BVH (5599.9962ms)
+✔ decoded normalized/interleaved inputs agree with Three and in-place version changes require rebuild (5.4454ms)
+{"movingPoseMs":{"idle":{"median":24.987699999999677,"p95":91.34799999999996,"max":131.48919999999998},"walk":{"median":26.083999999999833,"p95":98.40099999999984,"max":144.0617000000002},"run":{"median":29.675599999998667,"p95":77.36120000000119,"max":84.0067999999992},"swim":{"median":23.379699999999502,"p95":65.10460000000057,"max":125.39120000000003},"dive":{"median":24.065200000000914,"p95":51.28050000000076,"max":57.414700000001176},"helm":{"median":28.172500000000582,"p95":49.66870000000017,"max":89.83719999999994},"climb":{"median":27.279500000000553,"p95":42.63799999999901,"max":74.98240000000078}},"vertices":19372,"triangles":36700}
+✔ actual-body moving pose benchmark (17641.5281ms)
+✔ relative wind cancels matching motion and distinguishes headwind and tailwind (3.14ms)
+✔ boat idle, acceleration, exit and underwater cut (0.6503ms)
+✔ continuous air cut and quiet sheltered bay, wave readiness gates surf (0.4894ms)
+✔ propeller demand changes engine sound independently from coasting hull speed (1.9168ms)
+✔ footfalls cross gait boundaries and pause, large dt, pose reset cannot burst (0.4583ms)
+✔ seeded birds are sparse, habitat gated, timestamp independent and paused clocks freeze (34.0299ms)
+✔ invalid inputs remain finite and amplitudes bounded; invalid dt produces no events (0.5737ms)
+✔ incoming wave produces audible wash attack then release without false reacquisition impact (0.9274ms)
+✔ five-Hz height samples produce the same surf envelope at 30/60/120 UI fps (2.6581ms)
+✔ cache gaps, rewind and reacquisition do not create surf impact (0.4537ms)
+✔ reused caller wave objects cannot mutate the previous audio sample (0.2421ms)
+✔ after the incoming front stops, held sampled wash releases back to baseline (1.1396ms)
+✔ same seed gives the same finite wave field with no DC height offset (25.8822ms)
+✔ the evolved frequency field is Hermitian, so spatial height is real at every time (4.2824ms)
+✔ Nyquist axes cannot inject an unpaired imaginary horizontal displacement (2.1736ms)
+✔ wave energy aligns with the wind while retaining crosswind variation (1.0275ms)
+✔ spectral energy is normalized to the requested statistical surface height (1.5152ms)
+✔ invalid transform sizes and physical parameters are rejected (0.6165ms)
+✔ quiet water has no white coverage and dense foam can close its holes (1.56ms)
+✔ advected concentration erodes coverage continuously and monotonically (3.2468ms)
+✔ east-positive heading agrees with the FPS controller coordinate system (2.4983ms)
+✔ pickup is proximity gated and launch requires usable water (0.6016ms)
+✔ flat water and static slope cannot power surfing (10.9675ms)
+✔ a stopped body cannot turn stored board speed into motion of a static wave (0.6366ms)
+✔ moving wave opens stand window and accelerates, readiness loss is recoverable (10.0565ms)
+✔ sustained hard turning loses balance, gentle turning remains viable (32.8934ms)
+✔ shallow water ends ride without displacement or teleport (3.2774ms)
+✔ walking a wiped-out board onto the beach restores carrying (0.8414ms)
+✔ invalid numeric inputs and oversized frames stay finite and bounded (1.2677ms)
+✔ constant wave integration is consistent at 30/60/120 fps (4.3573ms)
+✔ five-Hz wave cache drives the interval between samples, then expires when the crest stops (7.2081ms)
+✔ the front face drives a ride and the back of the swell slows it (1.1999ms)
+✔ angling down the face gains more than trimming flat across it (1.2296ms)
+✔ joined presentation skin preserves every terrain mesh, ground sample, and arrival location (31025.172ms)
+✔ GSI land snapshot contains all three real islands and a high-resolution Tomari patch (1702.7147ms)
+✔ the sandy Tomari spawn has camera height and a continuous walk into shallow water (0.4045ms)
+✔ arrival points are water and every island has a dry coastal landing (0.2939ms)
+✔ Tomari detail joins the main DEM continuously at all raster edges (0.2336ms)
+✔ depth maps store metre-valued half floats and preserve GSI cell order (1414.6659ms)
+✔ terrain triangle budget and map outlines are bounded and useful (1.0353ms)
+✔ refined beach and cliff mesh use the exact collision triangles, with joined patch edges (2.3888ms)
+✔ bilinear GPU bathymetry agrees with the visible beach strand between texel centres (1.4501ms)
+✔ travel-island movement samples match visible coarse mesh surfaces (0.9894ms)
+✔ non-heightfield cliff volumes have conservative swept-body collision without obstructing the sandy exit (23.9267ms)
+✔ actual GSI voyages clear both bathymetry and the new rock volumes (5561.0274ms)
+✔ open ground places the lens behind and above the eye, aiming along the view (1.9811ms)
+✔ a hill behind the player pulls the lens in instead of burying it (0.4448ms)
+✔ the lens stays on the player side of the water surface (0.398ms)
+✔ toggling eases out from the eye and first person leaves the camera alone (14.6178ms)
+✔ saves from before the view key keep their bindings and get a free key (1.854ms)
+✔ an overhanging solid between eye and lens pulls the lens in front of it (3.1568ms)
+✔ the vessel box blocks a lens line from outside but not from its own deck (0.6592ms)
+✔ solid occlusion uses the water-corrected lens line (0.6953ms)
+✔ a shallow dive keeps feasible margins on both sides of the lens (0.3916ms)
+✔ point-guided native canopies retain source proportions and root contact (1394.8479ms)
+✔ invalid or underwater roots cannot create survey trees (1113.2844ms)
+✔ physical proxies share the actual native near root even when far wood is displaced (910.4597ms)
+✔ cliff plants are deterministic and rooted to exposed 3D faces with world-space spacing (301.3994ms)
+✔ normal east survey shares render, feet and water depth and keeps every island route reachable (25636.5148ms)
+✔ mosaicked east cliff recovers independent native TIFF heights and preserves wet ground (5810.7952ms)
+✔ east render triangles agree with foot height and join old outer triangles (4658.5263ms)
+✔ photographic strand stays sandy while the east dry headland has a rocky toe (0.5305ms)
+✔ reference arc interpolates its controls with continuous slopes and no segment overshoot (3.5765ms)
+✔ actual refined heightfield follows the supported reference arc without the previous western clipped ledge (7270.6455ms)
+✔ water used for navigation and land outside the low strand retain the old triangle samples (5782.4186ms)
+✔ measured dry-foot correction reaches actual world render, bathymetry and routes (25304.7919ms)
+✔ Tokyo derivative has intact payload and declares reprojection/precision limits (3.5585ms)
+✔ patch boundary coincides with both existing terrain lattices (0.3273ms)
+✔ render triangle centroids and sampled footing agree, including chunk edges (2.3305ms)
+✔ outer seam retains old rendered heights at common vertices (2.1814ms)
+✔ western cliff changes, berth water and spawn remain outside land reconstruction (0.2595ms)
+✔ measured dry rock cannot be suppressed into the old authored beach (0.9375ms)
+✔ dispose does not destroy borrowed terrain material (1683.5199ms)
+✔ survey exclusion omits whole legacy rock cells, keeping every visible remnant collidable (432.6293ms)
+✔ perspective depth converts to metric ray length including wide field edges (1.2841ms)
+✔ distant background cannot retain the blue transmission of an 85m visibility cap (0.3045ms)
+✔ Beer-Lambert stays bounded, continuous and compositional through surface crossing (0.3502ms)
+✔ QA depth probe has bounded finite UV inputs (0.8261ms)
+✔ sun and eye extinction integral matches independent quadrature including surface crossings (161.5021ms)
+✔ a far miss converges continuously and preserves interval additivity (0.4613ms)
+✔ zero optical slope, transparent water and zero-length paths stay finite (0.7556ms)
+✔ propagation sign matches positive temporal phase and the actual asymmetric spectrum (5.5263ms)
+✔ flat shelves retain travelling incident flux and trough velocity reverses (27.3595ms)
+✔ refraction retains tangential motion and approaches the shore normal as water shallows (3.2005ms)
+✔ wave shell reads a separate base-water snapshot and preserves base depth (8.2936ms)
+✔ foreground draw failure restores visibility and renderer clear state (2.0153ms)
+✔ shared world channel survives twelve overlapping masks while independent pores fill it (1.6277ms)
+✔ production pores use world metres without seed phase and sunlight uses incidence over pi (15.7279ms)
+✔ 36 spray events per second retain that expectation at 20 and 60 fps (4.0227ms)
+✔ observed .0392 instantaneous source survives rate integration without residual foam (0.5039ms)
+✔ short low-source pulses create bounded volumes and spray; zero source cannot rebirth (1987.1082ms)
+✔ landed water replenishes one finite froth volume, then spreads, loses height and disappears (4.6836ms)
+✔ later material rows feed visible froth after the leading tip has landed (278.7633ms)
+✔ invalid or absent landed water cannot create or refill froth (0.5789ms)
+✔ impact foam contains small separate 3D flocs within the previous triangle budget (7.7571ms)
+{"glancingRegression":{"blocked":true,"fraction":0.2342791426492451,"position":{"x":-0.2812576685880604,"y":0,"z":0.07028374279477352},"normal":{"x":-1,"y":-1.2643108910078437e-14,"z":-4.4448429761994505e-15},"iterations":17}}
+{"sharedCollision":{"instances":130,"logicalTriangles":2340000,"storedTriangles":18000,"uniqueBVHs":1,"buildMs":825.6,"heapDeltaMiB":20.73,"rssDeltaMiB":32.27}}
+{"bundledBoulderCollision":{"source":"boulder-01-2k.glb","instances":130,"storedTriangles":18000,"logicalTriangles":2340000,"buildMs":624,"heapDeltaMiB":23.21,"rssDeltaMiB":27.2}}
+✔ open scanned-like corner surfaces collide but cannot invent an interior in empty space (44.3432ms)
+✔ glancing body sweep never returns an unverified endpoint after conservative iterations exhaust (3.0412ms)
+✔ different closing/tangent ratios cannot turn thin wall penetration into a clear sweep (19.49ms)
+✔ near parallel slides and moving away stay clear while glancing toward thin transformed walls blocks (4.6755ms)
+✔ standing capsule feet touching a large floor can walk freely without a conservative false block (56.7321ms)
+✔ body sweeps stop horizontal, falling and ascending motion at actual solid faces (3.097ms)
+✔ thin rotated meshes retain triangle contact and do not inflate empty AABB corners (1.5609ms)
+✔ support contact distinguishes steps, jumpable rock tops and ceilings (0.9805ms)
+✔ trunk proxy only occupies its cylinder and registry updates/removals are bounded (17.754ms)
+✔ horizontal swim pose clears under an overhang but meets underwater rocks in every direction (0.7384ms)
+✔ ground adapter retains height/navigation and terrain body hooks (0.3696ms)
+✔ new solids enclosing a body resolve locally with a strict displacement bound (0.6939ms)
+✔ shared instances measure radius and support in world metres under rotation, nonuniform and negative scale (1.2209ms)
+✔ geometry revisions and draw ranges retain old snapshots until the final referencing entry is removed (0.9707ms)
+✔ unit primitive BVHs share numeric storage and transformed interior pushes remain bounded (3.3207ms)
+✔ 130 dense actual mesh instances store one 18000-triangle BVH instead of 2.34 million world copies (894.0467ms)
+✔ the bundled photographic boulder keeps all source triangles while sharing across 130 placements (705.6526ms)
+{"denseScanBinding":{"triangles":142400,"initialMs":1003.3,"unchangedMs":0.113}}
+✔ binding selects actual cliffs, fixtures, scans and placements while excluding DEM, foliage and boat (89.4891ms)
+✔ mutable instance count/matrices and parent world transforms replace only changed colliders (7.0911ms)
+✔ stable trunk proxies survive LOD churn and placement/undo changes only physical roots (72.2764ms)
+✔ borrowed resources remain intact and dispose releases only this binding (5.2498ms)
+✔ dense scan BVHs are built once; unchanged sync preserves collider IDs and triangle budget (1183.774ms)
+ℹ tests 681
+ℹ suites 0
+ℹ pass 680
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 112496.157
+
+✖ failing tests:
+
+test at tests\shore-breaker-probe.test.ts:19:1
+✖ expanded probe preserves legacy output and named metric profile lane decoding (93.5109ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /diagnosticSurfaceHeight=surface.x;diagnosticConfidence=weighted.z;diagnosticBlend=blend/. Input:
+
+  'uniform vec2 uOrigin;uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;\n' +
+    '      \n' +
+    '      \n' +
+    '      \n' +
+    '  uniform float uBathyTriangulated;\n' +
+    '  vec4 sampleCoastalGround(sampler2D map,vec2 uv,vec2 resolution){\n' +
+    '    vec2 node=clamp(uv,vec2(0),vec2(1))*(resolution-1.0);\n' +
+    '    vec4 filtered=texture2D(map,(node+.5)/resolution);\n' +
+    "    // Match Niijima's indexed triangle diagonal near the wet contact. A\n" +
+    '    // bilinear saddle can sit above/below the actual flat render triangle.\n' +
+    '    if(uBathyTriangulated<.5||abs(filtered.r)>3.0)return filtered;\n' +
+    '    vec2 base=min(floor(node),max(vec2(0),resolution-2.0)),f=node-base;\n' +
+    '    vec4 a=texture2D(map,(base+.5)/resolution),b=texture2D(map,(base+vec2(1.5,.5))/resolution);\n' +
+    '    vec4 c=texture2D(map,(base+vec2(.5,1.5))/resolution),d=texture2D(map,(base+1.5)/resolution);\n' +
+    '    return f.x+f.y<=1.0?a+(b-a)*f.x+(c-a)*f.y:d+(c-d)*(1.0-f.x)+(b-d)*(1.0-f.y);\n' +
+    '  }\n' +
+    '  float shoreWaveScale(vec2 coast,float swell,float wind){\n' +
+    '    float depth=max(0.0,-coast.x);\n' +
+    '    float transport=pow(clamp(18.0/max(depth,1.0),1.0,8.0),.125);\n' +
+    '    float nominalAmplitude=max(.08,swell*(.10+wind*wind*.013));\n' +
+    '    float breakingCap=min(1.0,depth*.38/nominalAmplitude);\n' +
+    '    return transport*breakingCap*smoothstep(.015,.22,depth)*clamp(coast.y,.08,1.0);\n' +
+    '  }\n' +
+    '  float shoreWindDetailScale(float depth,float exposure,float wind){\n' +
+    '    float rms=.009*pow(max(0.,wind),.92);\n' +
+    '    return min(1.,.38*max(0.,depth)/max(.035,2.*rms))*smoothstep(.015,.22,depth)*clamp(exposure,.08,1.);\n' +
+    '  }\n' +
+    '\n' +
+    '      \n' +
+    '  float shoreBreakerDissipation(float rawFftHeight,vec2 coast,float swell,float wind){\n' +
+    '    float depth=-coast.x;\n' +
+    '    // Existing surf-particle domain and protected-cove boundary. Comparisons\n' +
+    '    // also reject NaN; finite physical parameter bounds reject infinities.\n' +
+    '    if(!(depth>=.2&&depth<=3.8&&coast.y>=.18&&coast.y<=1.0&&\n' +
+    '         rawFftHeight>0.0&&rawFftHeight<1000000.0&&\n' +
+    '         swell>0.0&&swell<=4.0&&wind>=0.0&&wind<=35.0))return 0.0;\n' +
+    '    float transport=pow(clamp(18.0/max(depth,1.0),1.0,8.0),.125);\n' +
+    '    float uncappedScale=transport*smoothstep(.015,.22,depth)*clamp(coast.y,.08,1.0);\n' +
+    '    float uncappedCrest=rawFftHeight*swell*uncappedScale;\n' +
+    '    float heightProxy=2.0*uncappedCrest;\n' +
+    '    float limitingHeight=.73*depth;\n' +
+    '    if(!(heightProxy>limitingHeight))return 0.0;\n' +
+    '    float retained=clamp(shoreWaveScale(coast,swell,wind)/uncappedScale,0.0,1.0);\n' +
+    '    float capLoss=1.0-retained*retained;\n' +
+    '    float thresholdRatio=limitingHeight/heightProxy;\n' +
+    '    float depthExcess=1.0-thresholdRatio*thresholdRatio;\n' +
+    '    // Intersection of energy actually removed by the existing amplitude cap\n' +
+    '    // and energy beyond the depth-height envelope; continuous at onset.\n' +
+    '    return clamp(min(capLoss,depthExcess),0.0,1.0);\n' +
+    '  }\n' +
+    '\n' +
+    '      \n' +
+    'uniform sampler2D uShoreState;\n' +
+    'uniform vec4 uShoreBounds;\n' +
+    'uniform float uShoreReady,uShoreResolution;\n' +
+    '\n' +
+    'float shoreWetSurfaceSlope(float center,float negative,float negativeBed,float positive,float positiveBed,float stepSize){\n' +
+    '  bool wetNegative=negative>negativeBed,wetPositive=positive>positiveBed;\n' +
+    '  if(wetNegative&&wetPositive)return (positive-negative)/(2.*stepSize);\n' +
+    '  if(wetPositive)return (positive-center)/stepSize;\n' +
+    '  if(wetNegative)return (center-negative)/stepSize;\n' +
+    '  return 0.;\n' +
+    '}\n' +
+    'float shoreContactDepth(float meshHeight,float pointHeight,float worldBed){\n' +
+    '  return min(meshHeight,pointHeight)-worldBed;\n' +
+    '}\n' +
+    'float shoreSurfaceBlend(float edge,float bed,float wetWeight){\n' +
+    '  return smoothstep(0.025,0.1,edge)\n' +
+    '    *(1.-smoothstep(8.0,11.0,-bed))\n' +
+    '    *smoothstep(0.00001,0.05,wetWeight);\n' +
+    '}\n' +
+    'float shoreWetSupport(float weight){return smoothstep(0.00001,0.05,weight);}\n' +
+    '\n' +
+    '\n' +
+    'uniform int uBreakerProfileCount;\n' +
+    'uniform vec4 uBreakerProfileCrests[12],uBreakerProfileAxes[12];\n' +
+    'float reconstructedBreakerSurface(vec2 world,float raw){\n' +
+    '  float result=raw;\n' +
+    '  for(int i=0;i<12;i++){\n' +
+    '    if(i>=uBreakerProfileCount)break;\n' +
+    '    vec4 c=uBreakerProfileCrests[i],a=uBreakerProfileAxes[i];vec2 delta=world-c.xy;\n' +
+    '    float q=dot(delta,a.xy),across=dot(delta,vec2(-a.y,a.x)),reach=3.+c.w*3.;\n' +
+    '    if(q<=0.||q>=reach||abs(across)>=a.z)continue;\n' +
+    '    float edge=1.-smoothstep(a.z*.55,a.z,abs(across));\n' +
+    '    float strength=a.w*edge*(1.-smoothstep(reach*.6,reach,q));\n' +
+    '    float width=.55+c.w*.18,target=c.z-c.w*(1.-exp(-q*q/(width*width)));\n' +
+    '    result=min(result,mix(raw,target,strength));\n' +
+    '  }\n' +
+    '  return result;\n' +
+    '}\n' +
+    '\n' +
+    'vec3 shoreNode(vec2 uv){\n' +
+    '  vec2 p=uShoreBounds.xy+uv*uShoreBounds.zw;\n' +
+    '  vec2 buv=clamp((p-uBathyBounds.xy)/uBathyBounds.zw,vec2(0),vec2(1));\n' +
+    '  float bed=sampleCoastalGround(uBathymetry,buv,uBathyResolution).r;\n' +
+    '  vec4 s=texture2D(uShoreState,uv);float wet=step(.01,s.r);return vec3((bed+s.r)*wet,s.a*wet,wet);\n' +
+    '}\n' +
+    'vec2 shoreSolvedSurface(vec2 world,float fallbackHeight,float fallbackFoam){\n' +
+    '  if(uShoreReady<.5)return vec2(fallbackHeight,fallbackFoam);\n' +
+    '  vec2 uv=(world-uShoreBounds.xy)/uShoreBounds.zw;\n' +
+    '  if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);\n' +
+    '  vec2 buv=(world-uBathyBounds.xy)/uBathyBounds.zw;\n' +
+    '  if(any(lessThan(buv,vec2(0)))||any(greaterThan(buv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);\n' +
+    '  vec2 coast=sampleCoastalGround(uBathymetry,buv,uBathyResolution).rg;float bed=coast.r;\n' +
+    '  if(coast.g<.18)return vec2(fallbackHeight,fallbackFoam);\n' +
+    '  vec2 node=clamp(uv*uShoreResolution-.5,vec2(0),vec2(uShoreResolution-1.));\n' +
+    '  vec2 base=min(floor(node),vec2(uShoreResolution-2.)),f=node-base;\n' +
+    '  vec2 a=(base+.5)/uShoreResolution,e=vec2(1./uShoreResolution,0);\n' +
+    '  vec3 weighted=mix(mix(shoreNode(a),shoreNode(a+e),f.x),mix(shoreNode(a+e.yx),shoreNode(a+e+e.yx),f.x),f.y);\n' +
+    '  vec2 wetSurface=weighted.xy/max(weighted.z,.00001);\n' +
+    '  vec2 drySurface=vec2(min(fallbackHeight,bed-.015),0.);\n' +
+    '  vec2 surface=mix(drySurface,wetSurface,shoreWetSupport(weighted.z));\n' +
+    '  float edge=min(min(uv.x,uv.y),min(1.-uv.x,1.-uv.y));\n' +
+    '  // Keep a valid bore elevation through the wet contact. Using local depth\n' +
+    '  // here previously pulled the advancing crest into the sand before contact.\n' +
+    '  float blend=shoreSurfaceBlend(edge,bed,1.);\n' +
+    '  vec2 solved=mix(vec2(fallbackHeight,fallbackFoam),surface,blend);\n' +
+    '  if(uBreakerProfileCount>0&&solved.x>bed+.25)solved.x=max(bed+.015,reconstructedBreakerSurface(world,solved.x));\n' +
+    '  return solved;\n' +
+    '}\n' +
+    '\n' +
+    '      \n' +
+    '\n' +
+    'float incidentBoreVelocity(float depth,float restDepth,float maxSpeed){\n' +
+    '  if(depth<=.01)return 0.;\n' +
+    '  return clamp(2.*(sqrt(9.81*depth)-sqrt(9.81*max(0.,restDepth))),-maxSpeed,maxSpeed);\n' +
+    '}\n' +
+    'float depthLimitedBreaker(float depth,float elevation,float restDepth){\n' +
+    '  float ratio=2.*max(0.,elevation)/max(.2,restDepth);\n' +
+    '  return (1.-smoothstep(3.,7.,restDepth))*smoothstep(.05,.3,depth)*smoothstep(.55,.9,ratio);\n' +
+    '}\n' +
+    'float boreFoamBirth(float depth,float compression,float elevation,float restDepth){\n' +
+    '  return clamp(compression*.7,0.,1.)*depthLimitedBreaker(depth,elevation,restDepth);\n' +
+    '}\n' +
+    'float breakerViscosity(float depth,float compression,float elevation,float restDepth,float dx,float dt){\n' +
+    '  return min(.10*dx*dx/max(dt,.00001),1.2*depth*depth*max(0.,compression)*depthLimitedBreaker(depth,elevation,restDepth));\n' +
+    '}\n' +
+    '\n' +
+    'vec4 whitewaterSolvedFlow(vec2 world){\n' +
+    '  if(uShoreReady<.5)return vec4(0);\n' +
+    '  vec2 uv=(world-uShoreBounds.xy)/uShoreBounds.zw;\n' +
+    '  vec2 buv=(world-uBathyBounds.xy)/uBathyBounds.zw;\n' +
+    '  if(any(lessThan(buv,vec2(0)))||any(greaterThan(buv,vec2(1))))return vec4(0);\n' +
+    '  vec2 coast=sampleCoastalGround(uBathymetry,buv,uBathyResolution).rg;\n' +
+    '  vec2 e=vec2(1./uShoreResolution,0);\n' +
+    '  if(any(lessThan(uv,e.xx))||any(greaterThan(uv,vec2(1)-e.xx))||coast.g<.18)return vec4(0);\n' +
+    '  vec4 c=texture2D(uShoreState,uv),r=texture2D(uShoreState,uv+e),l=texture2D(uShoreState,uv-e);\n' +
+    '  vec4 t=texture2D(uShoreState,uv+e.yx),b=texture2D(uShoreState,uv-e.yx);\n' +
+    '  if(c.r<.01)return vec4(0);\n' +
+    '  vec2 cellSize=uShoreBounds.zw/uShoreResolution;\n' +
+    '  float compression=max(0.,-(r.y/max(r.r,.01)-l.y/max(l.r,.01))/(2.*cellSize.x)\n' +
+    '                         -(t.z/max(t.r,.01)-b.z/max(b.r,.01))/(2.*cellSize.y));\n' +
+    '  float born=boreFoamBirth(c.r,compression,c.r+coast.r,max(0.,-coast.r));\n' +
+    '  float edge=min(min(uv.x,uv.y),min(1.-uv.x,1.-uv.y));\n' +
+    '  float blend=smoothstep(.025,.10,edge)*(1.-smoothstep(8.,11.,-coast.r))*smoothstep(.015,.12,c.r);\n' +
+    '  return vec4(clamp(c.yz/max(c.r,.01),vec2(-12),vec2(12)),born,blend);\n' +
+    '}\n' +
+    '\n' +
+    '      vec2 coast(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;}\n' +
+    '      vec3 raw(vec2 p){return texture2D(uLongWaves,p/384.).xyz+texture2D(uShortWaves,p/24.).xyz;}\n' +
+    '      vec3 displacement(vec2 p){return raw(p)*uSwell*shoreWaveScale(coast(p),uSwell,uWind);}\n' +
+    '      vec2 inverseChop(vec2 world){vec2 p=world;for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;return p;}\n' +
+    '      float fftHeight(vec2 world){return displacement(inverseChop(world)).y;}\n' +
+    '      float baseHeight(vec2 world){return shoreSolvedSurface(world,fftHeight(world),0.).x;}\n' +
+    '      float incidentHeight(vec2 world){return uShoreReady>.5?baseHeight(world):texture2D(uLongWaves,inverseChop(world)/384.).y*uSwell;}\n' +
+    '      \n' +
+    'float diagnosticSurfaceHeight,diagnosticConfidence,diagnosticBlend;vec2 diagnosticSurface(vec2 world,float fallbackHeight,float fallbackFoam){\n' +
+    '  if(uShoreReady<.5)return vec2(fallbackHeight,fallbackFoam);\n' +
+    '  vec2 uv=(world-uShoreBounds.xy)/uShoreBounds.zw;\n' +
+    '  if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);\n' +
+    '  vec2 buv=(world-uBathyBounds.xy)/uBathyBounds.zw;\n' +
+    '  if(any(lessThan(buv,vec2(0)))||any(greaterThan(buv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);\n' +
+    '  vec2 coast=sampleCoastalGround(uBathymetry,buv,uBathyResolution).rg;float bed=coast.r;\n' +
+    '  if(coast.g<.18)return vec2(fallbackHeight,fallbackFoam);\n' +
+    '  vec2 node=clamp(uv*uShoreResolution-.5,vec2(0),vec2(uShoreResolution-1.));\n' +
+    '  vec2 base=min(floor(node),vec2(uShoreResolution-2.)),f=node-base;\n' +
+    '  vec2 a=(base+.5)/uShoreResolution,e=vec2(1./uShoreResolution,0);\n' +
+    '  vec3 weighted=mix(mix(shoreNode(a),shore'... 6374 more characters
+
+      at TestContext.<anonymous> (file:///C:/Users/rambo/Documents/Codex/2026-09-30/https-github-com-dj-thank-sea/work/sea-release/tests/shore-breaker-probe.test.ts:29:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "uniform vec2 uOrigin;uniform sampler2D uLongWaves,uShortWaves,uBathymetry;uniform vec4 uBathyBounds;uniform vec2 uBathyResolution;uniform float uSwell,uWind,uChoppiness;\n      \n      \n      \n  uniform float uBathyTriangulated;\n  vec4 sampleCoastalGround(sampler2D map,vec2 uv,vec2 resolution){\n    vec2 node=clamp(uv,vec2(0),vec2(1))*(resolution-1.0);\n    vec4 filtered=texture2D(map,(node+.5)/resolution);\n    // Match Niijima's indexed triangle diagonal near the wet contact. A\n    // bilinear saddle can sit above/below the actual flat render triangle.\n    if(uBathyTriangulated<.5||abs(filtered.r)>3.0)return filtered;\n    vec2 base=min(floor(node),max(vec2(0),resolution-2.0)),f=node-base;\n    vec4 a=texture2D(map,(base+.5)/resolution),b=texture2D(map,(base+vec2(1.5,.5))/resolution);\n    vec4 c=texture2D(map,(base+vec2(.5,1.5))/resolution),d=texture2D(map,(base+1.5)/resolution);\n    return f.x+f.y<=1.0?a+(b-a)*f.x+(c-a)*f.y:d+(c-d)*(1.0-f.x)+(b-d)*(1.0-f.y);\n  }\n  float shoreWaveScale(vec2 coast,float swell,float wind){\n    float depth=max(0.0,-coast.x);\n    float transport=pow(clamp(18.0/max(depth,1.0),1.0,8.0),.125);\n    float nominalAmplitude=max(.08,swell*(.10+wind*wind*.013));\n    float breakingCap=min(1.0,depth*.38/nominalAmplitude);\n    return transport*breakingCap*smoothstep(.015,.22,depth)*clamp(coast.y,.08,1.0);\n  }\n  float shoreWindDetailScale(float depth,float exposure,float wind){\n    float rms=.009*pow(max(0.,wind),.92);\n    return min(1.,.38*max(0.,depth)/max(.035,2.*rms))*smoothstep(.015,.22,depth)*clamp(exposure,.08,1.);\n  }\n\n      \n  float shoreBreakerDissipation(float rawFftHeight,vec2 coast,float swell,float wind){\n    float depth=-coast.x;\n    // Existing surf-particle domain and protected-cove boundary. Comparisons\n    // also reject NaN; finite physical parameter bounds reject infinities.\n    if(!(depth>=.2&&depth<=3.8&&coast.y>=.18&&coast.y<=1.0&&\n         rawFftHeight>0.0&&rawFftHeight<1000000.0&&\n         swell>0.0&&swell<=4.0&&wind>=0.0&&wind<=35.0))return 0.0;\n    float transport=pow(clamp(18.0/max(depth,1.0),1.0,8.0),.125);\n    float uncappedScale=transport*smoothstep(.015,.22,depth)*clamp(coast.y,.08,1.0);\n    float uncappedCrest=rawFftHeight*swell*uncappedScale;\n    float heightProxy=2.0*uncappedCrest;\n    float limitingHeight=.73*depth;\n    if(!(heightProxy>limitingHeight))return 0.0;\n    float retained=clamp(shoreWaveScale(coast,swell,wind)/uncappedScale,0.0,1.0);\n    float capLoss=1.0-retained*retained;\n    float thresholdRatio=limitingHeight/heightProxy;\n    float depthExcess=1.0-thresholdRatio*thresholdRatio;\n    // Intersection of energy actually removed by the existing amplitude cap\n    // and energy beyond the depth-height envelope; continuous at onset.\n    return clamp(min(capLoss,depthExcess),0.0,1.0);\n  }\n\n      \nuniform sampler2D uShoreState;\nuniform vec4 uShoreBounds;\nuniform float uShoreReady,uShoreResolution;\n\nfloat shoreWetSurfaceSlope(float center,float negative,float negativeBed,float positive,float positiveBed,float stepSize){\n  bool wetNegative=negative>negativeBed,wetPositive=positive>positiveBed;\n  if(wetNegative&&wetPositive)return (positive-negative)/(2.*stepSize);\n  if(wetPositive)return (positive-center)/stepSize;\n  if(wetNegative)return (center-negative)/stepSize;\n  return 0.;\n}\nfloat shoreContactDepth(float meshHeight,float pointHeight,float worldBed){\n  return min(meshHeight,pointHeight)-worldBed;\n}\nfloat shoreSurfaceBlend(float edge,float bed,float wetWeight){\n  return smoothstep(0.025,0.1,edge)\n    *(1.-smoothstep(8.0,11.0,-bed))\n    *smoothstep(0.00001,0.05,wetWeight);\n}\nfloat shoreWetSupport(float weight){return smoothstep(0.00001,0.05,weight);}\n\n\nuniform int uBreakerProfileCount;\nuniform vec4 uBreakerProfileCrests[12],uBreakerProfileAxes[12];\nfloat reconstructedBreakerSurface(vec2 world,float raw){\n  float result=raw;\n  for(int i=0;i<12;i++){\n    if(i>=uBreakerProfileCount)break;\n    vec4 c=uBreakerProfileCrests[i],a=uBreakerProfileAxes[i];vec2 delta=world-c.xy;\n    float q=dot(delta,a.xy),across=dot(delta,vec2(-a.y,a.x)),reach=3.+c.w*3.;\n    if(q<=0.||q>=reach||abs(across)>=a.z)continue;\n    float edge=1.-smoothstep(a.z*.55,a.z,abs(across));\n    float strength=a.w*edge*(1.-smoothstep(reach*.6,reach,q));\n    float width=.55+c.w*.18,target=c.z-c.w*(1.-exp(-q*q/(width*width)));\n    result=min(result,mix(raw,target,strength));\n  }\n  return result;\n}\n\nvec3 shoreNode(vec2 uv){\n  vec2 p=uShoreBounds.xy+uv*uShoreBounds.zw;\n  vec2 buv=clamp((p-uBathyBounds.xy)/uBathyBounds.zw,vec2(0),vec2(1));\n  float bed=sampleCoastalGround(uBathymetry,buv,uBathyResolution).r;\n  vec4 s=texture2D(uShoreState,uv);float wet=step(.01,s.r);return vec3((bed+s.r)*wet,s.a*wet,wet);\n}\nvec2 shoreSolvedSurface(vec2 world,float fallbackHeight,float fallbackFoam){\n  if(uShoreReady<.5)return vec2(fallbackHeight,fallbackFoam);\n  vec2 uv=(world-uShoreBounds.xy)/uShoreBounds.zw;\n  if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);\n  vec2 buv=(world-uBathyBounds.xy)/uBathyBounds.zw;\n  if(any(lessThan(buv,vec2(0)))||any(greaterThan(buv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);\n  vec2 coast=sampleCoastalGround(uBathymetry,buv,uBathyResolution).rg;float bed=coast.r;\n  if(coast.g<.18)return vec2(fallbackHeight,fallbackFoam);\n  vec2 node=clamp(uv*uShoreResolution-.5,vec2(0),vec2(uShoreResolution-1.));\n  vec2 base=min(floor(node),vec2(uShoreResolution-2.)),f=node-base;\n  vec2 a=(base+.5)/uShoreResolution,e=vec2(1./uShoreResolution,0);\n  vec3 weighted=mix(mix(shoreNode(a),shoreNode(a+e),f.x),mix(shoreNode(a+e.yx),shoreNode(a+e+e.yx),f.x),f.y);\n  vec2 wetSurface=weighted.xy/max(weighted.z,.00001);\n  vec2 drySurface=vec2(min(fallbackHeight,bed-.015),0.);\n  vec2 surface=mix(drySurface,wetSurface,shoreWetSupport(weighted.z));\n  float edge=min(min(uv.x,uv.y),min(1.-uv.x,1.-uv.y));\n  // Keep a valid bore elevation through the wet contact. Using local depth\n  // here previously pulled the advancing crest into the sand before contact.\n  float blend=shoreSurfaceBlend(edge,bed,1.);\n  vec2 solved=mix(vec2(fallbackHeight,fallbackFoam),surface,blend);\n  if(uBreakerProfileCount>0&&solved.x>bed+.25)solved.x=max(bed+.015,reconstructedBreakerSurface(world,solved.x));\n  return solved;\n}\n\n      \n\nfloat incidentBoreVelocity(float depth,float restDepth,float maxSpeed){\n  if(depth<=.01)return 0.;\n  return clamp(2.*(sqrt(9.81*depth)-sqrt(9.81*max(0.,restDepth))),-maxSpeed,maxSpeed);\n}\nfloat depthLimitedBreaker(float depth,float elevation,float restDepth){\n  float ratio=2.*max(0.,elevation)/max(.2,restDepth);\n  return (1.-smoothstep(3.,7.,restDepth))*smoothstep(.05,.3,depth)*smoothstep(.55,.9,ratio);\n}\nfloat boreFoamBirth(float depth,float compression,float elevation,float restDepth){\n  return clamp(compression*.7,0.,1.)*depthLimitedBreaker(depth,elevation,restDepth);\n}\nfloat breakerViscosity(float depth,float compression,float elevation,float restDepth,float dx,float dt){\n  return min(.10*dx*dx/max(dt,.00001),1.2*depth*depth*max(0.,compression)*depthLimitedBreaker(depth,elevation,restDepth));\n}\n\nvec4 whitewaterSolvedFlow(vec2 world){\n  if(uShoreReady<.5)return vec4(0);\n  vec2 uv=(world-uShoreBounds.xy)/uShoreBounds.zw;\n  vec2 buv=(world-uBathyBounds.xy)/uBathyBounds.zw;\n  if(any(lessThan(buv,vec2(0)))||any(greaterThan(buv,vec2(1))))return vec4(0);\n  vec2 coast=sampleCoastalGround(uBathymetry,buv,uBathyResolution).rg;\n  vec2 e=vec2(1./uShoreResolution,0);\n  if(any(lessThan(uv,e.xx))||any(greaterThan(uv,vec2(1)-e.xx))||coast.g<.18)return vec4(0);\n  vec4 c=texture2D(uShoreState,uv),r=texture2D(uShoreState,uv+e),l=texture2D(uShoreState,uv-e);\n  vec4 t=texture2D(uShoreState,uv+e.yx),b=texture2D(uShoreState,uv-e.yx);\n  if(c.r<.01)return vec4(0);\n  vec2 cellSize=uShoreBounds.zw/uShoreResolution;\n  float compression=max(0.,-(r.y/max(r.r,.01)-l.y/max(l.r,.01))/(2.*cellSize.x)\n                         -(t.z/max(t.r,.01)-b.z/max(b.r,.01))/(2.*cellSize.y));\n  float born=boreFoamBirth(c.r,compression,c.r+coast.r,max(0.,-coast.r));\n  float edge=min(min(uv.x,uv.y),min(1.-uv.x,1.-uv.y));\n  float blend=smoothstep(.025,.10,edge)*(1.-smoothstep(8.,11.,-coast.r))*smoothstep(.015,.12,c.r);\n  return vec4(clamp(c.yz/max(c.r,.01),vec2(-12),vec2(12)),born,blend);\n}\n\n      vec2 coast(vec2 p){vec2 uv=(p-uBathyBounds.xy)/uBathyBounds.zw;if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(-110,1);return sampleCoastalGround(uBathymetry,uv,uBathyResolution).rg;}\n      vec3 raw(vec2 p){return texture2D(uLongWaves,p/384.).xyz+texture2D(uShortWaves,p/24.).xyz;}\n      vec3 displacement(vec2 p){return raw(p)*uSwell*shoreWaveScale(coast(p),uSwell,uWind);}\n      vec2 inverseChop(vec2 world){vec2 p=world;for(int i=0;i<3;i++)p=world-displacement(p).xz*uChoppiness;return p;}\n      float fftHeight(vec2 world){return displacement(inverseChop(world)).y;}\n      float baseHeight(vec2 world){return shoreSolvedSurface(world,fftHeight(world),0.).x;}\n      float incidentHeight(vec2 world){return uShoreReady>.5?baseHeight(world):texture2D(uLongWaves,inverseChop(world)/384.).y*uSwell;}\n      \nfloat diagnosticSurfaceHeight,diagnosticConfidence,diagnosticBlend;vec2 diagnosticSurface(vec2 world,float fallbackHeight,float fallbackFoam){\n  if(uShoreReady<.5)return vec2(fallbackHeight,fallbackFoam);\n  vec2 uv=(world-uShoreBounds.xy)/uShoreBounds.zw;\n  if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);\n  vec2 buv=(world-uBathyBounds.xy)/uBathyBounds.zw;\n  if(any(lessThan(buv,vec2(0)))||any(greaterThan(buv,vec2(1))))return vec2(fallbackHeight,fallbackFoam);\n  vec2 coast=sampleCoastalGround(uBathymetry,buv,uBathyResolution).rg;float bed=coast.r;\n  if(coast.g<.18)return vec2(fallbackHeight,fallbackFoam);\n  vec2 node=clamp(uv*uShoreResolution-.5,vec2(0),vec2(uShoreResolution-1.));\n  vec2 base=min(floor(node),vec2(uShoreResolution-2.)),f=node-base;\n  vec2 a=(base+.5)/uShoreResolution,e=vec2(1./uShoreResolution,0);\n  vec3 weighted=mix(mix(shoreNode(a),shore"... 6374 more characters,
+    expected: /diagnosticSurfaceHeight=surface.x;diagnosticConfidence=weighted.z;diagnosticBlend=blend/,
+    operator: 'match',
+    diff: 'simple'
+  }

@@ -15,6 +15,8 @@
 
 ## 今回の実装判断
 
+2026-10-25 / V116: [Basiliskの二相Stokes波](https://basilisk.fr/src/test/stokes-ns.c)と[LiらのOpenFOAM plungingBreakerケース](https://github.com/LiYZPearl/ReynoldsStressTurbulenceModels/tree/main/Tutorials/plungingBreaker)の実装・数値設定も確認した。[実験波形](https://doi.org/10.1017/jfm.2023.379)の「先端形成→前方へ巻く→空洞→着水」という順序と、ゲームの断面を比較した。外部ソルバーをそのまま動かしたとは主張せず、ゲーム側の放出元の速度、空洞を埋めていた高さ場、無効な水の行への接続、同じ波頭の重複を修正する。[変更と限界](breaking-wave-status-v116.md)
+
 - 波頭を毎フレーム広い範囲で探し直すと、別の波に飛び、隣接する時間の水が何メートルも離れる。波面と放出元の波頭を別々に追跡し、各線は共通の位相増分で移動させる。
 - 初期の波頭検出でも、伝播方向に2.5m以上飛ぶ隣接列を同じシートに結ばない。
 - 水を出した時刻と速度は履歴に固定する。後から波頭が動いても、既に飛んでいる水を引っ張らない。

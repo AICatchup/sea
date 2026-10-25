@@ -794,6 +794,11 @@ export const oceanFragment = /* glsl */ `
       solvedFoam=max(solvedFoam,.86*crestAeration(center,back,front,coast.x,compression));
     }
     #endif
+    #ifndef CURVED_SURFACE
+    // Apply after crest aeration as well: its max() used to restore the
+    // horizontal foam mask across the entire reconstructed vertical wall.
+    if(uBreakerProfileCount>0)solvedFoam*=smoothstep(.35,.82,normal.y);
+    #endif
     color=mix(color,uCloudColor*.43,clamp(marine.g*marine.g*.10,0.,.10)*(1.-uHideSurfaceFoam));
     float materialFoam=foamMaterialConcentration(solvedFoam,foam);
     FoamAppearance froth=FoamAppearance(.5,1.,normal);
@@ -807,7 +812,7 @@ export const oceanFragment = /* glsl */ `
     #ifdef CURVED_SURFACE
     // Foam on the underlying heightfield is not a coating of the lifted face.
     // Retain it at the join; the separate lip term describes local aeration.
-    foam*=1.-smoothstep(.015,.14,vLip)*(1.-smoothstep(.86,.985,vLip));
+    foam*=1.-smoothstep(.015,.14,vLip);
     // Aeration remains a narrow lip detail; the rolling face keeps optics.
     foam=max(foam,smoothstep(.88,1.,vLip)*vEnvelope*pores*.35);
     #ifdef CONNECTED_FRONT

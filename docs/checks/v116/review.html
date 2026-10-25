@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>SEA — 現状保存 V116</title>
+<style>body{margin:0;background:#102630;color:#e3eff4;font:16px system-ui}main{max-width:1120px;margin:auto;padding:24px}h1{font-size:24px}video{display:block;width:min(100%,calc(65vh * 1.5486));height:auto;margin:auto}button,a{color:inherit}button{padding:9px 14px;margin:8px 5px 0 0;background:#254954;border:1px solid #60838a;border-radius:8px}p{line-height:1.7;color:#bfd2d8}.note{font-size:14px}</style>
+<main><h1>SEA — 現状保存 V116</h1>
+<p>2026-10-25、開発をクローズした時点の試作です。<strong>砕波の自然さは未受入</strong>。水の壁、薄い接合、白水の不自然さを残した記録です。</p>
+<video controls preload="metadata" poster="wave-lifecycle.jpg" src="wave-lifecycle.mp4" aria-label="クローズ時点のゲーム映像・波音あり"></video>
+<button id="play">音付きで再生</button><button id="pause">一時停止</button><span id="times"></span><p id="status" role="status">未再生</p>
+<p class="note">台風うねり・目線1.25m。18秒の実ゲーム描画を最大1/60秒ずつ計算し、24fps・433フレームで保存しました。実時間FPSの測定ではありません。音声はゲームと同じ音声グラフから生成しています。</p>
+<p><a href="wave-lifecycle.mp4" download>音付きMP4を保存</a> · <a href="../../closeout-2026-10-25.md">クローズ記録</a> · <a href="https://github.com/AICatchup/sea/issues/1">再開用Issue一覧</a></p></main>
+<script>
+const v=document.querySelector('video'),status=document.querySelector('#status');
+document.querySelector('#play').onclick=async()=>{v.muted=false;v.volume=1;try{await v.play();status.textContent='音声ありで再生中';}catch(e){status.textContent='再生できませんでした: '+e.message;}};
+document.querySelector('#pause').onclick=()=>{v.pause();status.textContent='一時停止中';};
+for(const t of [0,3,3.5,4,5,7,10,14,18]){const b=document.createElement('button');b.textContent=t+'秒';b.onclick=()=>{v.pause();v.currentTime=t;status.textContent=t+'秒の静止画';};document.querySelector('#times').append(b);}
+v.onended=()=>{status.textContent='再生が完了しました';};
+v.onerror=()=>{status.textContent='動画を読み込めませんでした';};
+</script></html>

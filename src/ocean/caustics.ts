@@ -256,7 +256,7 @@ export class WaveCaustics {
   }
 
   get texture(): THREE.Texture { return this.history[this.historyIndex].texture; }
-  bindShore(uniforms:Record<string,THREE.IUniform>):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution'])if(uniforms[key])this.photons.material.uniforms[key]=uniforms[key];}
+  bindShore(uniforms:Record<string,THREE.IUniform>):void {for(const key of ['uShoreState','uShoreBounds','uShoreReady','uShoreResolution','uBreakerProfileCount','uBreakerProfileCrests','uBreakerProfileAxes'])if(uniforms[key])this.photons.material.uniforms[key]=uniforms[key];}
 
   /** Explicit developer probe; never called in the frame loop. */
   readEnergy():{min:number;max:number;mean:number;rms:number;center:number}{

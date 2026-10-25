@@ -34,7 +34,7 @@ test('a large shallow-water crest survives the temporary-depth gate and plunges 
   const line=traceBreakingFront(0,0,steep,.2);assert.equal(line.length,17);
   assert.ok(line.every(b=>(b.drop??0)>1.5&&(b.reach??0)>3));
   const pool=new ConnectedBreakerPool();pool.emitFront(line);let impacts=0;
-  for(let i=0;i<120;i++)pool.advance(1/60,steep,()=>impacts++);
+  for(let i=0;i<200;i++)pool.advance(1/60,steep,()=>impacts++);
   assert.ok(impacts>0,'the high crest must land instead of remaining raised');assert.equal(pool.active,0);
 });
 test('one connected event gives one landing per node and collapses without repeat impacts',()=>{

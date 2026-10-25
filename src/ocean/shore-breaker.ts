@@ -218,7 +218,7 @@ export class ShoreBreaker {
     // Optional observation is wholly on demand; all formulas below are extracted
     // from the production sampling strings, not a second physical closure.
     const compression=whitewaterFlowSampling.slice(whitewaterFlowSampling.indexOf('float compression='),whitewaterFlowSampling.indexOf('float born='));
-    const surface=shoreSolverSampling.slice(shoreSolverSampling.indexOf('vec2 shoreSolvedSurface(')).replace('shoreSolvedSurface(', 'diagnosticSurface(').replace('return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);','diagnosticSurfaceHeight=surface.x;diagnosticConfidence=weighted.z;diagnosticBlend=blend;return mix(vec2(fallbackHeight,fallbackFoam),surface,blend);');
+    const surface=shoreSolverSampling.slice(shoreSolverSampling.indexOf('vec2 shoreSolvedSurface(')).replace('shoreSolvedSurface(', 'diagnosticSurface(').replace('vec2 solved=mix','diagnosticSurfaceHeight=surface.x;diagnosticConfidence=weighted.z;diagnosticBlend=blend;vec2 solved=mix');
     const profileFragment=expanded?prefix+`\nfloat diagnosticSurfaceHeight,diagnosticConfidence,diagnosticBlend;${surface}
     void main(){float rowZ=(gl_FragCoord.y-1.5)*8.;${driver}{
       float lane=floor(gl_FragCoord.x/65.),index=mod(floor(gl_FragCoord.x),65.),crossOffset=(index-32.)*1.5;

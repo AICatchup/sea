@@ -1,10 +1,12 @@
 # SEA
 
+> **2026-10-25：現状保存で開発をクローズしました。** 遊べる試作と成果物を保持し、残件は[親Issue #1と11件の子Issue](https://github.com/AICatchup/sea/issues/1)に整理しています。砕波の物理・自然さ・実写同等の品質は未達です。[クローズ記録・再開手順](docs/closeout-2026-10-25.md) · [現状V116の音付き記録](docs/checks/v116/review.html)
+
 **どこまでも、海。** 伊豆諸島の浜から泳ぎ出し、潜り、船で次の島へ。ブラウザで遊べる一続きの3D海洋アドベンチャーです。
 
 ![透明な浅瀬と水面の光](docs/gallery/open-sea.png)
 
-![新島の波と泡・巻き込み形状は改善中](docs/checks/v115/wave-lifecycle.jpg)
+![V115で記録した新島の波と泡・巻き込みの自然さは未達](docs/checks/v115/wave-lifecycle.jpg)
 
 [波音入り動画（MP4・V115）](docs/checks/v115/wave-lifecycle.mp4) · [通常の海況](docs/checks/v115/day-lifecycle.mp4) · [正面・側面・前版の比較再生](docs/checks/v115/review.html) · [映像の検証条件と未達事項](docs/breaking-wave-status-v115.md)
 
