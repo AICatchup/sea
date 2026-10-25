@@ -1,9 +1,10 @@
 # 砕波の実装に使う外部資料
 
-2026-10-23確認。READMEの「リアル」「物理的」といった説明だけでは採用せず、対象処理とSEAへの適用範囲を区別する。今回、外部ソースのコピーや依存追加はしていない。
+2026-10-25更新。READMEの「リアル」「物理的」といった説明だけでは採用せず、対象処理とSEAへの適用範囲を区別する。今回、外部ソースのコピーや依存追加はしていない。
 
 | 一次資料 | 確認した方法 | SEAとの対応・限界 |
 | --- | --- | --- |
+| [Celeris / Pass3_Bous.wgsl](https://github.com/plynett/plynett.github.io/blob/main/shaders/Pass3_Bous.wgsl)、[係数生成](https://github.com/plynett/plynett.github.io/blob/main/shaders/Update_TriDiag_coef.wgsl)、[砕波粘性](https://github.com/plynett/plynett.github.io/blob/main/shaders/Pass_Breaking.wgsl) | 浅水項から分散項を分離し、楕円型の更新と砕波時の渦粘性を組み合わせる | V115で未砕波の弱分散圧力と砕波減衰を独立に追加。自前の低次近似であり、Celerisの非線形項・海底勾配項をすべて移植したものではない。平底の実GPU試験と海岸の実画面を区別して確認 |
 | [Crest / UpdateFoam.compute](https://github.com/wave-harmonic/crest/blob/master/crest/Assets/Crest/Crest/Shaders/Resources/UpdateFoam.compute) | 前フレームの泡を速度で移流し、時間で減衰。圧縮と水深から発生源を作る | MarineSurfaceFieldの永続場を使用。今回、先端だけでなく後続の水の着水量も発生源に渡す。Crestを入れれば巻き込みまで解決するという意味ではない |
 | [FLIP Fluids / diffuseparticlesimulation.cpp](https://github.com/rlguy/Blender-FLIP-Fluids/blob/master/src/engine/diffuseparticlesimulation.cpp) | 波頭の発生判定に曲率・速度と表面法線を使い、泡を速度場で運び、種類別に寿命を減らす | 「白い模様」ではなく発生・輸送・消失を別々に検証する。ゲームの低解像度場とFLIPの圧力計算は同等ではない |
 | [SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH) | 粒子流体、複数の圧力ソルバー、境界モデル、二次粒子 | Colabの粗いWCSPHについて圧力・境界・解像度を検証する比較対象。ブラウザへ重い流体計算を無条件に移植しない |

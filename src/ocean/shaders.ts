@@ -832,12 +832,14 @@ export const oceanFragment = /* glsl */ `
       float foamSun=max(0.,dot(froth.normal,uSunDirection));
       vec3 irradiance=uHorizon*(.20+.22*max(0.,froth.normal.y))+uSunColor*(foamSun/PI)*sunVisibility;
       foamColor=vec3(.94,.97,.98)*irradiance*froth.tone;
-      foam*=.84+.16*froth.field;
+      foam*=foamMicroCoverage(materialFoam,.84+.16*froth.field);
       // The atlas supplies macro coverage; it must not bypass the resolved
       // bubble caps and translucent channels of the optical foam film.
       if(uFoamFilm>.5&&uFoamStructure>.5){
         vec2 film=structuredFoamFilm(vOcean+foamDrift*.35,footprint,materialFoam,pocketField);
-        foam*=film.x;foamColor*=film.y;
+        // Surface micro-pores survive in dilute foam. A second independent
+        // opacity mask in dense froth exposed glassy stripes through breakers.
+        foam*=foamMicroCoverage(materialFoam,film.x);foamColor*=film.y;
       }
     }else if(uFoamFilm>.5&&foam>.001){
       vec2 film=uFoamStructure>.5?structuredFoamFilm(vOcean+foamDrift*.35,footprint,materialFoam,pocketField):foamFilm(vOcean+foamDrift*.35,footprint,max(solvedFoam,foam));

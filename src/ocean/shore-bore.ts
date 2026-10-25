@@ -14,16 +14,36 @@ const smooth=(a:number,b:number,x:number)=>{const t=Math.max(0,Math.min(1,(x-a)/
 // deeper water column suppressed breaking precisely when a big wave rose.
 export function boreFoamBirth(depth:number,compression:number,elevation:number,restDepth:number):number{
   if(![depth,compression,elevation,restDepth].every(Number.isFinite)||depth<=.01)return 0;
+  return Math.max(0,Math.min(1,compression*.7))*depthLimitedBreaker(depth,elevation,restDepth);
+}
+function depthLimitedBreaker(depth:number,elevation:number,restDepth:number):number{
   const ratio=2*Math.max(0,elevation)/Math.max(.2,restDepth);
-  return Math.max(0,Math.min(1,compression*.7))*(1-smooth(3,7,restDepth))*smooth(.05,.3,depth)*smooth(.55,.9,ratio);
+  return (1-smooth(3,7,restDepth))*smooth(.05,.3,depth)*smooth(.55,.9,ratio);
+}
+/** Eddy-viscosity closure for a depth-limited compressing breaker (m²/s).
+ * Dissipation is a symmetric momentum flux, not lowering the surface or
+ * adding/removing depth. Quiet swell and backwash get no artificial drag.
+ * The explicit two-axis stencil has a conservative diffusion CFL budget.
+ */
+export function breakerViscosity(depth:number,compression:number,elevation:number,restDepth:number,dx:number,dt:number):number{
+  if(![depth,compression,elevation,restDepth,dx,dt].every(Number.isFinite)||dx<=0||dt<=0)return 0;
+  // Mixing length squared times strain has m²/s units. Foam birth has its
+  // own time scale; multiplying it here suppressed dissipation a second time.
+  return Math.min(.10*dx*dx/dt,1.2*depth*depth*Math.max(0,compression)*depthLimitedBreaker(depth,elevation,restDepth));
 }
 export const shoreBoreGLSL=/* glsl */`
 float incidentBoreVelocity(float depth,float restDepth,float maxSpeed){
   if(depth<=.01)return 0.;
   return clamp(2.*(sqrt(9.81*depth)-sqrt(9.81*max(0.,restDepth))),-maxSpeed,maxSpeed);
 }
-float boreFoamBirth(float depth,float compression,float elevation,float restDepth){
+float depthLimitedBreaker(float depth,float elevation,float restDepth){
   float ratio=2.*max(0.,elevation)/max(.2,restDepth);
-  return clamp(compression*.7,0.,1.)*(1.-smoothstep(3.,7.,restDepth))*smoothstep(.05,.3,depth)*smoothstep(.55,.9,ratio);
+  return (1.-smoothstep(3.,7.,restDepth))*smoothstep(.05,.3,depth)*smoothstep(.55,.9,ratio);
+}
+float boreFoamBirth(float depth,float compression,float elevation,float restDepth){
+  return clamp(compression*.7,0.,1.)*depthLimitedBreaker(depth,elevation,restDepth);
+}
+float breakerViscosity(float depth,float compression,float elevation,float restDepth,float dx,float dt){
+  return min(.10*dx*dx/max(dt,.00001),1.2*depth*depth*max(0.,compression)*depthLimitedBreaker(depth,elevation,restDepth));
 }
 `;

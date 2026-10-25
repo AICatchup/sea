@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>SEA — うねりと砕波の改善 V115</title>
+<style>body{margin:0;background:#102630;color:#e3eff4;font:16px system-ui}main{max-width:1200px;margin:auto;padding:24px}h1{font-size:24px}video{display:block;width:min(100%,calc(65vh * 1.5472));height:auto;margin:auto;background:#102630}video:fullscreen{width:100%;height:100%;object-fit:contain}button,a{color:inherit}button{padding:10px 18px;margin:8px 6px 0 0;background:#254954;border:1px solid #60838a;border-radius:8px}button[aria-pressed=true]{background:#3d6571;border-color:#d3e7dd}p{line-height:1.7;color:#b8cfd7}.note{font-size:14px}</style>
+<main><h1>SEA — うねりと砕波の改善 V115</h1>
+<video controls preload="metadata" poster="wave-lifecycle.jpg" src="wave-lifecycle.mp4" aria-label="新島の波・18秒のゲーム映像、音声あり"></video>
+<button id="play">音付きで再生</button><button id="pause">一時停止</button><span id="times"></span><p id="status" role="status">台風うねり・正面</p>
+<div id="views"><button data-clip="wave" aria-pressed="true">台風うねり・正面</button><button data-clip="side" aria-pressed="false">台風うねり・側面</button><button data-clip="day" aria-pressed="false">通常の海況</button><button data-clip="previous" aria-pressed="false">前版 V114・正面</button></div>
+<p>波長に応じた進み方、崩れる波の減衰、濃い白水の光の扱いを改修したゲーム画面です。同じ時刻の前版とも切り替えて比較できます。</p>
+<p class="note">各24fps・433フレーム。最大1/60秒の計算刻みで収録しており、実時間FPSの測定ではありません。波・風の音はゲームと同じ音声グラフから合成しています。巻き込みの厚みや白波の連続性には改善の余地があり、実写同等の達成報告ではありません。</p>
+<p><a href="wave-lifecycle.mp4" download>正面の音付きMP4</a> · <a href="side-lifecycle.mp4" download>側面の音付きMP4</a> · <a href="day-lifecycle.mp4" download>通常の海況の音付きMP4</a> · <a href="../../breaking-wave-status-v115.md">変更と検証条件</a></p></main>
+<script>
+const v=document.querySelector('video'),status=document.querySelector('#status');
+document.querySelector('#play').onclick=async()=>{v.muted=false;v.volume=1;try{await v.play();status.textContent='音声ありで再生中';}catch(e){status.textContent='再生できませんでした: '+e.message;}};
+document.querySelector('#pause').onclick=()=>{v.pause();status.textContent='一時停止中';};
+for(const button of document.querySelectorAll('[data-clip]'))button.onclick=()=>{
+ const time=Number.isFinite(v.currentTime)?v.currentTime:0;v.pause();
+ const clip=button.dataset.clip,base=clip==='previous'?'../v114/wave':clip;
+ v.onloadedmetadata=()=>{v.currentTime=Math.min(time,v.duration);};
+ v.src=base+'-lifecycle.mp4';v.poster=base+'-lifecycle.jpg';
+ for(const other of document.querySelectorAll('[data-clip]'))other.setAttribute('aria-pressed',String(other===button));
+ status.textContent=button.textContent+'。同じ時刻で比較できます。';
+};
+v.onended=()=>{status.textContent='再生が完了しました';};
+v.onerror=()=>{status.textContent='動画を読み込めませんでした。接続とファイルを確認してください。';};
+for(const t of [0,4,7,10,14,18]){const b=document.createElement('button');b.textContent=t+'秒';b.onclick=()=>{v.pause();v.currentTime=t;status.textContent=t+'秒の静止画';};document.querySelector('#times').append(b);}
+</script></html>

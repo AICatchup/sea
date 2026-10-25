@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {incidentBoreVelocity,boreFoamBirth} from '../src/ocean/shore-bore.ts';
+import {incidentBoreVelocity,boreFoamBirth,breakerViscosity} from '../src/ocean/shore-bore.ts';
 import {referenceStep} from '../src/ocean/shore-solver-reference.ts';
 
 test('incident closure preserves rest, zero dry momentum and the small-amplitude limit',()=>{
@@ -39,4 +39,21 @@ test('nonlinear incident packet evolves conservatively without negative depth',(
     assert.ok(h.every(v=>v>0&&Number.isFinite(v)));
   }
   assert.ok(Math.abs(sum(h)-mass)<1e-10);assert.ok(Math.abs(sum(q)-momentum)<1e-10);
+});
+
+test('breaking dissipates only compressing depth-limited fronts and respects the diffusion CFL bound',()=>{
+ assert.equal(breakerViscosity(4.1,.4,.1,4,1.5,.006),0,'ordinary swell remains unbroken');
+ assert.equal(breakerViscosity(3,-.5,1,2,1.5,.006),0,'backwash is not forced shoreward');
+ assert.ok(breakerViscosity(3,.8,1,2,1.5,.006)>1);
+ assert.equal(breakerViscosity(3,.2,1,2,1.5,.006),2*breakerViscosity(3,.1,1,2,1.5,.006),'eddy viscosity uses strain once, independent of the foam birth timescale');
+ for(const dt of [.001,.006,.02])assert.ok(breakerViscosity(8,20,4,4,1.5,dt)*dt/(1.5**2)<=.100000001);
+});
+
+test('symmetric breaking stress lowers kinetic energy while retaining water and net momentum',()=>{
+ const n=64,dx=1.5,dt=.006,h=3,q=Array.from({length:n},(_,i)=>h*2*Math.sin(2*Math.PI*i/n));
+ const nu=q.map((_,i)=>breakerViscosity(h,Math.max(0,-(q[(i+1)%n]-q[(i+n-1)%n])/(2*dx*h)),1,2,dx,dt));
+ const next=q.map((v,i)=>{const r=(i+1)%n,l=(i+n-1)%n;return v+.5*dt/(dx*dx)*((nu[i]+nu[r])*(q[r]-v)+(nu[i]+nu[l])*(q[l]-v));});
+ const sum=(a:number[])=>a.reduce((s,v)=>s+v,0);
+ assert.ok(sum(next.map(v=>v*v/(2*h)))<sum(q.map(v=>v*v/(2*h))));
+ assert.ok(Math.abs(sum(next)-sum(q))<1e-12);
 });

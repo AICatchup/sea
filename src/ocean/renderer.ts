@@ -176,7 +176,7 @@ export class Ocean {
     this.simulation=new OceanSimulation(this.renderer,this.wind);
     const experience=experienceOptions(location.search);
     this.reflectionCull.enabled=new URLSearchParams(location.search).get('mirrorcull')!=='0';
-    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2,incidentDirection:new URLSearchParams(location.search).get('shoreincident')!=='0',matchedIncident:new URLSearchParams(location.search).get('shoreforcing')!=='0'}):null;
+    this.shoreSolver=experience.surf?new ShoreSolver(this.renderer,{order:new URLSearchParams(location.search).get('shoreorder')==='1'?1:2,incidentDirection:new URLSearchParams(location.search).get('shoreincident')!=='0',matchedIncident:new URLSearchParams(location.search).get('shoreforcing')!=='0',dispersion:new URLSearchParams(location.search).get('shoredispersion')!=='0',breakingDissipation:new URLSearchParams(location.search).get('shoredissipation')!=='0'}):null;
     this.sandMoisture=new URLSearchParams(location.search).get('sandmemory')!=='0'?new SandMoisture(this.renderer):null;
     this.waterHeights=new LocalWaterHeights(this.renderer);
     this.world=new IslandWorld(new URLSearchParams(location.search).get('rock')!=='legacy',new URLSearchParams(location.search).get('toe')!=='legacy',new URLSearchParams(location.search).get('coastform')==='1',new URLSearchParams(location.search).get('ground')!=='0',new URLSearchParams(location.search).get('cliffskin')!=='0',new URLSearchParams(location.search).get('strandprofile')!=='0');

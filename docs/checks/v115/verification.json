@@ -1,0 +1,270 @@
+{
+  "version": "v115",
+  "baseCommit": "06e27434e9f3f032c9a6c78a5c1230a162e823f7",
+  "clips": [
+    {
+      "view": "front",
+      "preset": "typhoon",
+      "video": "wave-lifecycle.mp4",
+      "sha256": "c9c408c5a05ef686ca6e2a1399759eb222ccbaf0c97d921891e160d2b055986c",
+      "captureSource": "capture-20261025-100117-2aa8f192.json",
+      "captureSHA256": "fe215d032709086ad409dece7ca6a5cea10bb6c904050fde0c1b7553d613d0c4",
+      "container": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1114,
+            "height": 720,
+            "r_frame_rate": "24/1",
+            "side_data_list": [
+              {}
+            ]
+          },
+          {
+            "codec_name": "aac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "18.041667",
+          "size": "24435320"
+        }
+      },
+      "verification": {
+        "frames": 433,
+        "fps": 24,
+        "realtime": false,
+        "audio": {
+          "channels": 2,
+          "sampleRate": 48000,
+          "seconds": 18.041666666666668,
+          "peak": 0.242584228515625,
+          "rms": 0.032677677130111736
+        },
+        "maxAcrossGap": 3.4266961998800523,
+        "maxAlongGap": 1.461732474981359,
+        "lastSpray": {
+          "rollerActive": 256,
+          "frontEvents": 166,
+          "lipActive": 12,
+          "lipImpacts": 23,
+          "whitewaterEmitted": 33970,
+          "geometryAudit": {
+            "maxAcrossGap": 1.8912743037431987,
+            "maxAlongGap": 1.29073682937045,
+            "maxRootGapIncludingInactive": 1.8830952167312331,
+            "activeSamples": 2081,
+            "maxAge": 1.2749999999997104,
+            "emittingNodes": 149
+          }
+        }
+      },
+      "observed": {
+        "simulationSeconds": 18.00000000000104,
+        "solverSeconds": 18.000000000001556,
+        "droppedSolverSeconds": 0.0,
+        "lipImpacts": 23,
+        "counterNote": "Raw runtime counters are cumulative; this clip delta subtracts its first frame."
+      },
+      "chromePlayback": {
+        "currentTime": 18.041667,
+        "duration": 18.041667,
+        "ended": true,
+        "muted": false,
+        "readyState": 4
+      }
+    },
+    {
+      "view": "side",
+      "preset": "typhoon",
+      "video": "side-lifecycle.mp4",
+      "sha256": "11786df84034cb1a7e956fa676409305aac71fb07b0c12d2f802ad3a2b57e375",
+      "captureSource": "capture-20261025-100256-fb7a502f.json",
+      "captureSHA256": "f41b95aae57728805b9af81ee7b537e4c9302f79645425a97ff79332452ef979",
+      "container": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1114,
+            "height": 720,
+            "r_frame_rate": "24/1",
+            "side_data_list": [
+              {}
+            ]
+          },
+          {
+            "codec_name": "aac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "18.041667",
+          "size": "21198558"
+        }
+      },
+      "verification": {
+        "frames": 433,
+        "fps": 24,
+        "realtime": false,
+        "audio": {
+          "channels": 2,
+          "sampleRate": 48000,
+          "seconds": 18.041666666666668,
+          "peak": 0.24951171875,
+          "rms": 0.03752786839349119
+        },
+        "maxAcrossGap": 5.649034933550083,
+        "maxAlongGap": 1.3410479595744267,
+        "lastSpray": {
+          "rollerActive": 256,
+          "frontEvents": 528,
+          "lipActive": 10,
+          "lipImpacts": 104,
+          "whitewaterEmitted": 88789,
+          "geometryAudit": {
+            "maxAcrossGap": 1.7718795842980917,
+            "maxAlongGap": 1.0601591437215097,
+            "maxRootGapIncludingInactive": 1.767903224646607,
+            "activeSamples": 1445,
+            "maxAge": 1.6916666666662823,
+            "emittingNodes": 99
+          }
+        }
+      },
+      "observed": {
+        "simulationSeconds": 17.999999999995964,
+        "solverSeconds": 17.999999999989768,
+        "droppedSolverSeconds": 0.0,
+        "lipImpacts": 74,
+        "counterNote": "Raw runtime counters are cumulative; this clip delta subtracts its first frame."
+      },
+      "chromePlayback": {
+        "currentTime": 18.041667,
+        "duration": 18.041667,
+        "ended": true,
+        "muted": false,
+        "readyState": 4
+      }
+    },
+    {
+      "view": "day",
+      "preset": "day",
+      "video": "day-lifecycle.mp4",
+      "sha256": "c14cbc565450ab8f37c93b8a17da1dd089c4b301b143f1002e1240f14bf925b4",
+      "captureSource": "capture-20261025-100441-43f1237c.json",
+      "captureSHA256": "61060400070af52ed3cc9ba9ca144817042c9c41fa75b656a74e6d5ecd8b6b4a",
+      "container": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1114,
+            "height": 720,
+            "r_frame_rate": "24/1",
+            "side_data_list": [
+              {}
+            ]
+          },
+          {
+            "codec_name": "aac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "18.041667",
+          "size": "14426671"
+        }
+      },
+      "verification": {
+        "frames": 433,
+        "fps": 24,
+        "realtime": false,
+        "audio": {
+          "channels": 2,
+          "sampleRate": 48000,
+          "seconds": 18.041666666666668,
+          "peak": 0.124755859375,
+          "rms": 0.015397179771217585
+        },
+        "maxAcrossGap": 3.5795028403103144,
+        "maxAlongGap": 0.5531625439863944,
+        "lastSpray": {
+          "rollerActive": 256,
+          "frontEvents": 844,
+          "lipActive": 12,
+          "lipImpacts": 135,
+          "whitewaterEmitted": 137432,
+          "geometryAudit": {
+            "maxAcrossGap": 3.579494455635919,
+            "maxAlongGap": 0.5531625439863944,
+            "maxRootGapIncludingInactive": 3.579494455635919,
+            "activeSamples": 1414,
+            "maxAge": 1.066666666666164,
+            "emittingNodes": 204
+          }
+        }
+      },
+      "observed": {
+        "simulationSeconds": 18.00000000000815,
+        "solverSeconds": 18.000000000008185,
+        "droppedSolverSeconds": 0.0,
+        "lipImpacts": 6,
+        "counterNote": "Raw runtime counters are cumulative; this clip delta subtracts its first frame."
+      },
+      "chromePlayback": {
+        "currentTime": 18.041667,
+        "duration": 18.041667,
+        "ended": true,
+        "muted": false,
+        "readyState": 4
+      }
+    }
+  ],
+  "sourceSHA256": {
+    "src/ocean/shore-solver.ts": "8bb877ce69b14286e05781860c8b71e0b833591c64c5eff5ceefd828fcbbaf44",
+    "src/ocean/shore-dispersion.ts": "25ca9fc41d76af1a04dee8b8a5523c65663442d5dc26e735b7347be702d7364f",
+    "src/ocean/shore-bore.ts": "4cc44ad85fc5a1bfec3f0607a531f9edc1f5463d3015b0743264dd2b2a46866a",
+    "src/ocean/foam-appearance.ts": "8cdc5ce14ec341f06138e0caee240c7f7be26785db45c89a46debedb45fdb21c",
+    "src/ocean/shaders.ts": "c4f895df426cc3398a6ef30d6b70b7a7072bc455e939ed3f088ed8b860ee2416",
+    "src/ocean/renderer.ts": "fd4fea106e86c485fc398b10f939a6070c99c97308857003b300babca85233f5",
+    "src/qa/wave-recording.ts": "179eb2d74f52d08a9a8c23bed878f4e1929ad5309c9d25561e50e378752f365f"
+  },
+  "cpuTests": 148,
+  "typecheck": "passed",
+  "build": "passed",
+  "standalone": "passed",
+  "gpuReport": "dispersion-gpu.json",
+  "realtimePerformanceMeasured": false,
+  "naturalBreakingFullyAccepted": false,
+  "consoleErrorsObserved": [],
+  "consoleWarningsObserved": [
+    "Three.js texture allocation warns about 17-19 combined units against its 16 fragment-unit capability field. The wave page renders; per-stage and combined sampler budgets have not been audited in this change."
+  ],
+  "visualReview": {
+    "framesSeconds": [
+      0,
+      5,
+      7,
+      10,
+      14,
+      18
+    ],
+    "remaining": [
+      "Bright streaks on the breaking front",
+      "Large curl thickness and continuity",
+      "Not a field-calibrated 3D air-water simulation"
+    ]
+  },
+  "sourceHashesNormalization": "UTF-8 with LF line endings"
+}

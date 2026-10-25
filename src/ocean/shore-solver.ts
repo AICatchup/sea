@@ -3,6 +3,7 @@ import { shoreWaveSampling } from './surface-detail.ts';
 import { shoreSurfaceTransitionGLSL } from './shore-surface-transition.ts';
 import {shoreBoreGLSL} from './shore-bore.ts';
 import {shoreIncidentDirectionGLSL} from './wave-direction.ts';
+import {dispersivePressureMain} from './shore-dispersion.ts';
 
 /** Include after shoreWaveSampling, so terrain interpolation agrees with geometry. */
 export const shoreSolverSampling = /* glsl */`
@@ -42,6 +43,8 @@ vec2 shoreSolvedSurface(vec2 world,float fallbackHeight,float fallbackFoam){
 export const shoreTransportFragment = /* glsl */`
 precision highp float;
 uniform sampler2D uInput,uOriginal,uBathymetry,uLongWaves,uShortWaves;
+uniform sampler2D uDispersivePressure;
+uniform float uDispersion,uBreakingDissipation;
 uniform vec4 uBathyBounds,uBounds,uOldBounds;
 uniform vec2 uBathyResolution;
 uniform float uSize,uDx,uDt,uMode,uSwell,uChoppiness,uWind,uMaxDepth,uMaxSpeed,uMaxHeight,uSecondOrder,uStage,uIncidentDirection,uMatchedIncident;
@@ -91,6 +94,13 @@ vec4 reconstruct(vec4 a,vec4 ahead,vec4 behind,float z,float za,float zb){
   vec3 edge=p+.5*slope;float h=max(0.,edge.x-z);return vec4(h,h*edge.yz,a.a);
 }
 vec3 physical(vec3 s,vec2 n){vec2 v=s.yz/max(s.x,.00001);float un=dot(v,n);return vec3(s.x*un,s.yz*un+.5*9.81*s.x*s.x*n);}
+float viscosity(vec2 uv){
+  vec2 e=vec2(1./uSize,0);vec4 c=state(uv),r=state(uv+e),l=state(uv-e),t=state(uv+e.yx),b=state(uv-e.yx);
+  if(min(c.r,min(min(r.r,l.r),min(t.r,b.r)))<.05)return 0.;
+  float compression=max(0.,-((r.y/max(r.r,.01)-l.y/max(l.r,.01))+(t.z/max(t.r,.01)-b.z/max(b.r,.01)))/(2.*uDx));
+  float z=bed(world(uv));
+  return breakerViscosity(c.r,compression,c.r+z,max(0.,-z),uDx,uDt);
+}
 vec3 face(vec4 a,vec4 b,float za,float zb,vec2 n){
   float z=max(za,zb),ha=max(0.,a.x+za-z),hb=max(0.,b.x+zb-z);
   vec3 l=vec3(ha,a.yz*(ha/max(a.x,.00001))),r=vec3(hb,b.yz*(hb/max(b.x,.00001)));
@@ -117,6 +127,29 @@ void main(){vec2 uv=gl_FragCoord.xy/uSize,p=world(uv);
       +face(reconstruct(a,b,t,z,zb,zt),reconstruct(b,a,bb,zb,z,bed(p-vec2(0,2.*uDx))),z,zb,vec2(0,-1));
   }else sum=face(a,r,z,zr,vec2(1,0))+face(a,l,z,zl,vec2(-1,0))+face(a,t,z,zt,vec2(0,1))+face(a,b,z,zb,vec2(0,-1));
   vec3 next=a.xyz-uDt/uDx*sum;
+  if(uBreakingDissipation>.5){
+    float nu=viscosity(uv);
+    // The same face stress has opposite sign in its two neighbouring cells.
+    // Thus breaking loses kinetic energy without a hidden sink of water or
+    // net momentum on a periodic flat shelf. No body-wide downward animation.
+    vec2 stress=(nu+viscosity(uv+e))*(r.yz-a.yz)+(nu+viscosity(uv-e))*(l.yz-a.yz)
+      +(nu+viscosity(uv+e.yx))*(t.yz-a.yz)+(nu+viscosity(uv-e.yx))*(b.yz-a.yz);
+    next.yz+=.5*uDt/(uDx*uDx)*stress;
+  }
+  if(uDispersion>.5&&min(a.r,min(min(r.r,l.r),min(t.r,b.r)))>.35){
+    // p = eta/6 + 5*r/6, (I-.4*d²*Laplacian)r=eta.
+    // Replace only the hydrostatic gravity contribution. The mass flux,
+    // advection, wet/dry reconstruction and water volume remain conservative.
+    #ifdef SHORE_PERIODIC_PROBE
+    vec4 pr=texture2D(uDispersivePressure,fract(uv+e)),pl=texture2D(uDispersivePressure,fract(uv-e));
+    vec4 pt=texture2D(uDispersivePressure,fract(uv+e.yx)),pb=texture2D(uDispersivePressure,fract(uv-e.yx));
+    #else
+    vec4 pr=texture2D(uDispersivePressure,uv+e),pl=texture2D(uDispersivePressure,uv-e);
+    vec4 pt=texture2D(uDispersivePressure,uv+e.yx),pb=texture2D(uDispersivePressure,uv-e.yx);
+    #endif
+    vec2 correction=vec2((pr.g-pr.r)-(pl.g-pl.r),(pt.g-pt.r)-(pb.g-pb.r))/(2.*uDx);
+    next.yz+=uDt*9.81*a.r*(5./6.)*correction;
+  }
   if(uSecondOrder>.5&&uStage>.5)next=.5*(texture2D(uOriginal,uv).xyz+next);
   next.x=clamp(next.x,0.,uMaxDepth+uMaxHeight);
   if(next.x<.01)next.yz=vec2(0);else{
@@ -155,7 +188,7 @@ export function createShoreSolverUniforms():Record<string,THREE.IUniform> {
 
 const finiteOption=(value:number|undefined,fallback:number,min:number,max:number):number=>Number.isFinite(value)?Math.max(min,Math.min(max,value!)):fallback;
 
-export interface ShoreSolverOptions { resolution?: number; span?: number; maxDepth?: number; maxSpeed?: number; maxHeight?: number; maxSubsteps?: number; order?:1|2; incidentDirection?:boolean; matchedIncident?:boolean }
+export interface ShoreSolverOptions { resolution?: number; span?: number; maxDepth?: number; maxSpeed?: number; maxHeight?: number; maxSubsteps?: number; order?:1|2; incidentDirection?:boolean; matchedIncident?:boolean; dispersion?:boolean; breakingDissipation?:boolean }
 /** Depth-integrated SWE candidate with optional MUSCL/RK2. Opt-in; RGBA32F.
  * Iterated half-float storage loses small depth updates and can drain water. */
 export class ShoreSolver {
@@ -168,6 +201,11 @@ export class ShoreSolver {
   substeps=0;
   private readonly targets:THREE.WebGLRenderTarget[];
   private readonly material:THREE.ShaderMaterial;
+  private readonly pressureMaterial:THREE.ShaderMaterial|null;
+  private readonly pressureTargets:THREE.WebGLRenderTarget[];
+  private pressureIndex=0;
+  private pressureReady=false;
+  private pressurePasses=0;
   private readonly scene=new THREE.Scene();
   private readonly camera=new THREE.Camera();
   private readonly quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2));
@@ -194,10 +232,17 @@ export class ShoreSolver {
     this.stableDelta=(this.secondOrder?.10:.20)*(this.span/this.resolution)/(maxSpeed+Math.sqrt(9.81*(maxDepth+maxHeight)));
     this.targets=Array.from({length:this.secondOrder?3:2},()=>new THREE.WebGLRenderTarget(this.resolution,this.resolution,{type:THREE.FloatType,format:THREE.RGBAFormat,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter,depthBuffer:false,stencilBuffer:false}));
     this.material=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,vertexShader:'void main(){gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:shoreTransportFragment,uniforms:{uInput:{value:null},uOriginal:{value:null},uIncidentDirection:{value:options.incidentDirection===false?0:1},uMatchedIncident:{value:options.matchedIncident===false?0:1},uWind:{value:8.5},uSecondOrder:{value:this.secondOrder?1:0},uStage:{value:0},uBathymetry:{value:null},uLongWaves:{value:null},uShortWaves:{value:null},uBathyBounds:{value:new THREE.Vector4()},uBathyResolution:{value:new THREE.Vector2()},uBathyTriangulated:{value:0},uBounds:this.uniforms.uShoreBounds,uOldBounds:{value:new THREE.Vector4()},uSize:{value:this.resolution},uDx:{value:this.span/this.resolution},uDt:{value:0},uMode:{value:2},uSwell:{value:1},uChoppiness:{value:1},uMaxDepth:{value:maxDepth},uMaxSpeed:{value:maxSpeed},uMaxHeight:{value:maxHeight}}});
+    this.material.uniforms.uDispersion={value:options.dispersion===false?0:1};
+    this.material.uniforms.uBreakingDissipation={value:options.breakingDissipation===false?0:1};
+    this.material.uniforms.uDispersivePressure={value:null};
+    this.pressureTargets=options.dispersion===false?[]:Array.from({length:2},()=>new THREE.WebGLRenderTarget(this.resolution,this.resolution,{type:THREE.FloatType,format:THREE.RGBAFormat,minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter,depthBuffer:false,stencilBuffer:false}));
+    this.pressureMaterial=this.pressureTargets.length?new THREE.ShaderMaterial({depthTest:false,depthWrite:false,vertexShader:this.material.vertexShader,
+      fragmentShader:shoreTransportFragment.slice(0,shoreTransportFragment.indexOf('void main()'))+dispersivePressureMain,
+      uniforms:{...this.material.uniforms,uPressure:{value:null},uPressureMode:{value:0}}}):null;
     this.quad.material=this.material;this.quad.frustumCulled=false;this.scene.add(this.quad);
   }
-  get diagnostics():{order:number;precision:'float32';substeps:number;simulationElapsed:number;droppedSeconds:number;stableDelta:number;bounds:THREE.Vector4} {
-    return {order:this.secondOrder?2:1,precision:'float32',substeps:this.substeps,simulationElapsed:this.simulationElapsed,droppedSeconds:this.droppedSeconds,stableDelta:this.stableDelta,bounds:(this.uniforms.uShoreBounds.value as THREE.Vector4).clone()};
+  get diagnostics() {
+    return {order:this.secondOrder?2:1,precision:'float32' as const,dispersion:!!this.pressureMaterial,pressurePasses:this.pressurePasses,substeps:this.substeps,simulationElapsed:this.simulationElapsed,droppedSeconds:this.droppedSeconds,stableDelta:this.stableDelta,bounds:(this.uniforms.uShoreBounds.value as THREE.Vector4).clone()};
   }
   /** Explicit developer readback only; never part of normal frame updates. */
   probeState(){
@@ -211,8 +256,26 @@ export class ShoreSolver {
     }
     return {minDepth,maxDepth,maxSpeed,maxFoam,nonfinite,cells:pixels.length/4,readbackBytes:pixels.byteLength,...this.diagnostics};
   }
-  bindUniforms(shared:Record<string,THREE.IUniform>):void {for(const name of ['uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uLongWaves','uShortWaves','uSwell','uChoppiness','uWind'])if(shared[name])this.material.uniforms[name]=shared[name];}
-  private pass(mode:number,dt:number,stage=0,original?:THREE.Texture):void {const u=this.material.uniforms;u.uInput.value=this.targets[this.index].texture;u.uOriginal.value=original??u.uInput.value;u.uStage.value=stage;u.uMode.value=mode;u.uDt.value=dt;this.index=(this.index+1)%this.targets.length;this.renderer.setRenderTarget(this.targets[this.index]);this.renderer.render(this.scene,this.camera);this.uniforms.uShoreState.value=this.targets[this.index].texture;}
+  bindUniforms(shared:Record<string,THREE.IUniform>):void {for(const name of ['uBathymetry','uBathyBounds','uBathyResolution','uBathyTriangulated','uLongWaves','uShortWaves','uSwell','uChoppiness','uWind'])if(shared[name]){this.material.uniforms[name]=shared[name];if(this.pressureMaterial)this.pressureMaterial.uniforms[name]=shared[name];}}
+  private pressure():void {
+    const material=this.pressureMaterial;if(!material)return;
+    this.quad.material=material;const u=material.uniforms;
+    const iterations=this.pressureReady?6:96;
+    for(let i=0;i<=iterations;i++){
+      u.uPressureMode.value=i===0?(this.pressureReady?1:0):2;
+      u.uPressure.value=this.pressureTargets[this.pressureIndex].texture;
+      this.pressureIndex=1-this.pressureIndex;
+      this.renderer.setRenderTarget(this.pressureTargets[this.pressureIndex]);this.renderer.render(this.scene,this.camera);
+      this.pressurePasses++;
+    }
+    this.material.uniforms.uDispersivePressure.value=this.pressureTargets[this.pressureIndex].texture;
+    this.pressureReady=true;this.quad.material=this.material;
+  }
+  private pass(mode:number,dt:number,stage=0,original?:THREE.Texture):void {
+    const u=this.material.uniforms;u.uInput.value=this.targets[this.index].texture;u.uOriginal.value=original??u.uInput.value;u.uStage.value=stage;u.uMode.value=mode;u.uDt.value=dt;
+    if(mode===0)this.pressure();else this.pressureReady=false;
+    this.index=(this.index+1)%this.targets.length;this.renderer.setRenderTarget(this.targets[this.index]);this.renderer.render(this.scene,this.camera);this.uniforms.uShoreState.value=this.targets[this.index].texture;
+  }
   update(deltaSeconds:number,x:number,z:number):void {
     if(this.disposed||![deltaSeconds,x,z].every(Number.isFinite)||deltaSeconds<0)return;
     const u=this.material.uniforms;
@@ -241,6 +304,6 @@ export class ShoreSolver {
       this.uniforms.uShoreReady.value=1;
     }finally{this.renderer.setRenderTarget(previous);this.renderer.xr.enabled=xr;}
   }
-  reset():void {this.ready=false;this.uniforms.uShoreReady.value=0;}
-  dispose():void {if(this.disposed)return;this.disposed=true;this.uniforms.uShoreReady.value=0;this.targets.forEach(t=>t.dispose());this.material.dispose();this.quad.geometry.dispose();this.scene.clear();}
+  reset():void {this.ready=false;this.pressureReady=false;this.uniforms.uShoreReady.value=0;}
+  dispose():void {if(this.disposed)return;this.disposed=true;this.uniforms.uShoreReady.value=0;this.targets.forEach(t=>t.dispose());this.pressureTargets.forEach(t=>t.dispose());this.pressureMaterial?.dispose();this.material.dispose();this.quad.geometry.dispose();this.scene.clear();}
 }

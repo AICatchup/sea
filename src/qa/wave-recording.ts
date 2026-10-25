@@ -21,11 +21,15 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
   ];
   const view=document.createElement('select');view.setAttribute('aria-label','波の検証視点');
   views.forEach((pose,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=pose.label;view.append(option);});
+  const sea=document.createElement('select');sea.setAttribute('aria-label','収録する海況');
+  for(const [value,label] of [['typhoon','台風うねり（比較条件）'],['day','青い海（通常の海況）']]){
+    const option=document.createElement('option');option.value=value;option.textContent=label;sea.append(option);
+  }
   const setView=()=>{const p=views[view.selectedIndex]??views[0];host.viewpoint(p.x,p.z,p.yaw,p.pitch,'walk',0,p.eye);};
   const paired=document.createElement('input');paired.type='checkbox';
   const pairedLabel=document.createElement('label');pairedLabel.append(paired,' 同時刻の材質比較も保存');
   const status=document.createElement('p');status.setAttribute('role','status');status.textContent='ゲームを最大1/60秒ずつ進め、24fpsで保存。実時間性能の測定ではありません。';
-  panel.append(view,pairedLabel,button,cancel,status);document.body.append(panel);
+  panel.append(view,sea,pairedLabel,button,cancel,status);document.body.append(panel);
   const save=async(data:unknown,name:string,label:string)=>{
     const body=JSON.stringify(data);
     // Opt-in local QA sink avoids putting large recordings on a full system
@@ -41,10 +45,10 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
   let stopped=false,busy=false,disposed=false;cancel.onclick=()=>{stopped=true;};
   const inspect=document.createElement('button');inspect.textContent='14秒地点を比較撮影';panel.append(inspect);
   inspect.onclick=()=>{void gate.run(async()=>{
-    if(busy||disposed)return;busy=true;stopped=false;button.disabled=true;inspect.disabled=true;view.disabled=true;cancel.disabled=false;
+    if(busy||disposed)return;busy=true;stopped=false;button.disabled=true;inspect.disabled=true;view.disabled=true;sea.disabled=true;cancel.disabled=false;
     let before:ReturnType<typeof host.readState>|undefined;
     try{
-      await ocean.ready;before=host.readState();host.visualLock(true);host.setPaused(true);host.setQuality('high');host.setPreset('typhoon');
+      await ocean.ready;before=host.readState();host.visualLock(true);host.setPaused(true);host.setQuality('high');host.setPreset(sea.value);
       setView();ocean.setObservationClock(0);
       const started=performance.now();
       for(let i=0;i<140;i++){
@@ -60,16 +64,16 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
       await save(data,'sea-wave-comparison.json','比較画像と診断を保存');
       status.textContent='14秒地点の画像と光学診断を保存しました。';
     }catch(error){status.textContent=error instanceof Error?error.message:String(error);}
-    finally{if(before&&!disposed)host.restoreState(before);busy=false;button.disabled=false;inspect.disabled=false;view.disabled=false;cancel.disabled=true;}
+    finally{if(before&&!disposed)host.restoreState(before);busy=false;button.disabled=false;inspect.disabled=false;view.disabled=false;sea.disabled=false;cancel.disabled=true;}
   }).catch(error=>{status.textContent=String(error);});};
   const record=async()=>{
-    if(busy||disposed)return;busy=true;stopped=false;button.disabled=true;inspect.disabled=true;view.disabled=true;cancel.disabled=false;
+    if(busy||disposed)return;busy=true;stopped=false;button.disabled=true;inspect.disabled=true;view.disabled=true;sea.disabled=true;cancel.disabled=false;
     let before:ReturnType<typeof host.readState>|undefined;
     const fps=24,duration=18,comparison=paired.checked;
     const frames:{jpeg:string;beforeJpeg?:string;time:number;spray:unknown;shore:unknown}[]=[],audio:SoundscapeFrame[]=[];
     try {
       await ocean.ready;before=host.readState();host.visualLock(true);host.setPaused(true);
-      host.setQuality('high');host.setPreset('typhoon');
+      host.setQuality('high');host.setPreset(sea.value);
       setView();ocean.setObservationClock(0);
       const started=performance.now();let bytes=0;
       for(let i=0;i<=duration*fps;i++){
@@ -87,10 +91,10 @@ export function mountWaveRecording(ocean:Ocean,host:SceneCaptureHost,gate:Return
       }
       status.textContent='同じゲーム音声を映像の時刻で合成しています。';
       const wav=await captureSoundtrack(audio,duration+1/fps);
-      await save({fps,simulationStep:1/60,realtime:false,comparison:comparison?'material toggles at identical physical state; geometry fixes remain enabled':false,view:views[view.selectedIndex].label,pose:host.readState(),frames,wav,audioFrames:audio},'sea-wave-recording.json','音付き収録素材を保存');
+      await save({fps,simulationStep:1/60,realtime:false,preset:sea.value,comparison:comparison?'material toggles at identical physical state; geometry fixes remain enabled':false,view:views[view.selectedIndex].label,pose:host.readState(),frames,wav,audioFrames:audio},'sea-wave-recording.json','音付き収録素材を保存');
       status.textContent=`${frames.length}フレームと音声を保存しました。実画面と動画で見た目を確認してください。`;
     }catch(error){status.textContent=error instanceof Error?error.message:String(error);}
-    finally{if(before&&!disposed)host.restoreState(before);frames.length=0;audio.length=0;busy=false;button.disabled=false;inspect.disabled=false;view.disabled=false;cancel.disabled=true;}
+    finally{if(before&&!disposed)host.restoreState(before);frames.length=0;audio.length=0;busy=false;button.disabled=false;inspect.disabled=false;view.disabled=false;sea.disabled=false;cancel.disabled=true;}
   };
   button.onclick=()=>{void gate.run(record).catch(error=>{status.textContent=error instanceof Error?error.message:String(error);});};
   return()=>{disposed=true;stopped=true;panel.remove();};

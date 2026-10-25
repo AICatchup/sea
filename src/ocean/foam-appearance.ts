@@ -1,4 +1,21 @@
 import {foamFlowGLSL} from './foam-flow.ts';
+const smooth=(a:number,b:number,x:number)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
+/** Dense entrained air closes most optical holes; diluted rafts retain them.
+ * Coverage never exceeds the transported area fraction. The atlas describes
+ * structure, not a permanent transparency mask for fully aerated water. */
+export function foamOpticalCoverage(concentration:number,field:number,footprint:number):number{
+  if(![concentration,field,footprint].every(Number.isFinite))return 0;
+  const c=Math.max(0,Math.min(1,concentration)),pores=smooth(.035,.46,field);
+  const resolved=Math.exp(-((Math.max(0,footprint)*3)**2));
+  const sparse=.42+(pores*pores-.42)*resolved,dense=.90+.10*pores;
+  return c*(sparse+(dense-sparse)*smooth(.55,.95,c));
+}
+/** Do not punch a second set of clear holes through optically thick froth. */
+export function foamMicroCoverage(concentration:number,modulation:number):number{
+  if(![concentration,modulation].every(Number.isFinite))return 0;
+  const m=Math.max(0,Math.min(1,modulation));
+  return m+(1-m)*smooth(.55,.95,concentration);
+}
 /** Crest's licensed foam image is a material, never a camera-facing picture.
  * Two phase-shifted material coordinates follow current SWE velocity. Triplanar
  * projection also covers an overturning vertical face without stretched UVs.
@@ -51,8 +68,13 @@ float foamImageCoverage(float concentration,float field,float footprint){
   // a moving threshold abruptly deletes it. Dense impact froth remains white.
   float pores=smoothstep(.035,.46,field);
   float density=mix(.42,pores*pores,exp(-pow(footprint*3.,2.)));
-  // Coverage is bounded by transported area fraction. A weak remnant must
-  // not be optically amplified into a continuous white carpet.
-  return c*density;
+  // The old permanent pore mask also punctured dense, freshly aerated crests.
+  // Their uncovered water highlights looked like a silver wall after breaking.
+  // Only concentrated froth closes its pores; old thin rafts are unchanged.
+  float dense=.90+.10*pores;
+  return c*mix(density,dense,smoothstep(.55,.95,c));
+}
+float foamMicroCoverage(float concentration,float modulation){
+  return mix(clamp(modulation,0.,1.),1.,smoothstep(.55,.95,concentration));
 }
 `;

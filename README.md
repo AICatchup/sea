@@ -4,11 +4,11 @@
 
 ![透明な浅瀬と水面の光](docs/gallery/open-sea.png)
 
-![新島の波と泡・巻き込み形状は改善中](docs/checks/v114/wave-lifecycle.jpg)
+![新島の波と泡・巻き込み形状は改善中](docs/checks/v115/wave-lifecycle.jpg)
 
-[波音入り動画（MP4・V114）](docs/checks/v114/wave-lifecycle.mp4) · [再生ページ](docs/checks/v114/review.html) · [映像の検証条件と未達事項](docs/breaking-wave-status-v114.md)
+[波音入り動画（MP4・V115）](docs/checks/v115/wave-lifecycle.mp4) · [通常の海況](docs/checks/v115/day-lifecycle.mp4) · [正面・側面・前版の比較再生](docs/checks/v115/review.html) · [映像の検証条件と未達事項](docs/breaking-wave-status-v115.md)
 
-**砕波の改善記録 V114:** 波頭からの継続した水の供給、個別の着水、小さな立体の泡とその減衰へ改修。板状に見える大きな白水の外殻を置き換え、接合部の反射を修正しました。Chromeの実描画を24fps・波音付きで保存しています。[参考にしたGitHub実装](docs/wave-methods-github.md) · [Colabの粒子計算と限界](docs/colab-wave-lab.md) · [前版V113](docs/breaking-wave-status-v113.md)。実写同等の達成報告ではありません。
+**砕波の改善記録 V115:** 水の壁が押し寄せるような運動に対し、波長に応じた伝播と、崩れる波の減衰を追加。濃い白水を二重に透かしていた材質も修正しました。Chromeの実描画を通常の海況と台風うねりで、24fps・波音付きで保存しています。[参考にしたGitHub実装](docs/wave-methods-github.md) · [Colabの粒子計算と限界](docs/colab-wave-lab.md) · [前版V114](docs/breaking-wave-status-v114.md)。巻き込みの厚さや白波の連続性は改善中で、実写同等の達成報告ではありません。
 
 [はじめる](#はじめる) · [できること](#できること) · [島をめぐる](#島をめぐる) · [操作](#操作) · [開発と検証](#開発と検証)
 

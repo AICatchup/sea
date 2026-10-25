@@ -10,7 +10,7 @@ test('RK2 retains its original state without sampling the active draw attachment
    const u=((scene.children[0] as THREE.Mesh).material as THREE.ShaderMaterial).uniforms;
    calls.push({mode:u.uMode.value,stage:u.uStage.value,target,input:u.uInput.value,original:u.uOriginal.value});
   }};
- const solver=new ShoreSolver(renderer as unknown as THREE.WebGLRenderer,{order:2}),texture=new THREE.Texture();
+ const solver=new ShoreSolver(renderer as unknown as THREE.WebGLRenderer,{order:2,dispersion:false}),texture=new THREE.Texture();
  solver.bindUniforms({uBathymetry:{value:texture},uLongWaves:{value:texture},uShortWaves:{value:texture}});
  solver.update(solver.stableDelta*1.5,0,0);assert.equal(solver.diagnostics.order,2);assert.equal(solver.substeps,2);
  assert.deepEqual(calls.map(c=>[c.mode,c.stage]),[[2,0],[0,0],[0,1],[0,0],[0,1]]);
